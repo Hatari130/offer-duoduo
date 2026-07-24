@@ -1,4 +1,10 @@
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import {
+  copyFile,
+  mkdir,
+  readFile,
+  readdir,
+  writeFile
+} from "node:fs/promises";
 import { extname, relative, resolve, sep } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
@@ -60,3 +66,10 @@ const workerSource = template.replace(
 
 await mkdir(serverDirectory, { recursive: true });
 await writeFile(resolve(serverDirectory, "index.js"), workerSource);
+
+const hostingDirectory = resolve(distDirectory, ".openai");
+await mkdir(hostingDirectory, { recursive: true });
+await copyFile(
+  resolve(root, ".openai", "hosting.json"),
+  resolve(hostingDirectory, "hosting.json")
+);
