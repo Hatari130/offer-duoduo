@@ -23,6 +23,7 @@ import type {
 
 export const DOCUMENTS_KEY = "offerflow.documents";
 export const WEB_PREFERENCES_KEY = "offerflow.webPreferences";
+const PUBLIC_DEMO_SEEDED_KEY = "offerflow.publicDemoSeeded";
 
 export type DocumentKind =
   | "resume"
@@ -110,7 +111,7 @@ export async function loadWorkspace(): Promise<WorkspaceData> {
         weekStartsMonday: true
       })
     ]);
-  return {
+  const workspace = {
     jobs,
     profile,
     settings,
@@ -118,6 +119,24 @@ export async function loadWorkspace(): Promise<WorkspaceData> {
     documents,
     preferences
   };
+  const hasUserData =
+    jobs.length > 0 ||
+    documents.length > 0 ||
+    opportunities.opportunities.length > 0 ||
+    Boolean(profile.fullName || profile.email || profile.targetRole);
+  if (
+    !isExtensionDashboard() &&
+    !hasUserData &&
+    !localStorage.getItem(PUBLIC_DEMO_SEEDED_KEY)
+  ) {
+    localStorage.setItem(PUBLIC_DEMO_SEEDED_KEY, "1");
+    return applyWorkspaceSnapshot({
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      ...createDemoWorkspace()
+    });
+  }
+  return workspace;
 }
 
 export const saveDocuments = (documents: OfferFlowDocument[]) =>
@@ -445,6 +464,51 @@ export function createDemoWorkspace(): WorkspaceData {
     opportunities: {
       fetchedAt: new Date().toISOString(),
       opportunities: [
+        {
+          id: "demo_op_baidu",
+          company: "百度",
+          title: "2026 届校园招聘",
+          batch: "秋招正式批",
+          status: "open",
+          openAt: dateFromNow(0),
+          deadline: dateFromNow(28),
+          graduationYears: ["2026"],
+          roleTags: ["产品", "AI", "技术"],
+          cities: ["北京", "上海", "深圳"],
+          officialUrl: "https://talent.baidu.com/jobs/list",
+          sourceName: "百度招聘官网",
+          verifiedAt: new Date().toISOString()
+        },
+        {
+          id: "demo_op_jd",
+          company: "京东",
+          title: "TET 管培生校园招聘",
+          batch: "秋招第一批",
+          status: "open",
+          openAt: dateFromNow(-1),
+          deadline: dateFromNow(24),
+          graduationYears: ["2026"],
+          roleTags: ["产品", "供应链", "零售"],
+          cities: ["北京", "成都"],
+          officialUrl: "https://campus.jd.com",
+          sourceName: "京东校园招聘",
+          verifiedAt: new Date().toISOString()
+        },
+        {
+          id: "demo_op_vivo",
+          company: "vivo",
+          title: "2026 校园招聘",
+          batch: "全球校园招聘",
+          status: "open",
+          openAt: dateFromNow(-2),
+          deadline: dateFromNow(21),
+          graduationYears: ["2026"],
+          roleTags: ["产品", "设计", "算法"],
+          cities: ["深圳", "东莞", "南京"],
+          officialUrl: "https://hr.vivo.com/wt/vivo/web/index/CompvivoCampus",
+          sourceName: "vivo 招聘官网",
+          verifiedAt: new Date().toISOString()
+        },
         {
           id: "demo_op_1",
           company: "网易",

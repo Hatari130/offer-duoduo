@@ -37,7 +37,7 @@ const websiteFiles = [
   resolve(distDirectory, "index.html"),
   resolve(distDirectory, "dashboard.html"),
   resolve(distDirectory, "opportunities.json"),
-  resolve(distDirectory, "og.png"),
+  resolve(distDirectory, "og-v2.png"),
   ...assetFiles
 ];
 

@@ -64,7 +64,7 @@ export default {
     }
 
     const html = new TextDecoder().decode(bytes);
-    const imageUrl = new URL("/og.png", request.url).href;
+    const imageUrl = new URL("/og-v2.png", request.url).href;
     return new Response(
       html.replaceAll("__OFFERFLOW_OG_IMAGE__", imageUrl),
       { status: 200, headers }

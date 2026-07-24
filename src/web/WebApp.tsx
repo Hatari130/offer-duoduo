@@ -103,10 +103,10 @@ type Toast = {
 };
 
 const VIEW_LABELS: Record<WebView, string> = {
-  overview: "今日总览",
-  pipeline: "投递管线",
-  jobs: "岗位库",
-  opportunities: "秋招机会",
+  overview: "动态首页",
+  pipeline: "投递看板",
+  jobs: "投递管理",
+  opportunities: "开招动态",
   calendar: "日历",
   profile: "个人资料",
   documents: "文档中心",
@@ -187,6 +187,17 @@ function relativeDate(value?: string): string {
   return shortDate(key);
 }
 
+function openingDateLabel(value?: string): string {
+  const key = parseDateKey(value);
+  if (!key) return "持续开放";
+  const days = daysBetween(key);
+  if (days === 0) return "今天开启";
+  if (days === -1) return "昨天开启";
+  if (days < 0 && days >= -30) return `${Math.abs(days)} 天前开启`;
+  if (days > 0 && days <= 30) return `${days} 天后开启`;
+  return `${shortDate(key)} 开启`;
+}
+
 function createId(prefix: string) {
   return `${prefix}_${Date.now().toString(36)}_${crypto.randomUUID().slice(0, 7)}`;
 }
@@ -238,7 +249,7 @@ function completionOfProfile(profile: PersonalProfile) {
 
 function viewFromLocation(): WebView {
   const raw = location.hash.replace(/^#\/?/, "") as WebView;
-  return raw && raw in VIEW_LABELS ? raw : "overview";
+  return raw && raw in VIEW_LABELS ? raw : "jobs";
 }
 
 function allJobEvents(jobs: JobApplication[]) {
@@ -399,6 +410,34 @@ export default function WebApp() {
     notify(`已移到「${STAGE_LABELS[stage]}」`, "success");
   };
 
+  const updateStages = async (
+    ids: string[],
+    stage: ApplicationStage
+  ) => {
+    if (!ids.length) return;
+    const idSet = new Set(ids);
+    const now = new Date().toISOString();
+    const next = data.jobs.map((job) => {
+      if (!idSet.has(job.id) || job.stage === stage) return job;
+      return {
+        ...job,
+        stage,
+        updatedAt: now,
+        events: [
+          ...job.events,
+          {
+            id: createId("evt"),
+            type: "stage_changed" as const,
+            title: `批量更新：${STAGE_LABELS[job.stage]} → ${STAGE_LABELS[stage]}`,
+            occurredAt: now
+          }
+        ]
+      };
+    });
+    await persistJobs(next);
+    notify(`已更新 ${ids.length} 条投递记录`, "success");
+  };
+
   const startCreateJob = () => {
     setCreatingJob(true);
     setEditingJob(createEmptyJob());
@@ -452,7 +491,15 @@ export default function WebApp() {
       );
     }
     if (view === "jobs") {
-      return <JobsPage {...common} initialSearch={search} />;
+      return (
+        <JobsPage
+          {...common}
+          initialSearch={search}
+          onStageChange={updateStage}
+          onBulkStageChange={updateStages}
+          onNavigate={setView}
+        />
+      );
     }
     if (view === "opportunities") {
       return (
@@ -532,7 +579,7 @@ export default function WebApp() {
               <Menu size={20} />
             </button>
             <div className="breadcrumb">
-              <span>2026 秋招工作区</span>
+              <span>OfferFlow</span>
               <ChevronRight size={13} />
               <strong>{VIEW_LABELS[view]}</strong>
             </div>
@@ -569,6 +616,10 @@ export default function WebApp() {
               )}
               {isExtensionDashboard() ? "插件已连接" : "本地工作区"}
             </span>
+            <button className="topbar-create" onClick={startCreateJob}>
+              <Plus size={15} />
+              新增投递
+            </button>
             <button
               className="icon-button notification-button"
               aria-label="通知"
@@ -658,13 +709,16 @@ function Sidebar({
     {
       label: "工作台",
       items: [
+        {
+          view: "jobs",
+          icon: <BriefcaseBusiness size={17} />,
+          count: activeJobs
+        },
         { view: "overview", icon: <LayoutDashboard size={17} /> },
         {
           view: "pipeline",
-          icon: <Activity size={17} />,
-          count: activeJobs
+          icon: <Activity size={17} />
         },
-        { view: "jobs", icon: <BriefcaseBusiness size={17} /> },
         { view: "opportunities", icon: <Megaphone size={17} /> },
         {
           view: "calendar",
@@ -830,6 +884,13 @@ function OverviewPage({
     const status = opportunityStatus(item);
     return status === "open" || status === "closing" || status === "ongoing";
   }).length;
+  const recentOpenings = opportunities.opportunities
+    .filter((item) => {
+      const status = opportunityStatus(item);
+      return status === "open" || status === "closing" || status === "ongoing";
+    })
+    .sort((a, b) => (b.openAt || "").localeCompare(a.openAt || ""))
+    .slice(0, 4);
   const greeting =
     new Date().getHours() < 12
       ? "早上好"
@@ -900,6 +961,52 @@ function OverviewPage({
           <Plus size={17} /> 新建岗位
         </button>
       </div>
+
+      <section className="opening-signal">
+        <div className="opening-signal-title">
+          <span className="signal-live">
+            <i />
+            LIVE
+          </span>
+          <div>
+            <strong>哪些公司刚刚开启了投递？</strong>
+            <small>聚合校招官网更新，优先展示最近开放的批次。</small>
+          </div>
+        </div>
+        <div className="opening-signal-list">
+          {recentOpenings.map((item) => (
+            <button
+              key={item.id}
+              onClick={() => onNavigate("opportunities")}
+            >
+              <span className="company-monogram">
+                {item.company.slice(0, 1)}
+              </span>
+              <span>
+                <strong>{item.company}</strong>
+                <small>{openingDateLabel(item.openAt)}</small>
+              </span>
+              <ArrowRight size={14} />
+            </button>
+          ))}
+          {!recentOpenings.length && (
+            <button onClick={() => onNavigate("opportunities")}>
+              <span className="company-monogram">+</span>
+              <span>
+                <strong>同步开招信息</strong>
+                <small>查看哪些公司已经开放</small>
+              </span>
+              <ArrowRight size={14} />
+            </button>
+          )}
+        </div>
+        <button
+          className="opening-signal-more"
+          onClick={() => onNavigate("opportunities")}
+        >
+          查看全部 <ArrowRight size={14} />
+        </button>
+      </section>
 
       <div className="metric-strip">
         <button onClick={() => onNavigate("pipeline")}>
@@ -1275,18 +1382,36 @@ function JobsPage({
   jobs,
   initialSearch,
   onEdit,
-  onCreate
+  onCreate,
+  onStageChange,
+  onBulkStageChange,
+  onNavigate
 }: {
   jobs: JobApplication[];
   initialSearch: string;
   onEdit: (job: JobApplication) => void;
   onCreate: () => void;
+  onStageChange: (
+    job: JobApplication,
+    stage: ApplicationStage
+  ) => Promise<void>;
+  onBulkStageChange: (
+    ids: string[],
+    stage: ApplicationStage
+  ) => Promise<void>;
+  onNavigate: (view: WebView) => void;
 }) {
   const [query, setQuery] = useState(initialSearch);
-  const [stage, setStage] = useState<ApplicationStage | "all">("all");
+  const [stage, setStage] = useState<
+    ApplicationStage | "all" | "submitted"
+  >("all");
   const [sort, setSort] = useState<"updated" | "deadline" | "company">(
     "updated"
   );
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  useEffect(() => setQuery(initialSearch), [initialSearch]);
+
   const visible = jobs
     .filter((job) => {
       const normalized = query.trim().toLowerCase();
@@ -1295,7 +1420,12 @@ function JobsPage({
         [job.company, job.position, job.city, job.jobId, job.department]
           .filter(Boolean)
           .some((value) => value!.toLowerCase().includes(normalized));
-      return matches && (stage === "all" || job.stage === stage);
+      const matchesStage =
+        stage === "all" ||
+        job.stage === stage ||
+        (stage === "submitted" &&
+          ["applied", "assessment", "interview", "offer"].includes(job.stage));
+      return matches && matchesStage;
     })
     .sort((a, b) => {
       if (sort === "company") return a.company.localeCompare(b.company, "zh-CN");
@@ -1303,20 +1433,98 @@ function JobsPage({
         return (a.deadline || "9999").localeCompare(b.deadline || "9999");
       return b.updatedAt.localeCompare(a.updatedAt);
     });
+  const activeCount = jobs.filter((job) => job.stage !== "closed").length;
+  const submittedCount = jobs.filter((job) =>
+    ["applied", "assessment", "interview", "offer"].includes(job.stage)
+  ).length;
+  const interviewCount = jobs.filter((job) => job.stage === "interview").length;
+  const attentionCount = jobs.filter(
+    (job) =>
+      job.stage !== "closed" &&
+      (isUrgent(job) ||
+        (Date.now() - new Date(job.updatedAt).getTime()) / 86400000 >= 7)
+  ).length;
+  const visibleIds = visible.map((job) => job.id);
+  const allVisibleSelected =
+    Boolean(visibleIds.length) &&
+    visibleIds.every((id) => selectedIds.has(id));
+  const toggleVisible = () => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (allVisibleSelected) {
+        visibleIds.forEach((id) => next.delete(id));
+      } else {
+        visibleIds.forEach((id) => next.add(id));
+      }
+      return next;
+    });
+  };
+  const toggleOne = (id: string) => {
+    setSelectedIds((current) => {
+      const next = new Set(current);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
-    <section>
-      <PageHeading
-        eyebrow="JOB ARCHIVE"
-        title="岗位库"
-        description="所有岗位的可检索档案，包括来源、阶段、事件和下一步行动。"
-        actions={
-          <button className="web-button primary" onClick={onCreate}>
-            <Plus size={16} /> 新建岗位
+    <section className="applications-page">
+      <div className="applications-heading">
+        <div>
+          <span className="web-eyebrow">APPLICATIONS / 2026</span>
+          <h1>投递管理</h1>
+          <p>把岗位、申请阶段和下一步行动放进一张持续更新的表。</p>
+        </div>
+        <div className="applications-heading-actions">
+          <button
+            className="web-button subtle"
+            onClick={() => onNavigate("pipeline")}
+          >
+            <Activity size={15} /> 看板视图
           </button>
-        }
-      />
-      <div className="jobs-toolbar">
+          <button className="web-button primary" onClick={onCreate}>
+            <Plus size={16} /> 新增投递
+          </button>
+        </div>
+      </div>
+
+      <div className="applications-stats">
+        <button
+          className={stage === "all" ? "active" : ""}
+          onClick={() => setStage("all")}
+        >
+          <span>全部记录</span>
+          <strong>{jobs.length}</strong>
+          <small>{activeCount} 条正在推进</small>
+        </button>
+        <button
+          className={stage === "submitted" ? "active" : ""}
+          onClick={() => setStage("submitted")}
+        >
+          <span>已经投递</span>
+          <strong>{submittedCount}</strong>
+          <small>含笔试、面试与 Offer</small>
+        </button>
+        <button
+          className={stage === "interview" ? "active" : ""}
+          onClick={() => setStage("interview")}
+        >
+          <span>面试进行中</span>
+          <strong>{interviewCount}</strong>
+          <small>需要持续准备</small>
+        </button>
+        <button
+          className={attentionCount ? "attention" : ""}
+          onClick={() => setSort("deadline")}
+        >
+          <span>需要关注</span>
+          <strong>{attentionCount}</strong>
+          <small>临近截止或久未更新</small>
+        </button>
+      </div>
+
+      <div className="jobs-toolbar applications-toolbar">
         <label className="toolbar-search large">
           <Search size={16} />
           <input
@@ -1325,22 +1533,22 @@ function JobsPage({
             placeholder="搜索公司、岗位、城市或岗位编号"
           />
         </label>
-        <label className="toolbar-select">
-          <ListFilter size={14} />
-          <select
-            value={stage}
-            onChange={(event) =>
-              setStage(event.target.value as ApplicationStage | "all")
-            }
-          >
-            <option value="all">全部阶段</option>
-            {STAGES.map((item) => (
-              <option key={item} value={item}>
-                {STAGE_LABELS[item]}
-              </option>
-            ))}
-          </select>
-        </label>
+        <div className="application-stage-filters">
+          {(["all", ...STAGES] as const).map((item) => (
+            <button
+              key={item}
+              className={stage === item ? "active" : ""}
+              onClick={() => setStage(item)}
+            >
+              {item === "all" ? "全部" : STAGE_LABELS[item]}
+              <span>
+                {item === "all"
+                  ? jobs.length
+                  : jobs.filter((job) => job.stage === item).length}
+              </span>
+            </button>
+          ))}
+        </div>
         <label className="toolbar-select">
           <Filter size={14} />
           <select
@@ -1356,22 +1564,78 @@ function JobsPage({
         </label>
       </div>
 
+      {selectedIds.size > 0 && (
+        <div className="bulk-action-bar">
+          <span>
+            <Check size={14} />
+            已选择 <strong>{selectedIds.size}</strong> 条
+          </span>
+          <label>
+            <ListFilter size={14} />
+            <select
+              value=""
+              onChange={(event) => {
+                const nextStage = event.target.value as ApplicationStage;
+                void onBulkStageChange(
+                  Array.from(selectedIds),
+                  nextStage
+                ).then(() => setSelectedIds(new Set()));
+              }}
+            >
+              <option value="" disabled>
+                批量修改阶段
+              </option>
+              {STAGES.map((item) => (
+                <option key={item} value={item}>
+                  移到 {STAGE_LABELS[item]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <button onClick={() => setSelectedIds(new Set())}>取消选择</button>
+        </div>
+      )}
+
       <div className="jobs-table-wrap">
         <table className="jobs-table">
           <thead>
             <tr>
-              <th>岗位</th>
-              <th>阶段</th>
-              <th>城市</th>
-              <th>截止时间</th>
+              <th className="selection-column">
+                <input
+                  type="checkbox"
+                  checked={allVisibleSelected}
+                  onChange={toggleVisible}
+                  aria-label="选择当前筛选的全部投递"
+                />
+              </th>
+              <th>公司 / 岗位</th>
+              <th>投递阶段</th>
+              <th>投递日期</th>
+              <th>截止日期</th>
               <th>下一步</th>
-              <th>最近更新</th>
+              <th>更新</th>
+              <th>来源</th>
               <th aria-label="操作" />
             </tr>
           </thead>
           <tbody>
             {visible.map((job) => (
-              <tr key={job.id} onClick={() => onEdit(job)}>
+              <tr
+                key={job.id}
+                className={`${selectedIds.has(job.id) ? "selected" : ""} ${
+                  isUrgent(job) ? "urgent" : ""
+                }`}
+                onClick={() => onEdit(job)}
+              >
+                <td className="selection-column">
+                  <input
+                    type="checkbox"
+                    checked={selectedIds.has(job.id)}
+                    onClick={(event) => event.stopPropagation()}
+                    onChange={() => toggleOne(job.id)}
+                    aria-label={`选择 ${job.company} ${job.position}`}
+                  />
+                </td>
                 <td>
                   <span className="company-monogram">
                     {job.company.slice(0, 1)}
@@ -1380,16 +1644,33 @@ function JobsPage({
                     <strong>{job.position}</strong>
                     <small>
                       {job.company}
-                      {job.department ? ` · ${job.department}` : ""}
+                      {job.department ? ` / ${job.department}` : ""}
+                      {job.city ? ` · ${job.city}` : ""}
                     </small>
                   </span>
                 </td>
                 <td>
-                  <span className={`stage-chip ${stageClass(job.stage)}`}>
-                    {STAGE_LABELS[job.stage]}
-                  </span>
+                  <select
+                    className={`inline-stage-select ${stageClass(job.stage)}`}
+                    value={job.stage}
+                    onClick={(event) => event.stopPropagation()}
+                    onChange={(event) => {
+                      event.stopPropagation();
+                      void onStageChange(
+                        job,
+                        event.target.value as ApplicationStage
+                      );
+                    }}
+                    aria-label={`更新 ${job.company} 的投递阶段`}
+                  >
+                    {STAGES.map((item) => (
+                      <option key={item} value={item}>
+                        {STAGE_LABELS[item]}
+                      </option>
+                    ))}
+                  </select>
                 </td>
-                <td>{job.city || "—"}</td>
+                <td>{job.appliedAt ? shortDate(job.appliedAt) : "尚未投递"}</td>
                 <td>
                   <span className={isUrgent(job) ? "table-urgent" : ""}>
                     {job.deadline ? shortDate(job.deadline) : "—"}
@@ -1402,8 +1683,35 @@ function JobsPage({
                 </td>
                 <td>{relativeDate(job.updatedAt)}</td>
                 <td>
-                  <button aria-label="编辑">
-                    <ChevronRight size={16} />
+                  {job.sourceUrl ? (
+                    <button
+                      className="source-cell"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        window.open(
+                          job.sourceUrl,
+                          "_blank",
+                          "noopener,noreferrer"
+                        );
+                      }}
+                    >
+                      {job.sourceHost || "招聘官网"}
+                      <ExternalLink size={11} />
+                    </button>
+                  ) : (
+                    "手动创建"
+                  )}
+                </td>
+                <td>
+                  <button
+                    className="row-action"
+                    aria-label={`编辑 ${job.company} ${job.position}`}
+                    onClick={(event) => {
+                      event.stopPropagation();
+                      onEdit(job);
+                    }}
+                  >
+                    <MoreHorizontal size={16} />
                   </button>
                 </td>
               </tr>
@@ -1413,8 +1721,11 @@ function JobsPage({
         {!visible.length && (
           <div className="table-empty">
             <Search size={23} />
-            <strong>没有符合条件的岗位</strong>
-            <span>试试清除搜索词或切换阶段。</span>
+            <strong>没有符合条件的投递记录</strong>
+            <span>清除筛选条件，或者新增一条投递。</span>
+            <button className="web-button primary" onClick={onCreate}>
+              <Plus size={14} /> 新增投递
+            </button>
           </div>
         )}
       </div>
@@ -1468,6 +1779,23 @@ function OpportunitiesPage({
         (a.deadline || "9999").localeCompare(b.deadline || "9999")
       );
     });
+  const openingUpdates = snapshot.opportunities
+    .filter((item) => {
+      const itemStatus = opportunityStatus(item);
+      return (
+        itemStatus === "open" ||
+        itemStatus === "ongoing" ||
+        itemStatus === "closing"
+      );
+    })
+    .sort(
+      (a, b) =>
+        (b.openAt || b.updatedAt || "").localeCompare(
+          a.openAt || a.updatedAt || ""
+        ) ||
+        (b.verifiedAt || "").localeCompare(a.verifiedAt || "")
+    )
+    .slice(0, 6);
 
   const refresh = async (url = settings.opportunityFeedUrl) => {
     setLoading(true);
@@ -1549,9 +1877,9 @@ function OpportunitiesPage({
   return (
     <section>
       <PageHeading
-        eyebrow="OPPORTUNITY INBOX"
-        title="秋招机会"
-        description="把分散的招聘批次收进一个待处理收件箱，再转成真正要推进的岗位。"
+        eyebrow="RECRUITING SIGNALS / LIVE"
+        title="开招动态"
+        description="第一时间知道哪些公司开启了投递，并把值得关注的批次加入投递表。"
         actions={
           <>
             <button
@@ -1591,6 +1919,111 @@ function OpportunitiesPage({
           </button>
         </div>
       )}
+
+      <section className="opening-feed">
+        <header>
+          <div>
+            <span className="signal-live">
+              <i />
+              LIVE
+            </span>
+            <span>
+              <strong>最新开启投递</strong>
+              <small>按官方开放时间排序</small>
+            </span>
+          </div>
+          <p>
+            {openingUpdates.length
+              ? `${openingUpdates.length} 家公司正在开放申请`
+              : "同步数据后，这里会显示最近开招的公司"}
+          </p>
+        </header>
+        <div className="opening-feed-list">
+          {openingUpdates.map((opportunity) => {
+            const exists = Boolean(
+              findDuplicate(jobs, {
+                company: opportunity.company,
+                position: opportunity.title,
+                sourceUrl: opportunity.officialUrl,
+                city: opportunity.cities.join("、"),
+                jobId: undefined
+              })
+            );
+            const state = opportunityStatus(opportunity);
+            return (
+              <article key={`opening-${opportunity.id}`}>
+                <span className="opening-time">
+                  <i />
+                  <strong>{openingDateLabel(opportunity.openAt)}</strong>
+                  <small>
+                    {opportunity.verifiedAt
+                      ? `${relativeDate(opportunity.verifiedAt)}核验`
+                      : "官方信息"}
+                  </small>
+                </span>
+                <span className="company-monogram large">
+                  {opportunity.company.slice(0, 1)}
+                </span>
+                <span className="opening-company">
+                  <strong>{opportunity.company}</strong>
+                  <small>{opportunity.title}</small>
+                </span>
+                <span className="opening-roles">
+                  {opportunity.roleTags.slice(0, 3).map((tag) => (
+                    <em key={tag}>{tag}</em>
+                  ))}
+                </span>
+                <span className="opening-location">
+                  <MapPin size={13} />
+                  {opportunity.cities.slice(0, 2).join("、") || "多城市"}
+                </span>
+                <span
+                  className={`opening-state ${
+                    state === "closing" ? "closing" : ""
+                  }`}
+                >
+                  {state === "closing" ? "即将截止" : "投递开放"}
+                </span>
+                <button
+                  className={exists ? "added" : ""}
+                  disabled={exists}
+                  onClick={() => void addOpportunity(opportunity)}
+                >
+                  {exists ? (
+                    <>
+                      <Check size={13} /> 已加入
+                    </>
+                  ) : (
+                    <>
+                      <Plus size={13} /> 加入投递表
+                    </>
+                  )}
+                </button>
+                <button
+                  className="opening-external"
+                  aria-label={`打开 ${opportunity.company} 招聘官网`}
+                  onClick={() =>
+                    window.open(
+                      opportunity.officialUrl,
+                      "_blank",
+                      "noopener,noreferrer"
+                    )
+                  }
+                >
+                  <ExternalLink size={14} />
+                </button>
+              </article>
+            );
+          })}
+          {!openingUpdates.length && (
+            <div className="opening-feed-empty">
+              <Megaphone size={25} />
+              <strong>还没有开招更新</strong>
+              <span>点击“刷新机会”读取最新招聘数据。</span>
+            </div>
+          )}
+        </div>
+      </section>
 
       <div className="opportunity-summary">
         {(["open", "closing", "upcoming"] as const).map((item) => (
@@ -1632,6 +2065,7 @@ function OpportunitiesPage({
       </div>
 
       <div className="opportunity-toolbar">
+        <strong className="opportunity-section-title">全部招聘批次</strong>
         <label className="toolbar-search large">
           <Search size={16} />
           <input
