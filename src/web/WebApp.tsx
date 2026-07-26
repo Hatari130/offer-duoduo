@@ -103,7 +103,7 @@ type Toast = {
 };
 
 const VIEW_LABELS: Record<WebView, string> = {
-  overview: "动态首页",
+  overview: "个人首页",
   pipeline: "投递看板",
   jobs: "投递管理",
   opportunities: "开招动态",
@@ -249,7 +249,7 @@ function completionOfProfile(profile: PersonalProfile) {
 
 function viewFromLocation(): WebView {
   const raw = location.hash.replace(/^#\/?/, "") as WebView;
-  return raw && raw in VIEW_LABELS ? raw : "jobs";
+  return raw && raw in VIEW_LABELS ? raw : "opportunities";
 }
 
 function allJobEvents(jobs: JobApplication[]) {
@@ -616,9 +616,9 @@ export default function WebApp() {
               )}
               {isExtensionDashboard() ? "插件已连接" : "本地工作区"}
             </span>
-            <button className="topbar-create" onClick={startCreateJob}>
-              <Plus size={15} />
-              新增投递
+            <button className="topbar-create" onClick={() => setView("jobs")}>
+              <BriefcaseBusiness size={15} />
+              我的投递
             </button>
             <button
               className="icon-button notification-button"
@@ -707,19 +707,19 @@ function Sidebar({
     }>;
   }> = [
     {
-      label: "工作台",
+      label: "机会",
       items: [
+        { view: "opportunities", icon: <Megaphone size={17} /> },
+        { view: "overview", icon: <LayoutDashboard size={17} /> },
         {
           view: "jobs",
           icon: <BriefcaseBusiness size={17} />,
           count: activeJobs
         },
-        { view: "overview", icon: <LayoutDashboard size={17} /> },
         {
           view: "pipeline",
           icon: <Activity size={17} />
         },
-        { view: "opportunities", icon: <Megaphone size={17} /> },
         {
           view: "calendar",
           icon: <CalendarDays size={17} />,
@@ -1796,6 +1796,21 @@ function OpportunitiesPage({
         (b.verifiedAt || "").localeCompare(a.verifiedAt || "")
     )
     .slice(0, 6);
+  const openCount = snapshot.opportunities.filter((item) => {
+    const itemStatus = opportunityStatus(item);
+    return itemStatus === "open" || itemStatus === "ongoing";
+  }).length;
+  const closingCount = snapshot.opportunities.filter(
+    (item) => opportunityStatus(item) === "closing"
+  ).length;
+  const upcomingCount = snapshot.opportunities.filter(
+    (item) => opportunityStatus(item) === "upcoming"
+  ).length;
+  const newThisWeek = snapshot.opportunities.filter((item) => {
+    const key = parseDateKey(item.openAt || item.updatedAt);
+    return key ? daysBetween(key) <= 0 && daysBetween(key) >= -7 : false;
+  }).length;
+  const featured = openingUpdates[0] || visible[0];
 
   const refresh = async (url = settings.opportunityFeedUrl) => {
     setLoading(true);
@@ -1876,18 +1891,22 @@ function OpportunitiesPage({
 
   return (
     <section>
-      <PageHeading
-        eyebrow="RECRUITING SIGNALS / LIVE"
-        title="开招动态"
-        description="第一时间知道哪些公司开启了投递，并把值得关注的批次加入投递表。"
-        actions={
-          <>
-            <button
-              className="web-button subtle"
-              onClick={() => setSourceOpen((current) => !current)}
-            >
-              <Link2 size={15} /> 数据源
-            </button>
+      <section className="opportunity-home-hero">
+        <div className="opportunity-hero-copy">
+          <span className="web-eyebrow">RECRUITING SIGNALS / LIVE</span>
+          <h1>今天有哪些公司开始招人？</h1>
+          <p>
+            OfferFlow 把外部招聘官网的开招信息整理成可筛选、可追踪、可加入投递表的机会流。
+          </p>
+          <div className="opportunity-hero-actions">
+            <label className="hero-search">
+              <Search size={17} />
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="搜索公司、岗位方向、城市"
+              />
+            </label>
             <button
               className="web-button primary"
               disabled={loading}
@@ -1896,9 +1915,118 @@ function OpportunitiesPage({
               <RefreshCw size={15} className={loading ? "spin" : ""} />
               刷新机会
             </button>
-          </>
-        }
-      />
+          </div>
+        </div>
+        <aside className="opportunity-hero-panel">
+          <div className="hero-panel-live">
+            <span className="signal-live">
+              <i />
+              LIVE
+            </span>
+            <small>
+              {snapshot.fetchedAt
+                ? `最近同步 ${new Date(snapshot.fetchedAt).toLocaleString(
+                    "zh-CN",
+                    {
+                      month: "numeric",
+                      day: "numeric",
+                      hour: "2-digit",
+                      minute: "2-digit"
+                    }
+                  )}`
+                : "等待第一次同步"}
+            </small>
+          </div>
+          {featured ? (
+            <button
+              className="featured-opening-card"
+              onClick={() =>
+                window.open(
+                  featured.officialUrl,
+                  "_blank",
+                  "noopener,noreferrer"
+                )
+              }
+            >
+              <span className="company-monogram large">
+                {featured.company.slice(0, 1)}
+              </span>
+              <span>
+                <strong>{featured.company}</strong>
+                <small>{featured.title}</small>
+              </span>
+              <ArrowRight size={16} />
+            </button>
+          ) : (
+            <div className="featured-opening-empty">
+              <Megaphone size={22} />
+              <strong>同步后显示最新开招</strong>
+            </div>
+          )}
+          <div className="hero-watchlist">
+            <span>关注方向</span>
+            <strong>{settings.opportunityFeedUrl ? "自定义数据源" : "校招官网 · 产品 · AI · 多城市"}</strong>
+          </div>
+        </aside>
+      </section>
+
+      <div className="opportunity-home-stats">
+        <button
+          className={status === "open" ? "active" : ""}
+          onClick={() => setStatus(status === "open" ? "all" : "open")}
+        >
+          <span>正在开放</span>
+          <strong>{openCount}</strong>
+          <small>可立即投递</small>
+        </button>
+        <button
+          className={status === "closing" ? "active attention" : "attention"}
+          onClick={() => setStatus(status === "closing" ? "all" : "closing")}
+        >
+          <span>即将截止</span>
+          <strong>{closingCount}</strong>
+          <small>需要优先处理</small>
+        </button>
+        <button
+          className={status === "upcoming" ? "active" : ""}
+          onClick={() => setStatus(status === "upcoming" ? "all" : "upcoming")}
+        >
+          <span>即将开放</span>
+          <strong>{upcomingCount}</strong>
+          <small>提前准备材料</small>
+        </button>
+        <button onClick={() => setStatus("all")}>
+          <span>近 7 天新增</span>
+          <strong>{newThisWeek}</strong>
+          <small>保持每日刷新</small>
+        </button>
+      </div>
+
+      <div className="opportunity-home-controls">
+        <button
+          className="web-button subtle"
+          onClick={() => setSourceOpen((current) => !current)}
+        >
+          <Link2 size={15} /> 数据源
+        </button>
+        <div className="filter-chips">
+          {(["all", "open", "closing", "upcoming"] as const).map((item) => (
+            <button
+              key={item}
+              className={status === item ? "active" : ""}
+              onClick={() => setStatus(item)}
+            >
+              {item === "all"
+                ? "全部"
+                : item === "open"
+                  ? "开放中"
+                  : item === "closing"
+                    ? "即将截止"
+                    : "即将开放"}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {sourceOpen && (
         <div className="source-banner">
@@ -2025,72 +2153,11 @@ function OpportunitiesPage({
         </div>
       </section>
 
-      <div className="opportunity-summary">
-        {(["open", "closing", "upcoming"] as const).map((item) => (
-          <button
-            key={item}
-            className={status === item ? "active" : ""}
-            onClick={() => setStatus(status === item ? "all" : item)}
-          >
-            <span>
-              {item === "open"
-                ? "正在招聘"
-                : item === "closing"
-                  ? "即将截止"
-                  : "即将开放"}
-            </span>
-            <strong>
-              {
-                snapshot.opportunities.filter((opportunity) => {
-                  const candidate = opportunityStatus(opportunity);
-                  return item === "open"
-                    ? candidate === "open" || candidate === "ongoing"
-                    : candidate === item;
-                }).length
-              }
-            </strong>
-          </button>
-        ))}
-        <div className="opportunity-last-sync">
-          <CircleDot size={13} />
-          <span>
-            {snapshot.fetchedAt
-              ? `最近同步 ${new Date(snapshot.fetchedAt).toLocaleString(
-                  "zh-CN",
-                  { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" }
-                )}`
-              : "尚未同步机会数据"}
-          </span>
-        </div>
-      </div>
-
       <div className="opportunity-toolbar">
         <strong className="opportunity-section-title">全部招聘批次</strong>
-        <label className="toolbar-search large">
-          <Search size={16} />
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="搜索公司、项目、城市或岗位类别"
-          />
-        </label>
-        <div className="filter-chips">
-          {(["all", "open", "closing", "upcoming"] as const).map((item) => (
-            <button
-              key={item}
-              className={status === item ? "active" : ""}
-              onClick={() => setStatus(item)}
-            >
-              {item === "all"
-                ? "全部"
-                : item === "open"
-                  ? "开放中"
-                  : item === "closing"
-                    ? "即将截止"
-                    : "即将开放"}
-            </button>
-          ))}
-        </div>
+        <span className="opportunity-result-count">
+          当前显示 {visible.length} 条机会
+        </span>
       </div>
 
       <div className="opportunity-grid">
