@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+﻿import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Check,
   ChevronLeft,
@@ -213,7 +213,7 @@ export default function ProfileView({
             })}
           </div>
           <button className="profile-fill-button" disabled={!selectedFields.size || busy} onClick={fill}><Check size={15} />确认填写 {selectedFields.size} 项</button>
-          <p>填写后请在网页中检查；OfferFlow 不会点击提交按钮。</p>
+          <p>填写后请在网页中检查；OfferDuoDuo 不会点击提交按钮。</p>
         </div>
       )}
 
@@ -316,3 +316,4 @@ function EntryCard({ title, onRemove, children }: { title: string; onRemove: () 
 function EmptyEntry({ onClick, text }: { onClick: () => void; text: string }) {
   return <button className="profile-empty-entry" onClick={onClick}><Plus size={15} />{text}</button>;
 }
+

@@ -1,4 +1,4 @@
-(() => {
+﻿(() => {
   const clean = (value) => (value || "").replace(/\s+/g, " ").trim();
 
   const firstMatch = (text, patterns) => {
@@ -602,7 +602,7 @@
 
       const frame = document.createElement("iframe");
       frame.src = chrome.runtime.getURL("sidepanel.html?surface=overlay");
-      frame.title = "OfferFlow";
+      frame.title = "OfferDuoDuo";
       frame.setAttribute("allow", "clipboard-write");
       Object.assign(frame.style, {
         width: "100%",
@@ -717,3 +717,4 @@
   // Initial silent sync after SPA content has had time to render.
   scheduleProgressCheck(2600);
 })();
+

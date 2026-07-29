@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   ApplicationStage,
   DeepSeekExtraction,
   ExtractedJob,
@@ -68,7 +68,7 @@ function compactPageText(page: ExtractedJob): string {
 }
 
 function extractionPrompt(page: ExtractedJob): string {
-  return `你是 OfferFlow 的招聘页面结构化引擎。请判断页面类型，并提取页面中所有明确出现的求职岗位或投递记录。
+  return `你是 OfferDuoDuo 的招聘页面结构化引擎。请判断页面类型，并提取页面中所有明确出现的求职岗位或投递记录。
 
 只返回 JSON，不要解释。结构必须是：
 {
@@ -344,3 +344,4 @@ export async function testDeepSeekConnection(
     throw new Error(`API 可连接，但模型 ${model} 当前不可用`);
   }
 }
+

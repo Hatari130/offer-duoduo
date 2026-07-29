@@ -8,7 +8,6 @@ export default defineConfig({
         emptyOutDir: true,
         rollupOptions: {
             input: {
-                index: resolve(__dirname, "index.html"),
                 dashboard: resolve(__dirname, "dashboard.html"),
                 sidepanel: resolve(__dirname, "sidepanel.html"),
                 background: resolve(__dirname, "src/background.ts")

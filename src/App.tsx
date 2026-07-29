@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -55,7 +55,6 @@ import {
 import {
   loadOpportunityCache,
   OPPORTUNITY_CACHE_KEY,
-  opportunityStatus,
   refreshOpportunityFeed
 } from "./opportunities";
 import {
@@ -611,7 +610,7 @@ function CompactSidebar({
       <header className="compact-header">
         <button className="compact-brand" onClick={() => onViewChange("dashboard")}>
           <span>OF</span>
-          <strong>OfferFlow</strong>
+          <strong>OfferDuoDuo</strong>
         </button>
         <div className="compact-header-actions">
           <button title="打开完整工作台" onClick={() => onOpenWorkspace(view)}>
@@ -928,18 +927,6 @@ function OverlayPanel({
   const recentJobs = [...activeJobs]
     .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
     .slice(0, 5);
-  const opportunityCounts = opportunitySnapshot.opportunities.reduce(
-    (counts, opportunity) => {
-      const status = opportunityStatus(opportunity);
-      if (opportunity.openAt === today) counts.today += 1;
-      if (status === "open" || status === "ongoing" || status === "closing") {
-        counts.open += 1;
-      }
-      if (status === "closing") counts.closing += 1;
-      return counts;
-    },
-    { today: 0, open: 0, closing: 0 }
-  );
   const locationGroups = Array.from(
     activeJobs.reduce((groups, job) => {
       const location = normalizeJobLocation(job.city);
@@ -1094,47 +1081,16 @@ function OverlayPanel({
 
         {tab === "overview" && (
           <>
-            <section className="overlay-intro">
-              <span className="overlay-section-icon"><LayoutDashboard size={18} /></span>
-              <div>
-                <h1>总览</h1>
-                <p>
-                  {activeJobs.length
-                    ? `${activeJobs.length} 个岗位正在推进，${agenda.filter((item) => item.kind === "deadline").length} 个事项等待处理。`
-                    : "从当前招聘页面开始建立你的求职记录。"}
-                </p>
-              </div>
-            </section>
-
-            <section className="overlay-opportunity-summary">
-              <div className="overlay-section-heading">
-                <span>校招机会</span>
-                <button onClick={() => setTab("opportunities")}>查看全部</button>
-              </div>
-              <div className="overlay-opportunity-metrics">
-                <div><strong>{opportunityCounts.today}</strong><span>今日开放</span></div>
-                <div><strong>{opportunityCounts.open}</strong><span>正在招聘</span></div>
-                <div className={opportunityCounts.closing ? "urgent" : ""}>
-                  <strong>{opportunityCounts.closing}</strong><span>三日内截止</span>
-                </div>
-              </div>
-              <button
-                className="overlay-opportunity-entry"
-                onClick={() => setTab(opportunitySnapshot.opportunities.length ? "opportunities" : "settings")}
-              >
-                <span>
-                  <strong>{opportunitySnapshot.opportunities.length ? "浏览全部可投机会" : "接入校招机会数据源"}</strong>
-                  <small>{opportunitySnapshot.opportunities.length ? "不做推荐，按开放状态完整呈现" : "连接公开 JSON 文档后开始使用"}</small>
-                </span>
-                <ChevronRight size={16} />
-              </button>
-            </section>
+            <div className="overlay-summary-row">
+              <span>
+                {activeJobs.length
+                  ? `${activeJobs.length} 个岗位正在推进`
+                  : "暂无岗位记录"}
+              </span>
+              <button onClick={() => setTab("jobs")}>查看全部</button>
+            </div>
 
             <section className="overlay-flow">
-              <div className="overlay-section-heading">
-                <span>进行中的申请</span>
-                <button onClick={() => setTab("jobs")}>查看全部</button>
-              </div>
               <div className="overlay-flow-list">
                 {recentJobs.map((job, index) => (
                   <div className="overlay-flow-item" key={job.id}>
@@ -1147,21 +1103,6 @@ function OverlayPanel({
                   <div className="overlay-empty">暂无岗位记录</div>
                 )}
               </div>
-            </section>
-
-            <section className="overlay-next">
-              <div className="overlay-section-heading">
-                <span>接下来</span>
-                <button onClick={() => setTab("agenda")}>全部日程</button>
-              </div>
-              {agenda.slice(0, 3).map((item) => (
-                <button key={item.id} onClick={() => onEdit(item.job)}>
-                  <time>{item.date.slice(5).replace("-", "/")}</time>
-                  <span><strong>{item.job.position}</strong><small>{item.job.company} · {item.label}</small></span>
-                  <ChevronRight size={14} />
-                </button>
-              ))}
-              {!agenda.length && <div className="overlay-empty">暂无未来日程</div>}
             </section>
           </>
         )}
@@ -1383,7 +1324,7 @@ function OverlayPanel({
           <section className="overlay-page">
             <div className="overlay-page-title">
               <span className="overlay-section-icon"><Settings2 size={18} /></span>
-              <div><h1>连接</h1><p>OfferFlow 的本地服务状态</p></div>
+              <div><h1>连接</h1><p>OfferDuoDuo 的本地服务状态</p></div>
             </div>
             <div className="overlay-connection-list">
               <div><Megaphone size={17} /><span><strong>校招机会</strong><small>{settings.opportunityFeedUrl ? `${opportunitySnapshot.opportunities.length} 条机会` : "使用内置数据或配置外部源"}</small></span><i className={opportunitySnapshot.opportunities.length ? "active" : ""} /></div>
@@ -1603,7 +1544,7 @@ function CaptureForm({
           </button>
         )}
         <button className="button button--primary" onClick={() => onSave("create")}>
-          <Plus size={16} /> {duplicate ? "仍然新建" : "加入 OfferFlow"}
+          <Plus size={16} /> {duplicate ? "仍然新建" : "加入 OfferDuoDuo"}
         </button>
       </div>
     </section>
@@ -2033,7 +1974,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       } else {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab.id || !tab.url?.startsWith("http")) {
-          throw new Error("请在招聘网页中使用 OfferFlow");
+          throw new Error("请在招聘网页中使用 OfferDuoDuo");
         }
         const requestExtraction = () =>
           chrome.tabs.sendMessage(tab.id!, {
@@ -2133,14 +2074,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           {
             id: createId("evt"),
             type: "created",
-            title: "从招聘网页加入 OfferFlow",
+            title: "从招聘网页加入 OfferDuoDuo",
             occurredAt: now,
             sourceUrl: capture.sourceUrl
           }
         ]
       };
       await persistJobs([created, ...jobs]);
-      setNotice("岗位已加入 OfferFlow");
+      setNotice("岗位已加入 OfferDuoDuo");
     }
 
     setCapture(null);
@@ -2200,7 +2141,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             {
               id: createId("evt"),
               type: "created",
-              title: "从投递记录页导入 OfferFlow",
+              title: "从投递记录页导入 OfferDuoDuo",
               occurredAt: now,
               sourceUrl: candidate.sourceUrl
             }
@@ -2579,7 +2520,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div>
                 <span className="eyebrow">数据与连接</span>
                 <h1>把记录留在你手里</h1>
-                <p>OfferFlow 保存主数据，Obsidian 接收可阅读、可继续补充的 Markdown。</p>
+                <p>OfferDuoDuo 保存主数据，Obsidian 接收可阅读、可继续补充的 Markdown。</p>
               </div>
             </div>
 
@@ -2625,7 +2566,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div className="setting-copy">
                 <h3>Obsidian Markdown</h3>
                 <p>
-                  选择 Vault 中的岗位目录。同步只更新 OfferFlow 管理区域，不覆盖你的准备笔记。
+                  选择 Vault 中的岗位目录。同步只更新 OfferDuoDuo 管理区域，不覆盖你的准备笔记。
                 </p>
                 <div className="connection-state">
                   <span className={settings.obsidianFolderName ? "connected-dot" : "empty-dot"} />
@@ -2833,3 +2774,4 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     </main>
   );
 }
+
