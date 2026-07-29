@@ -23,7 +23,6 @@ import type {
 
 export const DOCUMENTS_KEY = "offerflow.documents";
 export const WEB_PREFERENCES_KEY = "offerflow.webPreferences";
-const PUBLIC_DEMO_SEEDED_KEY = "offerflow.publicDemoSeeded";
 
 export type DocumentKind =
   | "resume"
@@ -119,23 +118,6 @@ export async function loadWorkspace(): Promise<WorkspaceData> {
     documents,
     preferences
   };
-  const hasUserData =
-    jobs.length > 0 ||
-    documents.length > 0 ||
-    opportunities.opportunities.length > 0 ||
-    Boolean(profile.fullName || profile.email || profile.targetRole);
-  if (
-    !isExtensionDashboard() &&
-    !hasUserData &&
-    !localStorage.getItem(PUBLIC_DEMO_SEEDED_KEY)
-  ) {
-    localStorage.setItem(PUBLIC_DEMO_SEEDED_KEY, "1");
-    return applyWorkspaceSnapshot({
-      version: 1,
-      exportedAt: new Date().toISOString(),
-      ...createDemoWorkspace()
-    });
-  }
   return workspace;
 }
 

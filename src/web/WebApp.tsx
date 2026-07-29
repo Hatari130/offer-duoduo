@@ -103,10 +103,10 @@ type Toast = {
 };
 
 const VIEW_LABELS: Record<WebView, string> = {
-  overview: "个人首页",
+  overview: "我的",
   pipeline: "投递看板",
   jobs: "投递管理",
-  opportunities: "开招动态",
+  opportunities: "信息速递",
   calendar: "日历",
   profile: "个人资料",
   documents: "文档中心",
@@ -472,12 +472,10 @@ export default function WebApp() {
     };
     if (view === "overview") {
       return (
-        <OverviewPage
-          {...common}
+        <MyPage
+          jobs={data.jobs}
           profile={data.profile}
-          opportunities={data.opportunities}
           onNavigate={setView}
-          onInstallDemo={installDemo}
         />
       );
     }
@@ -578,62 +576,38 @@ export default function WebApp() {
             >
               <Menu size={20} />
             </button>
-            <div className="breadcrumb">
-              <span>OfferFlow</span>
-              <ChevronRight size={13} />
-              <strong>{VIEW_LABELS[view]}</strong>
+            <div className="minimal-brandline">
+              <strong>OF</strong>
+              <i />
+              <span>
+                <BriefcaseBusiness size={18} />
+                2026 秋招
+              </span>
+              <ChevronRight size={16} />
             </div>
           </div>
 
           <div className="web-topbar-actions">
-            <label className="global-search">
-              <Search size={15} />
-              <input
-                value={search}
-                onChange={(event) => setSearch(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === "Enter") setView("jobs");
-                }}
-                placeholder="搜索公司、岗位或城市"
-                aria-label="搜索全部岗位"
-              />
-              {search && <kbd>{filteredJobCount}</kbd>}
-            </label>
-            <span
-              className={`connection-pill ${
-                isExtensionDashboard() ? "connected" : ""
-              }`}
-              title={
-                isExtensionDashboard()
-                  ? "当前页面与 OfferFlow 插件共享数据"
-                  : "公开网页版使用当前浏览器的本地数据"
-              }
-            >
-              {isExtensionDashboard() ? (
-                <CircleDot size={13} />
-              ) : (
-                <Cloud size={13} />
-              )}
-              {isExtensionDashboard() ? "插件已连接" : "本地工作区"}
-            </span>
-            <button className="topbar-create" onClick={() => setView("jobs")}>
-              <BriefcaseBusiness size={15} />
-              我的投递
-            </button>
             <button
               className="icon-button notification-button"
-              aria-label="通知"
-              onClick={() => setView("calendar")}
+              aria-label="导入"
+              onClick={startCreateJob}
             >
-              <Bell size={17} />
-              {data.jobs.some(isUrgent) && <i />}
+              <Upload size={17} />
             </button>
             <button
-              className="profile-chip"
-              onClick={() => setView("profile")}
+              className="icon-button"
+              aria-label="刷新"
+              onClick={() => location.reload()}
             >
-              <span>{data.profile.fullName?.slice(0, 1) || "OF"}</span>
-              <strong>{data.profile.fullName || "我的资料"}</strong>
+              <RefreshCw size={17} />
+            </button>
+            <button
+              className="icon-button"
+              aria-label="关闭"
+              onClick={() => setView("opportunities")}
+            >
+              <X size={19} />
             </button>
           </div>
         </header>
@@ -696,8 +670,6 @@ function Sidebar({
   onView: (view: WebView) => void;
   jobs: JobApplication[];
 }) {
-  const activeJobs = jobs.filter((job) => job.stage !== "closed").length;
-  const urgent = jobs.filter(isUrgent).length;
   const sections: Array<{
     label: string;
     items: Array<{
@@ -707,31 +679,10 @@ function Sidebar({
     }>;
   }> = [
     {
-      label: "机会",
+      label: "菜单",
       items: [
         { view: "opportunities", icon: <Megaphone size={17} /> },
-        { view: "overview", icon: <LayoutDashboard size={17} /> },
-        {
-          view: "jobs",
-          icon: <BriefcaseBusiness size={17} />,
-          count: activeJobs
-        },
-        {
-          view: "pipeline",
-          icon: <Activity size={17} />
-        },
-        {
-          view: "calendar",
-          icon: <CalendarDays size={17} />,
-          count: urgent || undefined
-        }
-      ]
-    },
-    {
-      label: "资料",
-      items: [
-        { view: "profile", icon: <UserRound size={17} /> },
-        { view: "documents", icon: <FileArchive size={17} /> }
+        { view: "overview", icon: <LayoutDashboard size={17} /> }
       ]
     }
   ];
@@ -747,7 +698,7 @@ function Sidebar({
           <strong>
             OFFER<b>FLOW</b>
           </strong>
-          <small>求职工作台</small>
+          <small>2026 秋招</small>
         </div>
 
         <nav>
@@ -769,22 +720,7 @@ function Sidebar({
           ))}
         </nav>
 
-        <div className="sidebar-footer">
-          <button
-            className={view === "settings" ? "active" : ""}
-            onClick={() => onView("settings")}
-          >
-            <Settings2 size={17} />
-            <span>同步与设置</span>
-          </button>
-          <div className="privacy-note">
-            <ShieldCheck size={15} />
-            <span>
-              <strong>隐私优先</strong>
-              <small>数据默认保存在当前浏览器</small>
-            </span>
-          </div>
-        </div>
+        <div className="sidebar-footer" />
       </aside>
     </>
   );
@@ -824,6 +760,81 @@ function PageHeading({
       </div>
       {actions && <div className="page-heading-actions">{actions}</div>}
     </div>
+  );
+}
+
+function MyPage({
+  jobs,
+  profile,
+  onNavigate
+}: {
+  jobs: JobApplication[];
+  profile: PersonalProfile;
+  onNavigate: (view: WebView) => void;
+}) {
+  const activeJobs = jobs.filter((job) => job.stage !== "closed");
+  const appliedJobs = jobs.filter((job) =>
+    ["applied", "assessment", "interview", "offer"].includes(job.stage)
+  );
+  const urgent = activeJobs.filter(isUrgent);
+  const stageCounts = STAGES.map((stage) => ({
+    stage,
+    count: jobs.filter((job) => job.stage === stage).length
+  }));
+  const progress = jobs.length
+    ? Math.round((appliedJobs.length / jobs.length) * 100)
+    : 0;
+
+  return (
+    <section className="minimal-my-page">
+      <header className="minimal-section-heading">
+        <span>
+          <LayoutDashboard size={22} />
+        </span>
+        <div>
+          <h1>我的</h1>
+          <p>{profile.fullName || "求职者"} 的投递进度大屏</p>
+        </div>
+      </header>
+
+      <section className="progress-screen">
+        <div className="progress-screen-main">
+          <span className="web-eyebrow">APPLICATION PROGRESS</span>
+          <strong>{progress}%</strong>
+          <p>
+            {jobs.length
+              ? `${appliedJobs.length} 个机会已经进入投递流程，${urgent.length} 个需要尽快处理。`
+              : "还没有投递记录。先从信息速递里把机会加入投递表。"}
+          </p>
+          <i>
+            <b style={{ width: `${progress}%` }} />
+          </i>
+        </div>
+        <div className="progress-screen-stats">
+          <button onClick={() => onNavigate("opportunities")}>
+            <span>关注机会</span>
+            <strong>{jobs.length}</strong>
+          </button>
+          <button onClick={() => onNavigate("overview")}>
+            <span>推进中</span>
+            <strong>{activeJobs.length}</strong>
+          </button>
+          <button onClick={() => onNavigate("overview")}>
+            <span>临近截止</span>
+            <strong>{urgent.length}</strong>
+          </button>
+        </div>
+      </section>
+
+      <section className="stage-board-minimal">
+        {stageCounts.map(({ stage, count }) => (
+          <article key={stage}>
+            <span>{STAGE_LABELS[stage]}</span>
+            <strong>{count}</strong>
+          </article>
+        ))}
+      </section>
+    </section>
   );
 }
 
@@ -1806,12 +1817,6 @@ function OpportunitiesPage({
   const upcomingCount = snapshot.opportunities.filter(
     (item) => opportunityStatus(item) === "upcoming"
   ).length;
-  const newThisWeek = snapshot.opportunities.filter((item) => {
-    const key = parseDateKey(item.openAt || item.updatedAt);
-    return key ? daysBetween(key) <= 0 && daysBetween(key) >= -7 : false;
-  }).length;
-  const featured = openingUpdates[0] || visible[0];
-
   const refresh = async (url = settings.opportunityFeedUrl) => {
     setLoading(true);
     try {
@@ -1890,141 +1895,88 @@ function OpportunitiesPage({
   };
 
   return (
-    <section>
-      <section className="opportunity-home-hero">
-        <div className="opportunity-hero-copy">
-          <span className="web-eyebrow">RECRUITING SIGNALS / LIVE</span>
-          <h1>今天有哪些公司开始招人？</h1>
-          <p>
-            OfferFlow 把外部招聘官网的开招信息整理成可筛选、可追踪、可加入投递表的机会流。
-          </p>
-          <div className="opportunity-hero-actions">
-            <label className="hero-search">
-              <Search size={17} />
-              <input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="搜索公司、岗位方向、城市"
-              />
-            </label>
-            <button
-              className="web-button primary"
-              disabled={loading}
-              onClick={() => void refresh()}
-            >
-              <RefreshCw size={15} className={loading ? "spin" : ""} />
-              刷新机会
-            </button>
-          </div>
+    <section className="minimal-feed-page">
+      <section className="recognize-card">
+        <span>
+          <Target size={26} />
+        </span>
+        <div>
+          <h1>识别当前招聘页面</h1>
+          <p>岗位、投递记录或流程变化</p>
         </div>
-        <aside className="opportunity-hero-panel">
-          <div className="hero-panel-live">
-            <span className="signal-live">
-              <i />
-              LIVE
-            </span>
-            <small>
-              {snapshot.fetchedAt
-                ? `最近同步 ${new Date(snapshot.fetchedAt).toLocaleString(
-                    "zh-CN",
-                    {
-                      month: "numeric",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    }
-                  )}`
-                : "等待第一次同步"}
-            </small>
-          </div>
-          {featured ? (
-            <button
-              className="featured-opening-card"
-              onClick={() =>
-                window.open(
-                  featured.officialUrl,
-                  "_blank",
-                  "noopener,noreferrer"
-                )
-              }
-            >
-              <span className="company-monogram large">
-                {featured.company.slice(0, 1)}
-              </span>
-              <span>
-                <strong>{featured.company}</strong>
-                <small>{featured.title}</small>
-              </span>
-              <ArrowRight size={16} />
-            </button>
-          ) : (
-            <div className="featured-opening-empty">
-              <Megaphone size={22} />
-              <strong>同步后显示最新开招</strong>
-            </div>
-          )}
-          <div className="hero-watchlist">
-            <span>关注方向</span>
-            <strong>{settings.opportunityFeedUrl ? "自定义数据源" : "校招官网 · 产品 · AI · 多城市"}</strong>
-          </div>
-        </aside>
+        <button onClick={() => void refresh()} disabled={loading}>
+          {loading ? "刷新" : "识别"}
+        </button>
       </section>
 
-      <div className="opportunity-home-stats">
+      <header className="minimal-section-heading">
+        <span>
+          <Megaphone size={22} />
+        </span>
+        <div>
+          <h1>机会</h1>
+          <p>全部校招入口，不替你筛掉任何公司</p>
+        </div>
         <button
-          className={status === "open" ? "active" : ""}
-          onClick={() => setStatus(status === "open" ? "all" : "open")}
+          className="minimal-icon-button"
+          onClick={() => void refresh()}
+          disabled={loading}
+          aria-label="刷新机会"
         >
-          <span>正在开放</span>
-          <strong>{openCount}</strong>
-          <small>可立即投递</small>
+          <RefreshCw size={21} className={loading ? "spin" : ""} />
+        </button>
+      </header>
+
+      <label className="minimal-search">
+        <Search size={21} />
+        <input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="搜索公司、批次、城市或岗位方向"
+        />
+      </label>
+
+      <div className="minimal-filter-row">
+        <button
+          className={status === "all" ? "active" : ""}
+          onClick={() => setStatus("all")}
+        >
+          全部 {snapshot.opportunities.length}
         </button>
         <button
-          className={status === "closing" ? "active attention" : "attention"}
-          onClick={() => setStatus(status === "closing" ? "all" : "closing")}
+          className={status === "closing" ? "active" : ""}
+          onClick={() => setStatus("closing")}
         >
-          <span>即将截止</span>
-          <strong>{closingCount}</strong>
-          <small>需要优先处理</small>
+          即将截止 {closingCount}
+        </button>
+        <button
+          className={status === "open" ? "active" : ""}
+          onClick={() => setStatus("open")}
+        >
+          正在招聘 {openCount}
         </button>
         <button
           className={status === "upcoming" ? "active" : ""}
-          onClick={() => setStatus(status === "upcoming" ? "all" : "upcoming")}
+          onClick={() => setStatus("upcoming")}
         >
-          <span>即将开放</span>
-          <strong>{upcomingCount}</strong>
-          <small>提前准备材料</small>
+          即将开放 {upcomingCount}
         </button>
-        <button onClick={() => setStatus("all")}>
-          <span>近 7 天新增</span>
-          <strong>{newThisWeek}</strong>
-          <small>保持每日刷新</small>
-        </button>
+        <button onClick={() => setStatus("all")}>长期招聘 0</button>
       </div>
 
-      <div className="opportunity-home-controls">
+      <div className="minimal-source-row">
         <button
-          className="web-button subtle"
           onClick={() => setSourceOpen((current) => !current)}
         >
-          <Link2 size={15} /> 数据源
+          <Settings2 size={16} /> 配置数据源
         </button>
         <div className="filter-chips">
-          {(["all", "open", "closing", "upcoming"] as const).map((item) => (
-            <button
-              key={item}
-              className={status === item ? "active" : ""}
-              onClick={() => setStatus(item)}
-            >
-              {item === "all"
-                ? "全部"
-                : item === "open"
-                  ? "开放中"
-                  : item === "closing"
-                    ? "即将截止"
-                    : "即将开放"}
-            </button>
-          ))}
+          <span>
+            最近同步：
+            {snapshot.fetchedAt
+              ? new Date(snapshot.fetchedAt).toLocaleString("zh-CN")
+              : "尚未同步"}
+          </span>
         </div>
       </div>
 
@@ -2146,8 +2098,11 @@ function OpportunitiesPage({
           {!openingUpdates.length && (
             <div className="opening-feed-empty">
               <Megaphone size={25} />
-              <strong>还没有开招更新</strong>
-              <span>点击“刷新机会”读取最新招聘数据。</span>
+              <strong>还没有接入校招机会</strong>
+              <span>配置一份公开 JSON 数据源后，所有开放信息会在这里统一出现。</span>
+              <button onClick={() => setSourceOpen(true)}>
+                <Settings2 size={16} /> 配置数据源
+              </button>
             </div>
           )}
         </div>
