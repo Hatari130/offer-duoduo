@@ -153,13 +153,36 @@ export interface ProfileProject {
   description: string;
 }
 
+export interface ProfileCampusExperience {
+  id: string;
+  type: string;
+  role: string;
+  startDate: string;
+  endDate: string;
+  description: string;
+}
+
+export interface ProfileAward {
+  id: string;
+  date: string;
+  name: string;
+  level: string;
+  description: string;
+}
+
 export interface PersonalProfile {
   fullName: string;
   gender: string;
   phone: string;
   email: string;
   birthDate: string;
+  graduationDate: string;
   currentCity: string;
+  nativePlace: string;
+  height: string;
+  weight: string;
+  recruitmentType: string;
+  graduateStatus: string;
   address: string;
   targetRole: string;
   targetCities: string;
@@ -169,18 +192,170 @@ export interface PersonalProfile {
   education: ProfileEducation[];
   experiences: ProfileExperience[];
   projects: ProfileProject[];
+  campusExperiences: ProfileCampusExperience[];
+  awards: ProfileAward[];
   selfIntroduction: string;
   strengths: string;
   careerPlan: string;
+  extraFields?: Record<string, string>;
   updatedAt?: string;
+}
+
+export type ProfileFieldKey =
+  | keyof PersonalProfile
+  | "school"
+  | "major"
+  | "degree"
+  | "gpa"
+  | "educationStartDate"
+  | "educationEndDate"
+  | "experienceOrganization"
+  | "experienceTitle"
+  | "experienceStartDate"
+  | "experienceEndDate"
+  | "experienceDescription"
+  | "nationality"
+  | "idType"
+  | "idNumber"
+  | "wechat"
+  | "qq"
+  | "politicalStatus"
+  | "maritalStatus"
+  | "healthStatus"
+  | "specialty"
+  | "workYears"
+  | "emergencyContactName"
+  | "emergencyContactPhone"
+  | "countryRegion"
+  | "expectedSalary"
+  | "educationCollege"
+  | "educationDegree"
+  | "educationForm"
+  | "educationCourses"
+  | "educationResearchDirection"
+  | "educationThesis"
+  | "educationRank"
+  | "overseasEducation"
+  | "minorMajor"
+  | "advisorName"
+  | "experienceType"
+  | "experienceDepartment"
+  | "experienceSalary"
+  | "experienceAchievements"
+  | "refereeName"
+  | "refereeTitle"
+  | "refereeContact"
+  | "leavingReason"
+  | "subordinateCount"
+  | "projectName"
+  | "projectRole"
+  | "projectStartDate"
+  | "projectEndDate"
+  | "projectDescription"
+  | "projectAchievement"
+  | "projectLink"
+  | "campusExperienceType"
+  | "campusExperienceRole"
+  | "campusExperienceStartDate"
+  | "campusExperienceEndDate"
+  | "campusExperienceDescription"
+  | "awardDate"
+  | "awardName"
+  | "awardLevel"
+  | "awardDescription"
+  | "languageName"
+  | "languageCertificate"
+  | "englishLevel"
+  | "languageScore"
+  | "languageProficiency"
+  | "listeningSpeaking"
+  | "readingWriting"
+  | "computerSkillType"
+  | "computerSkillProficiency"
+  | "qualificationDate"
+  | "qualificationName"
+  | "qualificationNumber"
+  | "qualificationDescription"
+  | "familyName"
+  | "familyRelation"
+  | "familyPhone"
+  | "familyCompany"
+  | "familyPosition"
+  | "familyPoliticalStatus"
+  | "publicationDate"
+  | "publicationJournal"
+  | "publicationLevel"
+  | "publicationTitle"
+  | "publicationDescription"
+  | "publicationAuthors"
+  | "publicationImpactFactor"
+  | "publicationLink"
+  | "patentDate"
+  | "patentName"
+  | "patentNumber"
+  | "patentType"
+  | "patentAchievement"
+  | "hobbies"
+  | "workName"
+  | "workLink"
+  | "workDescription"
+  | "competitionName"
+  | "competitionDate"
+  | "competitionDescription"
+  | "referralCode"
+  | "experienceCurrent";
+
+export type FormPlatformId = "beisen" | "moka" | "nowcoder" | "tencent" | "generic" | string;
+
+export interface FormPlatformInfo {
+  id: FormPlatformId;
+  name: string;
+  version: string;
+  total: number;
+  ruleMatched: number;
+  unknown: number;
 }
 
 export interface FormFieldMatch {
   id: string;
   label: string;
-  key: keyof PersonalProfile | "school" | "major" | "degree" | "gpa";
+  key?: ProfileFieldKey;
+  repeatGroup?: "education" | "experience" | "project" | "campus" | "award";
+  repeatIndex?: number;
   type: string;
   currentValue?: string;
+  section?: string;
+  required?: boolean;
+  options?: string[];
+  confidence?: number;
+  source?: "rules" | "deepseek" | "manual";
+  evidence?: string[];
+  adapterId?: FormPlatformId;
+}
+
+export interface FormScanResponse {
+  ok: boolean;
+  fields: FormFieldMatch[];
+  platform?: FormPlatformInfo;
+  repeatersExpanded?: boolean;
+  error?: string;
+}
+
+export interface FormFieldResult {
+  id: string;
+  label: string;
+  key?: ProfileFieldKey;
+  status: "filled" | "missing" | "failed" | "skipped";
+  expectedValue?: string;
+  actualValue?: string;
+  reason?: string;
+}
+
+export interface FormFillResponse {
+  ok: boolean;
+  filled: number;
+  results: FormFieldResult[];
+  error?: string;
 }
 
 export interface DeepSeekExtraction {

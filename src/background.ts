@@ -191,7 +191,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   } catch {
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ["content.js"]
+      files: ["form-adapters.js", "content.js"]
     });
     await toggle();
   }

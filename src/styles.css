@@ -2366,10 +2366,59 @@ button {
   border-radius: 14px;
 }
 
-.profile-match-list {
-  margin-top: 12px;
-  border-top: 1px solid var(--overlay-line);
-}
+  .profile-match-list {
+    margin-top: 12px;
+    border-top: 1px solid var(--overlay-line);
+  }
+
+  .profile-fill-progress {
+    margin-top: 12px;
+    padding: 10px 11px;
+    background: #f1f8f4;
+    border: 1px solid #cce8d8;
+    border-radius: 10px;
+  }
+
+  .profile-fill-progress > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #247653;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  .profile-fill-progress > i {
+    display: block;
+    height: 5px;
+    margin-top: 8px;
+    overflow: hidden;
+    background: #dbece1;
+    border-radius: 99px;
+  }
+
+  .profile-fill-progress > i b {
+    display: block;
+    height: 100%;
+    background: #28a36c;
+    border-radius: inherit;
+    transition: width 120ms ease;
+  }
+
+  .profile-fill-progress > small {
+    display: block;
+    margin-top: 6px;
+    overflow: hidden;
+    color: #5a7968;
+    font-size: 9px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  .profile-fill-progress.done {
+    background: #f4f7f3;
+    border-color: var(--overlay-line);
+  }
 
 .profile-match-list label {
   display: grid;
@@ -2384,6 +2433,15 @@ button {
 .profile-match-list label.missing {
   opacity: 0.52;
   cursor: default;
+}
+
+.profile-match-list label.failed em,
+.profile-match-list label.missing em {
+  color: #a84d3c;
+}
+
+.profile-match-list label.filled em {
+  color: #21815e;
 }
 
 .profile-match-list input {
@@ -2434,6 +2492,12 @@ button {
   text-overflow: ellipsis;
 }
 
+.profile-match-list em small {
+  margin-top: 3px;
+  color: inherit;
+  font-size: 8px;
+}
+
 .profile-fill-button {
   width: 100%;
   min-height: 39px;
@@ -2460,7 +2524,31 @@ button {
 
 .profile-section-title {
   justify-content: space-between;
+  gap: 10px;
   margin-bottom: 14px;
+}
+
+.profile-section.is-collapsed .profile-section-title {
+  margin-bottom: 0;
+}
+
+.profile-section-toggle {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0;
+  color: var(--overlay-text);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-section-toggle > span {
+  min-width: 0;
 }
 
 .profile-section-title strong,
@@ -2478,7 +2566,30 @@ button {
   font-size: 9px;
 }
 
-.profile-section-title > button {
+.profile-section-chevron {
+  flex: 0 0 auto;
+  color: #8c948e;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.profile-section.is-open .profile-section-chevron {
+  transform: rotate(180deg);
+  color: var(--overlay-text);
+}
+
+.profile-section-toggle:hover .profile-section-chevron {
+  color: var(--overlay-text);
+}
+
+.profile-section-toggle:focus-visible,
+.profile-section-action:focus-visible,
+.profile-entry-toggle:focus-visible,
+.profile-entry-remove:focus-visible {
+  outline: 2px solid rgba(32, 35, 33, 0.28);
+  outline-offset: 3px;
+}
+
+.profile-section-action {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -2489,6 +2600,27 @@ button {
   border-radius: 8px;
   font-size: 9px;
   cursor: pointer;
+}
+
+.profile-section-action:hover {
+  border-color: #c4cac5;
+  background: #f7f8f6;
+}
+
+.profile-section-body {
+  animation: profile-section-reveal 180ms ease both;
+}
+
+@keyframes profile-section-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .profile-grid {
@@ -2541,24 +2673,56 @@ button {
 
 .profile-entry {
   margin-top: 10px;
-  padding: 13px;
+  overflow: hidden;
   background: #fff;
   border: 1px solid var(--overlay-line);
   border-radius: 12px;
 }
 
-.profile-entry > div:first-child {
+.profile-entry-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 12px;
+  gap: 8px;
+  min-height: 46px;
+  padding: 0 13px;
 }
 
-.profile-entry > div:first-child > strong {
+.profile-entry-toggle {
+  min-width: 0;
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0;
+  color: var(--overlay-text);
+  background: transparent;
+  border: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.profile-entry-toggle strong {
+  min-width: 0;
+  overflow: hidden;
   font-size: 11px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
-.profile-entry > div:first-child > button {
+.profile-entry-chevron {
+  flex: 0 0 auto;
+  color: #9ba19c;
+  transition: transform 180ms ease, color 180ms ease;
+}
+
+.profile-entry.is-open .profile-entry-chevron {
+  transform: rotate(180deg);
+  color: var(--overlay-text);
+}
+
+.profile-entry-remove {
+  font-size: 11px;
   width: 28px;
   height: 28px;
   display: grid;
@@ -2568,6 +2732,35 @@ button {
   border: 0;
   border-radius: 7px;
   cursor: pointer;
+}
+
+.profile-entry-remove:hover {
+  color: #a84d3c;
+  background: #fff5f3;
+}
+
+.profile-entry-body {
+  padding: 0 13px 13px;
+  animation: profile-section-reveal 180ms ease both;
+}
+
+.profile-add-entry {
+  min-height: 38px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 9px;
+  padding: 0 2px;
+  color: var(--overlay-blue);
+  background: transparent;
+  border: 0;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.profile-add-entry:hover {
+  color: #1d56d3;
 }
 
 .profile-empty-entry {

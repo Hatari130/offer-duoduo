@@ -11,7 +11,13 @@ export const EMPTY_PROFILE: PersonalProfile = {
   phone: "",
   email: "",
   birthDate: "",
+  graduationDate: "",
   currentCity: "",
+  nativePlace: "",
+  height: "",
+  weight: "",
+  recruitmentType: "",
+  graduateStatus: "",
   address: "",
   targetRole: "",
   targetCities: "",
@@ -21,9 +27,12 @@ export const EMPTY_PROFILE: PersonalProfile = {
   education: [],
   experiences: [],
   projects: [],
+  campusExperiences: [],
+  awards: [],
   selfIntroduction: "",
   strengths: "",
-  careerPlan: ""
+  careerPlan: "",
+  extraFields: {}
 };
 
 const hasChromeStorage = () =>

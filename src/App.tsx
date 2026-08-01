@@ -1356,6 +1356,7 @@ function OverlayPanel({
         {tab === "profile" && (
           <ProfileView
             profile={profile}
+            settings={settings}
             onSave={onSaveProfile}
             onBack={() => setTab("overview")}
           />
@@ -1792,7 +1793,9 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     ...EMPTY_PROFILE,
     education: [],
     experiences: [],
-    projects: []
+    projects: [],
+    campusExperiences: [],
+    awards: []
   }));
   const [view, setView] = useState<View>(() => {
     const requested = new URLSearchParams(location.search).get("view");
@@ -1992,7 +1995,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
 
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ["content.js"]
+            files: ["form-adapters.js", "content.js"]
           });
           response = await requestExtraction();
         }
@@ -2588,8 +2591,8 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div className="setting-copy">
                 <h3>DeepSeek 页面理解</h3>
                 <p>
-                  用于识别投递列表、流程页面和非标准招聘网站。页面可见文本会发送给
-                  DeepSeek API。
+                  用于识别投递列表、流程页面和网申字段。页面理解会发送必要的页面文本；
+                  网申匹配只发送字段标签、类型和选项，不发送个人资料值。
                 </p>
                 <div className="ai-fields">
                   <label>

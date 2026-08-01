@@ -2,7 +2,10 @@
   ApplicationStage,
   DeepSeekExtraction,
   ExtractedJob,
-  OfferFlowSettings
+  FormFieldMatch,
+  OfferFlowSettings,
+  PersonalProfile,
+  ProfileFieldKey
 } from "./types";
 
 const API_URL = "https://api.deepseek.com/chat/completions";
@@ -30,6 +33,249 @@ type ModelResponse = {
   page_type?: DeepSeekExtraction["pageType"];
   applications?: ModelApplication[];
 };
+
+type FormMatchResponse = {
+  matches?: Array<{
+    id?: string;
+    key?: string;
+    confidence?: number;
+    reason?: string;
+  }>;
+};
+
+const FORM_PROFILE_FIELDS: Array<{ key: ProfileFieldKey; label: string }> = [
+  { key: "fullName", label: "姓名" },
+  { key: "gender", label: "性别" },
+  { key: "phone", label: "手机号" },
+  { key: "email", label: "邮箱" },
+  { key: "birthDate", label: "出生日期" },
+  { key: "graduationDate", label: "毕业时间" },
+  { key: "currentCity", label: "现居城市" },
+  { key: "nativePlace", label: "籍贯" },
+  { key: "height", label: "身高" },
+  { key: "weight", label: "体重" },
+  { key: "recruitmentType", label: "是否统招" },
+  { key: "graduateStatus", label: "应届或往届" },
+  { key: "address", label: "联系地址" },
+  { key: "targetRole", label: "目标岗位" },
+  { key: "targetCities", label: "意向城市" },
+  { key: "earliestStartDate", label: "最早到岗时间" },
+  { key: "portfolioUrl", label: "作品集" },
+  { key: "githubUrl", label: "GitHub" },
+  { key: "school", label: "毕业院校" },
+  { key: "major", label: "专业" },
+  { key: "degree", label: "学历或学位" },
+  { key: "gpa", label: "GPA 或绩点" },
+  { key: "educationStartDate", label: "教育经历开始时间" },
+  { key: "educationEndDate", label: "教育经历结束时间" },
+  { key: "experienceOrganization", label: "工作经历公司" },
+  { key: "experienceTitle", label: "工作经历职位" },
+  { key: "experienceStartDate", label: "工作经历开始时间" },
+  { key: "experienceEndDate", label: "工作经历结束时间" },
+  { key: "experienceDescription", label: "工作职责或经历描述" },
+  { key: "selfIntroduction", label: "自我介绍" },
+  { key: "strengths", label: "个人优势" },
+  { key: "careerPlan", label: "职业规划" },
+  { key: "nationality", label: "民族" },
+  { key: "idType", label: "证件类型" },
+  { key: "idNumber", label: "证件号码" },
+  { key: "wechat", label: "微信号" },
+  { key: "qq", label: "QQ" },
+  { key: "politicalStatus", label: "政治面貌" },
+  { key: "maritalStatus", label: "婚姻状况" },
+  { key: "healthStatus", label: "健康状况" },
+  { key: "specialty", label: "特长" },
+  { key: "workYears", label: "工作年限" },
+  { key: "emergencyContactName", label: "紧急联系人姓名" },
+  { key: "emergencyContactPhone", label: "紧急联系人电话" },
+  { key: "countryRegion", label: "国家或地区" },
+  { key: "expectedSalary", label: "期望薪资" },
+  { key: "educationCollege", label: "学院或院系" },
+  { key: "educationDegree", label: "学位" },
+  { key: "educationForm", label: "学习形式" },
+  { key: "educationCourses", label: "专业课程" },
+  { key: "educationResearchDirection", label: "研究方向" },
+  { key: "educationThesis", label: "毕业论文" },
+  { key: "educationRank", label: "专业排名" },
+  { key: "overseasEducation", label: "是否海外教育经历" },
+  { key: "minorMajor", label: "辅修或双学位专业" },
+  { key: "advisorName", label: "导师姓名" },
+  { key: "experienceType", label: "工作类型" },
+  { key: "experienceDepartment", label: "工作部门" },
+  { key: "experienceSalary", label: "工作薪资" },
+  { key: "experienceAchievements", label: "工作成果" },
+  { key: "refereeName", label: "证明人姓名" },
+  { key: "refereeTitle", label: "证明人职位" },
+  { key: "refereeContact", label: "证明人联系方式" },
+  { key: "leavingReason", label: "离职原因" },
+  { key: "subordinateCount", label: "下属人数" },
+  { key: "projectName", label: "项目名称" },
+  { key: "projectRole", label: "项目职位或角色" },
+  { key: "projectStartDate", label: "项目开始时间" },
+  { key: "projectEndDate", label: "项目结束时间" },
+  { key: "projectDescription", label: "项目内容" },
+  { key: "projectAchievement", label: "项目成果" },
+  { key: "projectLink", label: "项目链接" },
+  { key: "campusExperienceType", label: "在校经历类型" },
+  { key: "campusExperienceRole", label: "在校经历职位" },
+  { key: "campusExperienceStartDate", label: "在校经历开始时间" },
+  { key: "campusExperienceEndDate", label: "在校经历结束时间" },
+  { key: "campusExperienceDescription", label: "在校经历内容" },
+  { key: "awardDate", label: "获奖时间" },
+  { key: "awardName", label: "奖励名称" },
+  { key: "awardLevel", label: "奖励等级" },
+  { key: "awardDescription", label: "奖励描述" },
+  { key: "languageName", label: "外语语种" },
+  { key: "languageCertificate", label: "语言证书名称" },
+  { key: "englishLevel", label: "英语水平" },
+  { key: "languageScore", label: "语言成绩" },
+  { key: "languageProficiency", label: "语言掌握程度" },
+  { key: "listeningSpeaking", label: "听说能力" },
+  { key: "readingWriting", label: "读写能力" },
+  { key: "computerSkillType", label: "计算机技能类型" },
+  { key: "computerSkillProficiency", label: "计算机掌握程度" },
+  { key: "qualificationDate", label: "资格证书获得时间" },
+  { key: "qualificationName", label: "资格证书名称" },
+  { key: "qualificationNumber", label: "资格证书编号" },
+  { key: "qualificationDescription", label: "资格证书说明" },
+  { key: "familyName", label: "家庭成员姓名" },
+  { key: "familyRelation", label: "家庭成员关系" },
+  { key: "familyPhone", label: "家庭成员电话" },
+  { key: "familyCompany", label: "家庭成员公司" },
+  { key: "familyPosition", label: "家庭成员职位" },
+  { key: "familyPoliticalStatus", label: "家庭成员政治面貌" },
+  { key: "publicationDate", label: "论文发表时间" },
+  { key: "publicationJournal", label: "刊物名称" },
+  { key: "publicationLevel", label: "刊物层级" },
+  { key: "publicationTitle", label: "论文名称" },
+  { key: "publicationDescription", label: "论文描述" },
+  { key: "publicationAuthors", label: "论文作者" },
+  { key: "publicationImpactFactor", label: "期刊影响因子" },
+  { key: "publicationLink", label: "论文链接" },
+  { key: "patentDate", label: "专利发表时间" },
+  { key: "patentName", label: "专利名称" },
+  { key: "patentNumber", label: "专利编号" },
+  { key: "patentType", label: "专利类型" },
+  { key: "patentAchievement", label: "专利成果" },
+  { key: "hobbies", label: "兴趣爱好" },
+  { key: "workName", label: "作品名称" },
+  { key: "workLink", label: "作品链接" },
+  { key: "workDescription", label: "作品描述" },
+  { key: "competitionName", label: "竞赛名称" },
+  { key: "competitionDate", label: "竞赛参与时间" },
+  { key: "competitionDescription", label: "竞赛详情内容" },
+  { key: "referralCode", label: "推荐码或内推码" },
+  { key: "experienceCurrent", label: "工作经历是否至今" }
+];
+
+const FORM_PROFILE_KEY_SET = new Set<string>(FORM_PROFILE_FIELDS.map((field) => field.key));
+
+function isProfileFieldKey(value?: string): value is ProfileFieldKey {
+  return Boolean(value && FORM_PROFILE_KEY_SET.has(value));
+}
+
+function profileFieldAvailability(profile: PersonalProfile): Record<string, boolean> {
+  const education = profile.education[0];
+  const experience = profile.experiences[0];
+  const project = profile.projects[0];
+  const campusExperience = profile.campusExperiences[0];
+  const award = profile.awards[0];
+  const values: Record<string, string | undefined> = {
+    fullName: profile.fullName,
+    gender: profile.gender,
+    phone: profile.phone,
+    email: profile.email,
+    birthDate: profile.birthDate,
+    graduationDate: profile.graduationDate,
+    currentCity: profile.currentCity,
+    nativePlace: profile.nativePlace,
+    height: profile.height,
+    weight: profile.weight,
+    recruitmentType: profile.recruitmentType,
+    graduateStatus: profile.graduateStatus,
+    address: profile.address,
+    targetRole: profile.targetRole,
+    targetCities: profile.targetCities,
+    earliestStartDate: profile.earliestStartDate,
+    portfolioUrl: profile.portfolioUrl,
+    githubUrl: profile.githubUrl,
+    school: education?.school,
+    major: education?.major,
+    degree: education?.degree,
+    gpa: education?.gpa,
+    educationStartDate: education?.startDate,
+    educationEndDate: education?.endDate,
+    experienceOrganization: experience?.organization,
+    experienceTitle: experience?.title,
+    experienceStartDate: experience?.startDate,
+    experienceEndDate: experience?.endDate,
+    experienceDescription: experience?.description,
+    projectName: project?.name,
+    projectRole: project?.role,
+    projectStartDate: project?.startDate,
+    projectEndDate: project?.endDate,
+    projectDescription: project?.description,
+    campusExperienceType: campusExperience?.type,
+    campusExperienceRole: campusExperience?.role,
+    campusExperienceStartDate: campusExperience?.startDate,
+    campusExperienceEndDate: campusExperience?.endDate,
+    campusExperienceDescription: campusExperience?.description,
+    awardDate: award?.date,
+    awardName: award?.name,
+    awardLevel: award?.level,
+    awardDescription: award?.description,
+    selfIntroduction: profile.selfIntroduction,
+    strengths: profile.strengths,
+    careerPlan: profile.careerPlan,
+    ...(profile.extraFields || {})
+  };
+  return Object.fromEntries(
+    FORM_PROFILE_FIELDS.map(({ key }) => [key, Boolean(values[key])])
+  );
+}
+
+function formMatchingPrompt(fields: FormFieldMatch[], profile: PersonalProfile): string {
+  const availability = profileFieldAvailability(profile);
+  const candidates = FORM_PROFILE_FIELDS.map(({ key, label }) => ({
+    key,
+    label,
+    available: availability[key]
+  }));
+  const pageFields = fields.slice(0, 100).map((field) => ({
+    id: field.id,
+    label: field.label,
+    section: field.section || "",
+    type: field.type,
+    required: Boolean(field.required),
+    options: (field.options || []).slice(0, 30),
+    rule_key: field.key || "",
+    rule_confidence: field.confidence || 0,
+    evidence: (field.evidence || []).slice(0, 5)
+  }));
+  return `你是网申表单字段匹配器。请把网页字段映射到候选人资料字段，只返回 JSON，不要解释。
+
+输出结构：
+{
+  "matches": [
+    { "id": "网页字段 id", "key": "候选资料 key 或空字符串", "confidence": 0.0, "reason": "不超过20字" }
+  ]
+}
+
+候选资料字段（key 必须从这里选择）：
+${JSON.stringify(candidates)}
+
+规则：
+1. 只在语义明确时匹配，不要猜测未知问题。
+2. section、label、type、options 要一起判断；例如“是否接受调剂”不能匹配为性别。
+3. 同一个网页字段只能匹配一个 key；无法匹配时 key 返回空字符串。
+4. rule_key 是本地规则的初步结果，只有网页语义更明确时才覆盖它。
+5. 不要返回候选人的任何实际资料值。
+6. 重复标签必须结合 section 判断；“开始时间”可能是教育、工作、项目或在校经历，“职位”可能是工作职位、项目角色、在校职位或家庭成员职位。
+7. “籍贯/户籍/户口/生源地”属于同一语义族；“职位名称/职位/工作职位/岗位名称”也属于同一语义族，但优先使用 section 对应的候选 key。
+
+网页字段：
+${JSON.stringify(pageFields)}`;
+}
 
 function normalizeStage(value?: string): ApplicationStage | undefined {
   const stage = (value || "").toLowerCase();
@@ -321,6 +567,102 @@ export async function extractWithDeepSeek(
     pageType: inferredPageType || (applications.length > 1 ? "application_list" : "job_posting"),
     applications
   };
+}
+
+export async function matchFormFields(
+  fields: FormFieldMatch[],
+  profile: PersonalProfile,
+  settings: OfferFlowSettings
+): Promise<FormFieldMatch[]> {
+  const apiKey = settings.deepseekApiKey?.trim();
+  // Rules and site adapters are authoritative for known labels. DeepSeek is
+  // only called for fields that still have no local key, which keeps API cost
+  // and accidental semantic overrides low.
+  const unknownFields = fields.filter((field) => !field.key);
+  if (!apiKey || !unknownFields.length) return fields;
+
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: settings.deepseekModel || DEFAULT_DEEPSEEK_MODEL,
+      messages: [
+        {
+          role: "system",
+          content: "你只负责网申字段语义匹配，必须输出合法 JSON，不返回任何个人资料值。"
+        },
+        {
+          role: "user",
+          content: formMatchingPrompt(unknownFields, profile)
+        }
+      ],
+      response_format: { type: "json_object" },
+      thinking: { type: "disabled" },
+      temperature: 0,
+      max_tokens: 2400,
+      stream: false
+    })
+  });
+
+  if (!response.ok) {
+    const detail = await response.text();
+    throw new Error(`DeepSeek 字段匹配失败（${response.status}）：${detail.slice(0, 180)}`);
+  }
+
+  const payload = (await response.json()) as {
+    choices?: Array<{ message?: { content?: string } }>;
+  };
+  const content = payload.choices?.[0]?.message?.content;
+  if (!content) throw new Error("DeepSeek 没有返回字段匹配结果");
+
+  let parsed: FormMatchResponse;
+  try {
+    parsed = JSON.parse(stripCodeFence(content)) as FormMatchResponse;
+  } catch {
+    throw new Error("DeepSeek 字段匹配结果不是合法 JSON");
+  }
+
+  const matches = new Map(
+    (parsed.matches || [])
+      .filter((item) => item.id)
+      .map((item) => [item.id!, item])
+  );
+
+  return fields.map((field) => {
+    if (field.key) return field;
+    const match = matches.get(field.id);
+    const confidence =
+      typeof match?.confidence === "number"
+        ? Math.max(0, Math.min(1, match.confidence))
+        : 0;
+    const aiKey = isProfileFieldKey(match?.key) ? match.key : undefined;
+    const ruleConfidence = field.confidence || (field.key ? 0.82 : 0);
+    const shouldUseAi = Boolean(
+      aiKey &&
+        confidence >= 0.65 &&
+        (!field.key || confidence >= ruleConfidence - 0.05)
+    );
+    if (!shouldUseAi && !field.key) {
+      return {
+        ...field,
+        confidence: confidence || undefined,
+        source: "deepseek" as const,
+        evidence: match?.reason ? [match.reason] : field.evidence
+      };
+    }
+    return {
+      ...field,
+      key: shouldUseAi ? aiKey : field.key,
+      confidence: shouldUseAi ? confidence : field.confidence,
+      source: shouldUseAi ? ("deepseek" as const) : field.source,
+      evidence: match?.reason
+        ? [...(field.evidence || []).slice(0, 4), match.reason]
+        : field.evidence
+    };
+  });
 }
 
 export async function testDeepSeekConnection(
