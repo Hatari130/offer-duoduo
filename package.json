@@ -1,25 +1,17 @@
 {
-  "name": "offer-duoduo",
+  "name": "offerflow",
   "private": true,
   "version": "0.1.0",
-  "type": "module",
+  "packageManager": "pnpm@11.9.0",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "typecheck": "tsc -b --pretty false"
-  },
-  "dependencies": {
-    "lucide-react": "^0.468.0",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "dev": "pnpm run dev:extension",
+    "dev:extension": "pnpm --filter @offerflow/extension dev",
+    "build": "pnpm -r --if-present run build",
+    "build:extension": "pnpm --filter @offerflow/extension build",
+    "typecheck": "pnpm -r --if-present run typecheck"
   },
   "devDependencies": {
-    "@types/chrome": "^0.0.287",
     "@types/node": "^22.10.5",
-    "@types/react": "^18.3.18",
-    "@types/react-dom": "^18.3.5",
-    "@vitejs/plugin-react": "^4.3.4",
-    "typescript": "~5.6.3",
-    "vite": "^6.0.5"
+    "typescript": "~5.6.3"
   }
 }

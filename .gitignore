@@ -2,3 +2,7 @@ node_modules/
 dist/
 *.tsbuildinfo
 offerflow-*-preview.png
+.env
+.env.*
+!.env.example
+coverage/

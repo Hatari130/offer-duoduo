@@ -1,0 +1,49 @@
+# Database ownership
+
+OfferFlow uses PostgreSQL as the planned cloud source of truth. Browser storage
+is an extension offline cache, not a replacement for authenticated cloud data.
+
+## Data groups
+
+### Public recruitment catalogue
+
+| Table | Purpose |
+| --- | --- |
+| `companies` | normalized company identity |
+| `recruitment_campaigns` | spring/autumn/internship recruitment batches |
+| `job_postings` | individual jobs belonging to an optional campaign |
+| `opportunity_sources` | Feishu, official site, JSON and manual sources |
+| `opportunity_import_runs` | observable ingestion history |
+| `opportunity_source_records` | source-row identity, payload hash and raw evidence |
+
+### Private user data
+
+| Table | Purpose |
+| --- | --- |
+| `users` | identity link to the chosen authentication provider |
+| `profiles` | sensitive candidate profile document and revision |
+| `applications` | private application state plus immutable job snapshots |
+| `application_events` | assessment/interview/offer timeline |
+| `sync_devices` | extension devices and acknowledged cursor |
+| `sync_changes` | ordered incremental synchronization log |
+
+### Operational data
+
+`form_mapping_versions` stores published ATS mapping versions. Platform AI
+credentials are environment secrets in `apps/api`; they are never persisted in
+browser bundles or committed files.
+
+## Source-of-truth rules
+
+- `apps/extension/public/opportunities.json` is development/offline fallback data.
+- Feishu and official sites are import sources, not application runtime databases.
+- PostgreSQL catalogue records become canonical after import and verification.
+- user application data is always scoped by `user_id` at the API boundary.
+- `job_posting_id` is nullable because a user may capture a job not yet in the catalogue.
+- application snapshot fields preserve history when source records change.
+
+## Migration policy
+
+Migrations live in `packages/db/migrations` and are forward-only after deployment.
+Create separate databases for local development, staging and production. Apply
+migrations from the API deployment pipeline, never from the extension or website.

@@ -1,0 +1,26 @@
+{
+  "name": "@offerflow/extension",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 127.0.0.1",
+    "build": "pnpm run typecheck && vite build && pnpm run validate:build",
+    "validate:build": "node scripts/validate-build.mjs",
+    "typecheck": "tsc -p tsconfig.app.json --pretty false && tsc -p tsconfig.node.json --pretty false"
+  },
+  "dependencies": {
+    "@offerflow/contracts": "workspace:*",
+    "@offerflow/domain": "workspace:*",
+    "lucide-react": "^0.468.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.287",
+    "@types/react": "^18.3.18",
+    "@types/react-dom": "^18.3.5",
+    "@vitejs/plugin-react": "^4.3.4",
+    "vite": "^6.0.5"
+  }
+}

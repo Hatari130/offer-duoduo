@@ -1,111 +1,153 @@
-# Architecture
+# OfferFlow architecture
 
-OfferDuoDuo is currently a browser-extension-first project.
+## Goals
 
-## Current Shape
+OfferFlow delivers two user-facing products: a website and a browser extension.
+They share business language and server contracts, but they remain independently
+buildable and deployable.
 
-```text
-dashboard.html        Full extension workspace entry
-sidepanel.html        Browser side panel entry
-src/main.tsx          React bootstrap for extension UI
-src/App.tsx           Extension application shell and workflows
-src/background.ts     Manifest V3 service worker
-src/storage.ts        Local persistence adapters
-src/opportunities.ts  External recruiting feed parser/cache
-src/obsidian.ts       Obsidian Markdown integration
-src/deepseek.ts       DeepSeek page understanding integration
-public/form-adapters.js Versioned Beisen/Moka/牛客/腾讯字段映射库
-public/manifest.json  Extension manifest
-public/content.js     Content script injected into recruiting pages
-```
+The architecture follows four rules:
 
-## Application Form Autofill
+1. applications own runtime-specific code;
+2. packages contain reusable, runtime-neutral code;
+3. the API is the only database and platform-secret boundary;
+4. the extension remains local-first and can run before the website/backend exist.
 
-The profile workflow is intentionally split into a rule-first pipeline:
+## System boundary
 
 ```text
-Content Script scan
-  -> resolve site adapter (Beisen / Moka / 牛客 / 腾讯 / generic)
-  -> adapter + section-aware alias mapping (label, section, type, options)
-  -> only unknown fields go to DeepSeek (metadata only; no profile values)
-  -> immediately fill fields with a mapped, available local value
-  -> skip missing/unknown fields and keep a per-field result report
-  -> DOM read-back verification and per-field result report
+Official sites / Feishu / manual admin
+                  |
+                  v
+              apps/api  <--------> PostgreSQL
+               ^   ^
+               |   |
+       apps/web     extension background
+                         ^       ^
+                         |       |
+                 extension UI   content scripts
+                                      |
+                               recruiting-page DOM
 ```
 
-`public/content.js` performs page-local DOM work. `src/ProfileView.tsx` owns the
-result list and failed-field retry UI. `src/deepseek.ts` only resolves ambiguous
-field semantics; it never submits the application. Missing profile values,
-unsupported controls, and post-write mismatches are reported separately.
+The website and extension use the same HTTP contracts. They never import one
+another and never connect directly to PostgreSQL.
 
-The mapping library uses canonical profile keys plus aliases and page sections.
-The Nowcoder taxonomy is covered across basic information, job intention,
-education, work, projects, campus experience, awards, languages, computer
-skills, certificates, family, publications, patents, self-evaluation, hobbies,
-portfolio and competitions. Repeated labels are disambiguated by the section:
-for example, `开始时间` becomes an education, work, project or campus date, and
-`职位` becomes a work title, project role, campus role or family position.
-Aliases such as `籍贯 / 户籍 / 户口 / 生源地` and
-`职位名称 / 职位 / 工作职位 / 岗位名称` are treated as the same semantic
-family within their relevant section.
+## Workspace ownership
 
-For Beisen Phoenix forms (for example `*.zhiye.com`), the scanner consumes the
-platform's `data-nc-label` / `data-nc-cls` metadata and recognizes its custom
-`phoenix-select`, `phoenix-radio-group`, and `phoenix-checkbox` controls. This
-site-level metadata is used before calling DeepSeek, matching the same general
-strategy as a maintained recruiting-site field mapping library.
+### `apps/extension`
 
-Phoenix date fields are filled through the calendar's year/month/day panels
-instead of assigning the hidden input text. Phoenix area fields use the
-province/city selector and confirm action, so values such as 安徽 are handled
-as a hierarchical selection rather than a flat option lookup.
+Owns all Chrome/Edge runtime behavior:
 
-`public/form-adapters.js` is the update boundary for the mapping library. Each
-adapter has a stable id, host matcher, platform-specific aliases and a shared
-version. New ATS labels should be added there first. Runtime overrides can be
-stored under `offerflow.formMappingOverrides`; the content script loads them
-before scanning, so a label fix does not require changing the fill engine.
+- `src/entries/ui`: React bootstrap shared by dashboard and side panel;
+- `src/entries/background`: Manifest V3 service worker;
+- `src/app`: extension shell and global extension styling;
+- `src/features`: profile, opportunities and workspace user flows;
+- `src/infrastructure`: Chrome storage and future message/API adapters;
+- `src/integrations`: DeepSeek BYOK and Obsidian integration;
+- `public`: manifest, content scripts and offline/static assets.
 
-The rule-first contract is explicit: a field with `source: "rules"` is never
-sent to DeepSeek. This preserves the predictable behavior of a maintained ATS
-mapping library while keeping the existing AI fallback for new or company-
-specific questions.
+The extension is built independently into `apps/extension/dist`.
 
-Filling uses a direct DOM interaction path: the page scrolls the active control
-into view, focuses it, triggers the control's click/input/change sequence, and
-waits one paint frame before verifying the result. Custom Phoenix selects are
-opened and their rendered options are clicked after the next frame. This keeps
-the fast “browser is operating the page” effect without using remote browser
-automation or submitting the application.
+### `apps/web`
 
-The fill loop is sequential and emits "OFFERFLOW_FILL_PROGRESS" after every
-field. The side panel consumes these events to update the progress bar and
-result row while the page is being filled. A small configurable inter-field
-delay (currently 55 ms) makes scrolling, dropdown selection and verification
-observable without turning the operation into slow human simulation.
+Reserved for the future website. The website may provide public pages, account
+UI and cloud dashboards. It must use `@offerflow/api-client` for server data and
+must not reuse extension screens wholesale.
 
-## Removed Boundary
+### `apps/api`
 
-The previous standalone website and Sites deployment layer have been removed:
+Server-only boundary for:
 
-- no `src/web`
-- no `index.html`
-- no Sites worker
-- no `.openai/hosting.json`
-- no Open Graph preview assets
-- no website deployment packaging step
+- authentication and authorization;
+- profiles and applications;
+- opportunity catalogue queries;
+- extension synchronization;
+- Feishu/official-site imports;
+- platform-owned AI requests;
+- database transactions.
 
-## Future Web Boundary
+The HTTP runtime is intentionally undecided until backend implementation starts.
+Keeping the package compile-checked now prevents browser/server responsibilities
+from becoming mixed again.
 
-If a companion website is rebuilt later, keep it separate from the extension:
+### Shared packages
+
+| Package | Owns | Must not own |
+| --- | --- | --- |
+| `@offerflow/domain` | applications, stages, profiles, opportunities and pure types | React, Chrome, storage, fetch |
+| `@offerflow/contracts` | API DTOs and autofill/extraction message shapes | database queries or UI |
+| `@offerflow/api-client` | authenticated typed HTTP calls | business state or database credentials |
+| `@offerflow/ui` | stable design tokens and future primitives | complete product pages |
+| `@offerflow/db` | SQL migrations and schema documentation | browser-importable runtime code |
+
+## Extension runtime flow
 
 ```text
-apps/
-  extension/
-  web/
-packages/
-  core/
-  ui/
+dashboard.html / sidepanel.html
+           |
+           v
+src/entries/ui/main.tsx
+           |
+           v
+src/app/App.tsx
+   |       |        |
+profile  opportunities  workspace views
+   |       |        |
+   +-------+--------+
+           |
+Chrome storage / background messages / integrations
+           |
+src/entries/background <----> public/content.js
+                                  |
+                           recruiting-page DOM
 ```
 
-The website should depend on shared packages, not on extension entry files. The extension should remain buildable and testable without any website runtime.
+Content scripts only inspect and operate the current page. The background worker
+owns tab coordination, background synchronization and cross-origin orchestration.
+Extension UI components render state and issue commands.
+
+## Application form autofill
+
+Autofill remains rule-first:
+
+```text
+content script scan
+  -> resolve site adapter (Beisen / Moka / Nowcoder / Tencent / generic)
+  -> adapter and section-aware alias mapping
+  -> send only unknown field metadata to DeepSeek
+  -> fill values available in the local profile
+  -> verify values by reading the DOM back
+  -> return a per-field result report
+```
+
+`apps/extension/public/form-adapters.js` is the mapping-library update boundary.
+`apps/extension/public/content.js` owns page-local DOM operations.
+`apps/extension/src/features/profile/ProfileView.tsx` owns scan/fill results.
+`apps/extension/src/integrations/deepseek/deepseek.ts` resolves ambiguous field
+semantics and never submits an application.
+
+## Data and synchronization
+
+The extension is local-first:
+
+- before login, `chrome.storage.local` is the source of truth;
+- after login, local storage becomes an offline cache and queue;
+- the API accepts versioned changes and returns a synchronization cursor;
+- PostgreSQL is the long-term source of truth for authenticated users;
+- the website reads the same cloud data through the API.
+
+Every cloud-synchronized entity should carry `id`, `revision` and `updatedAt`.
+Application records retain company/position/source snapshots even when their
+catalogue job posting is later changed or removed.
+
+See `docs/database.md` and `packages/db/migrations` for the concrete schema.
+
+## Build and deployment boundaries
+
+- root `pnpm build` checks shared packages/API and builds the extension;
+- the extension store artifact comes from `apps/extension/dist`;
+- the website will receive its own build only when implementation begins;
+- API and website deployments can share infrastructure initially while retaining
+  separate source boundaries;
+- development, staging and production use separate databases and credentials.
