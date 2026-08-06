@@ -44,6 +44,7 @@ export interface JobApplication {
   nextAction?: string;
   sourceUrl: string;
   sourceHost: string;
+  identityAliases?: string[];
   summary?: string;
   responsibilities: string[];
   requirements: string[];
@@ -79,10 +80,15 @@ export interface ExtractedJob {
 
 export interface ProgressEvidence {
   jobId?: string;
+  recordUrl?: string;
+  company?: string;
   position?: string;
+  city?: string;
+  appliedAt?: string;
   currentStage?: string;
   terminalStatus?: string;
   context?: string;
+  adapterId?: string;
   steps: Array<{
     label: string;
     state: "completed" | "current" | "pending" | "failed" | "unknown";

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
-    "build": "pnpm run typecheck && vite build && pnpm run validate:build",
+    "build": "pnpm run test:extraction && pnpm run typecheck && vite build && pnpm run validate:build",
+    "test:extraction": "node --test tests/extraction-rules.test.mjs tests/capture-matching.test.mjs tests/application-identity.test.mjs && node --experimental-strip-types --test tests/opportunities.test.mjs && node tests/run-dom-fixture.mjs",
     "validate:build": "node scripts/validate-build.mjs",
     "typecheck": "tsc -p tsconfig.app.json --pretty false && tsc -p tsconfig.node.json --pretty false"
   },
@@ -14,7 +15,8 @@
     "@offerflow/domain": "workspace:*",
     "lucide-react": "^0.468.0",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "simple-icons": "16.21.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",

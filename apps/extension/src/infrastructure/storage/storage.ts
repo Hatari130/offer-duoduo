@@ -1,8 +1,16 @@
-import type { JobApplication, OfferFlowSettings, PersonalProfile } from "@/shared/types";
+import { matchExistingApplication } from "@/shared/types";
+import type {
+  ApplicationObservation,
+  JobApplication,
+  OfferFlowSettings,
+  PendingApplicationMatch,
+  PersonalProfile
+} from "@/shared/types";
 
 export const JOBS_KEY = "offerflow.jobs";
 export const SETTINGS_KEY = "offerflow.settings";
 export const AUTO_SYNC_NOTICE_KEY = "offerflow.autoSyncNotice";
+export const PENDING_PROGRESS_MATCHES_KEY = "offerflow.pendingProgressMatches";
 export const PROFILE_KEY = "offerflow.profile";
 
 export const EMPTY_PROFILE: PersonalProfile = {
@@ -10,18 +18,35 @@ export const EMPTY_PROFILE: PersonalProfile = {
   gender: "",
   phone: "",
   email: "",
+  nationality: "",
+  idType: "",
+  idNumber: "",
   birthDate: "",
   graduationDate: "",
   currentCity: "",
   nativePlace: "",
+  studentSource: "",
+  currentResidence: "",
   height: "",
   weight: "",
   recruitmentType: "",
   graduateStatus: "",
+  wechat: "",
+  qq: "",
+  politicalStatus: "",
+  maritalStatus: "",
+  healthStatus: "",
+  specialty: "",
+  workYears: "",
+  emergencyContactName: "",
+  emergencyContactPhone: "",
+  countryRegion: "",
   address: "",
   targetRole: "",
   targetCities: "",
   earliestStartDate: "",
+  expectedSalary: "",
+  referralCode: "",
   portfolioUrl: "",
   githubUrl: "",
   education: [],
@@ -29,6 +54,15 @@ export const EMPTY_PROFILE: PersonalProfile = {
   projects: [],
   campusExperiences: [],
   awards: [],
+  languages: [],
+  computerSkills: [],
+  qualifications: [],
+  familyMembers: [],
+  publications: [],
+  patents: [],
+  works: [],
+  competitions: [],
+  hobbies: "",
   selfIntroduction: "",
   strengths: "",
   careerPlan: "",
@@ -70,6 +104,25 @@ export async function saveSettings(settings: OfferFlowSettings): Promise<void> {
     return;
   }
   await chrome.storage.local.set({ [SETTINGS_KEY]: settings });
+}
+
+export async function loadPendingProgressMatches(): Promise<PendingApplicationMatch[]> {
+  if (!hasChromeStorage()) {
+    const value = localStorage.getItem(PENDING_PROGRESS_MATCHES_KEY);
+    return value ? JSON.parse(value) : [];
+  }
+  const result = await chrome.storage.local.get(PENDING_PROGRESS_MATCHES_KEY);
+  return (result[PENDING_PROGRESS_MATCHES_KEY] as PendingApplicationMatch[] | undefined) ?? [];
+}
+
+export async function savePendingProgressMatches(
+  matches: PendingApplicationMatch[]
+): Promise<void> {
+  if (!hasChromeStorage()) {
+    localStorage.setItem(PENDING_PROGRESS_MATCHES_KEY, JSON.stringify(matches));
+    return;
+  }
+  await chrome.storage.local.set({ [PENDING_PROGRESS_MATCHES_KEY]: matches });
 }
 
 export async function loadProfile(): Promise<PersonalProfile> {
@@ -122,30 +175,8 @@ const normalizePosition = (value?: string) =>
 
 export function findDuplicate(
   jobs: JobApplication[],
-  candidate: Pick<
-    JobApplication,
-    "company" | "position" | "jobId" | "city" | "sourceUrl"
-  >
+  candidate: ApplicationObservation
 ): JobApplication | undefined {
-  const normalizedUrl = normalizeUrl(candidate.sourceUrl);
-  return jobs.find((job) => {
-    if (job.jobId && candidate.jobId) {
-      return (
-        normalizeText(job.company) === normalizeText(candidate.company) &&
-        normalizeText(job.jobId) === normalizeText(candidate.jobId)
-      );
-    }
-
-    if (
-      normalizeUrl(job.sourceUrl) === normalizedUrl &&
-      normalizeText(job.company) === normalizeText(candidate.company) &&
-      normalizePosition(job.position) === normalizePosition(candidate.position)
-    ) return true;
-
-    return (
-      normalizeText(job.company) === normalizeText(candidate.company) &&
-      normalizePosition(job.position) === normalizePosition(candidate.position) &&
-      normalizeText(job.city) === normalizeText(candidate.city)
-    );
-  });
+  const result = matchExistingApplication(jobs, candidate);
+  return result.kind === "matched" ? result.best?.job : undefined;
 }

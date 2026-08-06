@@ -58,7 +58,8 @@ import {
   DEFAULT_OPPORTUNITY_FEED_URL,
   loadOpportunityCache,
   OPPORTUNITY_CACHE_KEY,
-  refreshOpportunityFeed
+  refreshOpportunityFeed,
+  type OpportunityUpdateMeta
 } from "@/features/opportunities/opportunities";
 import {
   STAGES,
@@ -92,6 +93,7 @@ export function OverlayPanel({
   jobs,
   settings,
   opportunitySnapshot,
+  opportunityUpdateMeta,
   opportunityLoading,
   opportunityError,
   profile,
@@ -104,12 +106,14 @@ export function OverlayPanel({
   onToggleFavorite,
   onRefresh,
   onRefreshOpportunities,
+  onMarkOpportunityUpdatesRead,
   onOpenDashboard,
   onClose
 }: {
   jobs: JobApplication[];
   settings: OfferFlowSettings;
   opportunitySnapshot: OpportunityFeedSnapshot;
+  opportunityUpdateMeta: OpportunityUpdateMeta;
   opportunityLoading: boolean;
   opportunityError?: string;
   profile: PersonalProfile;
@@ -122,6 +126,7 @@ export function OverlayPanel({
   onToggleFavorite: (job: JobApplication) => void;
   onRefresh: () => void;
   onRefreshOpportunities: () => void;
+  onMarkOpportunityUpdatesRead: () => void;
   onOpenDashboard: () => void;
   onClose: () => void;
 }) {
@@ -148,6 +153,12 @@ export function OverlayPanel({
   useEffect(() => {
     overlayScrollRef.current?.scrollTo(0, 0);
   }, [tab]);
+
+  useEffect(() => {
+    if (tab === "opportunities" && opportunityUpdateMeta.unreadCount > 0) {
+      onMarkOpportunityUpdatesRead();
+    }
+  }, [tab, opportunityUpdateMeta.unreadCount, onMarkOpportunityUpdatesRead]);
 
   useEffect(() => {
     let cancelled = false;
@@ -329,9 +340,17 @@ export function OverlayPanel({
           <button aria-label="打开网页工作台" title="打开网页工作台" onClick={onOpenDashboard}>
             <MonitorUp size={17} />
           </button>
-          <button aria-label="刷新" onClick={onRefresh}>
-            <RefreshCw size={17} />
-          </button>
+          <span className="overlay-update-trigger">
+            <button aria-label="刷新" onClick={onRefresh}>
+              <RefreshCw size={17} />
+            </button>
+            {opportunityUpdateMeta.unreadCount > 0 && (
+              <i
+                className="overlay-opportunity-update-dot"
+                title={`${opportunityUpdateMeta.unreadCount} 条岗位更新`}
+              />
+            )}
+          </span>
           <button aria-label="关闭" onClick={onClose}>
             <X size={19} />
           </button>
@@ -339,7 +358,7 @@ export function OverlayPanel({
       </header>
 
       <div className="overlay-scroll" ref={overlayScrollRef}>
-        {tab !== "profile" && <section className="overlay-capture-card">
+        {tab !== "profile" && tab !== "opportunities" && <section className="overlay-capture-card">
           <span className="overlay-capture-icon">
             <Target size={19} />
           </span>
@@ -384,6 +403,7 @@ export function OverlayPanel({
             loading={opportunityLoading}
             error={opportunityError}
             configured={Boolean(settings.opportunityFeedUrl)}
+            updateMeta={opportunityUpdateMeta}
             onOpen={onOpenOpportunity}
             onRefresh={onRefreshOpportunities}
             onConfigure={() => setTab("settings")}
@@ -683,7 +703,10 @@ export function OverlayPanel({
 
       <nav className="overlay-toolbar">
         <button title="总览" aria-label="总览" className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}><LayoutDashboard size={19} /></button>
-        <button title="机会" aria-label="机会" className={tab === "opportunities" ? "active" : ""} onClick={() => setTab("opportunities")}><Megaphone size={19} /></button>
+        <button title="机会" aria-label="机会" className={tab === "opportunities" ? "active" : ""} onClick={() => setTab("opportunities")}>
+          <Megaphone size={19} />
+          {opportunityUpdateMeta.unreadCount > 0 && <i className="overlay-opportunity-update-dot" />}
+        </button>
         <button title="投递" aria-label="投递" className={tab === "jobs" ? "active" : ""} onClick={() => setTab("jobs")}><BriefcaseBusiness size={19} /></button>
         <button title="日历" aria-label="日历" className={tab === "agenda" ? "active" : ""} onClick={() => setTab("agenda")}><CalendarDays size={19} /></button>
         <button title="设置" aria-label="设置" className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={19} /></button>

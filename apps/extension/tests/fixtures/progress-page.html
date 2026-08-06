@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>招聘进度测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      .company-section { width: 900px; margin-bottom: 28px; }
+      .application-card { padding: 20px; border: 1px solid #ddd; }
+      .position { margin-bottom: 4px; font-size: 24px; font-weight: 700; }
+      .campaign { margin-bottom: 20px; color: #555; }
+      .timeline { display: flex; gap: 18px; min-height: 70px; }
+      .step { min-width: 110px; padding: 8px; }
+      .step i { display: block; width: 14px; height: 14px; margin-bottom: 6px; border-radius: 50%; background: #ccc; }
+      .step.completed i { background: rgb(20, 170, 80); }
+      .step.current i { background: rgb(45, 110, 220); }
+      .step span, .step em { display: block; }
+      .step em { margin-top: 5px; font-style: normal; }
+    </style>
+  </head>
+  <body>
+    <section class="company-section">
+      <h2>京东</h2>
+      <article class="application-card">
+        <div class="position">技术产品经理</div>
+        <div class="campaign">JD YOUNG-实习生计划</div>
+        <div class="timeline">
+          <div class="step completed"><i></i><span>投递</span></div>
+          <div class="step completed"><i></i><span>测评</span></div>
+          <div class="step completed"><i></i><span>AI面试</span></div>
+          <div class="step current"><i></i><span>简历筛选</span><em>简历筛选中</em></div>
+          <div class="step"><i></i><span>面试</span></div>
+          <div class="step"><i></i><span>Offer</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="company-section">
+      <h2>Token Foundry</h2>
+      <article class="application-card">
+        <div class="position">日常实习生-AI产品经理-未来生活实验室</div>
+        <div class="campaign">阿里巴巴日常实习生</div>
+        <div class="application-number">100122560060</div>
+        <div class="timeline">
+          <div class="step completed"><i></i><span>简历投递</span></div>
+          <div class="step"><i></i><span>评估</span></div>
+          <div class="step"><i></i><span>面试</span></div>
+          <div class="step"><i></i><span>Offer</span></div>
+          <div class="step"><i></i><span>入职</span></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="company-section">
+      <h2>百度</h2>
+      <article class="application-card">
+        <div class="position">北京-AI产品经理(J100665)</div>
+        <div>北京市　投递时间：2026-07-16</div>
+        <div class="timeline">
+          <div class="step completed"><i></i><span>投递简历</span></div>
+          <div class="step completed"><i></i><span>简历筛选</span></div>
+          <div class="step"><i></i><span>面试</span></div>
+          <div class="step"><i></i><span>OFFER评估</span></div>
+          <div class="step"><i></i><span>入职</span></div>
+        </div>
+      </article>
+    </section>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener({ type: "OFFERFLOW_EXTRACT_PAGE" }, {}, (response) => {
+        document.body.dataset.ready = "true";
+        document.body.dataset.result = encodeURIComponent(JSON.stringify(response));
+      });
+    </script>
+  </body>
+</html>

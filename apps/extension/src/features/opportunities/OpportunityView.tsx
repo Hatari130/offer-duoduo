@@ -1,13 +1,19 @@
 import { useMemo, useState } from "react";
 import {
   CalendarClock,
+  Clock3,
   ExternalLink,
   Megaphone,
   RefreshCw,
   Search,
   Settings2
 } from "lucide-react";
-import { opportunityStatus } from "./opportunities";
+import CompanyLogo from "./CompanyLogo";
+import {
+  opportunityDisplayTitle,
+  opportunityStatus,
+  type OpportunityUpdateMeta
+} from "./opportunities";
 import type {
   OpportunityFeedSnapshot,
   OpportunityStatus,
@@ -15,7 +21,7 @@ import type {
 } from "@/shared/types";
 
 const STATUS_LABELS: Record<OpportunityStatus, string> = {
-  upcoming: "即将开放",
+  upcoming: "",
   open: "正在招聘",
   closing: "即将截止",
   closed: "已结束",
@@ -23,6 +29,12 @@ const STATUS_LABELS: Record<OpportunityStatus, string> = {
 };
 
 const STATUS_ORDER: OpportunityStatus[] = ["closing", "open", "ongoing", "upcoming", "closed"];
+const FILTER_STATUSES: Array<Exclude<OpportunityStatus, "upcoming">> = [
+  "closing",
+  "open",
+  "ongoing",
+  "closed"
+];
 
 function shortDate(value?: string) {
   const match = value?.match(/\d{4}-(\d{1,2})-(\d{1,2})/);
@@ -31,11 +43,33 @@ function shortDate(value?: string) {
   return `${Number(month)}月${Number(day)}日`;
 }
 
+function syncTime(value?: string) {
+  if (!value) return "尚未同步";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
+  return date.toLocaleString("zh-CN", {
+    month: "numeric",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+}
+
+function batchTone(value: string) {
+  if (/秋招|秋季/.test(value)) return "autumn";
+  if (/春招|春季/.test(value)) return "spring";
+  if (/提前批/.test(value)) return "early";
+  if (/实习/.test(value)) return "intern";
+  return "batch";
+}
+
 export default function OpportunityView({
   snapshot,
   loading,
   error,
   configured,
+  updateMeta,
   onOpen,
   onRefresh,
   onConfigure
@@ -44,12 +78,15 @@ export default function OpportunityView({
   loading: boolean;
   error?: string;
   configured: boolean;
+  updateMeta: OpportunityUpdateMeta;
   onOpen: (opportunity: RecruitmentOpportunity) => void;
   onRefresh: () => void;
   onConfigure: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | OpportunityStatus>("all");
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | Exclude<OpportunityStatus, "upcoming">
+  >("all");
 
   const counts = useMemo(() => {
     const result = new Map<OpportunityStatus, number>();
@@ -120,7 +157,7 @@ export default function OpportunityView({
         <button className={statusFilter === "all" ? "active" : ""} onClick={() => setStatusFilter("all")}>
           全部 <small>{snapshot.opportunities.length}</small>
         </button>
-        {STATUS_ORDER.map((status) => (
+        {FILTER_STATUSES.map((status) => (
           <button
             className={statusFilter === status ? "active" : ""}
             key={status}
@@ -131,9 +168,25 @@ export default function OpportunityView({
         ))}
       </div>
 
+      <div className="opportunity-sync-status">
+        <span><i />每 5 分钟自动同步</span>
+        <time>最近同步 {syncTime(updateMeta.lastSyncedAt || snapshot.fetchedAt)}</time>
+        {(updateMeta.addedCount > 0 || updateMeta.updatedCount > 0 || updateMeta.removedCount > 0) && (
+          <strong>
+            {updateMeta.addedCount > 0 ? `新增 ${updateMeta.addedCount}` : ""}
+            {updateMeta.updatedCount > 0 ? `${updateMeta.addedCount > 0 ? " · " : ""}更新 ${updateMeta.updatedCount}` : ""}
+            {updateMeta.removedCount > 0 ? `${updateMeta.addedCount + updateMeta.updatedCount > 0 ? " · " : ""}下线 ${updateMeta.removedCount}` : ""}
+          </strong>
+        )}
+      </div>
+
       {error && (
         <div className="opportunity-error">
-          <strong>数据源暂时不可用</strong>
+          <strong>
+            {snapshot.opportunities.length
+              ? `本次同步失败，已保留 ${snapshot.opportunities.length} 条缓存`
+              : "数据源暂时不可用"}
+          </strong>
           <span>{error}</span>
           <button onClick={onConfigure}>检查数据源</button>
         </div>
@@ -143,24 +196,35 @@ export default function OpportunityView({
         {visible.map((opportunity) => {
           const status = opportunityStatus(opportunity);
           const tags = [
-            ...opportunity.graduationYears,
-            ...opportunity.roleTags,
-            ...opportunity.cities
-          ].slice(0, 4);
+            ...(opportunity.batch
+              ? [{ value: opportunity.batch, kind: batchTone(opportunity.batch) }]
+              : []),
+            ...opportunity.graduationYears.map((value) => ({ value, kind: "year" })),
+            ...opportunity.roleTags.map((value) => ({ value, kind: "role" })),
+            ...opportunity.cities.map((value) => ({ value, kind: "city" }))
+          ]
+            .filter(
+              (tag, index, items) => items.findIndex((item) => item.value === tag.value) === index
+            )
+            .slice(0, 6);
           return (
             <article className={`opportunity-card opportunity-card--${status}`} key={opportunity.id}>
               <div className="opportunity-card-topline">
-                <span className="opportunity-company-mark">{opportunity.company.slice(0, 1)}</span>
+                <CompanyLogo company={opportunity.company} />
                 <span>
                   <strong>{opportunity.company}</strong>
-                  <small>{opportunity.batch || "校园招聘"}</small>
+                  <small>{opportunity.sourceName?.replace(/^飞书表格\s*·\s*/, "") || "校园招聘"}</small>
                 </span>
-                <em>{STATUS_LABELS[status]}</em>
+                {status !== "upcoming" && <em>{STATUS_LABELS[status]}</em>}
               </div>
-              <h2>{opportunity.title}</h2>
+              <h2 title={opportunity.title}>{opportunityDisplayTitle(opportunity)}</h2>
               {tags.length > 0 && (
                 <div className="opportunity-tags">
-                  {tags.map((tag) => <span key={tag}>{tag}</span>)}
+                  {tags.map((tag) => (
+                    <span className={`opportunity-tag--${tag.kind}`} key={`${tag.kind}-${tag.value}`}>
+                      {tag.value}
+                    </span>
+                  ))}
                 </div>
               )}
               <div className="opportunity-card-meta">
@@ -172,10 +236,13 @@ export default function OpportunityView({
                       ? `${shortDate(opportunity.deadline)} 截止`
                       : "长期有效"}
                 </span>
-                <small>
-                  {opportunity.verifiedAt
-                    ? `核验于 ${shortDate(opportunity.verifiedAt)}`
-                    : opportunity.sourceName || "外部数据源"}
+                <small className="opportunity-card-updated">
+                  <Clock3 size={12} />
+                  {opportunity.updatedAt
+                    ? `数据更新 ${shortDate(opportunity.updatedAt)}`
+                    : opportunity.verifiedAt
+                      ? `核验 ${shortDate(opportunity.verifiedAt)}`
+                      : `同步 ${syncTime(snapshot.fetchedAt)}`}
                 </small>
               </div>
               <div className="opportunity-card-actions">
@@ -221,7 +288,7 @@ export default function OpportunityView({
 
       {snapshot.fetchedAt && (
         <footer className="opportunity-footnote">
-          最近同步：{new Date(snapshot.fetchedAt).toLocaleString("zh-CN", { hour12: false })}
+          飞书更新后将在下一次自动同步中出现 · 最近同步 {syncTime(snapshot.fetchedAt)}
         </footer>
       )}
     </section>

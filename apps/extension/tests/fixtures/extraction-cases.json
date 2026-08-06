@@ -1,0 +1,26 @@
+[
+  {
+    "platform": "jd",
+    "hostname": "campus.jd.com",
+    "position": "技术产品经理",
+    "company": "京东",
+    "campaign": "JD YOUNG-实习生计划",
+    "processes": ["投递", "测评", "AI面试", "简历筛选中", "面试", "Offer"]
+  },
+  {
+    "platform": "alibaba",
+    "hostname": "talent.alibaba.com",
+    "position": "日常实习生-AI产品经理-未来生活实验室",
+    "company": "Token Foundry",
+    "campaign": "阿里巴巴2027届实习生",
+    "processes": ["简历投递", "评估", "评估中", "面试", "Offer", "入职"]
+  },
+  {
+    "platform": "baidu",
+    "hostname": "talent.baidu.com",
+    "position": "北京-AI产品经理(J100665)",
+    "company": "百度",
+    "campaign": "百度校园招聘",
+    "processes": ["投递简历", "简历筛选", "面试", "OFFER评估", "入职"]
+  }
+]

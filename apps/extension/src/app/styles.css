@@ -14,6 +14,154 @@
   --shadow: 0 14px 35px rgba(23, 34, 29, 0.11);
 }
 
+.pending-progress-panel {
+  position: fixed;
+  z-index: 95;
+  right: 22px;
+  bottom: 22px;
+  width: min(390px, calc(100vw - 32px));
+  max-height: calc(100vh - 116px);
+  overflow-y: auto;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.98);
+  border: 1px solid #dfe2de;
+  border-radius: 16px;
+  box-shadow: 0 18px 48px rgba(29, 35, 31, 0.18), 0 3px 12px rgba(29, 35, 31, 0.08);
+  animation: pending-progress-enter 180ms ease-out both;
+}
+
+@keyframes pending-progress-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.pending-progress-heading {
+  display: grid;
+  gap: 4px;
+  padding: 1px 2px 10px;
+}
+
+.pending-progress-heading > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #b06b00;
+}
+
+.pending-progress-heading strong {
+  color: var(--ink);
+  font-size: 12px;
+}
+
+.pending-progress-heading small,
+.pending-progress-observation small,
+.pending-progress-candidates small {
+  color: #737a75;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+.pending-progress-item {
+  display: grid;
+  gap: 9px;
+  margin-top: 9px;
+  padding: 11px;
+  background: #fafbf9;
+  border: 1px solid #e5e8e4;
+  border-radius: 12px;
+}
+
+.pending-progress-observation {
+  display: grid;
+  gap: 3px;
+}
+
+.pending-progress-observation strong {
+  color: var(--ink);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.pending-progress-candidates {
+  display: grid;
+  gap: 6px;
+}
+
+.pending-progress-candidates button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+  padding: 9px 10px;
+  color: var(--ink);
+  text-align: left;
+  background: #fff;
+  border: 1px solid #dfe2de;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: background-color 120ms ease, border-color 120ms ease, transform 120ms ease;
+}
+
+.pending-progress-candidates button:hover {
+  background: #f2f5f1;
+  border-color: #aab2ac;
+}
+
+.pending-progress-candidates button:active {
+  transform: scale(0.96);
+}
+
+.pending-progress-candidates button:focus-visible,
+.pending-progress-ignore:focus-visible {
+  outline: 2px solid var(--forest);
+  outline-offset: 2px;
+}
+
+.pending-progress-candidates button > span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.pending-progress-candidates strong {
+  overflow: hidden;
+  font-size: 10px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.pending-progress-candidates svg {
+  flex: 0 0 auto;
+  color: var(--forest);
+}
+
+.pending-progress-ignore {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  justify-self: end;
+  padding: 3px 5px;
+  color: #818782;
+  background: transparent;
+  border: 0;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.pending-progress-ignore:hover {
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .pending-progress-panel {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100vw - 24px);
+  }
+}
+
 * {
   box-sizing: border-box;
 }
@@ -124,6 +272,26 @@ button {
 
 .overlay-header-tools {
   gap: 2px;
+}
+
+.overlay-update-trigger {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.overlay-opportunity-update-dot {
+  position: absolute;
+  z-index: 2;
+  top: 4px;
+  right: 4px;
+  width: 8px;
+  height: 8px;
+  background: #e45f45;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgba(228, 95, 69, 0.12);
+  pointer-events: none;
 }
 
 .overlay-header-tools button,
@@ -829,6 +997,10 @@ button {
   align-items: start;
 }
 
+.opportunity-page > .opportunity-title {
+  margin-top: 0;
+}
+
 .opportunity-refresh {
   width: 30px;
   height: 30px;
@@ -917,6 +1089,46 @@ button {
   font-size: 8px;
 }
 
+.opportunity-sync-status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 5px 10px;
+  margin: 2px 0 10px;
+  padding: 8px 10px;
+  color: #777e79;
+  background: #f7f9f6;
+  border-radius: 9px;
+  font-size: 8px;
+}
+
+.opportunity-sync-status > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #40694e;
+  font-weight: 650;
+}
+
+.opportunity-sync-status > span i {
+  width: 6px;
+  height: 6px;
+  background: #50a268;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(80, 162, 104, 0.11);
+}
+
+.opportunity-sync-status time {
+  font-style: normal;
+}
+
+.opportunity-sync-status strong {
+  margin-left: auto;
+  color: #4f5751;
+  font-size: inherit;
+  font-weight: 700;
+}
+
 .opportunity-error {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -993,7 +1205,8 @@ button {
   gap: 9px;
 }
 
-.opportunity-company-mark {
+.opportunity-company-mark,
+.opportunity-company-logo {
   width: 34px;
   height: 34px;
   display: grid;
@@ -1003,6 +1216,31 @@ button {
   border-radius: 9px;
   font-size: 12px;
   font-weight: 750;
+}
+
+.opportunity-company-logo {
+  color: var(--company-brand);
+  background: color-mix(in srgb, var(--company-brand) 8%, #fff);
+  border: 1px solid color-mix(in srgb, var(--company-brand) 16%, #e7e9e6);
+  overflow: hidden;
+}
+
+.opportunity-company-logo svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.opportunity-company-logo strong {
+  color: currentColor;
+  font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: -0.05em;
+}
+
+.opportunity-company-logo strong.compact {
+  font-size: 8px;
 }
 
 .opportunity-card-topline strong,
@@ -1040,9 +1278,15 @@ button {
 
 .opportunity-card h2 {
   margin: 12px 0 0;
-  font-size: 13px;
-  line-height: 1.35;
-  letter-spacing: -0.015em;
+  display: -webkit-box;
+  overflow: hidden;
+  color: #343a36;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .opportunity-tags {
@@ -1054,10 +1298,50 @@ button {
 
 .opportunity-tags span {
   padding: 4px 7px;
-  color: #626863;
-  background: #f5f6f4;
+  color: #66706a;
+  background: #f3f5f2;
+  border: 1px solid transparent;
   border-radius: 5px;
   font-size: 8px;
+}
+
+.opportunity-tags .opportunity-tag--autumn {
+  color: #9a5d16;
+  background: #fff6e7;
+  border-color: #f4dfb9;
+}
+
+.opportunity-tags .opportunity-tag--spring {
+  color: #38704b;
+  background: #edf8f0;
+  border-color: #cee7d5;
+}
+
+.opportunity-tags .opportunity-tag--early {
+  color: #456aa0;
+  background: #eef4fd;
+  border-color: #d5e1f3;
+}
+
+.opportunity-tags .opportunity-tag--intern {
+  color: #745a97;
+  background: #f5f0fb;
+  border-color: #e4d8f2;
+}
+
+.opportunity-tags .opportunity-tag--year {
+  color: #626c73;
+  background: #f1f4f6;
+}
+
+.opportunity-tags .opportunity-tag--city {
+  color: #3e6d7a;
+  background: #edf6f7;
+}
+
+.opportunity-tags .opportunity-tag--role {
+  color: #687067;
+  background: #f4f5f1;
 }
 
 .opportunity-card-meta {
@@ -1081,6 +1365,17 @@ button {
   font-size: 8px;
   white-space: nowrap;
   text-overflow: ellipsis;
+}
+
+.opportunity-card-updated {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #8a908c;
+}
+
+.opportunity-card-updated svg {
+  flex: 0 0 auto;
 }
 
 .opportunity-card-actions {
@@ -1758,6 +2053,7 @@ button {
 }
 
 .overlay-toolbar button {
+  position: relative;
   width: 38px;
   height: 38px;
   display: grid;
@@ -1772,6 +2068,11 @@ button {
 .overlay-toolbar button.active {
   color: var(--overlay-text);
   background: var(--overlay-soft);
+}
+
+.overlay-toolbar .overlay-opportunity-update-dot {
+  top: 6px;
+  right: 6px;
 }
 
 .overlay-notice {
@@ -2238,10 +2539,24 @@ button {
   gap: 11px;
 }
 
-.overlay-shell .opportunity-company-mark {
+.overlay-shell .opportunity-company-mark,
+.overlay-shell .opportunity-company-logo {
   width: 40px;
   height: 40px;
   font-size: 14px;
+}
+
+.overlay-shell .opportunity-company-logo svg {
+  width: 23px;
+  height: 23px;
+}
+
+.overlay-shell .opportunity-company-logo strong {
+  font-size: 11px;
+}
+
+.overlay-shell .opportunity-company-logo strong.compact {
+  font-size: 9px;
 }
 
 .overlay-shell .opportunity-card-topline strong {
@@ -2254,7 +2569,13 @@ button {
 }
 
 .overlay-shell .opportunity-card h2 {
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.overlay-shell .opportunity-sync-status {
+  padding: 9px 11px;
+  font-size: 10px;
 }
 
 .overlay-shell .opportunity-card-meta > span,
@@ -3118,6 +3439,14 @@ button {
   border-radius: 9px;
   outline: none;
   font-size: 11px;
+}
+
+.profile-grid input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  margin: 8px 0 0;
+  accent-color: #202321;
 }
 
 .profile-grid input:focus,

@@ -20,7 +20,20 @@ export interface FormFieldMatch {
   id: string;
   label: string;
   key?: ProfileFieldKey;
-  repeatGroup?: "education" | "experience" | "project" | "campus" | "award";
+  repeatGroup?:
+    | "education"
+    | "experience"
+    | "project"
+    | "campus"
+    | "award"
+    | "language"
+    | "computer"
+    | "qualification"
+    | "family"
+    | "publication"
+    | "patent"
+    | "portfolio"
+    | "competition";
   repeatIndex?: number;
   type: string;
   currentValue?: string;
