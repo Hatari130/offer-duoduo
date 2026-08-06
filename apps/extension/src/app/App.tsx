@@ -1,5 +1,5 @@
 ﻿import { useEffect, useMemo, useState } from "react";
-import { useCallback, useRef } from "react";
+import { useRef } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -28,7 +28,6 @@ import {
   KeyRound,
   Target,
   Trash2,
-  UserRound,
   X
 } from "lucide-react";
 import {
@@ -48,41 +47,30 @@ import {
   findDuplicate,
   JOBS_KEY,
   loadJobs,
-  loadPendingProgressMatches,
   loadProfile,
   loadSettings,
-  PENDING_PROGRESS_MATCHES_KEY,
   PROFILE_KEY,
   saveJobs,
-  savePendingProgressMatches,
   saveProfile,
   saveSettings
 } from "@/infrastructure/storage/storage";
 import {
   DEFAULT_OPPORTUNITY_FEED_URL,
-  EMPTY_OPPORTUNITY_UPDATE_META,
   loadOpportunityCache,
-  loadOpportunityUpdateMeta,
-  markOpportunityUpdatesRead,
   OPPORTUNITY_CACHE_KEY,
-  OPPORTUNITY_UPDATE_META_KEY,
-  refreshOpportunityFeed,
-  type OpportunityUpdateMeta
+  refreshOpportunityFeed
 } from "@/features/opportunities/opportunities";
 import {
   STAGES,
   STAGE_LABELS,
-  rememberApplicationObservation,
   type ApplicationStage,
   type ExtractedJob,
   type JobApplication,
   type OfferFlowSettings,
   type OpportunityFeedSnapshot,
-  type PendingApplicationMatch,
   type PersonalProfile,
   type RecruitmentOpportunity
 } from "@/shared/types";
-import ProfileView from "@/features/profile/ProfileView";
 import OpportunityView from "@/features/opportunities/OpportunityView";
 
 import {
@@ -92,13 +80,10 @@ import {
   EditDrawer,
   JobCard,
   OverlayPanel,
-  captureCandidatesFromProgress,
   compactStages,
   createId,
   dueState,
   inferAppliedAt,
-  isCapturePositionRejected,
-  prepareCaptureForReview,
   shouldUseDeepSeekForCapture,
   type View
 } from "@/features/workspace/WorkspaceViews";
@@ -110,12 +95,8 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   const [opportunitySnapshot, setOpportunitySnapshot] = useState<OpportunityFeedSnapshot>({
     opportunities: []
   });
-  const [opportunityUpdateMeta, setOpportunityUpdateMeta] = useState<OpportunityUpdateMeta>({
-    ...EMPTY_OPPORTUNITY_UPDATE_META
-  });
   const [opportunityLoading, setOpportunityLoading] = useState(false);
   const [opportunityError, setOpportunityError] = useState("");
-  const [pendingProgressMatches, setPendingProgressMatches] = useState<PendingApplicationMatch[]>([]);
   const [profile, setProfile] = useState<PersonalProfile>(() => ({
     ...EMPTY_PROFILE,
     education: [],
@@ -126,7 +107,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   }));
   const [view, setView] = useState<View>(() => {
     const requested = new URLSearchParams(location.search).get("view");
-    return requested === "calendar" || requested === "profile" || requested === "settings"
+    return requested === "calendar" || requested === "settings"
       ? requested
       : "dashboard";
   });
@@ -139,21 +120,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   const [testingAi, setTestingAi] = useState(false);
 
   useEffect(() => {
-    Promise.all([
-      loadJobs(),
-      loadSettings(),
-      loadProfile(),
-      loadOpportunityCache(),
-      loadOpportunityUpdateMeta(),
-      loadPendingProgressMatches()
-    ]).then(([
-      storedJobs,
-      storedSettings,
-      storedProfile,
-      cachedOpportunities,
-      cachedOpportunityUpdateMeta,
-      storedPendingMatches
-    ]) => {
+    Promise.all([loadJobs(), loadSettings(), loadProfile(), loadOpportunityCache()]).then(([storedJobs, storedSettings, storedProfile, cachedOpportunities]) => {
       let migrationChanged = false;
       const migratedJobs = storedJobs.map((job) => {
         const appliedAt = inferAppliedAt(job);
@@ -171,9 +138,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       setSettings(effectiveSettings);
       if (!storedSettings.opportunityFeedUrl) void saveSettings(effectiveSettings);
       setProfile(storedProfile);
-      setPendingProgressMatches(storedPendingMatches);
       setOpportunitySnapshot(cachedOpportunities);
-      setOpportunityUpdateMeta(cachedOpportunityUpdateMeta);
       setOpportunityLoading(true);
       refreshOpportunityFeed(effectiveSettings.opportunityFeedUrl)
         .then((snapshot) => {
@@ -201,21 +166,10 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       if (changes[PROFILE_KEY]?.newValue) {
         setProfile(changes[PROFILE_KEY].newValue as PersonalProfile);
       }
-      if (changes[PENDING_PROGRESS_MATCHES_KEY]) {
-        setPendingProgressMatches(
-          (changes[PENDING_PROGRESS_MATCHES_KEY].newValue as PendingApplicationMatch[] | undefined) || []
-        );
-      }
       if (changes[OPPORTUNITY_CACHE_KEY]?.newValue) {
         setOpportunitySnapshot(
           changes[OPPORTUNITY_CACHE_KEY].newValue as OpportunityFeedSnapshot
         );
-      }
-      if (changes[OPPORTUNITY_UPDATE_META_KEY]?.newValue) {
-        setOpportunityUpdateMeta({
-          ...EMPTY_OPPORTUNITY_UPDATE_META,
-          ...(changes[OPPORTUNITY_UPDATE_META_KEY].newValue as OpportunityUpdateMeta)
-        });
       }
       if (changes[AUTO_SYNC_NOTICE_KEY]?.newValue) {
         const autoNotice = changes[AUTO_SYNC_NOTICE_KEY].newValue as {
@@ -236,77 +190,9 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     return () => chrome.storage.onChanged.removeListener(handleStorageChange);
   }, []);
 
-  const acknowledgeOpportunityUpdates = useCallback(() => {
-    setOpportunityUpdateMeta((previous) => ({
-      ...previous,
-      unreadCount: 0,
-      unreadOpportunityIds: [],
-      unreadRemovedOpportunityIds: []
-    }));
-    void markOpportunityUpdatesRead();
-  }, []);
-
   const persistJobs = async (next: JobApplication[]) => {
     setJobs(next);
     await saveJobs(next);
-  };
-
-  const dismissPendingProgressMatch = async (pendingId: string) => {
-    const next = pendingProgressMatches.filter((match) => match.id !== pendingId);
-    setPendingProgressMatches(next);
-    await savePendingProgressMatches(next);
-  };
-
-  const confirmPendingProgressMatch = async (
-    pending: PendingApplicationMatch,
-    localJobId: string
-  ) => {
-    const job = jobs.find((item) => item.id === localJobId);
-    if (!job) {
-      await dismissPendingProgressMatch(pending.id);
-      return;
-    }
-
-    const nextStage = pending.suggestedStage;
-    const stageChanged = job.stage !== nextStage;
-    const externalStage = pending.externalStage || job.externalStage;
-    const externalStageChanged = Boolean(externalStage) && externalStage !== job.externalStage;
-    const now = new Date().toISOString();
-    const nextAction =
-      nextStage === "assessment"
-        ? "完成笔试或测评"
-        : nextStage === "interview"
-          ? "准备下一轮面试"
-          : nextStage === "offer"
-            ? "确认 Offer 与入职安排"
-            : nextStage === "closed"
-              ? "归档本次申请"
-              : "关注后续筛选结果";
-    const updated = rememberApplicationObservation(
-      {
-        ...job,
-        stage: nextStage,
-        externalStage,
-        nextAction: stageChanged ? nextAction : job.nextAction,
-        updatedAt: now,
-        events: [
-          ...job.events,
-          {
-            id: createId("evt"),
-            type: stageChanged || externalStageChanged ? "stage_changed" : "updated",
-            title: stageChanged
-              ? `手动确认同步：${STAGE_LABELS[job.stage]} → ${STAGE_LABELS[nextStage]}`
-              : `手动确认网站进度：${externalStage}`,
-            occurredAt: now,
-            sourceUrl: pending.observation.sourceUrl
-          }
-        ]
-      },
-      pending.observation
-    );
-    await persistJobs(jobs.map((item) => (item.id === job.id ? updated : item)));
-    await dismissPendingProgressMatch(pending.id);
-    setNotice(`已确认更新：${job.company} · ${job.position}`);
   };
 
   const toggleFavorite = async (job: JobApplication) => {
@@ -482,9 +368,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         position: capture.position,
         jobId: capture.jobId,
         city: capture.city,
-        sourceUrl: capture.sourceUrl,
-        sourceHost: capture.sourceHost,
-        appliedAt: capture.appliedAt
+        sourceUrl: capture.sourceUrl
       })
     : undefined;
 
@@ -498,9 +382,9 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           position: "产品经理",
           city: "上海",
           jobId: "DEMO-001",
-          appliedAt: new Date().toISOString().slice(0, 10),
-          externalStage: "简历筛选",
-          suggestedStage: "applied",
+          deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
+          nextAction: "完成网申",
+          summary: "负责产品规划、需求分析与跨团队协作。",
           responsibilities: ["负责产品规划", "推进项目落地"],
           requirements: ["具备产品分析能力"],
           sourceUrl: location.href,
@@ -528,7 +412,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
 
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ["extraction-rules.js", "form-adapters.js", "content.js"]
+            files: ["form-adapters.js", "content.js"]
           });
           response = await requestExtraction();
         }
@@ -536,31 +420,18 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         if (!response.ok || !response.data) {
           throw new Error(response.error || "页面解析失败");
         }
-        const localProgressCandidates = captureCandidatesFromProgress(response.data);
-        if (localProgressCandidates.length > 1) {
-          setCaptureCandidates(localProgressCandidates);
-          setCapture(null);
-        } else if (localProgressCandidates.length === 1) {
-          setCapture(localProgressCandidates[0]);
-          setCaptureCandidates([]);
-        } else if (settings.deepseekApiKey && shouldUseDeepSeekForCapture(response.data)) {
+        if (settings.deepseekApiKey && shouldUseDeepSeekForCapture(response.data)) {
           try {
             const aiResult = await extractWithDeepSeek(response.data, settings);
-            const validApplications = aiResult.applications
-              .filter((application) => !isCapturePositionRejected(application.position))
-              .map(prepareCaptureForReview);
-            if (!validApplications.length) {
-              throw new Error("识别结果只有流程节点，没有可信岗位名称");
-            }
-            if (validApplications.length > 1) {
-              setCaptureCandidates(validApplications);
+            if (aiResult.applications.length > 1) {
+              setCaptureCandidates(aiResult.applications);
               setCapture(null);
             } else {
-              setCapture(validApplications[0]);
+              setCapture(aiResult.applications[0]);
               setCaptureCandidates([]);
             }
           } catch (aiError) {
-            setCapture(prepareCaptureForReview(response.data));
+            setCapture(response.data);
             setCaptureCandidates([]);
             setNotice(
               `DeepSeek识别失败，已使用本地规则：${
@@ -569,7 +440,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             );
           }
         } else {
-          setCapture(prepareCaptureForReview(response.data));
+          setCapture(response.data);
           setCaptureCandidates([]);
         }
       }
@@ -592,11 +463,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     const now = new Date().toISOString();
 
     if (mode === "update" && duplicate) {
-      const updated = rememberApplicationObservation({
+      const updated: JobApplication = {
         ...duplicate,
         ...capture,
         id: duplicate.id,
-        stage: capture.suggestedStage || duplicate.stage,
+        stage: duplicate.stage,
         createdAt: duplicate.createdAt,
         updatedAt: now,
         events: [
@@ -609,11 +480,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             sourceUrl: capture.sourceUrl
           }
         ]
-      }, capture);
+      };
       await persistJobs(jobs.map((job) => (job.id === duplicate.id ? updated : job)));
       setNotice("已有岗位已更新");
     } else {
-      const created = rememberApplicationObservation({
+      const created: JobApplication = {
         ...capture,
         id: createId("job"),
         stage: capture.suggestedStage || "interested",
@@ -628,7 +499,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             sourceUrl: capture.sourceUrl
           }
         ]
-      }, capture);
+      };
       await persistJobs([created, ...jobs]);
       setNotice("岗位已加入 OfferDuoDuo");
     }
@@ -650,15 +521,13 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         position: candidate.position,
         jobId: candidate.jobId,
         city: candidate.city,
-        sourceUrl: candidate.sourceUrl,
-        sourceHost: candidate.sourceHost,
-        appliedAt: candidate.appliedAt
+        sourceUrl: candidate.sourceUrl
       });
 
       if (duplicate) {
         const trustedStage =
           candidate.confidence >= 0.8 ? candidate.suggestedStage : undefined;
-        const updated = rememberApplicationObservation({
+        const updated: JobApplication = {
           ...duplicate,
           ...candidate,
           id: duplicate.id,
@@ -678,11 +547,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               sourceUrl: candidate.sourceUrl
             }
           ]
-        }, candidate);
+        };
         nextJobs = nextJobs.map((job) => (job.id === duplicate.id ? updated : job));
         updatedCount += 1;
       } else {
-        const created = rememberApplicationObservation({
+        const created: JobApplication = {
           ...candidate,
           id: createId("job"),
           stage: candidate.suggestedStage || "applied",
@@ -697,7 +566,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               sourceUrl: candidate.sourceUrl
             }
           ]
-        }, candidate);
+        };
         nextJobs.unshift(created);
         createdCount += 1;
       }
@@ -859,6 +728,18 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const openResumeManager = () => {
+    const url =
+      typeof chrome !== "undefined" && chrome.runtime?.getURL
+        ? chrome.runtime.getURL("resume.html")
+        : new URL("resume.html", window.location.href).href;
+    if (typeof chrome !== "undefined" && chrome.tabs?.create) {
+      void chrome.tabs.create({ url });
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   if (overlay) {
     const captureActive =
       view === "capture" && (captureCandidates.length > 1 || Boolean(capture));
@@ -941,7 +822,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             jobs={jobs}
             settings={settings}
             opportunitySnapshot={opportunitySnapshot}
-            opportunityUpdateMeta={opportunityUpdateMeta}
             opportunityLoading={opportunityLoading}
             opportunityError={opportunityError}
             profile={profile}
@@ -960,17 +840,9 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               void refreshOpportunities().catch(() => undefined);
             }}
             onRefreshOpportunities={() => void refreshOpportunities().catch(() => undefined)}
-            onMarkOpportunityUpdatesRead={acknowledgeOpportunityUpdates}
             onOpenDashboard={openWebDashboard}
+            onOpenResumeManager={openResumeManager}
             onClose={closeOverlay}
-          />
-        )}
-
-        {pendingProgressMatches.length > 0 && (
-          <PendingProgressMatches
-            matches={pendingProgressMatches}
-            onConfirm={confirmPendingProgressMatch}
-            onIgnore={dismissPendingProgressMatch}
           />
         )}
 
@@ -999,6 +871,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           </span>
         </button>
         <div className="topbar-actions">
+          <button
+            className="workspace-button"
+            onClick={openResumeManager}
+            title="打开简历中心"
+          >
+            <FileText size={16} />
+            简历中心
+          </button>
           <button
             className="workspace-button"
             onClick={openWebDashboard}
@@ -1047,13 +927,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           <Target size={19} />
         </button>
         <button
-          className={view === "profile" ? "active" : ""}
-          onClick={() => setView("profile")}
-          title="个人资料库"
-        >
-          <UserRound size={19} />
-        </button>
-        <button
           className={view === "settings" ? "active" : ""}
           onClick={() => setView("settings")}
           title="设置与备份"
@@ -1069,14 +942,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             {notice}
             <X size={13} />
           </button>
-        )}
-
-        {pendingProgressMatches.length > 0 && (
-          <PendingProgressMatches
-            matches={pendingProgressMatches}
-            onConfirm={confirmPendingProgressMatch}
-            onIgnore={dismissPendingProgressMatch}
-          />
         )}
 
         {view === "capture" && captureCandidates.length > 1 ? (
@@ -1103,13 +968,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           />
         ) : view === "calendar" ? (
           <CalendarView jobs={jobs} onEdit={setEditing} onCapture={capturePage} />
-        ) : view === "profile" ? (
-          <ProfileView
-            profile={profile}
-            settings={settings}
-            onSave={persistProfile}
-            onBack={() => setView("dashboard")}
-          />
         ) : view === "settings" ? (
           <section className="settings-view">
             <div className="page-heading">
@@ -1368,60 +1226,5 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         />
       )}
     </main>
-  );
-}
-
-function PendingProgressMatches({
-  matches,
-  onConfirm,
-  onIgnore
-}: {
-  matches: PendingApplicationMatch[];
-  onConfirm: (match: PendingApplicationMatch, localJobId: string) => void;
-  onIgnore: (matchId: string) => void;
-}) {
-  return (
-    <aside className="pending-progress-panel" aria-live="polite">
-      <div className="pending-progress-heading">
-        <span><AlertTriangle size={16} /><strong>待确认的进度更新</strong></span>
-        <small>系统发现了变化，但没有擅自修改岗位</small>
-      </div>
-      {matches.map((match) => (
-        <article className="pending-progress-item" key={match.id}>
-          <div className="pending-progress-observation">
-            <strong>{match.observation.company || "未知公司"} · {match.observation.position || "未知岗位"}</strong>
-            <small>
-              网页进度：{match.externalStage || STAGE_LABELS[match.suggestedStage]}
-              {match.observation.city ? ` · ${match.observation.city}` : ""}
-            </small>
-          </div>
-          <div className="pending-progress-candidates">
-            {match.candidates.map((candidate) => (
-              <button
-                type="button"
-                key={candidate.localJobId}
-                onClick={() => onConfirm(match, candidate.localJobId)}
-              >
-                <span>
-                  <strong>{candidate.company} · {candidate.position}</strong>
-                  <small>
-                    当前：{candidate.externalStage || STAGE_LABELS[candidate.currentStage]}
-                    {candidate.city ? ` · ${candidate.city}` : ""}
-                  </small>
-                </span>
-                <Check size={14} />
-              </button>
-            ))}
-          </div>
-          <button
-            className="pending-progress-ignore"
-            type="button"
-            onClick={() => onIgnore(match.id)}
-          >
-            <X size={13} />忽略这条
-          </button>
-        </article>
-      ))}
-    </aside>
   );
 }

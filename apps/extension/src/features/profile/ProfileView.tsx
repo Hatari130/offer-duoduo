@@ -1,9 +1,16 @@
 ﻿import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useRef, type ChangeEvent } from "react";
 import {
   Check,
   ChevronDown,
   ChevronLeft,
+  CircleAlert,
+  CloudUpload,
+  FileCheck2,
+  FileText,
+  FolderOpen,
   Plus,
+  RefreshCw,
   ScanLine,
   ShieldCheck,
   Trash2,
@@ -11,7 +18,14 @@ import {
   X
 } from "lucide-react";
 import { matchFormFields } from "@/integrations/deepseek/deepseek";
-import { getProfileFieldValues } from "@/shared/types";
+import { mergeParsedProfile, parseResumeFile, type ResumeParseResult } from "@/features/profile/resumeParser";
+import {
+  loadActiveResumeId,
+  loadResumeLibrary,
+  saveResumeLibrary,
+  setActiveResumeId,
+  type StoredResume
+} from "@/infrastructure/storage/storage";
 import type {
   FormFieldMatch,
   FormFillResponse,
@@ -20,20 +34,24 @@ import type {
   PersonalProfile,
   ProfileAward,
   ProfileCampusExperience,
-  ProfileCompetition,
-  ProfileComputerSkill,
   ProfileEducation,
   ProfileExperience,
-  ProfileFamilyMember,
-  ProfileLanguage,
-  ProfilePatent,
-  ProfileProject,
-  ProfilePublication,
-  ProfileQualification,
-  ProfileWork
+  ProfileProject
 } from "@/shared/types";
 
 const newId = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+
+const openResumeManager = () => {
+  const url =
+    typeof chrome !== "undefined" && chrome.runtime?.getURL
+      ? chrome.runtime.getURL("resume.html")
+      : new URL("resume.html", window.location.href).href;
+  if (typeof chrome !== "undefined" && chrome.tabs?.create) {
+    void chrome.tabs.create({ url });
+    return;
+  }
+  window.open(url, "_blank", "noopener,noreferrer");
+};
 
 const FIELD_NAMES: Record<string, string> = {
   fullName: "姓名",
@@ -44,8 +62,6 @@ const FIELD_NAMES: Record<string, string> = {
   graduationDate: "毕业时间",
   currentCity: "现居城市",
   nativePlace: "籍贯",
-  studentSource: "生源地",
-  currentResidence: "现居住地",
   height: "身高",
   weight: "体重",
   recruitmentType: "是否统招",
@@ -179,14 +195,6 @@ type ProfileSectionId =
   | "projects"
   | "campus"
   | "awards"
-  | "languages"
-  | "computer"
-  | "qualifications"
-  | "family"
-  | "publications"
-  | "patents"
-  | "portfolio"
-  | "competitions"
   | "answers";
 
 type ProfileSectionState = Record<ProfileSectionId, boolean>;
@@ -199,14 +207,6 @@ const DEFAULT_OPEN_SECTIONS: ProfileSectionState = {
   projects: true,
   campus: true,
   awards: true,
-  languages: false,
-  computer: false,
-  qualifications: false,
-  family: false,
-  publications: false,
-  patents: false,
-  portfolio: false,
-  competitions: false,
   answers: true
 };
 
@@ -218,19 +218,66 @@ const COLLAPSED_SECTIONS: ProfileSectionState = {
   projects: false,
   campus: false,
   awards: false,
-  languages: false,
-  computer: false,
-  qualifications: false,
-  family: false,
-  publications: false,
-  patents: false,
-  portfolio: false,
-  competitions: false,
   answers: false
 };
 
-const profileValues = (profile: PersonalProfile, repeatIndex = 0): Record<string, string> =>
-  getProfileFieldValues(profile, repeatIndex);
+function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string, string> {
+  const index = Number.isInteger(repeatIndex) && repeatIndex >= 0 ? repeatIndex : 0;
+  const education = profile.education[index];
+  const experience = profile.experiences[index];
+  const project = profile.projects[index];
+  const campusExperience = profile.campusExperiences[index];
+  const award = profile.awards[index];
+  return {
+    fullName: profile.fullName,
+    gender: profile.gender,
+    phone: profile.phone,
+    email: profile.email,
+    birthDate: profile.birthDate,
+    graduationDate: profile.graduationDate,
+    currentCity: profile.currentCity,
+    nativePlace: profile.nativePlace,
+    height: profile.height,
+    weight: profile.weight,
+    recruitmentType: profile.recruitmentType,
+    graduateStatus: profile.graduateStatus,
+    address: profile.address,
+    targetRole: profile.targetRole,
+    targetCities: profile.targetCities,
+    earliestStartDate: profile.earliestStartDate,
+    portfolioUrl: profile.portfolioUrl,
+    githubUrl: profile.githubUrl,
+    school: education?.school || "",
+    major: education?.major || "",
+    degree: education?.degree || "",
+    gpa: education?.gpa || "",
+    educationStartDate: education?.startDate || "",
+    educationEndDate: education?.endDate || "",
+    experienceOrganization: experience?.organization || "",
+    experienceTitle: experience?.title || "",
+    experienceStartDate: experience?.startDate || "",
+    experienceEndDate: experience?.endDate || "",
+    experienceDescription: experience?.description || "",
+    projectName: project?.name || "",
+    projectRole: project?.role || "",
+    projectStartDate: project?.startDate || "",
+    projectEndDate: project?.endDate || "",
+    projectDescription: project?.description || "",
+    campusExperienceType: campusExperience?.type || "",
+    campusExperienceRole: campusExperience?.role || "",
+    campusExperienceStartDate: campusExperience?.startDate || "",
+    campusExperienceEndDate: campusExperience?.endDate || "",
+    campusExperienceDescription: campusExperience?.description || "",
+    awardDate: award?.date || "",
+    awardName: award?.name || "",
+    awardLevel: award?.level || "",
+    awardDescription: award?.description || "",
+    selfIntroduction: profile.selfIntroduction,
+    strengths: profile.strengths,
+    careerPlan: profile.careerPlan,
+    ...(profile.extraFields || {})
+  };
+}
 
 function profileFieldValue(
   profile: PersonalProfile,
@@ -252,10 +299,7 @@ async function activeTabMessage(message: unknown) {
       if (String(error).includes("Extension context invalidated")) {
         throw error;
       }
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ["extraction-rules.js", "form-adapters.js", "content.js"]
-      });
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["form-adapters.js", "content.js"] });
       return chrome.tabs.sendMessage(tab.id, message);
     }
   } catch (error) {
@@ -287,8 +331,34 @@ export default function ProfileView({
   const [fillProgress, setFillProgress] = useState<FillProgress>();
   const [openSections, setOpenSections] = useState<ProfileSectionState>(DEFAULT_OPEN_SECTIONS);
   const [pendingEntryId, setPendingEntryId] = useState<string>();
+  const [resumeImportOpen, setResumeImportOpen] = useState(false);
+  const [resumeParsing, setResumeParsing] = useState(false);
+  const [resumeFileName, setResumeFileName] = useState("");
+  const [resumeResult, setResumeResult] = useState<ResumeParseResult>();
+  const resumeInputRef = useRef<HTMLInputElement>(null);
+  const [resumeLibrary, setResumeLibrary] = useState<StoredResume[]>([]);
+  const [activeResumeId, setActiveResumeIdState] = useState("");
 
   useEffect(() => setDraft(profile), [profile]);
+
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const [library, activeId] = await Promise.all([loadResumeLibrary(), loadActiveResumeId()]);
+      if (cancelled) return;
+      const currentId = activeId && library.some((resume) => resume.id === activeId) ? activeId : library[0]?.id || "";
+      setResumeLibrary(library);
+      setActiveResumeIdState(currentId);
+      const current = library.find((resume) => resume.id === currentId);
+      if (current) {
+        setDraft(current.profile);
+        setResumeFileName(current.sourceFileName || "");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     if (!pendingEntryId) return;
@@ -304,15 +374,7 @@ export default function ProfileView({
     draft.experiences.length,
     draft.projects.length,
     draft.campusExperiences.length,
-    draft.awards.length,
-    draft.languages.length,
-    draft.computerSkills.length,
-    draft.qualifications.length,
-    draft.familyMembers.length,
-    draft.publications.length,
-    draft.patents.length,
-    draft.works.length,
-    draft.competitions.length
+    draft.awards.length
   ]);
 
   useEffect(() => {
@@ -343,6 +405,7 @@ export default function ProfileView({
 
   const values = useMemo(() => profileValues(draft), [draft]);
   const essentials = [draft.fullName, draft.phone, draft.email, draft.currentCity, draft.targetRole];
+  const currentResume = resumeLibrary.find((resume) => resume.id === activeResumeId);
   const completion = Math.round(
     ((essentials.filter(Boolean).length + Math.min(draft.education.length, 1)) / 6) * 100
   );
@@ -350,15 +413,84 @@ export default function ProfileView({
   const set = <K extends keyof PersonalProfile>(key: K, value: PersonalProfile[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
+  const selectResume = async (id: string) => {
+    const selected = resumeLibrary.find((resume) => resume.id === id);
+    if (!selected) return;
+    setActiveResumeIdState(id);
+    setDraft(selected.profile);
+    setResumeFileName(selected.sourceFileName || "");
+    await Promise.all([setActiveResumeId(id), onSave(selected.profile)]);
+    setStatus(`已切换当前网申简历：${selected.name}`);
+  };
+
   const save = async () => {
     setBusy(true);
     try {
       await onSave(draft);
+      if (activeResumeId) {
+        const now = new Date().toISOString();
+        const nextLibrary = resumeLibrary.map((resume) =>
+          resume.id === activeResumeId
+            ? {
+                ...resume,
+                profile: draft,
+                sourceFileName: resumeFileName || resume.sourceFileName,
+                updatedAt: now
+              }
+            : resume
+        );
+        setResumeLibrary(nextLibrary);
+        await saveResumeLibrary(nextLibrary);
+      }
       setOpenSections(COLLAPSED_SECTIONS);
       setStatus("个人资料已保存在本地 · 已收起各资料分组");
     } finally {
       setBusy(false);
     }
+  };
+
+  const importResume = async (file: File) => {
+    setResumeParsing(true);
+    setResumeFileName(file.name);
+    setResumeResult(undefined);
+    setStatus("正在解析简历，识别联系方式、教育和经历…");
+    try {
+      const result = await parseResumeFile(file);
+      const mergedProfile = mergeParsedProfile(draft, result.profile);
+      setDraft(mergedProfile);
+      if (activeResumeId) {
+        const now = new Date().toISOString();
+        const nextLibrary = resumeLibrary.map((resume) =>
+          resume.id === activeResumeId
+            ? {
+                ...resume,
+                profile: mergedProfile,
+                sourceFileName: file.name,
+                updatedAt: now
+              }
+            : resume
+        );
+        setResumeLibrary(nextLibrary);
+        await saveResumeLibrary(nextLibrary);
+      }
+      setResumeResult(result);
+      setResumeImportOpen(false);
+      setOpenSections({ ...DEFAULT_OPEN_SECTIONS, basic: true, education: true, experience: true, projects: true });
+      setStatus(
+        `已从 ${file.name} 提取 ${result.extractedCount} 个字段` +
+        (result.warnings.length ? ` · ${result.warnings.length} 项待确认` : " · 请检查后保存")
+      );
+    } catch (error) {
+      setStatus(error instanceof Error ? error.message : "简历解析失败，请换一个文件重试");
+    } finally {
+      setResumeParsing(false);
+    }
+  };
+
+  const handleResumeFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) void importResume(file);
+    event.target.value = "";
   };
 
   const scan = async () => {
@@ -374,15 +506,7 @@ export default function ProfileView({
           experience: draft.experiences.length,
           project: draft.projects.length,
           campus: draft.campusExperiences.length,
-          award: draft.awards.length,
-          language: draft.languages.length,
-          computer: draft.computerSkills.length,
-          qualification: draft.qualifications.length,
-          family: draft.familyMembers.length,
-          publication: draft.publications.length,
-          patent: draft.patents.length,
-          portfolio: draft.works.length,
-          competition: draft.competitions.length
+          award: draft.awards.length
         }
       })) as FormScanResponse;
       if (!response?.ok) throw new Error(response?.error || "表单识别失败");
@@ -494,25 +618,7 @@ export default function ProfileView({
     setOpenSections((current) => ({ ...current, [id]: true }));
   const addEducation = () => {
     const id = newId("edu");
-    set("education", [...draft.education, {
-      id,
-      school: "",
-      college: "",
-      major: "",
-      degree: "",
-      educationDegree: "",
-      educationForm: "",
-      courses: "",
-      researchDirection: "",
-      thesis: "",
-      rank: "",
-      overseasEducation: "",
-      minorMajor: "",
-      advisorName: "",
-      startDate: "",
-      endDate: "",
-      gpa: ""
-    }]);
+    set("education", [...draft.education, { id, school: "", major: "", degree: "", startDate: "", endDate: "", gpa: "" }]);
     revealSection("education");
     setPendingEntryId(id);
   };
@@ -520,24 +626,7 @@ export default function ProfileView({
     set("education", draft.education.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   const addExperience = () => {
     const id = newId("exp");
-    set("experiences", [...draft.experiences, {
-      id,
-      organization: "",
-      title: "",
-      type: "",
-      department: "",
-      salary: "",
-      startDate: "",
-      endDate: "",
-      description: "",
-      achievements: "",
-      refereeName: "",
-      refereeTitle: "",
-      refereeContact: "",
-      leavingReason: "",
-      subordinateCount: "",
-      isCurrent: false
-    }]);
+    set("experiences", [...draft.experiences, { id, organization: "", title: "", startDate: "", endDate: "", description: "" }]);
     revealSection("experience");
     setPendingEntryId(id);
   };
@@ -545,7 +634,7 @@ export default function ProfileView({
     set("experiences", draft.experiences.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   const addProject = () => {
     const id = newId("project");
-    set("projects", [...draft.projects, { id, name: "", role: "", startDate: "", endDate: "", description: "", achievement: "", link: "" }]);
+    set("projects", [...draft.projects, { id, name: "", role: "", startDate: "", endDate: "", description: "" }]);
     revealSection("projects");
     setPendingEntryId(id);
   };
@@ -576,73 +665,6 @@ export default function ProfileView({
   };
   const updateAward = (id: string, patch: Partial<ProfileAward>) =>
     set("awards", draft.awards.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addLanguage = () => {
-    const id = newId("language");
-    set("languages", [
-      ...draft.languages,
-      { id, name: "", certificate: "", englishLevel: "", score: "", proficiency: "", listeningSpeaking: "", readingWriting: "" }
-    ]);
-    revealSection("languages");
-    setPendingEntryId(id);
-  };
-  const updateLanguage = (id: string, patch: Partial<ProfileLanguage>) =>
-    set("languages", draft.languages.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addComputerSkill = () => {
-    const id = newId("computer");
-    set("computerSkills", [...draft.computerSkills, { id, type: "", proficiency: "" }]);
-    revealSection("computer");
-    setPendingEntryId(id);
-  };
-  const updateComputerSkill = (id: string, patch: Partial<ProfileComputerSkill>) =>
-    set("computerSkills", draft.computerSkills.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addQualification = () => {
-    const id = newId("qualification");
-    set("qualifications", [...draft.qualifications, { id, date: "", name: "", number: "", description: "" }]);
-    revealSection("qualifications");
-    setPendingEntryId(id);
-  };
-  const updateQualification = (id: string, patch: Partial<ProfileQualification>) =>
-    set("qualifications", draft.qualifications.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addFamilyMember = () => {
-    const id = newId("family");
-    set("familyMembers", [...draft.familyMembers, { id, name: "", relation: "", phone: "", company: "", position: "", politicalStatus: "" }]);
-    revealSection("family");
-    setPendingEntryId(id);
-  };
-  const updateFamilyMember = (id: string, patch: Partial<ProfileFamilyMember>) =>
-    set("familyMembers", draft.familyMembers.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addPublication = () => {
-    const id = newId("publication");
-    set("publications", [...draft.publications, { id, date: "", journal: "", level: "", title: "", description: "", authors: "", impactFactor: "", link: "" }]);
-    revealSection("publications");
-    setPendingEntryId(id);
-  };
-  const updatePublication = (id: string, patch: Partial<ProfilePublication>) =>
-    set("publications", draft.publications.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addPatent = () => {
-    const id = newId("patent");
-    set("patents", [...draft.patents, { id, date: "", name: "", number: "", type: "", achievement: "" }]);
-    revealSection("patents");
-    setPendingEntryId(id);
-  };
-  const updatePatent = (id: string, patch: Partial<ProfilePatent>) =>
-    set("patents", draft.patents.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addWork = () => {
-    const id = newId("work");
-    set("works", [...draft.works, { id, name: "", link: "", description: "" }]);
-    revealSection("portfolio");
-    setPendingEntryId(id);
-  };
-  const updateWork = (id: string, patch: Partial<ProfileWork>) =>
-    set("works", draft.works.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addCompetition = () => {
-    const id = newId("competition");
-    set("competitions", [...draft.competitions, { id, name: "", date: "", description: "" }]);
-    revealSection("competitions");
-    setPendingEntryId(id);
-  };
-  const updateCompetition = (id: string, patch: Partial<ProfileCompetition>) =>
-    set("competitions", draft.competitions.map((item) => (item.id === id ? { ...item, ...patch } : item)));
   const retryCount = fields.filter(
     (field) => selectedFields.has(field.id) && resultMap[field.id]?.status !== "filled"
   ).length;
@@ -654,13 +676,48 @@ export default function ProfileView({
     <section className="profile-view">
       <div className="profile-title-row">
         <button onClick={onBack}><ChevronLeft size={17} />秋招工作区</button>
-        <span><ShieldCheck size={14} />仅保存在本地</span>
+        <div className="profile-title-actions">
+          <button className="profile-manager-link" onClick={openResumeManager}><FolderOpen size={14} />简历中心</button>
+          <span><ShieldCheck size={14} />仅保存在本地</span>
+        </div>
       </div>
 
       <div className="profile-heading">
         <span><UserRound size={20} /></span>
         <div><h1>个人资料库</h1><p>维护一次，重复用于不同公司的网申表单。</p></div>
       </div>
+
+      {resumeLibrary.length > 0 && (
+        <div className="profile-resume-switcher">
+          <div className="profile-resume-switcher-copy">
+            <span><FileCheck2 size={16} /></span>
+            <div><strong>当前网申简历</strong><small>{currentResume?.name || "请选择一份简历"}</small></div>
+          </div>
+          <select value={activeResumeId} onChange={(event) => void selectResume(event.target.value)}>
+            {resumeLibrary.map((resume) => <option key={resume.id} value={resume.id}>{resume.name}</option>)}
+          </select>
+          <button className="profile-manager-link" onClick={openResumeManager}><FolderOpen size={14} />管理简历</button>
+        </div>
+      )}
+
+      <div className="profile-resume-import-card">
+        <span><CloudUpload size={20} /></span>
+        <div>
+          <strong>{resumeFileName ? "已导入简历，可重新解析" : "上传简历，自动填写资料"}</strong>
+          <small>{resumeFileName ? `${resumeFileName} · 本地文本解析` : "支持 PDF、DOCX、TXT；先解析，再由你确认后保存"}</small>
+        </div>
+        <button onClick={() => setResumeImportOpen(true)} disabled={resumeParsing}>
+          {resumeParsing ? <RefreshCw className="spin" size={15} /> : <FileText size={15} />}
+          {resumeParsing ? "解析中" : resumeFileName ? "重新导入" : "上传简历"}
+        </button>
+      </div>
+
+      {resumeResult && (
+        <div className="profile-resume-result">
+          <div><FileCheck2 size={16} /><span><strong>解析完成</strong><small>已提取 {resumeResult.extractedCount} 个字段 · 原文 {resumeResult.textLength} 字</small></span></div>
+          {resumeResult.warnings.length > 0 && <span className="profile-resume-warning"><CircleAlert size={13} />{resumeResult.warnings.join("、")}</span>}
+        </div>
+      )}
 
       <div className="profile-progress">
         <div><strong>{completion}%</strong><span>基础档案完整度</span></div>
@@ -728,29 +785,14 @@ export default function ProfileView({
           <Field label="性别"><select value={draft.gender} onChange={(e) => set("gender", e.target.value)}><option value="">请选择</option><option>男</option><option>女</option><option>不便透露</option></select></Field>
           <Field label="手机号"><input type="tel" value={draft.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
           <Field label="邮箱"><input type="email" value={draft.email} onChange={(e) => set("email", e.target.value)} /></Field>
-          <Field label="民族"><input value={draft.nationality} onChange={(e) => set("nationality", e.target.value)} placeholder="例如：汉族" /></Field>
-          <Field label="证件类型"><input value={draft.idType} onChange={(e) => set("idType", e.target.value)} placeholder="例如：身份证" /></Field>
-          <Field label="证件号码"><input value={draft.idNumber} onChange={(e) => set("idNumber", e.target.value)} /></Field>
           <Field label="出生日期"><input type="date" value={draft.birthDate} onChange={(e) => set("birthDate", e.target.value)} /></Field>
           <Field label="毕业时间"><input type="month" value={draft.graduationDate} onChange={(e) => set("graduationDate", e.target.value)} /></Field>
           <Field label="现居城市"><input value={draft.currentCity} onChange={(e) => set("currentCity", e.target.value)} /></Field>
           <Field label="籍贯"><input value={draft.nativePlace} onChange={(e) => set("nativePlace", e.target.value)} /></Field>
-          <Field label="生源地"><input value={draft.studentSource} onChange={(e) => set("studentSource", e.target.value)} /></Field>
-          <Field label="现居住地"><input value={draft.currentResidence} onChange={(e) => set("currentResidence", e.target.value)} /></Field>
           <Field label="身高（厘米）"><input inputMode="numeric" value={draft.height} onChange={(e) => set("height", e.target.value)} /></Field>
           <Field label="体重（公斤）"><input inputMode="decimal" value={draft.weight} onChange={(e) => set("weight", e.target.value)} /></Field>
           <Field label="是否统招"><select value={draft.recruitmentType} onChange={(e) => set("recruitmentType", e.target.value)}><option value="">请选择</option><option>是</option><option>否</option></select></Field>
           <Field label="应届/往届"><select value={draft.graduateStatus} onChange={(e) => set("graduateStatus", e.target.value)}><option value="">请选择</option><option>应届</option><option>往届</option></select></Field>
-          <Field label="微信号"><input value={draft.wechat} onChange={(e) => set("wechat", e.target.value)} /></Field>
-          <Field label="QQ"><input value={draft.qq} onChange={(e) => set("qq", e.target.value)} /></Field>
-          <Field label="政治面貌"><input value={draft.politicalStatus} onChange={(e) => set("politicalStatus", e.target.value)} placeholder="例如：共青团员" /></Field>
-          <Field label="婚姻状况"><input value={draft.maritalStatus} onChange={(e) => set("maritalStatus", e.target.value)} placeholder="例如：未婚" /></Field>
-          <Field label="健康状况"><input value={draft.healthStatus} onChange={(e) => set("healthStatus", e.target.value)} /></Field>
-          <Field label="特长"><input value={draft.specialty} onChange={(e) => set("specialty", e.target.value)} /></Field>
-          <Field label="工作年限"><input value={draft.workYears} onChange={(e) => set("workYears", e.target.value)} /></Field>
-          <Field label="国家/地区"><input value={draft.countryRegion} onChange={(e) => set("countryRegion", e.target.value)} placeholder="例如：中国" /></Field>
-          <Field label="紧急联系人姓名"><input value={draft.emergencyContactName} onChange={(e) => set("emergencyContactName", e.target.value)} /></Field>
-          <Field label="紧急联系人电话"><input type="tel" value={draft.emergencyContactPhone} onChange={(e) => set("emergencyContactPhone", e.target.value)} /></Field>
           <Field label="联系地址" wide><input value={draft.address} onChange={(e) => set("address", e.target.value)} /></Field>
         </div>
       </ProfileSection>
@@ -766,8 +808,6 @@ export default function ProfileView({
           <Field label="目标岗位"><input value={draft.targetRole} onChange={(e) => set("targetRole", e.target.value)} /></Field>
           <Field label="意向城市"><input value={draft.targetCities} onChange={(e) => set("targetCities", e.target.value)} placeholder="例如：北京、上海" /></Field>
           <Field label="最早到岗"><input type="date" value={draft.earliestStartDate} onChange={(e) => set("earliestStartDate", e.target.value)} /></Field>
-          <Field label="期望薪资"><input value={draft.expectedSalary} onChange={(e) => set("expectedSalary", e.target.value)} placeholder="例如：15-20K" /></Field>
-          <Field label="推荐码 / 内推码"><input value={draft.referralCode} onChange={(e) => set("referralCode", e.target.value)} /></Field>
           <Field label="作品集"><input type="url" value={draft.portfolioUrl} onChange={(e) => set("portfolioUrl", e.target.value)} /></Field>
           <Field label="GitHub" wide><input type="url" value={draft.githubUrl} onChange={(e) => set("githubUrl", e.target.value)} /></Field>
         </div>
@@ -785,22 +825,12 @@ export default function ProfileView({
         {draft.education.map((item) => (
           <EntryCard entryId={item.id} key={item.id} title={item.school || "新教育经历"} onRemove={() => set("education", draft.education.filter((entry) => entry.id !== item.id))}>
             <div className="profile-grid">
-              <Field label="学校"><input value={item.school || ""} onChange={(e) => updateEducation(item.id, { school: e.target.value })} /></Field>
-              <Field label="学院 / 院系"><input value={item.college || ""} onChange={(e) => updateEducation(item.id, { college: e.target.value })} /></Field>
-              <Field label="专业"><input value={item.major || ""} onChange={(e) => updateEducation(item.id, { major: e.target.value })} /></Field>
-              <Field label="学历"><input value={item.degree || ""} onChange={(e) => updateEducation(item.id, { degree: e.target.value })} /></Field>
-              <Field label="学位"><input value={item.educationDegree || ""} onChange={(e) => updateEducation(item.id, { educationDegree: e.target.value })} /></Field>
-              <Field label="学习形式"><input value={item.educationForm || ""} onChange={(e) => updateEducation(item.id, { educationForm: e.target.value })} placeholder="例如：全日制" /></Field>
-              <Field label="GPA"><input value={item.gpa || ""} onChange={(e) => updateEducation(item.id, { gpa: e.target.value })} /></Field>
-              <Field label="专业排名"><input value={item.rank || ""} onChange={(e) => updateEducation(item.id, { rank: e.target.value })} /></Field>
-              <Field label="是否海外教育"><input value={item.overseasEducation || ""} onChange={(e) => updateEducation(item.id, { overseasEducation: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate || ""} onChange={(e) => updateEducation(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate || ""} onChange={(e) => updateEducation(item.id, { endDate: e.target.value })} /></Field>
-              <Field label="辅修 / 双学位"><input value={item.minorMajor || ""} onChange={(e) => updateEducation(item.id, { minorMajor: e.target.value })} /></Field>
-              <Field label="导师姓名"><input value={item.advisorName || ""} onChange={(e) => updateEducation(item.id, { advisorName: e.target.value })} /></Field>
-              <Field label="专业课程" wide><textarea rows={2} value={item.courses || ""} onChange={(e) => updateEducation(item.id, { courses: e.target.value })} /></Field>
-              <Field label="研究方向" wide><textarea rows={2} value={item.researchDirection || ""} onChange={(e) => updateEducation(item.id, { researchDirection: e.target.value })} /></Field>
-              <Field label="毕业论文" wide><textarea rows={2} value={item.thesis || ""} onChange={(e) => updateEducation(item.id, { thesis: e.target.value })} /></Field>
+              <Field label="学校"><input value={item.school} onChange={(e) => updateEducation(item.id, { school: e.target.value })} /></Field>
+              <Field label="专业"><input value={item.major} onChange={(e) => updateEducation(item.id, { major: e.target.value })} /></Field>
+              <Field label="学历"><input value={item.degree} onChange={(e) => updateEducation(item.id, { degree: e.target.value })} /></Field>
+              <Field label="GPA"><input value={item.gpa} onChange={(e) => updateEducation(item.id, { gpa: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateEducation(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateEducation(item.id, { endDate: e.target.value })} /></Field>
             </div>
           </EntryCard>
         ))}
@@ -820,21 +850,11 @@ export default function ProfileView({
         {draft.experiences.map((item) => (
           <EntryCard entryId={item.id} key={item.id} title={item.organization || "新经历"} onRemove={() => set("experiences", draft.experiences.filter((entry) => entry.id !== item.id))}>
             <div className="profile-grid">
-              <Field label="公司 / 组织"><input value={item.organization || ""} onChange={(e) => updateExperience(item.id, { organization: e.target.value })} /></Field>
-              <Field label="岗位"><input value={item.title || ""} onChange={(e) => updateExperience(item.id, { title: e.target.value })} /></Field>
-              <Field label="工作类型"><input value={item.type || ""} onChange={(e) => updateExperience(item.id, { type: e.target.value })} placeholder="例如：实习 / 全职" /></Field>
-              <Field label="部门"><input value={item.department || ""} onChange={(e) => updateExperience(item.id, { department: e.target.value })} /></Field>
-              <Field label="薪资"><input value={item.salary || ""} onChange={(e) => updateExperience(item.id, { salary: e.target.value })} /></Field>
-              <Field label="下属人数"><input value={item.subordinateCount || ""} onChange={(e) => updateExperience(item.id, { subordinateCount: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate || ""} onChange={(e) => updateExperience(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate || ""} onChange={(e) => updateExperience(item.id, { endDate: e.target.value })} disabled={item.isCurrent} /></Field>
-              <Field label="当前仍在职"><input type="checkbox" checked={Boolean(item.isCurrent)} onChange={(e) => updateExperience(item.id, { isCurrent: e.target.checked })} /></Field>
-              <Field label="经历描述" wide><textarea rows={4} value={item.description || ""} onChange={(e) => updateExperience(item.id, { description: e.target.value })} /></Field>
-              <Field label="工作成果" wide><textarea rows={3} value={item.achievements || ""} onChange={(e) => updateExperience(item.id, { achievements: e.target.value })} /></Field>
-              <Field label="证明人姓名"><input value={item.refereeName || ""} onChange={(e) => updateExperience(item.id, { refereeName: e.target.value })} /></Field>
-              <Field label="证明人职位"><input value={item.refereeTitle || ""} onChange={(e) => updateExperience(item.id, { refereeTitle: e.target.value })} /></Field>
-              <Field label="证明人联系方式"><input value={item.refereeContact || ""} onChange={(e) => updateExperience(item.id, { refereeContact: e.target.value })} /></Field>
-              <Field label="离职原因" wide><input value={item.leavingReason || ""} onChange={(e) => updateExperience(item.id, { leavingReason: e.target.value })} /></Field>
+              <Field label="公司 / 组织"><input value={item.organization} onChange={(e) => updateExperience(item.id, { organization: e.target.value })} /></Field>
+              <Field label="岗位"><input value={item.title} onChange={(e) => updateExperience(item.id, { title: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateExperience(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateExperience(item.id, { endDate: e.target.value })} /></Field>
+              <Field label="经历描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateExperience(item.id, { description: e.target.value })} /></Field>
             </div>
           </EntryCard>
         ))}
@@ -854,13 +874,11 @@ export default function ProfileView({
         {draft.projects.map((item) => (
           <EntryCard entryId={item.id} key={item.id} title={item.name || "新项目"} onRemove={() => set("projects", draft.projects.filter((entry) => entry.id !== item.id))}>
             <div className="profile-grid">
-              <Field label="项目名称"><input value={item.name || ""} onChange={(e) => updateProject(item.id, { name: e.target.value })} /></Field>
-              <Field label="担任角色"><input value={item.role || ""} onChange={(e) => updateProject(item.id, { role: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate || ""} onChange={(e) => updateProject(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate || ""} onChange={(e) => updateProject(item.id, { endDate: e.target.value })} /></Field>
-              <Field label="项目链接"><input type="url" value={item.link || ""} onChange={(e) => updateProject(item.id, { link: e.target.value })} /></Field>
-              <Field label="项目描述" wide><textarea rows={4} value={item.description || ""} onChange={(e) => updateProject(item.id, { description: e.target.value })} /></Field>
-              <Field label="项目成果" wide><textarea rows={3} value={item.achievement || ""} onChange={(e) => updateProject(item.id, { achievement: e.target.value })} /></Field>
+              <Field label="项目名称"><input value={item.name} onChange={(e) => updateProject(item.id, { name: e.target.value })} /></Field>
+              <Field label="担任角色"><input value={item.role} onChange={(e) => updateProject(item.id, { role: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateProject(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateProject(item.id, { endDate: e.target.value })} /></Field>
+              <Field label="项目描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateProject(item.id, { description: e.target.value })} /></Field>
             </div>
           </EntryCard>
         ))}
@@ -926,196 +944,6 @@ export default function ProfileView({
       </ProfileSection>
 
       <ProfileSection
-        sectionKey="languages"
-        open={openSections.languages}
-        onToggle={toggleSection}
-        title="外语能力"
-        description={draft.languages.length ? `${draft.languages.length} 项语言记录` : "语言、证书和听说读写能力"}
-        action="添加外语能力"
-        onAction={addLanguage}
-      >
-        {draft.languages.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.name || "新外语能力"} onRemove={() => set("languages", draft.languages.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="外语语种"><input value={item.name || ""} onChange={(e) => updateLanguage(item.id, { name: e.target.value })} /></Field>
-              <Field label="证书名称"><input value={item.certificate || ""} onChange={(e) => updateLanguage(item.id, { certificate: e.target.value })} /></Field>
-              <Field label="英语水平"><input value={item.englishLevel || ""} onChange={(e) => updateLanguage(item.id, { englishLevel: e.target.value })} /></Field>
-              <Field label="成绩"><input value={item.score || ""} onChange={(e) => updateLanguage(item.id, { score: e.target.value })} /></Field>
-              <Field label="掌握程度"><input value={item.proficiency || ""} onChange={(e) => updateLanguage(item.id, { proficiency: e.target.value })} /></Field>
-              <Field label="听说能力"><input value={item.listeningSpeaking || ""} onChange={(e) => updateLanguage(item.id, { listeningSpeaking: e.target.value })} /></Field>
-              <Field label="读写能力"><input value={item.readingWriting || ""} onChange={(e) => updateLanguage(item.id, { readingWriting: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.languages.length > 0 && <AddEntryButton onClick={addLanguage} text="添加外语能力" />}
-        {!draft.languages.length && <EmptyEntry onClick={addLanguage} text="添加外语能力" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="computer"
-        open={openSections.computer}
-        onToggle={toggleSection}
-        title="计算机技能"
-        description={draft.computerSkills.length ? `${draft.computerSkills.length} 项技能` : "技能类型和掌握程度"}
-        action="添加计算机技能"
-        onAction={addComputerSkill}
-      >
-        {draft.computerSkills.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.type || "新计算机技能"} onRemove={() => set("computerSkills", draft.computerSkills.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="技能类型"><input value={item.type || ""} onChange={(e) => updateComputerSkill(item.id, { type: e.target.value })} placeholder="例如：Python、Excel" /></Field>
-              <Field label="掌握程度"><input value={item.proficiency || ""} onChange={(e) => updateComputerSkill(item.id, { proficiency: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.computerSkills.length > 0 && <AddEntryButton onClick={addComputerSkill} text="添加计算机技能" />}
-        {!draft.computerSkills.length && <EmptyEntry onClick={addComputerSkill} text="添加计算机技能" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="qualifications"
-        open={openSections.qualifications}
-        onToggle={toggleSection}
-        title="资格证书"
-        description={draft.qualifications.length ? `${draft.qualifications.length} 项证书` : "证书名称、编号和说明"}
-        action="添加资格证书"
-        onAction={addQualification}
-      >
-        {draft.qualifications.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.name || "新资格证书"} onRemove={() => set("qualifications", draft.qualifications.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="获得时间"><input type="month" value={item.date || ""} onChange={(e) => updateQualification(item.id, { date: e.target.value })} /></Field>
-              <Field label="证书名称"><input value={item.name || ""} onChange={(e) => updateQualification(item.id, { name: e.target.value })} /></Field>
-              <Field label="证书编号"><input value={item.number || ""} onChange={(e) => updateQualification(item.id, { number: e.target.value })} /></Field>
-              <Field label="证书说明" wide><textarea rows={3} value={item.description || ""} onChange={(e) => updateQualification(item.id, { description: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.qualifications.length > 0 && <AddEntryButton onClick={addQualification} text="添加资格证书" />}
-        {!draft.qualifications.length && <EmptyEntry onClick={addQualification} text="添加资格证书" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="family"
-        open={openSections.family}
-        onToggle={toggleSection}
-        title="家庭情况"
-        description={draft.familyMembers.length ? `${draft.familyMembers.length} 位家庭成员` : "仅在目标网申要求时填写"}
-        action="添加家庭成员"
-        onAction={addFamilyMember}
-      >
-        {draft.familyMembers.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.name || "新家庭成员"} onRemove={() => set("familyMembers", draft.familyMembers.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="姓名"><input value={item.name || ""} onChange={(e) => updateFamilyMember(item.id, { name: e.target.value })} /></Field>
-              <Field label="关系"><input value={item.relation || ""} onChange={(e) => updateFamilyMember(item.id, { relation: e.target.value })} /></Field>
-              <Field label="电话"><input type="tel" value={item.phone || ""} onChange={(e) => updateFamilyMember(item.id, { phone: e.target.value })} /></Field>
-              <Field label="公司"><input value={item.company || ""} onChange={(e) => updateFamilyMember(item.id, { company: e.target.value })} /></Field>
-              <Field label="职位"><input value={item.position || ""} onChange={(e) => updateFamilyMember(item.id, { position: e.target.value })} /></Field>
-              <Field label="政治面貌"><input value={item.politicalStatus || ""} onChange={(e) => updateFamilyMember(item.id, { politicalStatus: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.familyMembers.length > 0 && <AddEntryButton onClick={addFamilyMember} text="添加家庭成员" />}
-        {!draft.familyMembers.length && <EmptyEntry onClick={addFamilyMember} text="添加家庭成员" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="publications"
-        open={openSections.publications}
-        onToggle={toggleSection}
-        title="论文期刊"
-        description={draft.publications.length ? `${draft.publications.length} 项论文记录` : "论文、期刊和发表信息"}
-        action="添加论文期刊"
-        onAction={addPublication}
-      >
-        {draft.publications.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.title || "新论文记录"} onRemove={() => set("publications", draft.publications.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="发表时间"><input type="month" value={item.date || ""} onChange={(e) => updatePublication(item.id, { date: e.target.value })} /></Field>
-              <Field label="刊物名称"><input value={item.journal || ""} onChange={(e) => updatePublication(item.id, { journal: e.target.value })} /></Field>
-              <Field label="刊物层级"><input value={item.level || ""} onChange={(e) => updatePublication(item.id, { level: e.target.value })} /></Field>
-              <Field label="论文名称"><input value={item.title || ""} onChange={(e) => updatePublication(item.id, { title: e.target.value })} /></Field>
-              <Field label="论文作者"><input value={item.authors || ""} onChange={(e) => updatePublication(item.id, { authors: e.target.value })} /></Field>
-              <Field label="影响因子"><input value={item.impactFactor || ""} onChange={(e) => updatePublication(item.id, { impactFactor: e.target.value })} /></Field>
-              <Field label="论文链接"><input type="url" value={item.link || ""} onChange={(e) => updatePublication(item.id, { link: e.target.value })} /></Field>
-              <Field label="论文描述" wide><textarea rows={3} value={item.description || ""} onChange={(e) => updatePublication(item.id, { description: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.publications.length > 0 && <AddEntryButton onClick={addPublication} text="添加论文期刊" />}
-        {!draft.publications.length && <EmptyEntry onClick={addPublication} text="添加论文期刊" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="patents"
-        open={openSections.patents}
-        onToggle={toggleSection}
-        title="专利"
-        description={draft.patents.length ? `${draft.patents.length} 项专利` : "专利名称、编号和成果"}
-        action="添加专利"
-        onAction={addPatent}
-      >
-        {draft.patents.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.name || "新专利"} onRemove={() => set("patents", draft.patents.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="发表时间"><input type="month" value={item.date || ""} onChange={(e) => updatePatent(item.id, { date: e.target.value })} /></Field>
-              <Field label="专利名称"><input value={item.name || ""} onChange={(e) => updatePatent(item.id, { name: e.target.value })} /></Field>
-              <Field label="专利编号"><input value={item.number || ""} onChange={(e) => updatePatent(item.id, { number: e.target.value })} /></Field>
-              <Field label="专利类型"><input value={item.type || ""} onChange={(e) => updatePatent(item.id, { type: e.target.value })} /></Field>
-              <Field label="专利成果" wide><textarea rows={3} value={item.achievement || ""} onChange={(e) => updatePatent(item.id, { achievement: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.patents.length > 0 && <AddEntryButton onClick={addPatent} text="添加专利" />}
-        {!draft.patents.length && <EmptyEntry onClick={addPatent} text="添加专利" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="portfolio"
-        open={openSections.portfolio}
-        onToggle={toggleSection}
-        title="作品集"
-        description={draft.works.length ? `${draft.works.length} 项作品` : "作品名称、链接和描述"}
-        action="添加作品"
-        onAction={addWork}
-      >
-        {draft.works.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.name || "新作品"} onRemove={() => set("works", draft.works.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="作品名称"><input value={item.name || ""} onChange={(e) => updateWork(item.id, { name: e.target.value })} /></Field>
-              <Field label="作品链接"><input type="url" value={item.link || ""} onChange={(e) => updateWork(item.id, { link: e.target.value })} /></Field>
-              <Field label="作品描述" wide><textarea rows={3} value={item.description || ""} onChange={(e) => updateWork(item.id, { description: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.works.length > 0 && <AddEntryButton onClick={addWork} text="添加作品" />}
-        {!draft.works.length && <EmptyEntry onClick={addWork} text="添加作品" />}
-      </ProfileSection>
-
-      <ProfileSection
-        sectionKey="competitions"
-        open={openSections.competitions}
-        onToggle={toggleSection}
-        title="竞赛"
-        description={draft.competitions.length ? `${draft.competitions.length} 项竞赛` : "竞赛名称、时间和详情"}
-        action="添加竞赛"
-        onAction={addCompetition}
-      >
-        {draft.competitions.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.name || "新竞赛"} onRemove={() => set("competitions", draft.competitions.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="竞赛名称"><input value={item.name || ""} onChange={(e) => updateCompetition(item.id, { name: e.target.value })} /></Field>
-              <Field label="参与时间"><input type="month" value={item.date || ""} onChange={(e) => updateCompetition(item.id, { date: e.target.value })} /></Field>
-              <Field label="详情内容" wide><textarea rows={3} value={item.description || ""} onChange={(e) => updateCompetition(item.id, { description: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.competitions.length > 0 && <AddEntryButton onClick={addCompetition} text="添加竞赛" />}
-        {!draft.competitions.length && <EmptyEntry onClick={addCompetition} text="添加竞赛" />}
-      </ProfileSection>
-
-      <ProfileSection
         sectionKey="answers"
         open={openSections.answers}
         onToggle={toggleSection}
@@ -1123,12 +951,21 @@ export default function ProfileView({
         description="可复用并按公司微调"
       >
         <div className="profile-long-fields">
-          <Field label="兴趣爱好"><textarea rows={3} value={draft.hobbies} onChange={(e) => set("hobbies", e.target.value)} /></Field>
           <Field label="自我介绍"><textarea rows={5} value={draft.selfIntroduction} onChange={(e) => set("selfIntroduction", e.target.value)} /></Field>
           <Field label="个人优势"><textarea rows={4} value={draft.strengths} onChange={(e) => set("strengths", e.target.value)} /></Field>
           <Field label="职业规划"><textarea rows={4} value={draft.careerPlan} onChange={(e) => set("careerPlan", e.target.value)} /></Field>
         </div>
       </ProfileSection>
+
+      {resumeImportOpen && (
+        <ResumeImportModal
+          inputRef={resumeInputRef}
+          parsing={resumeParsing}
+          onClose={() => !resumeParsing && setResumeImportOpen(false)}
+          onPick={() => resumeInputRef.current?.click()}
+          onChange={handleResumeFile}
+        />
+      )}
 
       <div className="profile-save-bar">
         <span><ShieldCheck size={15} />不会发送给 AI</span>
@@ -1190,6 +1027,49 @@ function Field({ label, wide, children }: { label: string; wide?: boolean; child
   return <label className={wide ? "wide" : ""}><span>{label}</span>{children}</label>;
 }
 
+function ResumeImportModal({
+  inputRef,
+  parsing,
+  onClose,
+  onPick,
+  onChange
+}: {
+  inputRef: { current: HTMLInputElement | null };
+  parsing: boolean;
+  onClose: () => void;
+  onPick: () => void;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+}) {
+  return (
+    <div className="profile-import-modal" role="dialog" aria-modal="true" aria-labelledby="profile-import-title">
+      <div className="profile-import-dialog">
+        <button className="profile-import-close" onClick={onClose} disabled={parsing} aria-label="关闭"><X size={16} /></button>
+        <div className="profile-import-icon"><CloudUpload size={22} /></div>
+        <span className="profile-import-eyebrow">RESUME IMPORT</span>
+        <h2 id="profile-import-title">上传简历，自动生成个人资料</h2>
+        <p>OfferDuoDuo 会先在本地提取联系方式、教育经历和项目字段；解析结果会回填到当前资料库，确认后再保存。</p>
+        {parsing ? (
+          <div className="profile-import-loading">
+            <RefreshCw className="spin" size={22} />
+            <strong>正在解析简历…</strong>
+            <small>正在识别姓名、手机号、邮箱和教育经历</small>
+          </div>
+        ) : (
+          <>
+            <button className="profile-import-dropzone" onClick={onPick}>
+              <FileText size={22} />
+              <strong>点击选择简历文件</strong>
+              <small>支持 PDF、DOCX、TXT · 扫描件需要后续接入 OCR</small>
+            </button>
+            <input ref={inputRef} hidden type="file" accept=".pdf,.docx,.txt,.md,.html" onChange={onChange} />
+          </>
+        )}
+        <div className="profile-import-privacy"><ShieldCheck size={14} /><span>资料只写入 OfferDuoDuo 本地资料库，不会自动提交网申表单。</span></div>
+      </div>
+    </div>
+  );
+}
+
 function EntryCard({ entryId, title, onRemove, children }: { entryId: string; title: string; onRemove: () => void; children: ReactNode }) {
   const [open, setOpen] = useState(true);
   return (
@@ -1225,4 +1105,3 @@ function AddEntryButton({ onClick, text }: { onClick: () => void; text: string }
 function EmptyEntry({ onClick, text }: { onClick: () => void; text: string }) {
   return <button className="profile-empty-entry" type="button" onClick={onClick}><Plus size={15} />{text}</button>;
 }
-

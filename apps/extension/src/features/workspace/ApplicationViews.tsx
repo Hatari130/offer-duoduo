@@ -73,12 +73,7 @@ import {
 } from "@/shared/types";
 import ProfileView from "@/features/profile/ProfileView";
 import OpportunityView from "@/features/opportunities/OpportunityView";
-import {
-  applicationStageFromProgress,
-  dueState,
-  formatDeadline,
-  isCapturePositionRejected
-} from "./workspaceUtils";
+import { dueState, formatDeadline } from "./workspaceUtils";
 
 export function JobCard({
   job,
@@ -152,18 +147,6 @@ export function CaptureForm({
   const update = <K extends keyof ExtractedJob>(key: K, next: ExtractedJob[K]) =>
     onChange({ ...value, [key]: next });
 
-  const updateProgress = (next: string) =>
-    onChange({
-      ...value,
-      externalStage: next.trim() || undefined,
-      suggestedStage: next.trim()
-        ? applicationStageFromProgress(next) || value.suggestedStage
-        : undefined
-    });
-  const hasValidPosition =
-    Boolean(value.company.trim() && value.position.trim()) &&
-    !isCapturePositionRejected(value.position);
-
   return (
     <section className="capture-view">
       <div className="capture-hero">
@@ -201,11 +184,7 @@ export function CaptureForm({
         </label>
         <label>
           <span>岗位</span>
-          <input
-            value={value.position}
-            placeholder="请确认实际岗位名称"
-            onChange={(e) => update("position", e.target.value)}
-          />
+          <input value={value.position} onChange={(e) => update("position", e.target.value)} />
         </label>
         <label>
           <span>城市</span>
@@ -216,14 +195,19 @@ export function CaptureForm({
           />
         </label>
         <label>
-          <span>当前进度</span>
+          <span>岗位编号</span>
           <input
-            value={
-              value.externalStage ||
-              (value.suggestedStage ? STAGE_LABELS[value.suggestedStage] : "")
-            }
+            value={value.jobId || ""}
             placeholder="未识别"
-            onChange={(e) => updateProgress(e.target.value)}
+            onChange={(e) => update("jobId", e.target.value)}
+          />
+        </label>
+        <label>
+          <span>截止时间</span>
+          <input
+            type="date"
+            value={value.deadline?.slice(0, 10) || ""}
+            onChange={(e) => update("deadline", e.target.value)}
           />
         </label>
         <label>
@@ -234,26 +218,34 @@ export function CaptureForm({
             onChange={(e) => update("appliedAt", e.target.value)}
           />
         </label>
+        <label>
+          <span>下一步行动</span>
+          <input
+            value={value.nextAction || ""}
+            onChange={(e) => update("nextAction", e.target.value)}
+          />
+        </label>
       </div>
+
+      <label className="summary-field">
+        <span>岗位摘要</span>
+        <textarea
+          value={value.summary || ""}
+          rows={5}
+          onChange={(e) => update("summary", e.target.value)}
+        />
+      </label>
 
       <div className="capture-actions">
         <button className="button button--ghost" onClick={onCancel}>
           <X size={16} /> 取消
         </button>
         {duplicate && (
-          <button
-            className="button button--secondary"
-            disabled={!hasValidPosition}
-            onClick={() => onSave("update")}
-          >
+          <button className="button button--secondary" onClick={() => onSave("update")}>
             <RefreshCw size={16} /> 更新已有岗位
           </button>
         )}
-        <button
-          className="button button--primary"
-          disabled={!hasValidPosition}
-          onClick={() => onSave("create")}
-        >
+        <button className="button button--primary" onClick={() => onSave("create")}>
           <Plus size={16} /> {duplicate ? "仍然新建" : "加入 OfferDuoDuo"}
         </button>
       </div>
@@ -272,19 +264,7 @@ export function CandidatePicker({
   onCancel: () => void;
   onImport: (candidates: ExtractedJob[]) => void;
 }) {
-  const [selected, setSelected] = useState(
-    () =>
-      new Set(
-        candidates
-          .map((candidate, index) => ({ candidate, index }))
-          .filter(
-            ({ candidate }) =>
-              candidate.confidence >= 0.8 &&
-              !isCapturePositionRejected(candidate.position)
-          )
-          .map(({ index }) => index)
-      )
-  );
+  const [selected, setSelected] = useState(() => new Set(candidates.map((_, index) => index)));
 
   const toggle = (index: number) => {
     setSelected((current) => {
@@ -299,7 +279,7 @@ export function CandidatePicker({
     <section className="capture-view">
       <div className="capture-hero candidate-hero">
         <div className="eyebrow">
-          <Sparkles size={14} /> 页面多岗位识别
+          <Sparkles size={14} /> DeepSeek 多岗位识别
         </div>
         <h1>
           检测到 {candidates.length} 条<span>投递记录</span>
@@ -314,9 +294,7 @@ export function CandidatePicker({
             position: candidate.position,
             jobId: candidate.jobId,
             city: candidate.city,
-            sourceUrl: candidate.sourceUrl,
-            sourceHost: candidate.sourceHost,
-            appliedAt: candidate.appliedAt
+            sourceUrl: candidate.sourceUrl
           });
           return (
             <label
@@ -336,6 +314,7 @@ export function CandidatePicker({
                 <small>
                   {candidate.company}
                   {candidate.city ? ` · ${candidate.city}` : ""}
+                  {candidate.jobId ? ` · ${candidate.jobId}` : ""}
                 </small>
               </span>
               <span className="candidate-stage">
