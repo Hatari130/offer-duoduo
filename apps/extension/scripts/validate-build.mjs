@@ -18,6 +18,7 @@ if (manifest.manifest_version !== 3) {
 const requiredFiles = new Set([
   "manifest.json",
   "dashboard.html",
+  "resume.html",
   manifest.side_panel?.default_path,
   manifest.background?.service_worker
 ]);
@@ -38,7 +39,7 @@ for (const relativePath of requiredFiles) {
   }
 }
 
-for (const htmlFile of ["dashboard.html", "sidepanel.html"]) {
+for (const htmlFile of ["dashboard.html", "sidepanel.html", "resume.html"]) {
   const html = readFileSync(join(distDirectory, htmlFile), "utf8");
   const assetReferences = html.matchAll(/(?:src|href)="\/([^"#?]+)/g);
   for (const match of assetReferences) {

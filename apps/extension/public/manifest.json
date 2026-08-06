@@ -5,7 +5,6 @@
   "version": "0.1.0",
   "permissions": [
     "activeTab",
-    "alarms",
     "storage",
     "scripting",
     "sidePanel"
@@ -25,7 +24,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["extraction-rules.js", "form-adapters.js", "content.js"],
+      "js": ["form-adapters.js", "content.js"],
       "run_at": "document_idle"
     }
   ],

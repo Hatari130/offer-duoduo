@@ -5,49 +5,19 @@ import type {
 } from "@/shared/types";
 
 export const OPPORTUNITY_CACHE_KEY = "offerflow.opportunities";
-export const OPPORTUNITY_UPDATE_META_KEY = "offerflow.opportunityUpdates";
-export const OPPORTUNITY_SYNC_ALARM_NAME = "offerflow.syncOpportunities";
-export const OPPORTUNITY_SYNC_INTERVAL_MINUTES = 5;
 export const DEFAULT_OPPORTUNITY_FEED_URL =
   "https://zcnj0ltp8sdn.feishu.cn/wiki/MkhNwsXtXiugeEk81MMcs7RNnyh";
 
 type RawOpportunity = Partial<RecruitmentOpportunity> & Record<string, unknown>;
-export type FeishuSheetPayload = {
+type FeishuSheetPayload = {
   title?: string;
   sheetName?: string;
   rows: unknown[][];
 };
 type FeishuSheetResponse = {
   ok?: boolean;
-  snapshot?: OpportunityFeedSnapshot;
-  updateMeta?: OpportunityUpdateMeta;
+  data?: FeishuSheetPayload;
   error?: string;
-};
-
-export interface OpportunityUpdateMeta {
-  unreadCount: number;
-  unreadOpportunityIds: string[];
-  unreadRemovedOpportunityIds: string[];
-  addedCount: number;
-  updatedCount: number;
-  removedCount: number;
-  lastChangedAt?: string;
-  lastSyncedAt?: string;
-}
-
-export interface OpportunitySnapshotDiff {
-  addedIds: string[];
-  updatedIds: string[];
-  removedIds: string[];
-}
-
-export const EMPTY_OPPORTUNITY_UPDATE_META: OpportunityUpdateMeta = {
-  unreadCount: 0,
-  unreadOpportunityIds: [],
-  unreadRemovedOpportunityIds: [],
-  addedCount: 0,
-  updatedCount: 0,
-  removedCount: 0
 };
 
 const clean = (value: unknown) => String(value ?? "").trim();
@@ -60,7 +30,7 @@ const list = (value: unknown): string[] => {
     .filter(Boolean);
 };
 
-const dateKey = (value: unknown, preferLast = false) => {
+const dateKey = (value: unknown) => {
   if (typeof value === "number" && Number.isFinite(value)) {
     const date = new Date(Date.UTC(1899, 11, 30) + value * 24 * 60 * 60 * 1000);
     if (value >= 20000 && value <= 100000 && !Number.isNaN(date.getTime())) {
@@ -73,13 +43,10 @@ const dateKey = (value: unknown, preferLast = false) => {
   const text = clean(value);
   const numeric = Number(text);
   if (/^\d{4,6}(?:\.0+)?$/.test(text) && numeric >= 20000 && numeric <= 100000) {
-    return dateKey(numeric, preferLast);
+    return dateKey(numeric);
   }
 
-  const matches = Array.from(
-    text.matchAll(/(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/g)
-  );
-  const match = preferLast ? matches.at(-1) : matches[0];
+  const match = text.match(/(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/);
   if (!match) return undefined;
   const [, year, month, day] = match;
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
@@ -133,10 +100,7 @@ function normalizeOpportunity(raw: RawOpportunity): RecruitmentOpportunity | und
 
   const batch = clean(raw.batch || raw["批次"]) || undefined;
   const openAt = dateKey(clean(raw.openAt || raw["开放日期"] || raw["开始时间"]));
-  const deadline = dateKey(
-    clean(raw.deadline || raw["截止日期"] || raw["截止时间"]),
-    true
-  );
+  const deadline = dateKey(clean(raw.deadline || raw["截止日期"] || raw["截止时间"]));
   const sourceUrl = clean(raw.sourceUrl || raw["信息来源"] || raw["来源链接"]);
   const rawStatus = clean(raw.status || raw["状态"]);
   const statusAliases: Record<string, OpportunityStatus> = {
@@ -204,7 +168,7 @@ const roleTagsFromCell = (value: unknown) => {
   return list(roleText).slice(0, 4);
 };
 
-export function normalizeFeishuRows(
+function normalizeFeishuRows(
   payload: FeishuSheetPayload,
   sourceUrl: string
 ): OpportunityFeedSnapshot {
@@ -253,42 +217,23 @@ export function normalizeFeishuRows(
   return {
     opportunities: deduplicated,
     fetchedAt: new Date().toISOString(),
-    sourceUpdatedAt: deduplicated
-      .map((item) => item.updatedAt)
-      .filter((value): value is string => Boolean(value))
-      .sort((left, right) => right.localeCompare(left))[0],
+    sourceUpdatedAt: deduplicated.find((item) => item.updatedAt)?.updatedAt,
     sourceUrl
   };
 }
 
-const splitRoleText = (value: string) =>
-  value
-    .replace(/^行业\s*[：:]\s*[^；;]+[；;]\s*/i, "")
-    .split(/[,，、;；|｜/\\\n]+/)
-    .map((item) => item.trim())
-    .filter(Boolean);
-
-/** Keep the full source value in storage and only shorten it for card presentation. */
-export function opportunityDisplayTitle(opportunity: RecruitmentOpportunity): string {
-  const rawTitle = opportunity.title.trim();
-  if (rawTitle.length <= 28) return rawTitle;
-
-  const roleParts = splitRoleText(rawTitle);
-  if (roleParts.length > 1) {
-    const visibleParts = roleParts.slice(0, 2).map((item) =>
-      item.length > 18 ? `${item.slice(0, 18)}…` : item
-    );
-    return `${visibleParts.join("、")}${roleParts.length > 2 ? `等 ${roleParts.length} 类岗位` : ""}`;
+async function readFeishuSheet(sourceUrl: string): Promise<FeishuSheetPayload> {
+  if (typeof chrome === "undefined" || typeof chrome.runtime?.sendMessage !== "function") {
+    throw new Error("飞书表格需要在 Chrome 扩展中同步");
   }
-
-  const conciseTags = opportunity.roleTags
-    .flatMap(splitRoleText)
-    .filter((item) => item.length <= 22)
-    .slice(0, 2);
-  if (conciseTags.length) {
-    return `${conciseTags.join("、")}${opportunity.roleTags.length > conciseTags.length ? "等岗位" : ""}`;
+  const response = (await chrome.runtime.sendMessage({
+    type: "OFFERFLOW_READ_FEISHU_SHEET",
+    url: sourceUrl
+  })) as FeishuSheetResponse;
+  if (!response?.ok || !response.data?.rows) {
+    throw new Error(response?.error || "飞书表格读取失败");
   }
-  return `${rawTitle.slice(0, 30)}…`;
+  return response.data;
 }
 
 export function opportunityStatus(opportunity: RecruitmentOpportunity): OpportunityStatus {
@@ -312,77 +257,6 @@ export function opportunityStatus(opportunity: RecruitmentOpportunity): Opportun
 const hasChromeStorage = () =>
   typeof chrome !== "undefined" && Boolean(chrome.storage?.local);
 
-const comparableOpportunity = (opportunity: RecruitmentOpportunity) =>
-  JSON.stringify({
-    company: opportunity.company,
-    title: opportunity.title,
-    batch: opportunity.batch || "",
-    status: opportunity.status || "",
-    openAt: opportunity.openAt || "",
-    deadline: opportunity.deadline || "",
-    graduationYears: opportunity.graduationYears,
-    roleTags: opportunity.roleTags,
-    cities: opportunity.cities,
-    officialUrl: opportunity.officialUrl,
-    sourceUrl: opportunity.sourceUrl || "",
-    sourceName: opportunity.sourceName || "",
-    verifiedAt: opportunity.verifiedAt || "",
-    updatedAt: opportunity.updatedAt || ""
-  });
-
-export function diffOpportunitySnapshots(
-  previous: OpportunityFeedSnapshot,
-  next: OpportunityFeedSnapshot
-): OpportunitySnapshotDiff {
-  const previousById = new Map(previous.opportunities.map((item) => [item.id, item]));
-  const nextById = new Map(next.opportunities.map((item) => [item.id, item]));
-  const addedIds: string[] = [];
-  const updatedIds: string[] = [];
-  const removedIds: string[] = [];
-
-  for (const [id, item] of nextById) {
-    const oldItem = previousById.get(id);
-    if (!oldItem) addedIds.push(id);
-    else if (comparableOpportunity(oldItem) !== comparableOpportunity(item)) updatedIds.push(id);
-  }
-  for (const id of previousById.keys()) {
-    if (!nextById.has(id)) removedIds.push(id);
-  }
-  return { addedIds, updatedIds, removedIds };
-}
-
-export function nextOpportunityUpdateMeta(
-  previousSnapshot: OpportunityFeedSnapshot,
-  nextSnapshot: OpportunityFeedSnapshot,
-  previousMeta: OpportunityUpdateMeta = EMPTY_OPPORTUNITY_UPDATE_META
-): OpportunityUpdateMeta {
-  const diff = diffOpportunitySnapshots(previousSnapshot, nextSnapshot);
-  const hasBaseline = Boolean(
-    previousSnapshot.fetchedAt || previousSnapshot.sourceUrl || previousSnapshot.opportunities.length
-  );
-  const changedAt = nextSnapshot.fetchedAt || new Date().toISOString();
-  const newChangedIds = hasBaseline ? [...diff.addedIds, ...diff.updatedIds] : [];
-  const newRemovedIds = hasBaseline ? diff.removedIds : [];
-  const unreadOpportunityIds = Array.from(
-    new Set([...(previousMeta.unreadOpportunityIds || []), ...newChangedIds])
-  );
-  const unreadRemovedOpportunityIds = Array.from(
-    new Set([...(previousMeta.unreadRemovedOpportunityIds || []), ...newRemovedIds])
-  );
-  const hasChanges = newChangedIds.length > 0 || newRemovedIds.length > 0;
-
-  return {
-    unreadCount: unreadOpportunityIds.length + unreadRemovedOpportunityIds.length,
-    unreadOpportunityIds,
-    unreadRemovedOpportunityIds,
-    addedCount: hasBaseline ? diff.addedIds.length : 0,
-    updatedCount: hasBaseline ? diff.updatedIds.length : 0,
-    removedCount: hasBaseline ? diff.removedIds.length : 0,
-    lastChangedAt: hasChanges ? changedAt : previousMeta.lastChangedAt,
-    lastSyncedAt: changedAt
-  };
-}
-
 export async function loadOpportunityCache(): Promise<OpportunityFeedSnapshot> {
   if (!hasChromeStorage()) {
     const value = localStorage.getItem(OPPORTUNITY_CACHE_KEY);
@@ -394,53 +268,12 @@ export async function loadOpportunityCache(): Promise<OpportunityFeedSnapshot> {
   };
 }
 
-export async function loadOpportunityUpdateMeta(): Promise<OpportunityUpdateMeta> {
-  if (!hasChromeStorage()) {
-    const value = localStorage.getItem(OPPORTUNITY_UPDATE_META_KEY);
-    return value
-      ? { ...EMPTY_OPPORTUNITY_UPDATE_META, ...JSON.parse(value) }
-      : { ...EMPTY_OPPORTUNITY_UPDATE_META };
-  }
-  const result = await chrome.storage.local.get(OPPORTUNITY_UPDATE_META_KEY);
-  return {
-    ...EMPTY_OPPORTUNITY_UPDATE_META,
-    ...(result[OPPORTUNITY_UPDATE_META_KEY] as OpportunityUpdateMeta | undefined)
-  };
-}
-
-export async function saveOpportunitySnapshot(
-  snapshot: OpportunityFeedSnapshot
-): Promise<OpportunityUpdateMeta> {
-  const [previousSnapshot, previousMeta] = await Promise.all([
-    loadOpportunityCache(),
-    loadOpportunityUpdateMeta()
-  ]);
-  const updateMeta = nextOpportunityUpdateMeta(previousSnapshot, snapshot, previousMeta);
+async function saveOpportunityCache(snapshot: OpportunityFeedSnapshot) {
   if (!hasChromeStorage()) {
     localStorage.setItem(OPPORTUNITY_CACHE_KEY, JSON.stringify(snapshot));
-    localStorage.setItem(OPPORTUNITY_UPDATE_META_KEY, JSON.stringify(updateMeta));
-    return updateMeta;
-  }
-  await chrome.storage.local.set({
-    [OPPORTUNITY_CACHE_KEY]: snapshot,
-    [OPPORTUNITY_UPDATE_META_KEY]: updateMeta
-  });
-  return updateMeta;
-}
-
-export async function markOpportunityUpdatesRead(): Promise<void> {
-  const previous = await loadOpportunityUpdateMeta();
-  const next: OpportunityUpdateMeta = {
-    ...previous,
-    unreadCount: 0,
-    unreadOpportunityIds: [],
-    unreadRemovedOpportunityIds: []
-  };
-  if (!hasChromeStorage()) {
-    localStorage.setItem(OPPORTUNITY_UPDATE_META_KEY, JSON.stringify(next));
     return;
   }
-  await chrome.storage.local.set({ [OPPORTUNITY_UPDATE_META_KEY]: next });
+  await chrome.storage.local.set({ [OPPORTUNITY_CACHE_KEY]: snapshot });
 }
 
 export async function refreshOpportunityFeed(
@@ -449,17 +282,10 @@ export async function refreshOpportunityFeed(
   const configuredSourceUrl = configuredUrl?.trim();
   if (isFeishuOpportunityFeed(configuredSourceUrl)) {
     const sourceUrl = configuredSourceUrl!;
-    if (typeof chrome === "undefined" || typeof chrome.runtime?.sendMessage !== "function") {
-      throw new Error("飞书表格需要在 Chrome 扩展中同步");
-    }
-    const response = (await chrome.runtime.sendMessage({
-      type: "OFFERFLOW_SYNC_OPPORTUNITY_FEED",
-      url: sourceUrl
-    })) as FeishuSheetResponse;
-    if (!response?.ok || !response.snapshot) {
-      throw new Error(response?.error || "飞书表格读取失败");
-    }
-    return response.snapshot;
+    const payload = await readFeishuSheet(sourceUrl);
+    const snapshot = normalizeFeishuRows(payload, sourceUrl);
+    await saveOpportunityCache(snapshot);
+    return snapshot;
   }
 
   const sourceUrl = configuredSourceUrl || new URL("opportunities.json", window.location.href).href;
@@ -488,6 +314,6 @@ export async function refreshOpportunityFeed(
     sourceUpdatedAt: Array.isArray(payload) ? undefined : clean(payload.updatedAt) || undefined,
     sourceUrl
   };
-  await saveOpportunitySnapshot(snapshot);
+  await saveOpportunityCache(snapshot);
   return snapshot;
 }

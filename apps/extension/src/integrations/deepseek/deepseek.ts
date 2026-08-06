@@ -7,7 +7,6 @@
   PersonalProfile,
   ProfileFieldKey
 } from "@/shared/types";
-import { getProfileFieldValues } from "@/shared/types";
 
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MODELS_URL = "https://api.deepseek.com/models";
@@ -53,8 +52,6 @@ const FORM_PROFILE_FIELDS: Array<{ key: ProfileFieldKey; label: string }> = [
   { key: "graduationDate", label: "毕业时间" },
   { key: "currentCity", label: "现居城市" },
   { key: "nativePlace", label: "籍贯" },
-  { key: "studentSource", label: "生源地" },
-  { key: "currentResidence", label: "现居住地" },
   { key: "height", label: "身高" },
   { key: "weight", label: "体重" },
   { key: "recruitmentType", label: "是否统招" },
@@ -178,7 +175,60 @@ function isProfileFieldKey(value?: string): value is ProfileFieldKey {
 }
 
 function profileFieldAvailability(profile: PersonalProfile): Record<string, boolean> {
-  const values = getProfileFieldValues(profile);
+  const education = profile.education[0];
+  const experience = profile.experiences[0];
+  const project = profile.projects[0];
+  const campusExperience = profile.campusExperiences[0];
+  const award = profile.awards[0];
+  const values: Record<string, string | undefined> = {
+    fullName: profile.fullName,
+    gender: profile.gender,
+    phone: profile.phone,
+    email: profile.email,
+    birthDate: profile.birthDate,
+    graduationDate: profile.graduationDate,
+    currentCity: profile.currentCity,
+    nativePlace: profile.nativePlace,
+    height: profile.height,
+    weight: profile.weight,
+    recruitmentType: profile.recruitmentType,
+    graduateStatus: profile.graduateStatus,
+    address: profile.address,
+    targetRole: profile.targetRole,
+    targetCities: profile.targetCities,
+    earliestStartDate: profile.earliestStartDate,
+    portfolioUrl: profile.portfolioUrl,
+    githubUrl: profile.githubUrl,
+    school: education?.school,
+    major: education?.major,
+    degree: education?.degree,
+    gpa: education?.gpa,
+    educationStartDate: education?.startDate,
+    educationEndDate: education?.endDate,
+    experienceOrganization: experience?.organization,
+    experienceTitle: experience?.title,
+    experienceStartDate: experience?.startDate,
+    experienceEndDate: experience?.endDate,
+    experienceDescription: experience?.description,
+    projectName: project?.name,
+    projectRole: project?.role,
+    projectStartDate: project?.startDate,
+    projectEndDate: project?.endDate,
+    projectDescription: project?.description,
+    campusExperienceType: campusExperience?.type,
+    campusExperienceRole: campusExperience?.role,
+    campusExperienceStartDate: campusExperience?.startDate,
+    campusExperienceEndDate: campusExperience?.endDate,
+    campusExperienceDescription: campusExperience?.description,
+    awardDate: award?.date,
+    awardName: award?.name,
+    awardLevel: award?.level,
+    awardDescription: award?.description,
+    selfIntroduction: profile.selfIntroduction,
+    strengths: profile.strengths,
+    careerPlan: profile.careerPlan,
+    ...(profile.extraFields || {})
+  };
   return Object.fromEntries(
     FORM_PROFILE_FIELDS.map(({ key }) => [key, Boolean(values[key])])
   );
@@ -230,9 +280,9 @@ ${JSON.stringify(pageFields)}`;
 function normalizeStage(value?: string): ApplicationStage | undefined {
   const stage = (value || "").toLowerCase();
   if (!stage) return undefined;
-  if (/offer|录用|待入职|已入职|背调|背景调查|体检|薪酬|签约|审批|发放|意向书/.test(stage)) return "offer";
+  if (/offer|录用|待入职|已入职/.test(stage)) return "offer";
   if (/终止|结束|拒绝|淘汰|不合适|不通过|未通过|未录用|已撤回/.test(stage)) return "closed";
-  if (/面试|一面|二面|三面|hr面|复试|群面|业务面|主管面|终面/.test(stage)) return "interview";
+  if (/面试|一面|二面|三面|hr面|复试/.test(stage)) return "interview";
   if (/笔试|测评|在线测试/.test(stage)) return "assessment";
   if (/初筛|复筛|筛选|简历评估|简历审核|资格审核|已投递|投递简历|简历处理中/.test(stage)) return "applied";
   if (/待投递|网申/.test(stage)) return "to_apply";
@@ -250,10 +300,7 @@ function stripCodeFence(value: string): string {
 function compactProgressEvidence(page: ExtractedJob) {
   return (page.progressEvidence || []).slice(0, 24).map((evidence) => ({
     jobId: evidence.jobId,
-    company: evidence.company,
     position: evidence.position,
-    city: evidence.city,
-    appliedAt: evidence.appliedAt,
     currentStage: evidence.currentStage,
     terminalStatus: evidence.terminalStatus,
     context: evidence.context?.slice(0, 500),
@@ -410,9 +457,11 @@ export async function extractWithDeepSeek(
           candidate.jobId &&
           evidence.jobId.trim().toLowerCase() === candidate.jobId.trim().toLowerCase()
         );
-        if (evidence.jobId && candidate.jobId) return sameJobId;
-        return normalizePositionIdentity(evidence.position) ===
-          normalizePositionIdentity(candidate.position);
+        return (
+          sameJobId ||
+          normalizePositionIdentity(evidence.position) ===
+            normalizePositionIdentity(candidate.position)
+        );
       }) === index
     );
   const modelApplications = reliableEvidence.length
@@ -426,11 +475,9 @@ export async function extractWithDeepSeek(
         });
         return {
           ...matched,
-          company: evidence.company?.trim() || matched?.company?.trim() || evidenceCompany,
+          company: matched?.company?.trim() || evidenceCompany,
           position: matched?.position?.trim() || evidence.position,
           job_id: matched?.job_id?.trim() || evidence.jobId,
-          city: evidence.city?.trim() || matched?.city,
-          applied_at: evidence.appliedAt?.trim() || matched?.applied_at,
           stage: evidence.terminalStatus || evidence.currentStage,
           confidence: evidence.confidence
         } satisfies ModelApplication;
@@ -457,20 +504,14 @@ export async function extractWithDeepSeek(
         inferredPageType === "application_list" || inferredPageType === "application_update";
 
       return {
-        company:
-          progressEvidence?.company?.trim() ||
-          item.company?.trim() ||
-          page.company,
+        company: item.company?.trim() || page.company,
         position: item.position?.trim() || page.position,
         department: item.department?.trim() || undefined,
         jobId: item.job_id?.trim() || undefined,
-        city: progressEvidence?.city?.trim() || item.city?.trim() || undefined,
+        city: item.city?.trim() || undefined,
         jobType: item.job_type?.trim() || undefined,
         deadline: item.deadline?.trim() || undefined,
-        appliedAt:
-          progressEvidence?.appliedAt?.trim() ||
-          item.applied_at?.trim() ||
-          undefined,
+        appliedAt: item.applied_at?.trim() || undefined,
         nextAction: item.next_action?.trim() || "确认当前投递状态",
         summary: item.summary?.trim() || undefined,
         responsibilities: Array.isArray(item.responsibilities)
