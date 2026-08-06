@@ -6,12 +6,15 @@ import type {
   PendingApplicationMatch,
   PersonalProfile
 } from "@/shared/types";
+import type { TailoredResumeBundle, TailoredResumeEntry } from "@/features/tailor/types";
 
 export const JOBS_KEY = "offerflow.jobs";
 export const SETTINGS_KEY = "offerflow.settings";
 export const AUTO_SYNC_NOTICE_KEY = "offerflow.autoSyncNotice";
 export const PENDING_PROGRESS_MATCHES_KEY = "offerflow.pendingProgressMatches";
 export const PROFILE_KEY = "offerflow.profile";
+export const TAILORED_RESUMES_KEY = "offerflow.tailoredResumes";
+export const TAILORED_PDF_KEY = "offerflow.tailoredPdf";
 
 export const EMPTY_PROFILE: PersonalProfile = {
   fullName: "",
@@ -141,6 +144,80 @@ export async function saveProfile(profile: PersonalProfile): Promise<void> {
     return;
   }
   await chrome.storage.local.set({ [PROFILE_KEY]: next });
+}
+
+export async function loadTailoredResumes(): Promise<Record<string, TailoredResumeEntry>> {
+  if (!hasChromeStorage()) {
+    const value = localStorage.getItem(TAILORED_RESUMES_KEY);
+    return value ? JSON.parse(value) : {};
+  }
+  const result = await chrome.storage.local.get(TAILORED_RESUMES_KEY);
+  return (result[TAILORED_RESUMES_KEY] as Record<string, TailoredResumeEntry> | undefined) ?? {};
+}
+
+export async function saveTailoredResumes(
+  next: Record<string, TailoredResumeEntry>
+): Promise<void> {
+  if (!hasChromeStorage()) {
+    localStorage.setItem(TAILORED_RESUMES_KEY, JSON.stringify(next));
+    return;
+  }
+  await chrome.storage.local.set({ [TAILORED_RESUMES_KEY]: next });
+}
+
+export async function saveTailoredResume(entry: TailoredResumeEntry): Promise<void> {
+  const current = await loadTailoredResumes();
+  await saveTailoredResumes({ ...current, [entry.jobKey]: entry });
+}
+
+export async function getTailoredResume(jobKey: string): Promise<TailoredResumeBundle | undefined> {
+  const all = await loadTailoredResumes();
+  return all[jobKey]?.bundle;
+}
+
+export async function dropTailoredResume(jobKey: string): Promise<void> {
+  const current = await loadTailoredResumes();
+  if (!current[jobKey]) return;
+  delete current[jobKey];
+  await saveTailoredResumes(current);
+}
+
+export interface TailoredPdfSnapshot {
+  jobKey: string;
+  fileName: string;
+  size: number;
+  uploadedAt: string;
+  base64: string;
+}
+
+export async function loadTailoredPdf(jobKey: string): Promise<TailoredPdfSnapshot | undefined> {
+  if (!hasChromeStorage()) {
+    const raw = localStorage.getItem(`${TAILORED_PDF_KEY}.${jobKey}`);
+    return raw ? (JSON.parse(raw) as TailoredPdfSnapshot) : undefined;
+  }
+  const result = await chrome.storage.local.get(`${TAILORED_PDF_KEY}.${jobKey}`);
+  return result[`${TAILORED_PDF_KEY}.${jobKey}`] as TailoredPdfSnapshot | undefined;
+}
+
+export async function saveTailoredPdf(
+  jobKey: string,
+  snapshot: TailoredPdfSnapshot
+): Promise<void> {
+  const storageKey = `${TAILORED_PDF_KEY}.${jobKey}`;
+  if (!hasChromeStorage()) {
+    localStorage.setItem(storageKey, JSON.stringify(snapshot));
+    return;
+  }
+  await chrome.storage.local.set({ [storageKey]: snapshot });
+}
+
+export async function dropTailoredPdf(jobKey: string): Promise<void> {
+  const storageKey = `${TAILORED_PDF_KEY}.${jobKey}`;
+  if (!hasChromeStorage()) {
+    localStorage.removeItem(storageKey);
+    return;
+  }
+  await chrome.storage.local.remove(storageKey);
 }
 
 export function normalizeUrl(value: string): string {

@@ -6,3 +6,4 @@ offerflow-*-preview.png
 .env.*
 !.env.example
 coverage/
+.workbuddy/

@@ -28,6 +28,7 @@ import {
   KeyRound,
   Target,
   Trash2,
+  Wand2,
   X
 } from "lucide-react";
 import {
@@ -100,6 +101,7 @@ export function OverlayPanel({
   onSaveProfile,
   onSaveOpportunityFeed,
   onCapture,
+  onTailor,
   onOpenOpportunity,
   onOpenSource,
   onEdit,
@@ -120,6 +122,7 @@ export function OverlayPanel({
   onSaveProfile: (profile: PersonalProfile) => Promise<void>;
   onSaveOpportunityFeed: (url: string) => Promise<void>;
   onCapture: () => void;
+  onTailor?: () => void;
   onOpenOpportunity: (opportunity: RecruitmentOpportunity) => void;
   onOpenSource: (job: JobApplication) => void;
   onEdit: (job: JobApplication) => void;
@@ -358,16 +361,35 @@ export function OverlayPanel({
       </header>
 
       <div className="overlay-scroll" ref={overlayScrollRef}>
-        {tab !== "profile" && tab !== "opportunities" && <section className="overlay-capture-card">
-          <span className="overlay-capture-icon">
-            <Target size={19} />
-          </span>
-          <span>
-            <strong>识别当前招聘页面</strong>
-            <small>岗位、投递记录或流程变化</small>
-          </span>
-          <button onClick={onCapture}>识别</button>
-        </section>}
+        {tab !== "profile" && tab !== "opportunities" && (
+          <div className="overlay-action-stack">
+            <section className="overlay-capture-card">
+              <span className="overlay-capture-icon">
+                <Target size={19} />
+              </span>
+              <span>
+                <strong>识别当前招聘页面</strong>
+                <small>岗位、投递记录或流程变化</small>
+              </span>
+              <button onClick={onCapture}>识别</button>
+            </section>
+            {onTailor && (
+              <section className="overlay-capture-card overlay-tailor-card">
+                <span className="overlay-capture-icon overlay-tailor-icon">
+                  <Sparkles size={19} />
+                </span>
+                <span>
+                  <strong>为这个岗位定制简历</strong>
+                  <small>DeepSeek 改写 · JD × Resume 高亮 · 一键存为 PDF</small>
+                </span>
+                <button onClick={onTailor}>
+                  <Wand2 size={14} />
+                  定制
+                </button>
+              </section>
+            )}
+          </div>
+        )}
 
         {tab === "overview" && (
           <>

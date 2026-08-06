@@ -16,6 +16,7 @@ export default defineConfig({
       input: {
         dashboard: resolve(__dirname, "dashboard.html"),
         sidepanel: resolve(__dirname, "sidepanel.html"),
+        tailor: resolve(__dirname, "tailor.html"),
         background: resolve(__dirname, "src/entries/background/index.ts")
       },
       output: {

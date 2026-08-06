@@ -102,6 +102,7 @@ import {
   shouldUseDeepSeekForCapture,
   type View
 } from "@/features/workspace/WorkspaceViews";
+import { buildJobKey, type TailorContext } from "@/features/tailor/types";
 
 export default function App({ overlay = false }: { overlay?: boolean }) {
   const [jobs, setJobs] = useState<JobApplication[]>([]);
@@ -320,6 +321,103 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     const updated = { ...next, updatedAt: new Date().toISOString() };
     setProfile(updated);
     await saveProfile(updated);
+  };
+
+  const encodeUtf8Base64 = (value: string) => {
+    const bytes = new TextEncoder().encode(value);
+    let binary = "";
+    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+      binary += String.fromCharCode.apply(
+        null,
+        Array.from(bytes.subarray(offset, Math.min(offset + 0x8000, bytes.length)))
+      );
+    }
+    return btoa(binary);
+  };
+
+  const openTailorPage = async (context: TailorContext) => {
+    const payload = encodeURIComponent(encodeUtf8Base64(JSON.stringify({ jobKey: context.jobKey, context })));
+    const url = chrome.runtime.getURL(`tailor.html?context=${payload}`);
+    await chrome.tabs.create({ url });
+  };
+
+  const extractSingleJobForTailor = async (): Promise<ExtractedJob | undefined> => {
+    if (typeof chrome === "undefined" || !chrome.tabs) return undefined;
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab.id || !tab.url?.startsWith("http")) {
+      throw new Error("请在招聘网页中使用 OfferDuoDuo");
+    }
+    const requestExtraction = () =>
+      chrome.tabs.sendMessage(tab.id!, {
+        type: "OFFERFLOW_EXTRACT_PAGE"
+      }) as Promise<{ ok: boolean; data?: ExtractedJob; error?: string }>;
+    let response: { ok: boolean; data?: ExtractedJob; error?: string };
+    try {
+      response = await requestExtraction();
+    } catch (messageError) {
+      const reason =
+        messageError instanceof Error ? messageError.message : String(messageError);
+      const receiverMissing = reason.includes("Receiving end does not exist");
+      if (!receiverMissing || !chrome.scripting) throw messageError;
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ["extraction-rules.js", "form-adapters.js", "content.js"]
+      });
+      response = await requestExtraction();
+    }
+    if (!response.ok || !response.data) {
+      throw new Error(response.error || "页面解析失败");
+    }
+    const candidates = captureCandidatesFromProgress(response.data);
+    if (candidates.length >= 1) return candidates[0];
+    if (settings.deepseekApiKey && shouldUseDeepSeekForCapture(response.data)) {
+      try {
+        const aiResult = await extractWithDeepSeek(response.data, settings);
+        const valid = aiResult.applications
+          .filter((application) => !isCapturePositionRejected(application.position))
+          .map(prepareCaptureForReview);
+        if (valid.length) return valid[0];
+      } catch (error) {
+        setNotice(
+          `DeepSeek识别失败，已使用本地规则：${error instanceof Error ? error.message : "未知错误"}`
+        );
+      }
+    }
+    return prepareCaptureForReview(response.data);
+  };
+
+  const handleTailor = async () => {
+    setBusy(true);
+    setNotice("");
+    try {
+      const job = await extractSingleJobForTailor();
+      if (!job) throw new Error("未在当前页面识别到岗位信息");
+      const jobKey = buildJobKey({
+        company: job.company,
+        position: job.position,
+        sourceUrl: job.sourceUrl
+      });
+      const context: TailorContext = {
+        jobKey,
+        company: job.company,
+        position: job.position,
+        city: job.city,
+        sourceUrl: job.sourceUrl,
+        summary: job.summary,
+        responsibilities: job.responsibilities || [],
+        requirements: job.requirements || [],
+        rawExcerpt: job.rawExcerpt,
+        deadline: job.deadline,
+        jobType: job.jobType
+      };
+      await openTailorPage(context);
+      setNotice(`已为「${job.position}」打开定制简历编辑器`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "无法定制简历";
+      setNotice(message);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const refreshOpportunities = async (sourceUrl = settings.opportunityFeedUrl) => {
@@ -850,6 +948,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             onSaveProfile={persistProfile}
             onSaveOpportunityFeed={saveOpportunityFeedUrl}
             onCapture={capturePage}
+            onTailor={handleTailor}
             onOpenOpportunity={(opportunity) => void openOpportunity(opportunity)}
             onOpenSource={(job) => void openJobSource(job)}
             onEdit={setEditing}
@@ -916,6 +1015,15 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           >
             {busy ? <RefreshCw className="spin" size={16} /> : <Plus size={17} />}
             抓取当前岗位
+          </button>
+          <button
+            className="capture-button tailor-button"
+            onClick={handleTailor}
+            disabled={busy}
+            title="基于当前岗位定制简历"
+          >
+            {busy ? <RefreshCw className="spin" size={16} /> : <Sparkles size={16} />}
+            定制简历
           </button>
         </div>
       </header>
