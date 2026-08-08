@@ -1,14 +1,16 @@
 # OfferFlow Web
 
-Reserved boundary for the companion website. There is deliberately no fake
-website build yet.
+React/Vite companion website for OfferFlow. It provides:
 
-When implementation starts, keep these concerns inside this application:
+- account login and registration;
+- a streaming career assistant with conversations, retry, stop, attachments and knowledge citations;
+- an intentionally empty opportunity-import surface reserved for the external table pipeline;
+- table and board views for personal applications;
+- one-click browser-extension login and synchronization, with one-time pairing
+  codes retained only as a developer fallback.
 
-- public marketing and product pages
-- account and authentication UI
-- application/opportunity/profile dashboards
-- calls through `@offerflow/api-client`
+Run it with `pnpm dev:web` after starting `pnpm dev:api`. The default development
+URLs are `http://127.0.0.1:5173` and `http://127.0.0.1:8787`.
 
 The website may import `@offerflow/domain`, `@offerflow/contracts`,
 `@offerflow/api-client` and `@offerflow/ui`. It must not import anything from
