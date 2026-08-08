@@ -7,18 +7,18 @@ extension, a shared API boundary and a PostgreSQL data model.
 
 | Workspace | Status | Purpose |
 | --- | --- | --- |
-| `apps/extension` | runnable | Existing extension, dashboard, side panel, background worker and content scripts |
-| `apps/web` | reserved | Website boundary; intentionally has no fake implementation or build yet |
-| `apps/api` | compile-checked scaffold | Authentication, synchronization, imports and database access boundary |
-| `packages/db` | initial schema | PostgreSQL migrations for recruitment and private application data |
+| `apps/web` | runnable | Login, career chat, opportunity shell, application management and device pairing |
+| `apps/api` | runnable local runtime | Authentication, SSE chat, knowledge retrieval, applications and incremental sync |
+| `apps/extension` | runnable | Capture/autofill workspace plus local-first Web synchronization |
+| `packages/db` | migration-ready | PostgreSQL schema for auth, chat, knowledge, recruitment and private application data |
 
 ## Repository shape
 
 ```text
 apps/
-  api/                server-only boundary
+  api/                Node HTTP API and local in-memory repository
   extension/          browser extension
-  web/                future website
+  web/                React/Vite companion website
 packages/
   api-client/         typed HTTP client shared by web and extension
   contracts/          API and autofill message contracts
@@ -38,10 +38,12 @@ Install all workspace dependencies:
 pnpm install
 ```
 
-Run the extension development server:
+Run each application in a separate terminal:
 
 ```powershell
-pnpm dev
+pnpm dev:api
+pnpm dev:web
+pnpm dev:extension
 ```
 
 Type-check every implemented workspace:
@@ -54,6 +56,12 @@ Build every implemented workspace, including the production extension:
 
 ```powershell
 pnpm build
+```
+
+Run contract, API end-to-end and synchronization conflict tests:
+
+```powershell
+pnpm test
 ```
 
 After a successful build, load this directory as an unpacked Chrome/Edge

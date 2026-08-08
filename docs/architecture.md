@@ -51,9 +51,15 @@ The extension is built independently into `apps/extension/dist`.
 
 ### `apps/web`
 
-Reserved for the future website. The website may provide public pages, account
-UI and cloud dashboards. It must use `@offerflow/api-client` for server data and
-must not reuse extension screens wholesale.
+Owns the account experience and the three primary product areas:
+
+- `/app/chat`: conversation list, knowledge-grounded SSE chat, retry and attachments;
+- `/app/opportunities`: filter/table shell and empty import boundary for the collaborator-owned pipeline;
+- `/app/applications`: application CRUD, table/board views and revision-aware updates;
+- `/app/settings`: account controls and one-time extension pairing codes.
+
+The Web UI calls the API only through `@offerflow/api-client`; it does not import
+extension screens or database code.
 
 ### `apps/api`
 
@@ -67,9 +73,10 @@ Server-only boundary for:
 - platform-owned AI requests;
 - database transactions.
 
-The HTTP runtime is intentionally undecided until backend implementation starts.
-Keeping the package compile-checked now prevents browser/server responsibilities
-from becoming mixed again.
+The local runtime is a Node HTTP server with an in-memory repository. Its store
+interface is the seam for replacing local memory with PostgreSQL in deployment.
+Chat uses deterministic SSE locally and an OpenAI-compatible server-side model
+when the corresponding environment variables are configured.
 
 ### Shared packages
 
@@ -141,13 +148,26 @@ Every cloud-synchronized entity should carry `id`, `revision` and `updatedAt`.
 Application records retain company/position/source snapshots even when their
 catalogue job posting is later changed or removed.
 
+The concrete application synchronization cycle is:
+
+```text
+local save -> coalesced outbox(changeId + baseRevision)
+           -> POST /v1/applications/sync
+           -> accepted ids + conflicts + cursor-based remote changes
+           -> update local cache and revision metadata
+```
+
+`changeId` makes retries idempotent. A stale `baseRevision` produces an explicit
+conflict; server data is not silently overwritten, and an old device cannot
+resurrect a server tombstone.
+
 See `docs/database.md` and `packages/db/migrations` for the concrete schema.
 
 ## Build and deployment boundaries
 
-- root `pnpm build` checks shared packages/API and builds the extension;
+- root `pnpm build` checks shared packages/API and builds both Web and extension;
 - the extension store artifact comes from `apps/extension/dist`;
-- the website will receive its own build only when implementation begins;
+- the website artifact comes from `apps/web/dist`;
 - API and website deployments can share infrastructure initially while retaining
   separate source boundaries;
 - development, staging and production use separate databases and credentials.
