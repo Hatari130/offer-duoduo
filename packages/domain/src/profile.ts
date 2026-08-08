@@ -1,8 +1,18 @@
 export interface ProfileEducation {
   id: string;
   school: string;
+  college?: string;
   major: string;
   degree: string;
+  educationDegree?: string;
+  educationForm?: string;
+  courses?: string;
+  researchDirection?: string;
+  thesis?: string;
+  rank?: string;
+  overseasEducation?: string;
+  minorMajor?: string;
+  advisorName?: string;
   startDate: string;
   endDate: string;
   gpa: string;
@@ -12,9 +22,19 @@ export interface ProfileExperience {
   id: string;
   organization: string;
   title: string;
+  type?: string;
+  department?: string;
+  salary?: string;
   startDate: string;
   endDate: string;
   description: string;
+  achievements?: string;
+  refereeName?: string;
+  refereeTitle?: string;
+  refereeContact?: string;
+  leavingReason?: string;
+  subordinateCount?: string;
+  isCurrent?: boolean;
 }
 
 export interface ProfileProject {
@@ -24,6 +44,8 @@ export interface ProfileProject {
   startDate: string;
   endDate: string;
   description: string;
+  achievement?: string;
+  link?: string;
 }
 
 export interface ProfileCampusExperience {
@@ -70,6 +92,32 @@ export interface PersonalProfile {
   selfIntroduction: string;
   strengths: string;
   careerPlan: string;
+  currentResidence?: string;
+  nationality?: string;
+  idType?: string;
+  idNumber?: string;
+  studentSource?: string;
+  wechat?: string;
+  qq?: string;
+  politicalStatus?: string;
+  maritalStatus?: string;
+  healthStatus?: string;
+  specialty?: string;
+  workYears?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  countryRegion?: string;
+  expectedSalary?: string;
+  referralCode?: string;
+  computerSkills?: Record<string, string>[];
+  languages?: Record<string, string>[];
+  qualifications?: Record<string, string>[];
+  familyMembers?: Record<string, string>[];
+  hobbies?: string;
+  publications?: Record<string, string>[];
+  patents?: Record<string, string>[];
+  works?: Record<string, string>[];
+  competitions?: Record<string, string>[];
   extraFields?: Record<string, string>;
   updatedAt?: string;
 }

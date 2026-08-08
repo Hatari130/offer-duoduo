@@ -5,9 +5,13 @@
   "packageManager": "pnpm@11.9.0",
   "scripts": {
     "dev": "pnpm run dev:extension",
+    "dev:api": "pnpm --filter @offerflow/api dev",
     "dev:extension": "pnpm --filter @offerflow/extension dev",
+    "dev:web": "pnpm --filter @offerflow/web dev",
     "build": "pnpm -r --if-present run build",
+    "build:web": "pnpm --filter @offerflow/web build",
     "build:extension": "pnpm --filter @offerflow/extension build",
+    "test": "pnpm --filter @offerflow/contracts test && pnpm --filter @offerflow/api test && pnpm --filter @offerflow/extension test:sync",
     "typecheck": "pnpm -r --if-present run typecheck"
   },
   "devDependencies": {

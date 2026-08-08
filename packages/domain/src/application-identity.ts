@@ -1,4 +1,4 @@
-import type { ApplicationStage, JobApplication, ProgressEvidence } from "./applications";
+import type { ApplicationStage, JobApplication, ProgressEvidence } from "./applications.ts";
 
 export type ApplicationObservation = {
   sourceHost?: string;

@@ -13,3 +13,9 @@ Ownership rules:
 The initial migration intentionally supports applications that do not map to a
 known job posting by keeping `job_posting_id` nullable and storing immutable
 company/position/source snapshots on each application.
+
+`0002_chat_auth_sync.sql` adds self-hosted credentials, device pairing,
+conversation persistence, knowledge documents/chunks, citations and idempotent
+extension synchronization. The first knowledge implementation uses PostgreSQL
+full-text search so the base schema has no external extension requirement; the
+API retrieval boundary can later move to pgvector without changing Web contracts.

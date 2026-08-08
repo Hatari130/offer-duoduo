@@ -51,6 +51,11 @@ export interface JobApplication {
   createdAt: string;
   updatedAt: string;
   events: ApplicationEvent[];
+  /**
+   * Stable observations remembered by the extension so the same application can
+   * be recognised across job-detail and progress-list URLs.
+   */
+  identityAliases?: string[];
   obsidianPath?: string;
 }
 
@@ -78,8 +83,12 @@ export interface ExtractedJob {
 }
 
 export interface ProgressEvidence {
+  recordUrl?: string;
   jobId?: string;
+  company?: string;
   position?: string;
+  city?: string;
+  appliedAt?: string;
   currentStage?: string;
   terminalStatus?: string;
   context?: string;

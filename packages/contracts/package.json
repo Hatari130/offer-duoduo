@@ -8,6 +8,7 @@
   },
   "scripts": {
     "build": "pnpm run typecheck",
+    "test": "node --experimental-transform-types --test tests/*.test.mjs",
     "typecheck": "tsc -p tsconfig.json --pretty false"
   },
   "dependencies": {

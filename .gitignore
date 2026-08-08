@@ -7,3 +7,7 @@ offerflow-*-preview.png
 !.env.example
 coverage/
 .workbuddy/
+.offerflow-data/
+.offerflow-api.log
+.offerflow-api.err.log
+.pnpm-store/
