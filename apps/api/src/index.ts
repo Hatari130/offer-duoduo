@@ -2,6 +2,8 @@ import type { HealthResponse } from "@offerflow/contracts";
 
 export const API_MODULES = [
   "auth",
+  "chat",
+  "knowledge",
   "profiles",
   "applications",
   "opportunities",
@@ -18,3 +20,6 @@ export function createHealthResponse(version = "0.1.0"): HealthResponse {
     version
   };
 }
+
+export { createOfferFlowApp } from "./app.ts";
+export { createOfferFlowServer } from "./server.ts";

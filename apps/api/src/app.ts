@@ -1,0 +1,537 @@
+import type { IncomingMessage, ServerResponse } from "node:http";
+import { once } from "node:events";
+import type {
+  ApiError,
+  ApiResponse,
+  AuthSession,
+  ChatStreamEvent,
+  CreateApplicationRequest,
+  CreateConversationRequest,
+  RetryMessageRequest,
+  SendMessageRequest,
+  UpdateApplicationRequest
+} from "@offerflow/contracts";
+import {
+  isApplicationSyncRequest,
+  isExchangeDeviceCodeRequest,
+  isLoginRequest,
+  isRecord,
+  isRegisterRequest,
+  isOpportunitySyncRequest,
+  isRetryMessageRequest,
+  isSendMessageRequest
+} from "@offerflow/contracts";
+import type { JobApplication, KnowledgeCitation } from "@offerflow/domain";
+import { opportunityStatus } from "@offerflow/domain";
+import { createAccessToken, verifyAccessToken, type AccessTokenClaims } from "./auth/crypto.ts";
+import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
+import { loadApiConfig, type ApiConfig } from "./config.ts";
+import { KnowledgeService } from "./knowledge/service.ts";
+import { MemoryStore, MemoryStoreError } from "./store/memory-store.ts";
+
+export interface OfferFlowAppOptions {
+  config?: ApiConfig;
+  store?: MemoryStore;
+  assistant?: AssistantProvider;
+  knowledge?: KnowledgeService;
+}
+
+class HttpError extends Error {
+  constructor(
+    readonly status: number,
+    readonly code: string,
+    message: string,
+    readonly details?: Record<string, unknown>
+  ) {
+    super(message);
+    this.name = "HttpError";
+  }
+}
+
+function sendJson<T>(response: ServerResponse, status: number, payload: ApiResponse<T>): void {
+  response.statusCode = status;
+  response.setHeader("content-type", "application/json; charset=utf-8");
+  response.end(JSON.stringify(payload));
+}
+
+function success<T>(response: ServerResponse, data: T, status = 200): void {
+  sendJson(response, status, { ok: true, data });
+}
+
+function failure(
+  response: ServerResponse,
+  status: number,
+  code: string,
+  message: string,
+  details?: Record<string, unknown>
+): void {
+  const error: ApiError = { code, message, details };
+  sendJson(response, status, { ok: false, error });
+}
+
+async function readJson(request: IncomingMessage): Promise<unknown> {
+  const chunks: Buffer[] = [];
+  let bytes = 0;
+  for await (const chunk of request) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    bytes += buffer.length;
+    if (bytes > 1_000_000) {
+      throw new HttpError(413, "BODY_TOO_LARGE", "请求内容不能超过 1 MB");
+    }
+    chunks.push(buffer);
+  }
+  if (!chunks.length) return {};
+  try {
+    return JSON.parse(Buffer.concat(chunks).toString("utf8"));
+  } catch {
+    throw new HttpError(400, "INVALID_JSON", "请求内容不是有效的 JSON");
+  }
+}
+
+function bearerToken(request: IncomingMessage): string | undefined {
+  const authorization = request.headers.authorization;
+  if (!authorization?.startsWith("Bearer ")) return undefined;
+  return authorization.slice(7).trim();
+}
+
+function decodePath(value: string): string {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    throw new HttpError(400, "INVALID_PATH", "请求路径无法解析");
+  }
+}
+
+function isJobApplication(value: unknown): value is JobApplication {
+  return (
+    isRecord(value) &&
+    typeof value.id === "string" &&
+    typeof value.company === "string" &&
+    typeof value.position === "string" &&
+    typeof value.stage === "string" &&
+    typeof value.sourceUrl === "string" &&
+    typeof value.sourceHost === "string" &&
+    typeof value.createdAt === "string" &&
+    typeof value.updatedAt === "string" &&
+    Array.isArray(value.responsibilities) &&
+    Array.isArray(value.requirements) &&
+    Array.isArray(value.events)
+  );
+}
+
+async function writeSse(response: ServerResponse, event: ChatStreamEvent): Promise<void> {
+  if (response.destroyed || response.writableEnded) return;
+  if (!response.write(`data: ${JSON.stringify(event)}\n\n`)) {
+    await once(response, "drain");
+  }
+}
+
+function setCors(request: IncomingMessage, response: ServerResponse, config: ApiConfig): void {
+  const origin = request.headers.origin;
+  const extensionOriginAllowed =
+    Boolean(origin?.startsWith("chrome-extension://")) &&
+    config.allowedOrigins.includes("chrome-extension://*");
+  if (origin && (config.allowedOrigins.includes(origin) || extensionOriginAllowed)) {
+    response.setHeader("access-control-allow-origin", origin);
+    response.setHeader("vary", "Origin");
+  }
+  response.setHeader("access-control-allow-methods", "GET,POST,PATCH,DELETE,OPTIONS");
+  response.setHeader("access-control-allow-headers", "Authorization,Content-Type");
+  response.setHeader("access-control-max-age", "86400");
+}
+
+export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
+  const config = options.config ?? loadApiConfig();
+  const store = options.store ?? new MemoryStore();
+  const assistant = options.assistant ?? createAssistantProvider(config);
+  const knowledge = options.knowledge ?? new KnowledgeService();
+
+  function requireClaims(request: IncomingMessage): AccessTokenClaims {
+    const token = bearerToken(request);
+    const claims = token ? verifyAccessToken(token, config.tokenSecret) : undefined;
+    if (!claims || !store.getUser(claims.sub)) {
+      throw new HttpError(401, "UNAUTHORIZED", "登录状态已失效，请重新登录");
+    }
+    return claims;
+  }
+
+  function issueSession(
+    user: { id: string; email: string; displayName: string },
+    scope: "user" | "device" = "user",
+    deviceId?: string
+  ): AuthSession {
+    const issued = createAccessToken(
+      { sub: user.id, email: user.email, scope, deviceId },
+      config.tokenSecret,
+      config.tokenTtlSeconds
+    );
+    return { user, accessToken: issued.token, expiresAt: issued.expiresAt };
+  }
+
+  async function streamAnswer(
+    request: IncomingMessage,
+    response: ServerResponse,
+    userId: string,
+    conversationId: string,
+    prompt: string,
+    history: ReturnType<MemoryStore["getConversationHistory"]>
+  ): Promise<void> {
+    const citations = knowledge.search(prompt);
+    const assistantMessage = store.beginAssistantMessage(userId, conversationId);
+    const abortController = new AbortController();
+    response.on("close", () => {
+      if (!response.writableEnded) abortController.abort();
+    });
+
+    response.statusCode = 200;
+    response.setHeader("content-type", "text/event-stream; charset=utf-8");
+    response.setHeader("cache-control", "no-cache, no-transform");
+    response.setHeader("connection", "keep-alive");
+    response.setHeader("x-accel-buffering", "no");
+    response.flushHeaders();
+
+    await writeSse(response, { type: "message.started", message: assistantMessage });
+    for (const citation of citations) {
+      await writeSse(response, {
+        type: "citation",
+        messageId: assistantMessage.id,
+        citation
+      });
+    }
+
+    let content = "";
+    try {
+      for await (const delta of assistant.generate({
+        prompt,
+        history,
+        citations,
+        signal: abortController.signal
+      })) {
+        content += delta;
+        await writeSse(response, {
+          type: "message.delta",
+          messageId: assistantMessage.id,
+          delta
+        });
+      }
+      const completed = store.completeAssistantMessage(
+        userId,
+        conversationId,
+        assistantMessage.id,
+        content,
+        citations
+      );
+      await writeSse(response, { type: "message.completed", message: completed });
+      await writeSse(response, { type: "done" });
+    } catch (error) {
+      const aborted = abortController.signal.aborted;
+      store.completeAssistantMessage(
+        userId,
+        conversationId,
+        assistantMessage.id,
+        content,
+        citations,
+        aborted ? "complete" : "error"
+      );
+      if (!aborted) {
+        await writeSse(response, {
+          type: "error",
+          error: {
+            code: "CHAT_GENERATION_FAILED",
+            message: error instanceof Error ? error.message : "回答生成失败，请重试"
+          }
+        });
+      }
+    } finally {
+      if (!response.writableEnded) response.end();
+    }
+  }
+
+  async function handler(request: IncomingMessage, response: ServerResponse): Promise<void> {
+    setCors(request, response, config);
+    if (request.method === "OPTIONS") {
+      response.statusCode = 204;
+      response.end();
+      return;
+    }
+
+    const url = new URL(request.url || "/", `http://${request.headers.host || "localhost"}`);
+    const path = url.pathname;
+    const method = request.method || "GET";
+
+    try {
+      if (method === "GET" && path === "/health") {
+        success(response, {
+          service: "offerflow-api" as const,
+          status: "ok" as const,
+          version: "0.1.0"
+        });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/login") {
+        const body = await readJson(request);
+        if (!isLoginRequest(body)) {
+          throw new HttpError(400, "INVALID_LOGIN", "请输入邮箱和密码");
+        }
+        const user = store.authenticate(body.email, body.password);
+        if (!user) throw new HttpError(401, "INVALID_CREDENTIALS", "邮箱或密码不正确");
+        success(response, issueSession(user));
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/register") {
+        const body = await readJson(request);
+        if (!isRegisterRequest(body)) {
+          throw new HttpError(400, "INVALID_REGISTRATION", "请完整填写姓名、邮箱和密码");
+        }
+        if (body.password.length < 8) {
+          throw new HttpError(400, "WEAK_PASSWORD", "密码至少需要 8 个字符");
+        }
+        const user = store.createUser(body.email, body.displayName, body.password);
+        success(response, issueSession(user), 201);
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/demo") {
+        if (!config.allowDemoAuth) {
+          throw new HttpError(404, "NOT_FOUND", "体验账号没有开启");
+        }
+        success(response, issueSession(store.getDemoUser()));
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/device-token") {
+        const body = await readJson(request);
+        if (!isExchangeDeviceCodeRequest(body)) {
+          throw new HttpError(400, "INVALID_DEVICE_CODE", "请输入有效的设备配对码");
+        }
+        const user = store.exchangeDeviceCode(body.code);
+        if (!user) {
+          throw new HttpError(401, "DEVICE_CODE_EXPIRED", "配对码无效或已经过期");
+        }
+        success(response, {
+          ...issueSession(user, "device", body.deviceId),
+          deviceId: body.deviceId
+        });
+        return;
+      }
+
+      // The campus opportunity catalogue is shared, public data: read and
+      // ingest routes live before the authentication gate so the website and
+      // the extension can exchange snapshots without a user session.
+      if (method === "GET" && path === "/v1/opportunities") {
+        const feed = store.getOpportunityFeed();
+        success(response, {
+          opportunities: feed.opportunities.map((opportunity) => ({
+            ...opportunity,
+            status: opportunityStatus(opportunity)
+          })),
+          fetchedAt: feed.fetchedAt ?? new Date().toISOString(),
+          sourceUpdatedAt: feed.sourceUpdatedAt,
+          sourceUrl: feed.sourceUrl
+        });
+        return;
+      }
+
+      if (method === "GET" && path === "/v1/imports/opportunities/status") {
+        const feed = store.getOpportunityFeed();
+        success(
+          response,
+          feed.opportunities.length
+            ? {
+                status: "ready" as const,
+                message: `已载入 ${feed.opportunities.length} 条校招机会`
+              }
+            : {
+                status: "not_configured" as const,
+                message: "校招表格导入模块等待数据方案接入"
+              }
+        );
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/opportunities/sync") {
+        const body = await readJson(request);
+        if (!isOpportunitySyncRequest(body)) {
+          throw new HttpError(400, "INVALID_OPPORTUNITY_SYNC", "机会数据格式不正确");
+        }
+        const feed = store.replaceOpportunityFeed({
+          opportunities: body.opportunities,
+          fetchedAt: body.fetchedAt,
+          sourceUpdatedAt: body.sourceUpdatedAt,
+          sourceUrl: body.sourceUrl
+        });
+        success(response, {
+          accepted: feed.opportunities.length,
+          fetchedAt: feed.fetchedAt
+        });
+        return;
+      }
+
+      const opportunityMatch = path.match(/^\/v1\/opportunities\/([^/]+)$/);
+      if (method === "GET" && opportunityMatch) {
+        const opportunity = store.getOpportunity(decodePath(opportunityMatch[1]));
+        if (!opportunity) throw new HttpError(404, "OPPORTUNITY_NOT_FOUND", "没有找到这条校招信息");
+        success(response, {
+          opportunity: { ...opportunity, status: opportunityStatus(opportunity) }
+        });
+        return;
+      }
+
+      const claims = requireClaims(request);
+      const userId = claims.sub;
+
+      if (method === "GET" && path === "/v1/session") {
+        success(response, { user: store.getUser(userId)! });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/device-codes") {
+        success(response, store.createDeviceCode(userId), 201);
+        return;
+      }
+
+      if (method === "GET" && path === "/v1/conversations") {
+        success(response, { conversations: store.listConversations(userId) });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/conversations") {
+        const body = (await readJson(request)) as CreateConversationRequest;
+        const conversation = store.createConversation(
+          userId,
+          typeof body.title === "string" ? body.title : undefined
+        );
+        success(response, { conversation, messages: [] }, 201);
+        return;
+      }
+
+      const retryMatch = path.match(/^\/v1\/conversations\/([^/]+)\/messages\/([^/]+)\/retry$/);
+      if (method === "POST" && retryMatch) {
+        const body = await readJson(request);
+        if (!isRetryMessageRequest(body)) {
+          throw new HttpError(400, "INVALID_RETRY", "无法重试这条回答");
+        }
+        const conversationId = decodePath(retryMatch[1]);
+        const messageId = decodePath(retryMatch[2]);
+        const prompt = store.findRetryPrompt(userId, conversationId, messageId);
+        if (!prompt) throw new HttpError(404, "MESSAGE_NOT_FOUND", "没有找到可重试的问题");
+        const history = store.getConversationHistory(userId, conversationId);
+        await streamAnswer(request, response, userId, conversationId, prompt, history);
+        return;
+      }
+
+      const sendMatch = path.match(/^\/v1\/conversations\/([^/]+)\/messages$/);
+      if (method === "POST" && sendMatch) {
+        const body = await readJson(request);
+        if (!isSendMessageRequest(body) || !body.content.trim()) {
+          throw new HttpError(400, "EMPTY_MESSAGE", "输入问题后再发送");
+        }
+        const conversationId = decodePath(sendMatch[1]);
+        const history = store.getConversationHistory(userId, conversationId);
+        store.appendUserMessage(
+          userId,
+          conversationId,
+          body.clientMessageId,
+          body.content,
+          body.attachments
+        );
+        await streamAnswer(request, response, userId, conversationId, body.content, history);
+        return;
+      }
+
+      const conversationMatch = path.match(/^\/v1\/conversations\/([^/]+)$/);
+      if (conversationMatch) {
+        const conversationId = decodePath(conversationMatch[1]);
+        if (method === "GET") {
+          const result = store.getConversation(userId, conversationId);
+          if (!result) throw new HttpError(404, "CONVERSATION_NOT_FOUND", "没有找到这段对话");
+          success(response, result);
+          return;
+        }
+        if (method === "DELETE") {
+          if (!store.deleteConversation(userId, conversationId)) {
+            throw new HttpError(404, "CONVERSATION_NOT_FOUND", "没有找到这段对话");
+          }
+          success(response, { deleted: true as const });
+          return;
+        }
+      }
+
+      if (method === "GET" && path === "/v1/applications") {
+        success(response, { applications: store.listApplications(userId) });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/applications") {
+        const body = (await readJson(request)) as CreateApplicationRequest;
+        if (!isRecord(body) || !isJobApplication(body.application)) {
+          throw new HttpError(400, "INVALID_APPLICATION", "投递信息不完整");
+        }
+        success(response, { item: store.createApplication(userId, body.application) }, 201);
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/applications/sync") {
+        const body = await readJson(request);
+        if (!isApplicationSyncRequest(body)) {
+          throw new HttpError(400, "INVALID_SYNC_REQUEST", "同步请求格式不正确");
+        }
+        success(response, store.syncApplications(userId, body));
+        return;
+      }
+
+      const applicationMatch = path.match(/^\/v1\/applications\/([^/]+)$/);
+      if (applicationMatch) {
+        const applicationId = decodePath(applicationMatch[1]);
+        if (method === "GET") {
+          const item = store.getApplication(userId, applicationId);
+          if (!item) throw new HttpError(404, "APPLICATION_NOT_FOUND", "没有找到这条投递");
+          success(response, { item });
+          return;
+        }
+        if (method === "PATCH") {
+          const body = (await readJson(request)) as UpdateApplicationRequest;
+          if (
+            !isRecord(body) ||
+            typeof body.expectedRevision !== "number" ||
+            !isJobApplication(body.application) ||
+            body.application.id !== applicationId
+          ) {
+            throw new HttpError(400, "INVALID_APPLICATION", "投递更新格式不正确");
+          }
+          success(response, {
+            item: store.updateApplication(userId, body.application, body.expectedRevision)
+          });
+          return;
+        }
+        if (method === "DELETE") {
+          const expectedRevision = Number(url.searchParams.get("expectedRevision"));
+          if (!Number.isInteger(expectedRevision) || expectedRevision < 1) {
+            throw new HttpError(400, "INVALID_REVISION", "缺少要删除的投递版本");
+          }
+          success(response, {
+            item: store.deleteApplication(userId, applicationId, expectedRevision)
+          });
+          return;
+        }
+      }
+
+      throw new HttpError(404, "NOT_FOUND", "接口不存在");
+    } catch (error) {
+      if (response.headersSent) {
+        if (!response.writableEnded) response.end();
+        return;
+      }
+      if (error instanceof HttpError || error instanceof MemoryStoreError) {
+        failure(response, error.status, error.code, error.message, error.details);
+        return;
+      }
+      console.error("OfferFlow API request failed", error);
+      failure(response, 500, "INTERNAL_ERROR", "服务暂时不可用，请稍后重试");
+    }
+  }
+
+  return { handler, store, config, assistant, knowledge };
+}

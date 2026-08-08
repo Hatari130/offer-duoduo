@@ -4,8 +4,11 @@
   "version": "0.1.0",
   "type": "module",
   "scripts": {
+    "dev": "node --experimental-transform-types --watch src/server.ts",
+    "start": "node --experimental-transform-types src/server.ts",
     "build": "pnpm run typecheck",
-    "typecheck": "tsc -p tsconfig.json --pretty false"
+    "typecheck": "tsc -p tsconfig.json --pretty false",
+    "test": "node --experimental-transform-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@offerflow/contracts": "workspace:*",
