@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>合合信息招聘门户</title>
+    <style>
+      body { margin: 0; font: 14px/1.6 "Microsoft YaHei", Arial, sans-serif; color: #141414; }
+      header { display: flex; align-items: center; gap: 24px; padding: 14px 40px; background: #0f0c23; color: #fff; }
+      header nav a { color: #fff; margin-right: 18px; text-decoration: none; }
+      main { padding: 24px 40px; max-width: 1100px; }
+      .delivery-record-applicant-tabs { display: flex; gap: 20px; border-bottom: 1px solid #eee; }
+      .beisen-phoenix-tabs-base-tab { padding: 8px 2px; color: #888; }
+      .beisen-phoenix-tabs-base-tab-active { color: #1769e0; border-bottom: 2px solid #1769e0; }
+      .delivery-list-item { padding: 18px 20px; border: 1px solid #ececec; border-radius: 8px; margin: 14px 0 12px; }
+      .delivery-list-job_name { font-size: 18px; font-weight: 600; }
+      .delivery-list-status { margin: 8px 0 4px; color: #1769e0; }
+      .delivery-list-type, .delivery-list-time { color: #888; font-size: 13px; }
+      .footer-code { color: #999; padding: 20px 40px; font-family: Consolas, monospace; }
+    </style>
+  </head>
+  <body>
+    <header>
+      <span class="header-logo">INTSIG</span>
+      <nav>
+        <a href="/home">首页</a>
+        <a href="/personal/deliveryRecord" class="active">投递记录</a>
+        <a href="/campus">校园招聘</a>
+        <a href="/social">社会招聘</a>
+        <a href="/intern">实习生招聘</a>
+      </nav>
+      <button>编辑</button>
+    </header>
+    <main>
+      <h1 class="page-title">投递记录</h1>
+      <p class="page-subtitle">跟进应聘进度，查询暂存投递记录</p>
+      <div class="delivery-record-applicant-tabs beisen-phoenix-tabs-base">
+        <div class="beisen-phoenix-tabs-base-tab beisen-phoenix-tabs-base-tab-active">已完成的投递（2）</div>
+        <div class="beisen-phoenix-tabs-base-tab">暂存投递</div>
+      </div>
+      <div class="delivery-record-category-tabs beisen-phoenix-tabs-button-bar">
+        <div class="beisen-phoenix-tabs-button-tab">校园招聘</div>
+      </div>
+      <div class="delivery-list">
+        <div class="delivery-list-item">
+          <div class="delivery-list-job_name">【27校招】办公平台AI产品经理/AI Agent工程师（J14442）</div>
+          <div class="delivery-list-status">当前进度：简历筛选·初筛进行中</div>
+          <div class="delivery-list-type">校园招聘</div>
+          <div class="delivery-list-time">2026.08.08 19:03 投递</div>
+          <button>编辑</button>
+        </div>
+        <div class="delivery-list-item">
+          <div class="delivery-list-job_name">27届校招-AI产品经理（J14379）</div>
+          <div class="delivery-list-status">当前进度：简历筛选·初筛进行中</div>
+          <div class="delivery-list-type">校园招聘</div>
+          <div class="delivery-list-time">2026.08.08 19:02 投递</div>
+          <button>编辑</button>
+        </div>
+        <div class="delivery-list-empty">没有更多了</div>
+      </div>
+    </main>
+    <footer class="footer-code">
+      /*project config start*/
+      /*project config end*/
+    </footer>
+    <script type="text/javascript">
+      /*project config start*/
+      /*project config end*/
+    </script>
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script>
+      // The fixture runs from a file:// URL, so the hostname is empty. Route the
+      // adapter lookup through the real zhiye.com adapter to exercise the
+      // delivery-record selectors and single-status extraction path.
+      const offerFlowRules = globalThis.OfferFlowExtractionRules;
+      const offerFlowGetAdapter = offerFlowRules.getAdapter;
+      globalThis.OfferFlowExtractionRules = {
+        ...offerFlowRules,
+        getAdapter: (hostname) =>
+          offerFlowGetAdapter(String(hostname || "").toLowerCase() === "" ? "intsig.zhiye.com" : hostname)
+      };
+    </script>
+    <script src="../../public/content.js"></script>
+    <script>
+      (() => {
+        let captured;
+        const done = (value) => {
+          captured = value;
+          document.body.setAttribute(
+            "data-result",
+            encodeURIComponent(JSON.stringify(value)).replaceAll("&", "&amp;")
+          );
+        };
+        for (const listener of globalThis.__offerflowListeners) {
+          listener({ type: "OFFERFLOW_EXTRACT_PAGE" }, null, done);
+        }
+        if (!captured) done({ ok: false, error: "no listener responded" });
+      })();
+    </script>
+  </body>
+</html>

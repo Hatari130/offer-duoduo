@@ -1,5 +1,22 @@
 ﻿(() => {
+  // The OfferFlow web app mirrors synced applications in its own tables and
+  // selects. Its stage options include “已结束”, which must never be captured
+  // back as recruitment-page evidence (it would auto-close records via sync).
+  const isOfferFlowWebApp = Boolean(
+    document.querySelector(
+      'a[href^="/app/applications"], a[href^="/app/opportunities"], a[href^="/app/chat"]'
+    )
+  );
+  if (isOfferFlowWebApp) return;
+
   const clean = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const extractionRules = globalThis.OfferFlowExtractionRules;
+  if (!extractionRules) {
+    console.error("OfferFlow extraction rules were not loaded");
+    return;
+  }
+  const platformAdapter = extractionRules.getAdapter(location.hostname);
+
 
   const firstMatch = (text, patterns) => {
     for (const pattern of patterns) {
@@ -58,18 +75,11 @@
     return "";
   };
 
-  const stageLabelPattern = /^(?:(?:投递简历|提交简历|已投递|简历初筛|简历筛选|简历复筛|初筛|筛选|笔试|在线测评|测评|面试|一面|二面|三面|HR面|Offer|OFFER评估|录用|待入职|入职)(?:中)?|未通过|不合适|淘汰|流程终止|已结束|拒绝|未录用|已撤回)$/i;
-  const terminalPattern = /不通过|未通过|不合适|淘汰|流程终止|流程结束|已结束|拒绝|未录用|已撤回/i;
-  const statusPrefixPattern = /^(?:(?:应聘|申请|投递|招聘|流程|当前)状态)\s*[：:]?\s*/i;
-  const semanticStagePattern = /^(?:(?:等待|待).{0,10}(?:筛选|评估|审核|面试|笔试|测评|结果)|(?:简历|资格)?(?:筛选|评估|审核)(?:中|通过|不通过|结果)?|(?:笔试|测评|面试|一面|二面|三面|HR面|Offer|录用|入职)(?:中|通过|不通过|结果)?)$/i;
-
-  const stageTextValue = (value) => clean(value).replace(statusPrefixPattern, "");
-  const isStageText = (value) => {
-    const original = clean(value);
-    const stage = stageTextValue(original);
-    if (!stage || stage.length > 40) return false;
-    return statusPrefixPattern.test(original) || stageLabelPattern.test(stage) || semanticStagePattern.test(stage);
-  };
+  const terminalPattern = extractionRules.terminalPattern;
+  const statusPrefixPattern = extractionRules.statusPrefixPattern;
+  const stageTextValue = extractionRules.stageTextValue;
+  const isStageText = extractionRules.isProcessText;
+  const normalizeProgressPosition = extractionRules.normalizePosition;
 
   const ownText = (element) =>
     clean(
@@ -142,86 +152,285 @@
     return "unknown";
   };
 
-  const progressCardPosition = (card, jobId) => {
-    const rejectPattern = /^(?:实习|校招|社招|工作地点|投递方式|投递时间|简历|状态|详情)$/i;
-    const rolePattern = /产品|运营|经理|工程|开发|设计|算法|数据|市场|销售|职能|实习|管培|顾问|研究|测试/i;
-    const progressWordPattern = /等待筛选|筛选通过|简历评估|简历审核|资格审核|笔试|测评|面试|Offer|录用|入职/gi;
-    const structuredCandidates = Array.from(
-      card.querySelectorAll('h1,h2,h3,h4,h5,h6,[class*="title"],[class*="name"],[class*="position"],[class*="job"]')
-    )
-      .map((element) => {
-        const className = String(element.className || "");
-        const structuralScore = /^H[1-6]$/.test(element.tagName)
-          ? 30
-          : /title|position|name/i.test(className)
-            ? 20
-            : 8;
-        return { value: clean(element.innerText || ownText(element)), structuralScore };
-      });
-    const candidates = structuredCandidates
-      .concat(
-        (card.innerText || "")
-          .split(/\n+/)
-          .map(clean)
-          .map((value) => ({ value, structuralScore: 0 }))
-      )
-      .map(({ value, structuralScore }) => ({
-        value: clean(
-          value
-            .replace(terminalPattern, "")
-            .replace(jobId ? new RegExp(`[（(]?${jobId}[）)]?`, "i") : /$^/, "")
-        ),
-        structuralScore
-      }))
-      .filter(
-        ({ value }) =>
-          value.length >= 3 &&
-          value.length <= 60 &&
-          !isStageText(value) &&
-          !rejectPattern.test(value) &&
-          (value.match(progressWordPattern) || []).length < 2 &&
-          !/工作地|投递方式|投递时间|申请时间|\d{4}[./-]\d{1,2}/.test(value)
-      );
-    return candidates
-      .map(({ value, structuralScore }, index) => ({
-        value,
-        score:
-          structuralScore +
-          (rolePattern.test(value) ? 10 : 0) -
-          value.length * 0.02 -
-          index * 0.0001
-      }))
-      .sort((left, right) => right.score - left.score)[0]?.value;
+  const isVisibleElement = (element) => {
+    if (!(element instanceof Element)) return false;
+    const style = getComputedStyle(element);
+    if (style.display === "none" || style.visibility === "hidden" || Number(style.opacity) === 0) {
+      return false;
+    }
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0;
   };
 
-  const normalizeProgressPosition = (value) =>
-    clean(value)
-      .replace(/\s+(?:实习|全职|兼职|校招|社招|应届)$/i, "")
-      .replace(/(实习生)实习$/i, "$1")
-      .replace(/[\s\-—_｜|（）()【】\[\]]/g, "")
+  const stageFamily = (value) => {
+    const stage = stageTextValue(value)
+      .replace(/(?:中|完成|通过|不通过|结果)$/i, "")
       .toLowerCase();
+    if (/投递|提交/.test(stage)) return "application";
+    if (/筛选|初筛|复筛|审核/.test(stage)) return "screening";
+    if (/offer|录用|背调|背景调查|体检|薪酬|签约|审批|发放|意向书/.test(stage)) return "offer";
+    if (/评估|测评|笔试/.test(stage)) return "assessment";
+    if (/面试|一面|二面|三面|hr面|群面|业务面|主管面|终面/.test(stage)) return "interview";
+    if (/入职/.test(stage)) return "onboarding";
+    if (terminalPattern.test(stage)) return "closed";
+    return stage;
+  };
 
-  const evidenceFromCard = (card, jobId, explicitStage) => {
-    const cardText = clean(card.innerText || "");
-    const terminalStatus = cardText.match(terminalPattern)?.[0];
-    const stepElements = Array.from(card.querySelectorAll("*")).filter((element) =>
-      isStageText(ownText(element))
+  const stageElementsIn = (root) =>
+    [root, ...Array.from(root.querySelectorAll("*"))].filter((element) => {
+      const value = ownText(element);
+      return value && isStageText(value) && isVisibleElement(element);
+    });
+
+  // Application record lists (for example zhiye.com 投递记录) often render one
+  // status line per card instead of a full multi-step timeline. A lone stage
+  // label is still treated as a progress region when its container also carries
+  // an application-record marker: a 投递/申请 timestamp, an application id, or
+  // a job code such as J14442.
+  const applicationRecordMarker =
+    /(?:投递|申请|应聘|报名)(?:时间|日期)[：:\s]*20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}|20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?\s*(?:投递|申请)(?!截止|开始|时间)|[A-Z]\d{5,}|\d{10,16}/i;
+
+  const findProgressRegions = (allElements) => {
+    const stageElements = allElements.filter((element) => {
+      const value = ownText(element);
+      return value && isStageText(value) && isVisibleElement(element);
+    });
+    const regions = [];
+    for (const stageElement of stageElements) {
+      let current = stageElement.parentElement;
+      for (let depth = 0; current && current !== document.body && depth < 8; depth += 1) {
+        const text = clean(current.innerText || "");
+        if (!text || text.length > 2600) break;
+        const labels = stageElementsIn(current).map((element) => stageTextValue(ownText(element)));
+        const families = new Set(labels.map(stageFamily).filter(Boolean));
+        if (labels.length >= 2 && families.size >= 2) {
+          regions.push(current);
+          break;
+        }
+        if (labels.length === 1 && applicationRecordMarker.test(text)) {
+          regions.push(stageElement);
+          break;
+        }
+        current = current.parentElement;
+      }
+    }
+    return regions.filter(
+      (region, index) =>
+        regions.indexOf(region) === index &&
+        !regions.some(
+          (candidate) =>
+            candidate !== region &&
+            region.contains(candidate) &&
+            clean(candidate.innerText || "").length <= clean(region.innerText || "").length
+        )
     );
+  };
+
+  const isWithinAnyRegion = (element, regions) =>
+    regions.some((region) => region.contains(element) || element.contains(region));
+
+  const candidateTexts = (element) => {
+    const values = new Set();
+    const direct = ownText(element);
+    if (direct) values.add(direct);
+    const rendered = String(element.innerText || "");
+    rendered
+      .split(/\n+/)
+      .map(clean)
+      .filter(Boolean)
+      .forEach((value) => values.add(value));
+    if (!rendered.includes("\n") && clean(rendered)) values.add(clean(rendered));
+    return [...values];
+  };
+
+  const positionCandidateFromCard = (card, progressRegions) => {
+    const adapterSelector = platformAdapter.positionSelectors.join(",");
+    const genericSelector =
+      'a[href],h1,h2,h3,h4,h5,h6,strong,[class*="job-title"],[class*="jobTitle"],[class*="job-name"],[class*="jobName"],[class*="job_name"],[class*="position"],[class*="title"]';
+    const preferredElements = adapterSelector
+      ? Array.from(card.querySelectorAll(adapterSelector))
+      : [];
+    const elements = Array.from(
+      new Set([
+        ...preferredElements,
+        ...Array.from(card.querySelectorAll(genericSelector)),
+        ...Array.from(card.querySelectorAll("*")).slice(0, 900)
+      ])
+    );
+    const cardRect = card.getBoundingClientRect();
+    const candidates = [];
+
+    for (const element of elements) {
+      if (!isVisibleElement(element) || isWithinAnyRegion(element, progressRegions)) continue;
+      if (/^(?:BUTTON|INPUT|SELECT|OPTION|LABEL|NAV)$/.test(element.tagName)) continue;
+      const className = String(element.className || "");
+      const preferred = preferredElements.includes(element);
+      for (const value of candidateTexts(element)) {
+        const normalized = clean(value.replace(terminalPattern, ""));
+        if (!normalized || normalized.length < 2 || normalized.length > 80) continue;
+        if (extractionRules.isHardRejectedPosition(normalized)) continue;
+        if (/工作地|投递方式|投递时间|申请时间|所属部门|申请编号|\d{4}[./-]\d{1,2}/.test(normalized)) {
+          continue;
+        }
+
+        const category = extractionRules.classifyText(normalized);
+        const tagScore = /^H[1-6]$/.test(element.tagName)
+          ? 30
+          : element.tagName === "A"
+            ? 28
+            : element.tagName === "STRONG"
+              ? 12
+              : 0;
+        const classScore = /job-title|jobTitle|job-name|jobName|job_name|position/i.test(className)
+          ? 24
+          : /title/i.test(className)
+            ? 12
+            : 0;
+        const roleScore = extractionRules.occupationScore(normalized) * 6;
+        const elementRect = element.getBoundingClientRect();
+        const relativeTop = cardRect.height
+          ? (elementRect.top - cardRect.top) / cardRect.height
+          : 1;
+        const locationScore = relativeTop >= -0.05 && relativeTop <= 0.55 ? 8 : 0;
+        const score =
+          (preferred ? 32 : 0) +
+          tagScore +
+          classScore +
+          roleScore +
+          locationScore +
+          (category === "occupation" ? 24 : 0) -
+          normalized.length * 0.03;
+        if (category !== "occupation" && score < 48) continue;
+        candidates.push({ value: normalized, score, element });
+      }
+    }
+
+    return candidates.sort((left, right) => right.score - left.score)[0];
+  };
+
+  const cardContainsRegionCount = (card, regions) =>
+    regions.filter((region) => card.contains(region)).length;
+
+  const resolveProgressCard = (region, regions) => {
+    for (const selector of platformAdapter.cardSelectors) {
+      const candidate = region.closest(selector);
+      if (
+        candidate &&
+        candidate !== document.body &&
+        cardContainsRegionCount(candidate, regions) === 1 &&
+        positionCandidateFromCard(candidate, [region])?.score >= 48
+      ) {
+        return candidate;
+      }
+    }
+
+    let current = region.parentElement;
+    let best;
+    for (let depth = 0; current && current !== document.body && depth < 10; depth += 1) {
+      const value = clean(current.innerText || "");
+      if (!value || value.length > 3600) break;
+      if (cardContainsRegionCount(current, regions) > 1) break;
+      const position = positionCandidateFromCard(current, [region]);
+      if (position && (!best || position.score > best.position.score)) {
+        best = { card: current, position };
+      }
+      if (position?.score >= 58) return current;
+      current = current.parentElement;
+    }
+    return best?.position.score >= 48 ? best.card : undefined;
+  };
+
+  const sectionCompanyFromCard = (card) => {
+    if (!platformAdapter.sectionCompany) return platformAdapter.defaultCompany || undefined;
+    let current = card;
+    for (let depth = 0; current && current !== document.body && depth < 6; depth += 1) {
+      let sibling = current.previousElementSibling;
+      for (let offset = 0; sibling && offset < 4; offset += 1) {
+        const siblingText = clean(sibling.innerText || ownText(sibling));
+        if (siblingText.length > 0 && siblingText.length <= 80) {
+          const headings = [sibling, ...Array.from(sibling.querySelectorAll("h1,h2,h3,h4,strong"))];
+          const candidate = headings
+            .flatMap(candidateTexts)
+            .map(clean)
+            .find(
+              (value) =>
+                value.length >= 2 &&
+                value.length <= 40 &&
+                !/职位|岗位|所属部门|申请日期|申请编号|投递时间|进度|状态|操作/.test(value) &&
+                !/\d{4}[./-]\d{1,2}[./-]\d{1,2}/.test(value) &&
+                !extractionRules.isHardRejectedPosition(value) &&
+                extractionRules.classifyText(value) !== "occupation"
+            );
+          if (candidate) return candidate;
+        }
+        sibling = sibling.previousElementSibling;
+      }
+      current = current.parentElement;
+    }
+    return platformAdapter.defaultCompany || undefined;
+  };
+
+  const explicitStageFromRegion = (region) => {
+    const labels = stageElementsIn(region).map((element) => ({
+      element,
+      original: ownText(element),
+      label: stageTextValue(ownText(element))
+    }));
+    return labels.find(({ original, label }) => terminalPattern.test(label) || statusPrefixPattern.test(original)) ||
+      labels.find(({ label }) => /中$|^等待|^待/i.test(label));
+  };
+
+  const evidenceFromCard = (card, region) => {
+    const cardText = clean(card.innerText || "");
+    const positionCandidate = positionCandidateFromCard(card, [region]);
+    if (!positionCandidate || extractionRules.isHardRejectedPosition(positionCandidate.value)) {
+      return undefined;
+    }
+
+    const explicitStage = explicitStageFromRegion(region);
+    const terminalCandidate = explicitStage && terminalPattern.test(explicitStage.label)
+      ? explicitStage.label
+      : cardText.match(terminalPattern)?.[0];
+    // A terminal status on a job-detail page (“该职位已结束”) means the position
+    // stopped recruiting, not that this application was terminated. Only trust
+    // terminal text on application-record pages (投递记录/申请记录) or when the
+    // card carries an explicit 投递/申请 timestamp.
+    const isApplicationRecordPage =
+      /(?:personal|account|user)\/|delivery|application|投递记录|申请记录|my[-_]?applications/i.test(
+        location.href
+      );
+    const hasAppliedTimestamp =
+      /(?:投递时间|申请时间|提交时间|申请日期)[：:\s]*20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}|20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?\s*(?:投递|申请)(?!截止|开始|时间)/i.test(
+        cardText
+      );
+    if (terminalCandidate && !isApplicationRecordPage && !hasAppliedTimestamp) {
+      return undefined;
+    }
+    const terminalStatus = terminalCandidate;
+    const rawStepElements = stageElementsIn(region);
     const uniqueSteps = [];
-    const seenLabels = new Set();
-    for (const element of stepElements) {
+    const seenFamilies = new Set();
+    for (const element of rawStepElements) {
       const label = stageTextValue(ownText(element));
-      if (terminalPattern.test(label)) continue;
-      const key = label.toLowerCase();
-      if (seenLabels.has(key)) continue;
-      seenLabels.add(key);
+      if (!label || terminalPattern.test(label)) continue;
+      const baseLabel = label.replace(/(?:中|完成|通过|不通过|结果)$/i, "");
+      // “简历筛选中” is a variant of “简历筛选”; only skip it when a
+      // different element already carries the base label. A lone “简历筛选中”
+      // status (common on application record lists) must still become a step.
+      const hasExplicitBase = rawStepElements.some(
+        (other) =>
+          other !== element &&
+          stageTextValue(ownText(other)).replace(/(?:中|完成|通过|不通过|结果)$/i, "") ===
+            baseLabel
+      );
+      if (label !== baseLabel && hasExplicitBase) continue;
+      const family = stageFamily(label);
+      if (seenFamilies.has(family)) continue;
+      seenFamilies.add(family);
       uniqueSteps.push({
         label,
-        state: explicitStage === label ? "current" : stageVisualState(element, card)
+        state: explicitStage?.label === label ? "current" : stageVisualState(element, region)
       });
-    }
-    if (explicitStage && !uniqueSteps.some((step) => step.label === explicitStage)) {
-      uniqueSteps.push({ label: explicitStage, state: "current" });
     }
     if (!uniqueSteps.length && !terminalStatus) return undefined;
 
@@ -234,97 +443,99 @@
         }
       }
     }
-    const currentStage = explicitStage || (currentIndex >= 0 ? uniqueSteps[currentIndex].label : undefined);
-    const explicitCurrent = Boolean(explicitStage) || uniqueSteps.some((step) => step.state === "current");
+    const currentStage =
+      (!terminalStatus && explicitStage?.label) ||
+      (currentIndex >= 0 ? uniqueSteps[currentIndex].label : undefined);
+    const applicationId = extractionRules.extractApplicationId(cardText, platformAdapter);
+    const recordUrl = Array.from(card.querySelectorAll("a[href]"))
+      .map((anchor) => anchor.href)
+      .find((href) => /(?:job|position|apply|application|delivery|resume|detail)/i.test(href));
+    const appliedAt =
+      cardText.match(
+        /(?:投递时间|申请时间|提交时间|申请日期)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?)/i
+      )?.[1] ||
+      cardText.match(
+        /(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)\s*(?:投递|申请)(?!截止|开始|时间)/i
+      )?.[1];
+    const city = cardText.match(
+      /(?:工作地点|工作城市|职位地点|办公地点)[：:\s]+([^\s，,；;]{2,20})/i
+    )?.[1];
+    const positionConfidence = positionCandidate.score >= 80
+      ? 0.98
+      : positionCandidate.score >= 62
+        ? 0.92
+        : 0.82;
+    const progressConfidence = terminalStatus || explicitStage
+      ? 0.97
+      : currentStage
+        ? 0.86
+        : 0.76;
 
     return {
-      jobId,
-      position: progressCardPosition(card, jobId),
+      jobId: applicationId,
+      recordUrl,
+      position: positionCandidate.value,
+      company: sectionCompanyFromCard(card),
+      city,
+      appliedAt: appliedAt
+        ? appliedAt.replace(/[年月./]/g, "-").replace(/日$/, "")
+        : undefined,
       currentStage,
       terminalStatus,
-      context: cardText.slice(0, 900),
+      context: cardText.slice(0, 1200),
+      adapterId: platformAdapter.id,
       steps: uniqueSteps.map((step, index) => ({
         ...step,
         state: terminalStatus && index === currentIndex ? "failed" : step.state
       })),
-      confidence: terminalStatus ? 0.99 : explicitCurrent ? 0.97 : currentStage ? 0.82 : 0.35
+      confidence: Math.min(positionConfidence, progressConfidence)
     };
   };
 
   const extractProgressEvidence = () => {
-    const bodyText = document.body.innerText || "";
-    const jobIds = Array.from(new Set(bodyText.match(/\b[A-Z]\d{5,}\b/gi) || []));
-    const allElements = Array.from(document.body.querySelectorAll("*")).slice(0, 12000);
-    const evidence = jobIds.flatMap((jobId) => {
-      const idPattern = new RegExp(`\\b${jobId.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}\\b`, "i");
-      const card = allElements
-        .filter((element) => {
-          const value = clean(element.innerText || "");
-          if (!value || value.length > 2400 || !idPattern.test(value)) return false;
-          const ids = value.match(/\b[A-Z]\d{5,}\b/gi) || [];
-          if (new Set(ids.map((id) => id.toLowerCase())).size !== 1) return false;
-          return Array.from(element.querySelectorAll("*")).some((child) =>
-            isStageText(ownText(child)) && !terminalPattern.test(ownText(child))
-          );
-        })
-        .sort((left, right) => clean(left.innerText).length - clean(right.innerText).length)[0];
-      if (!card) return [];
-      const item = evidenceFromCard(card, jobId);
-      return item ? [item] : [];
-    });
-
-    const explicitStatuses = allElements.filter((element) => {
-      const value = ownText(element);
-      const stage = stageTextValue(value);
-      return (
-        isStageText(value) &&
-        (statusPrefixPattern.test(value) || terminalPattern.test(stage) || /中$|^等待|^待/i.test(stage))
-      );
-    });
-    for (const statusElement of explicitStatuses) {
-      const explicitStage = stageTextValue(ownText(statusElement));
-      let card = statusElement.parentElement;
-      while (card && card !== document.body) {
-        const value = clean(card.innerText || "");
-        if (value.length > 2400) break;
-        if (value.length >= 12 && progressCardPosition(card)) break;
-        card = card.parentElement;
-      }
-      if (!card || card === document.body) continue;
-      const cardJobId = clean(card.innerText || "").match(/\b[A-Z]\d{5,}\b/i)?.[0];
-      const item = evidenceFromCard(
-        card,
-        cardJobId,
-        terminalPattern.test(explicitStage) ? undefined : explicitStage
-      );
-      if (!item?.position) continue;
-      if (terminalPattern.test(explicitStage)) item.terminalStatus = explicitStage;
-      const duplicate = evidence.some(
-        (entry) =>
-          Boolean(
-            entry.jobId &&
-            item.jobId &&
-            entry.jobId.toLowerCase() === item.jobId.toLowerCase()
-          ) ||
-          normalizeProgressPosition(entry.position) === normalizeProgressPosition(item.position)
-      );
-      if (!duplicate) evidence.push(item);
+    const allElements = Array.from(document.body.querySelectorAll("*")).slice(0, 16000);
+    const regions = findProgressRegions(allElements);
+    const byCard = new Map();
+    for (const region of regions) {
+      const card = resolveProgressCard(region, regions);
+      if (!card) continue;
+      const item = evidenceFromCard(card, region);
+      if (!item) continue;
+      const existing = byCard.get(card);
+      if (!existing || item.confidence > existing.confidence) byCard.set(card, item);
     }
 
-    return evidence
-      .sort((left, right) => Number(Boolean(right.jobId)) - Number(Boolean(left.jobId)))
+    return [...byCard.entries()]
+      .sort((left, right) => {
+        const relation = left[0].compareDocumentPosition(right[0]);
+        return relation & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1;
+      })
+      .map(([, item]) => item)
       .filter((item, index, items) => {
+        const normalizedPosition = extractionRules.normalizePosition(item.position);
         return items.findIndex((candidate) => {
-          const sameJobId = Boolean(
-            item.jobId &&
-            candidate.jobId &&
-            item.jobId.toLowerCase() === candidate.jobId.toLowerCase()
-          );
-          return (
-            sameJobId ||
-            normalizeProgressPosition(candidate.position) ===
-              normalizeProgressPosition(item.position)
-          );
+          if (item.jobId || candidate.jobId) {
+            return Boolean(
+              item.jobId &&
+              candidate.jobId &&
+              item.jobId.toLowerCase() === candidate.jobId.toLowerCase()
+            );
+          }
+          const itemIdentity = [
+            normalizedPosition,
+            clean(item.company),
+            clean(item.city),
+            clean(item.appliedAt),
+            clean(item.recordUrl)
+          ].join("|");
+          const candidateIdentity = [
+            extractionRules.normalizePosition(candidate.position),
+            clean(candidate.company),
+            clean(candidate.city),
+            clean(candidate.appliedAt),
+            clean(candidate.recordUrl)
+          ].join("|");
+          return candidateIdentity === itemIdentity;
         }) === index;
       });
   };
@@ -381,7 +592,8 @@
         /(?:截止日期|截止时间|申请截止|网申截止)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?)/i
       ]);
     const appliedAtRaw = firstMatch(text, [
-      /(?:投递时间|申请时间|提交时间)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)/i
+      /(?:投递时间|申请时间|提交时间)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)/i,
+      /(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)\s*(?:投递|申请)(?!截止|开始|时间)/i
     ]);
 
     const description = clean(
@@ -1022,10 +1234,38 @@
     };
   };
 
+  // 直调 React 受控组件的 onChange handler（兜底）：构造精简版 synthetic event，
+  // 绕过事件冒泡时机的不确定性，确保 React 100% 收到值变化
+  // （参考竞品 fillField 的 _valueTracker + 直调 handler 写法）
+  const triggerReactChange = (element, nativeEvent) => {
+    const reactKey = Object.keys(element).find(
+      (key) => key.startsWith("__reactEventHandlers$") || key.startsWith("__reactProps$")
+    );
+    const handlers = reactKey ? element[reactKey] : null;
+    if (typeof handlers?.onChange !== "function") return;
+    handlers.onChange({
+      target: element,
+      currentTarget: element,
+      type: "change",
+      nativeEvent,
+      bubbles: true,
+      cancelable: true,
+      defaultPrevented: false,
+      isDefaultPrevented: () => false,
+      isPropagationStopped: () => false,
+      persist: () => {}
+    });
+  };
+
   const dispatchInputEvents = (element) => {
-    element.dispatchEvent(new Event("input", { bubbles: true }));
-    element.dispatchEvent(new Event("change", { bubbles: true }));
-    element.dispatchEvent(new Event("blur", { bubbles: true }));
+    const inputEvent = new Event("input", { bubbles: true, cancelable: true });
+    element.dispatchEvent(inputEvent);
+    triggerReactChange(element, inputEvent); // 直调 React onChange 兜底
+    element.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+    element.dispatchEvent(new Event("blur", { bubbles: true, cancelable: true }));
+    // 补齐键盘事件：部分自建组件（搜索型 combobox 等）依赖 keydown/keyup 刷新下拉
+    element.dispatchEvent(new KeyboardEvent("keydown", { bubbles: true, cancelable: true }));
+    element.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, cancelable: true }));
   };
 
   const prepareControlInteraction = (element) => {
@@ -1345,6 +1585,69 @@
     return true;
   };
 
+  // 字节/飞书系自建下拉 .ud__select 的专用填充（参考竞品 fillCustomSelectField）
+  // 这类组件值藏在虚拟 DOM / 自定义属性里，标准 select 写入无效，需模拟交互 + 直调 React onClick
+  const fillUdSelect = async (element, value) => {
+    const selector = element.closest?.(".ud__select__selector") || element.closest?.(".ud__select");
+    if (!selector) return false;
+    selector.scrollIntoView?.({ block: "center", inline: "nearest" });
+    await sleep(100);
+    clickControl(selector);
+    await sleep(500); // 等下拉渲染
+    const dropdowns = Array.from(document.querySelectorAll(".ud__select__dropdown"));
+    const dropdown = dropdowns
+      .filter((candidate) => {
+        const style = window.getComputedStyle(candidate);
+        return (
+          !candidate.classList.contains("ud__select__dropdown-hidden") &&
+          style.display !== "none" &&
+          style.visibility !== "hidden"
+        );
+      })
+      .pop();
+    const options = Array.from(
+      dropdown?.querySelectorAll(".ud__select__list__item, .ud__select__option") || []
+    );
+    const normalizedValue = clean(value).toLowerCase();
+    const target = options.find((option) => {
+      const text = clean(option.textContent || "").toLowerCase();
+      return (
+        text === normalizedValue ||
+        text.includes(normalizedValue) ||
+        normalizedValue.includes(text)
+      );
+    });
+    if (!target) {
+      document.body.click?.();
+      return false;
+    }
+    target.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
+    target.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window }));
+    target.click?.();
+    // 直调 React onClick 兜底
+    const reactKey = Object.keys(target).find(
+      (key) => key.startsWith("__reactEventHandlers$") || key.startsWith("__reactProps$")
+    );
+    const handlers = reactKey ? target[reactKey] : null;
+    if (typeof handlers?.onClick === "function") {
+      handlers.onClick({
+        target,
+        currentTarget: target,
+        type: "click",
+        nativeEvent: new MouseEvent("click"),
+        bubbles: true,
+        cancelable: true,
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        isDefaultPrevented: () => false,
+        isPropagationStopped: () => false,
+        persist: () => {}
+      });
+    }
+    await sleep(150);
+    return true;
+  };
+
   const setNativeValue = async (element, value) => {
     prepareControlInteraction(element);
     if (element instanceof HTMLSelectElement) {
@@ -1354,7 +1657,10 @@
         return text === normalized || text.includes(normalized) || normalized.includes(text);
       });
       if (!option) return false;
+      const oldValue = element.value;
       element.value = option.value;
+      // React 受控 <select> 同样用 _valueTracker 判断变化，设回旧值确保 onChange 触发
+      element._valueTracker?.setValue?.(oldValue);
     } else if (element instanceof HTMLInputElement && element.type === "radio") {
       const radios = Array.from(document.querySelectorAll(`input[type="radio"][name="${CSS.escape(element.name)}"]`));
       const normalized = clean(value).toLowerCase();
@@ -1409,6 +1715,9 @@
       );
       if (!target) return false;
       clickControl(target);
+    } else if (element.closest?.(".ud__select")) {
+      const ok = await fillUdSelect(element, value);
+      if (!ok) return false;
     } else if (element.getAttribute("role") === "combobox") {
       const nativeInput = element instanceof HTMLInputElement ? element : element.querySelector("input");
       if (nativeInput) {
@@ -1458,9 +1767,13 @@
       const prototype = element instanceof HTMLTextAreaElement
         ? HTMLTextAreaElement.prototype
         : HTMLInputElement.prototype;
+      const oldValue = element.value;
       const setter = Object.getOwnPropertyDescriptor(prototype, "value")?.set;
       if (setter) setter.call(element, value);
       else element.value = value;
+      // React 受控组件加固：把 _valueTracker 设回旧值，确保 React 在后续事件里
+      // 检测到"实际值 ≠ 跟踪值"而触发 onChange（防止赋值被 React 回滚/忽略）
+      element._valueTracker?.setValue?.(oldValue);
     }
     dispatchInputEvents(element);
     return true;
@@ -1685,4 +1998,3 @@
   // Initial silent sync after SPA content has had time to render.
   scheduleProgressCheck(2600);
 })();
-

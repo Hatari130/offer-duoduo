@@ -28,6 +28,7 @@ import {
   KeyRound,
   Target,
   Trash2,
+  Wand2,
   X
 } from "lucide-react";
 import {
@@ -61,6 +62,10 @@ import {
   refreshOpportunityFeed
 } from "@/features/opportunities/opportunities";
 import {
+  OPPORTUNITY_PUBLISH_STATUS_KEY,
+  publishOpportunityFeed
+} from "@/infrastructure/sync/opportunitySync";
+import {
   STAGES,
   STAGE_LABELS,
   type ApplicationStage,
@@ -72,6 +77,8 @@ import {
   type RecruitmentOpportunity
 } from "@/shared/types";
 import OpportunityView from "@/features/opportunities/OpportunityView";
+import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
+import { buildJobKey, type TailorContext } from "@/features/tailor/types";
 
 import {
   CalendarView,
@@ -80,14 +87,16 @@ import {
   EditDrawer,
   JobCard,
   OverlayPanel,
+  captureCandidatesFromProgress,
   compactStages,
   createId,
   dueState,
   inferAppliedAt,
+  isCapturePositionRejected,
+  prepareCaptureForReview,
   shouldUseDeepSeekForCapture,
   type View
 } from "@/features/workspace/WorkspaceViews";
-import { buildJobKey, type TailorContext } from "@/features/tailor/types";
 
 export default function App({ overlay = false }: { overlay?: boolean }) {
   const [jobs, setJobs] = useState<JobApplication[]>([]);
@@ -118,6 +127,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [testingAi, setTestingAi] = useState(false);
+  const [publishState, setPublishState] = useState<{
+    syncedAt?: string;
+    count?: number;
+    error?: string;
+  }>({});
 
   useEffect(() => {
     Promise.all([loadJobs(), loadSettings(), loadProfile(), loadOpportunityCache()]).then(([storedJobs, storedSettings, storedProfile, cachedOpportunities]) => {
@@ -144,6 +158,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         .then((snapshot) => {
           setOpportunitySnapshot(snapshot);
           setOpportunityError("");
+          publishSnapshot(snapshot);
         })
         .catch((error) => {
           if (storedSettings.opportunityFeedUrl) {
@@ -171,6 +186,15 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           changes[OPPORTUNITY_CACHE_KEY].newValue as OpportunityFeedSnapshot
         );
       }
+      if (changes[OPPORTUNITY_PUBLISH_STATUS_KEY]?.newValue) {
+        setPublishState(
+          changes[OPPORTUNITY_PUBLISH_STATUS_KEY].newValue as {
+            syncedAt?: string;
+            count?: number;
+            error?: string;
+          }
+        );
+      }
       if (changes[AUTO_SYNC_NOTICE_KEY]?.newValue) {
         const autoNotice = changes[AUTO_SYNC_NOTICE_KEY].newValue as {
           message?: string;
@@ -178,6 +202,16 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         if (autoNotice.message) setNotice(autoNotice.message);
       }
     };
+
+    chrome.storage.local
+      .get(OPPORTUNITY_PUBLISH_STATUS_KEY)
+      .then((result) => {
+        const stored = result[OPPORTUNITY_PUBLISH_STATUS_KEY] as
+          | { syncedAt?: string; count?: number; error?: string }
+          | undefined;
+        if (stored) setPublishState(stored);
+      })
+      .catch(() => undefined);
 
     chrome.storage.onChanged.addListener(handleStorageChange);
     chrome.tabs
@@ -209,109 +243,13 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     await saveProfile(updated);
   };
 
-  const encodeUtf8Base64 = (value: string) => {
-    const bytes = new TextEncoder().encode(value);
-    let binary = "";
-    for (let offset = 0; offset < bytes.length; offset += 0x8000) {
-      binary += String.fromCharCode.apply(
-        null,
-        Array.from(bytes.subarray(offset, Math.min(offset + 0x8000, bytes.length)))
-      );
-    }
-    return btoa(binary);
-  };
-
-  const openTailorPage = async (context: TailorContext) => {
-    const payload = encodeURIComponent(encodeUtf8Base64(JSON.stringify({ jobKey: context.jobKey, context })));
-    const url = chrome.runtime.getURL(`tailor.html?context=${payload}`);
-    await chrome.tabs.create({ url });
-  };
-
-  const extractSingleJobForTailor = async (): Promise<ExtractedJob | undefined> => {
-    if (typeof chrome === "undefined" || !chrome.tabs) return undefined;
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab.id || !tab.url?.startsWith("http")) {
-      throw new Error("请在招聘网页中使用 OfferDuoDuo");
-    }
-    const requestExtraction = () =>
-      chrome.tabs.sendMessage(tab.id!, {
-        type: "OFFERFLOW_EXTRACT_PAGE"
-      }) as Promise<{ ok: boolean; data?: ExtractedJob; error?: string }>;
-    let response: { ok: boolean; data?: ExtractedJob; error?: string };
-    try {
-      response = await requestExtraction();
-    } catch (messageError) {
-      const reason =
-        messageError instanceof Error ? messageError.message : String(messageError);
-      const receiverMissing = reason.includes("Receiving end does not exist");
-      if (!receiverMissing || !chrome.scripting) throw messageError;
-      await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        files: ["extraction-rules.js", "form-adapters.js", "content.js"]
-      });
-      response = await requestExtraction();
-    }
-    if (!response.ok || !response.data) {
-      throw new Error(response.error || "页面解析失败");
-    }
-    const candidates = captureCandidatesFromProgress(response.data);
-    if (candidates.length >= 1) return candidates[0];
-    if (settings.deepseekApiKey && shouldUseDeepSeekForCapture(response.data)) {
-      try {
-        const aiResult = await extractWithDeepSeek(response.data, settings);
-        const valid = aiResult.applications
-          .filter((application) => !isCapturePositionRejected(application.position))
-          .map(prepareCaptureForReview);
-        if (valid.length) return valid[0];
-      } catch (error) {
-        setNotice(
-          `DeepSeek识别失败，已使用本地规则：${error instanceof Error ? error.message : "未知错误"}`
-        );
-      }
-    }
-    return prepareCaptureForReview(response.data);
-  };
-
-  const handleTailor = async () => {
-    setBusy(true);
-    setNotice("");
-    try {
-      const job = await extractSingleJobForTailor();
-      if (!job) throw new Error("未在当前页面识别到岗位信息");
-      const jobKey = buildJobKey({
-        company: job.company,
-        position: job.position,
-        sourceUrl: job.sourceUrl
-      });
-      const context: TailorContext = {
-        jobKey,
-        company: job.company,
-        position: job.position,
-        city: job.city,
-        sourceUrl: job.sourceUrl,
-        summary: job.summary,
-        responsibilities: job.responsibilities || [],
-        requirements: job.requirements || [],
-        rawExcerpt: job.rawExcerpt,
-        deadline: job.deadline,
-        jobType: job.jobType
-      };
-      await openTailorPage(context);
-      setNotice(`已为「${job.position}」打开定制简历编辑器`);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "无法定制简历";
-      setNotice(message);
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const refreshOpportunities = async (sourceUrl = settings.opportunityFeedUrl) => {
     setOpportunityLoading(true);
     setOpportunityError("");
     try {
       const snapshot = await refreshOpportunityFeed(sourceUrl);
       setOpportunitySnapshot(snapshot);
+      publishSnapshot(snapshot);
       return snapshot;
     } catch (error) {
       const message = error instanceof Error ? error.message : "机会数据同步失败";
@@ -320,6 +258,18 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     } finally {
       setOpportunityLoading(false);
     }
+  };
+
+  const publishSnapshot = (snapshot: OpportunityFeedSnapshot) => {
+    publishOpportunityFeed(snapshot)
+      .then((count) =>
+        setPublishState({ syncedAt: new Date().toISOString(), count })
+      )
+      .catch((error) =>
+        setPublishState({
+          error: error instanceof Error ? error.message : "Web 端同步失败"
+        })
+      );
   };
 
   const saveOpportunityFeedUrl = async (sourceUrl: string) => {
@@ -412,7 +362,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
 
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ["form-adapters.js", "content.js"]
+            files: ["extraction-rules.js", "form-adapters.js", "content.js"]
           });
           response = await requestExtraction();
         }
@@ -420,18 +370,31 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         if (!response.ok || !response.data) {
           throw new Error(response.error || "页面解析失败");
         }
-        if (settings.deepseekApiKey && shouldUseDeepSeekForCapture(response.data)) {
+        const localProgressCandidates = captureCandidatesFromProgress(response.data);
+        if (localProgressCandidates.length > 1) {
+          setCaptureCandidates(localProgressCandidates);
+          setCapture(null);
+        } else if (localProgressCandidates.length === 1) {
+          setCapture(localProgressCandidates[0]);
+          setCaptureCandidates([]);
+        } else if (settings.deepseekApiKey && shouldUseDeepSeekForCapture(response.data)) {
           try {
             const aiResult = await extractWithDeepSeek(response.data, settings);
-            if (aiResult.applications.length > 1) {
-              setCaptureCandidates(aiResult.applications);
+            const validApplications = aiResult.applications
+              .filter((application) => !isCapturePositionRejected(application.position))
+              .map(prepareCaptureForReview);
+            if (!validApplications.length) {
+              throw new Error("识别结果只有流程节点，没有可信岗位名称");
+            }
+            if (validApplications.length > 1) {
+              setCaptureCandidates(validApplications);
               setCapture(null);
             } else {
-              setCapture(aiResult.applications[0]);
+              setCapture(validApplications[0]);
               setCaptureCandidates([]);
             }
           } catch (aiError) {
-            setCapture(response.data);
+            setCapture(prepareCaptureForReview(response.data));
             setCaptureCandidates([]);
             setNotice(
               `DeepSeek识别失败，已使用本地规则：${
@@ -440,7 +403,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             );
           }
         } else {
-          setCapture(response.data);
+          setCapture(prepareCaptureForReview(response.data));
           setCaptureCandidates([]);
         }
       }
@@ -577,6 +540,57 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     setCapture(null);
     setView("dashboard");
     setNotice(`导入完成：新建 ${createdCount} 条，更新 ${updatedCount} 条`);
+  };
+
+  const handleTailor = async () => {
+    setBusy(true);
+    setNotice("");
+    try {
+      if (typeof chrome === "undefined" || !chrome.tabs) {
+        setNotice("请在 Chrome 浏览器中使用定制功能");
+        return;
+      }
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      if (!tab.id || !tab.url?.startsWith("http")) {
+        throw new Error("请在招聘网页中使用 OfferDuoDuo");
+      }
+      const requestExtraction = () =>
+        chrome.tabs.sendMessage(tab.id!, {
+          type: "OFFERFLOW_EXTRACT_PAGE"
+        }) as Promise<{ ok: boolean; data?: ExtractedJob; error?: string }>;
+
+      let response = await requestExtraction();
+      if (!response.ok) {
+        await chrome.scripting.executeScript({
+          target: { tabId: tab.id },
+          files: ["extraction-rules.js", "form-adapters.js", "content.js"]
+        });
+        response = await requestExtraction();
+      }
+      if (!response.ok || !response.data) {
+        throw new Error(response.error || "页面解析失败");
+      }
+      const job = response.data;
+      const context: TailorContext = {
+        jobKey: buildJobKey({ company: job.company, position: job.position, sourceUrl: job.sourceUrl }),
+        company: job.company,
+        position: job.position,
+        city: job.city,
+        sourceUrl: job.sourceUrl,
+        summary: job.summary,
+        responsibilities: job.responsibilities || [],
+        requirements: job.requirements || []
+      };
+      const payload = encodeURIComponent(JSON.stringify(context));
+      const url = chrome.runtime.getURL(`tailor.html?context=${payload}`);
+      await chrome.tabs.create({ url });
+    } catch (error) {
+      setNotice(
+        error instanceof Error ? error.message : "定制功能暂时不可用，请先识别当前页面的岗位信息"
+      );
+    } finally {
+      setBusy(false);
+    }
   };
 
   const updateStage = async (job: JobApplication, stage: ApplicationStage) => {
@@ -719,8 +733,8 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   const openWebDashboard = () => {
     const url =
       typeof chrome !== "undefined" && chrome.runtime?.getURL
-        ? chrome.runtime.getURL("dashboard.html")
-        : new URL("dashboard.html", window.location.href).href;
+        ? chrome.runtime.getURL("resume.html")
+        : new URL("resume.html", window.location.href).href;
     if (typeof chrome !== "undefined" && chrome.tabs?.create) {
       void chrome.tabs.create({ url });
       return;
@@ -896,15 +910,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             {busy ? <RefreshCw className="spin" size={16} /> : <Plus size={17} />}
             抓取当前岗位
           </button>
-          <button
-            className="capture-button tailor-button"
-            onClick={handleTailor}
-            disabled={busy}
-            title="基于当前岗位定制简历"
-          >
-            {busy ? <RefreshCw className="spin" size={16} /> : <Sparkles size={16} />}
-            定制简历
-          </button>
         </div>
       </header>
 
@@ -978,6 +983,8 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               </div>
             </div>
 
+            <CloudSyncSettings />
+
             <div className="settings-card opportunity-source-card">
               <div className="setting-icon opportunity-source-icon">
                 <Megaphone size={24} />
@@ -1001,6 +1008,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
                   {opportunitySnapshot.opportunities.length
                     ? `已载入 ${opportunitySnapshot.opportunities.length} 条机会`
                     : "当前没有机会数据"}
+                </div>
+                <div className="connection-state">
+                  <span className={publishState?.error ? "empty-dot" : publishState?.count ? "connected-dot" : "empty-dot"} />
+                  {publishState?.error
+                    ? `Web 端同步失败：${publishState.error}`
+                    : publishState?.count
+                      ? `Web 端已同步 ${publishState.count} 条 · ${new Date(publishState.syncedAt || "").toLocaleTimeString("zh-CN", { hour12: false })}`
+                      : "Web 端等待同步：打开本地 API 后自动推送"}
                 </div>
               </div>
               <button

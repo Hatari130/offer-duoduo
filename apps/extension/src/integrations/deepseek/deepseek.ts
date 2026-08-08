@@ -7,6 +7,7 @@
   PersonalProfile,
   ProfileFieldKey
 } from "@/shared/types";
+import { normalizeExternalStage } from "@/features/workspace/workspaceUtils";
 
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MODELS_URL = "https://api.deepseek.com/models";
@@ -310,7 +311,7 @@ function compactProgressEvidence(page: ExtractedJob) {
 
 function compactPageText(page: ExtractedJob): string {
   const maxLength = page.progressEvidence?.length ? 2400 : 8000;
-  return documentSafe(page.rawExcerpt || "").slice(0, maxLength);
+  return sanitizeAiPageText(page.rawExcerpt || "").slice(0, maxLength);
 }
 
 function extractionPrompt(page: ExtractedJob): string {
@@ -350,8 +351,8 @@ function extractionPrompt(page: ExtractedJob): string {
 8. 页面进度证据由 DOM 状态生成，优先级高于纯文本推断；不得把尚未到达的后续节点当作当前阶段。
 
 页面信息：
-标题：${documentSafe(page.position)}
-规则初步识别公司：${documentSafe(page.company)}
+标题：${cleanSiteName(page.position)}
+规则初步识别公司：${cleanSiteName(page.company)}
 网址：${page.sourceUrl}
 域名：${page.sourceHost}
 
@@ -390,6 +391,56 @@ function normalizePositionIdentity(value?: string): string {
 
 function documentSafe(value: string): string {
   return value.replace(/\u0000/g, "").trim();
+}
+
+const AI_NAV_PLACEHOLDER_WORDS = [
+  "首页",
+  "投递记录",
+  "申请记录",
+  "我的申请",
+  "校园招聘",
+  "社会招聘",
+  "实习生招聘",
+  "招聘门户",
+  "招聘首页",
+  "编辑",
+  "返回",
+  "没有更多了",
+  "登录",
+  "注册",
+  "登录/注册",
+  "暂存投递"
+];
+
+const AI_CODE_COMMENT_PATTERN = /\/\*[\s\S]*?\*\/|<!--[\s\S]*?-->/g;
+
+/**
+ * Strip template code comments (for example the Beisen portal's
+ * project-config markers) and standalone navigation labels so the model cannot
+ * mistake them for a company or position.
+ */
+export function sanitizeAiPageText(value: string): string {
+  return documentSafe(value)
+    .replace(AI_CODE_COMMENT_PATTERN, " ")
+    .replace(
+      new RegExp(`(?:^|\\s)(?:${AI_NAV_PLACEHOLDER_WORDS.join("|")})(?=\\s|$)`, "g"),
+      " "
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+const SITE_SUFFIX_PATTERN = /(?:官方)?(?:招聘官网|招聘平台|招聘门户|招聘首页|校园招聘|社会招聘|人才招聘|招聘)$/;
+
+function cleanSiteName(value: string): string {
+  return sanitizeAiPageText(value).replace(SITE_SUFFIX_PATTERN, "");
+}
+
+export function inferApplicationListFromUrl(sourceUrl?: string): boolean {
+  const normalized = (sourceUrl || "").toLowerCase();
+  return /(?:personal|account|user)\/(?:delivery|application|apply)(?:[-_]?(?:record|list|history))?|(?:^|\/)(?:delivery|applications?)(?:[-_]?(?:record|list|history)|$|\/)|my[-_]?applications|投递记录|申请记录/.test(
+    normalized
+  );
 }
 
 export async function extractWithDeepSeek(
@@ -484,9 +535,10 @@ export async function extractWithDeepSeek(
       })
     : returnedApplications;
 
-  const inferredPageType =
-    page.progressEvidence?.length &&
-    (!parsed.page_type || parsed.page_type === "unknown" || parsed.page_type === "job_posting")
+  const inferredPageType = inferApplicationListFromUrl(page.sourceUrl)
+    ? "application_list"
+    : page.progressEvidence?.length &&
+      (!parsed.page_type || parsed.page_type === "unknown" || parsed.page_type === "job_posting")
       ? "application_list"
       : parsed.page_type;
 
@@ -529,10 +581,15 @@ export async function extractWithDeepSeek(
             ? undefined
             : normalizeStage(item.stage),
         externalStage: trustedEvidence
-          ? progressEvidence?.terminalStatus || progressEvidence?.currentStage
+          ? (normalizeExternalStage(
+              progressEvidence?.terminalStatus || progressEvidence?.currentStage
+            ) ||
+              progressEvidence?.terminalStatus ||
+              progressEvidence?.currentStage ||
+              undefined)
           : isProgressPage
             ? undefined
-            : item.stage?.trim() || undefined,
+            : normalizeExternalStage(item.stage) || item.stage?.trim() || undefined,
         extractionSource: "deepseek",
         confidence: trustedEvidence
           ? progressEvidence!.confidence

@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>个人投递管理</title>
+  </head>
+  <body>
+    <aside>
+      <nav>
+        <a href="/app/chat">求职助手</a>
+        <a href="/app/opportunities">校招信息速递</a>
+        <a href="/app/applications">个人投递管理</a>
+      </nav>
+    </aside>
+    <main>
+      <h1>个人投递管理</h1>
+      <table class="application-table">
+        <thead><tr><th>公司与岗位</th><th>当前阶段</th><th>投递时间</th></tr></thead>
+        <tbody>
+          <tr>
+            <td><button><strong>合合信息</strong><span>【27校招】办公平台AI产品经理/AI Agent工程师（J14442）</span></button></td>
+            <td>
+              <select>
+                <option>感兴趣</option>
+                <option>待投递</option>
+                <option selected>已投递</option>
+                <option>笔试测评</option>
+                <option>面试</option>
+                <option>Offer</option>
+                <option>已结束</option>
+              </select>
+              <small>网站进度：简历初筛</small>
+            </td>
+            <td><span>08/08 19:03</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      (() => {
+        let captured;
+        const done = (value) => {
+          captured = value;
+        };
+        const listeners = globalThis.__offerflowListeners;
+        for (const listener of listeners) {
+          listener({ type: "OFFERFLOW_EXTRACT_PAGE" }, null, done);
+        }
+        const payload = {
+          ok: true,
+          data: {
+            skipped: listeners.length === 0,
+            progressEvidence: captured?.data?.progressEvidence || []
+          }
+        };
+        document.body.setAttribute(
+          "data-result",
+          encodeURIComponent(JSON.stringify(payload)).replaceAll("&", "&amp;")
+        );
+      })();
+    </script>
+  </body>
+</html>

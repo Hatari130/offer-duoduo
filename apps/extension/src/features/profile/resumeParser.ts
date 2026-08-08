@@ -165,7 +165,6 @@ async function extractPdfText(buffer: ArrayBuffer) {
   try {
     const pdf = await getDocument({
       data: new Uint8Array(buffer),
-      isEvalSupported: false,
       useWorkerFetch: false
     }).promise;
     const pages: string[] = [];

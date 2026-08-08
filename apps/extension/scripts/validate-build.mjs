@@ -17,7 +17,6 @@ if (manifest.manifest_version !== 3) {
 
 const requiredFiles = new Set([
   "manifest.json",
-  "dashboard.html",
   "resume.html",
   manifest.side_panel?.default_path,
   manifest.background?.service_worker
@@ -39,7 +38,22 @@ for (const relativePath of requiredFiles) {
   }
 }
 
-for (const htmlFile of ["dashboard.html", "sidepanel.html", "resume.html"]) {
+for (const contentScript of manifest.content_scripts ?? []) {
+  for (const script of contentScript.js ?? []) {
+    const source = readFileSync(join(distDirectory, script), "utf8");
+    try {
+      // Content scripts are classic scripts, so parsing them as a function body
+      // catches malformed merges before Chrome silently rejects the extension.
+      new Function(source);
+    } catch (error) {
+      throw new Error(
+        `Extension content script has invalid JavaScript: ${script}\n${error instanceof Error ? error.message : error}`
+      );
+    }
+  }
+}
+
+for (const htmlFile of ["sidepanel.html", "resume.html", "tailor.html"]) {
   const html = readFileSync(join(distDirectory, htmlFile), "utf8");
   const assetReferences = html.matchAll(/(?:src|href)="\/([^"#?]+)/g);
   for (const match of assetReferences) {

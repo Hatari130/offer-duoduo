@@ -6,10 +6,13 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "pnpm run typecheck && vite build && pnpm run validate:build",
+    "test:capture": "node --test tests/capture-matching.test.mjs tests/deepseek-sanitize.test.mjs && node tests/run-dom-fixture.mjs",
+    "test:sync": "node --experimental-transform-types --test tests/cloud-sync-outbox.test.mjs",
     "validate:build": "node scripts/validate-build.mjs",
     "typecheck": "tsc -p tsconfig.app.json --pretty false && tsc -p tsconfig.node.json --pretty false"
   },
   "dependencies": {
+    "@offerflow/api-client": "workspace:*",
     "@offerflow/contracts": "workspace:*",
     "@offerflow/domain": "workspace:*",
     "lucide-react": "^0.468.0",

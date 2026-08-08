@@ -1,13 +1,29 @@
 import { loadJobs, loadSettings, saveJobs } from "@/infrastructure/storage/storage";
+import { runCloudSync } from "@/infrastructure/sync/cloudSync";
+import { publishOpportunityFeed } from "@/infrastructure/sync/opportunitySync";
+import { CLOUD_SYNC_OUTBOX_KEY } from "@/infrastructure/sync/syncState";
+import { normalizeExternalStage } from "@/features/workspace/workspaceUtils";
+import {
+  DEFAULT_OPPORTUNITY_FEED_URL,
+  isFeishuOpportunityFeed,
+  normalizeFeishuRows,
+  normalizeOpportunityFeed,
+  writeOpportunityCache
+} from "@/features/opportunities/opportunities";
 import {
   STAGE_LABELS,
   type ApplicationStage,
   type ExtractedJob,
   type JobApplication,
+  type OpportunityFeedSnapshot,
   type ProgressEvidence
 } from "@/shared/types";
 
 const PROCESSED_SIGNATURE_TTL = 30 * 60 * 1000;
+const CLOUD_SYNC_ALARM_NAME = "offerflow-cloud-sync";
+const CLOUD_SYNC_PERIOD_MINUTES = 5;
+const OPPORTUNITY_FEED_ALARM_NAME = "offerflow-opportunity-feed";
+const OPPORTUNITY_FEED_PERIOD_MINUTES = 15;
 const processedSignatures = new Map<number, Map<string, number>>();
 const processingTabs = new Set<number>();
 const pendingUpdates = new Map<
@@ -193,12 +209,27 @@ function stageFromEvidence(evidence: ProgressEvidence): ApplicationStage | undef
   return normalizeStage(evidence.terminalStatus || evidence.currentStage);
 }
 
+const APPLICATION_PAGE_PATTERN =
+  /(?:personal|account|user)\/|delivery|application|投递记录|申请记录|my[-_]?applications/i;
+const OFFERFLOW_WEB_ORIGINS = ["http://127.0.0.1:5173", "http://localhost:5173"];
+
+function isOfferFlowWebOrigin(sourceUrl?: string): boolean {
+  try {
+    return OFFERFLOW_WEB_ORIGINS.includes(new URL(sourceUrl || "").origin);
+  } catch {
+    return false;
+  }
+}
+
 async function updateProgressFromPage(
   tabId: number,
   signature: string,
   pageData: ExtractedJob
 ): Promise<void> {
   if (isProcessed(tabId, signature)) return;
+  // Never auto-update jobs from the OfferFlow web app itself: its stage
+  // selects contain “已结束” options which would close records in a loop.
+  if (isOfferFlowWebOrigin(pageData.sourceUrl)) return;
   const settings = await loadSettings();
   if (settings.autoMonitorEnabled === false) return;
 
@@ -224,7 +255,16 @@ async function updateProgressFromPage(
 
     const job = matches[0];
     const nextStage = stageFromEvidence(evidence)!;
-    const externalStage = evidence.terminalStatus || evidence.currentStage;
+    // “已结束” on a job-detail page means the position stopped recruiting, not
+    // that the application was terminated. Never auto-close a record from a
+    // page that is not an application-record page.
+    if (nextStage === "closed" && !APPLICATION_PAGE_PATTERN.test(pageData.sourceUrl || "")) {
+      continue;
+    }
+    const externalStage =
+      normalizeExternalStage(evidence.terminalStatus || evidence.currentStage) ||
+      evidence.terminalStatus ||
+      evidence.currentStage;
     const stageChanged = job.stage !== nextStage;
     const externalStageChanged = Boolean(externalStage) && job.externalStage !== externalStage;
     const appliedAt = evidenceItems.length === 1 ? pageData.appliedAt : undefined;
@@ -303,12 +343,62 @@ async function enqueueProgressUpdate(
   if (lastError) throw lastError;
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
+async function syncCloudInBackground(): Promise<void> {
+  try {
+    await runCloudSync();
+  } catch (error) {
+    console.warn("OfferFlow cloud sync failed", error);
+  }
+}
+
+async function syncOpportunityFeedInBackground(): Promise<void> {
+  try {
+    const settings = await loadSettings();
+    const configuredUrl = settings.opportunityFeedUrl?.trim();
+    const sourceUrl = configuredUrl || DEFAULT_OPPORTUNITY_FEED_URL;
+
+    let snapshot: OpportunityFeedSnapshot;
+    if (isFeishuOpportunityFeed(sourceUrl)) {
+      const payload = await readFeishuSheet(sourceUrl);
+      snapshot = normalizeFeishuRows(payload, sourceUrl);
+    } else {
+      const response = await fetch(sourceUrl, { cache: "no-store" });
+      if (!response.ok) throw new Error(`机会数据源读取失败（${response.status}）`);
+      snapshot = normalizeOpportunityFeed(await response.json(), sourceUrl);
+    }
+
+    await writeOpportunityCache(snapshot);
+    await publishOpportunityFeed(snapshot);
+  } catch (error) {
+    console.warn("OfferFlow opportunity feed sync failed", error);
+  }
+}
+
+async function initializeBackground(): Promise<void> {
   await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+  await chrome.alarms.create(CLOUD_SYNC_ALARM_NAME, {
+    delayInMinutes: 1,
+    periodInMinutes: CLOUD_SYNC_PERIOD_MINUTES
+  });
+  await chrome.alarms.create(OPPORTUNITY_FEED_ALARM_NAME, {
+    delayInMinutes: 1,
+    periodInMinutes: OPPORTUNITY_FEED_PERIOD_MINUTES
+  });
+  await syncCloudInBackground();
+  await syncOpportunityFeedInBackground();
+}
+
+chrome.runtime.onInstalled.addListener(() => {
+  void initializeBackground();
 });
 
-chrome.runtime.onStartup.addListener(async () => {
-  await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
+chrome.runtime.onStartup.addListener(() => {
+  void initializeBackground();
+});
+
+chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === CLOUD_SYNC_ALARM_NAME) void syncCloudInBackground();
+  if (alarm.name === OPPORTUNITY_FEED_ALARM_NAME) void syncOpportunityFeedInBackground();
 });
 
 chrome.action.onClicked.addListener(async (tab) => {
@@ -320,15 +410,29 @@ chrome.action.onClicked.addListener(async (tab) => {
   try {
     await toggle();
   } catch {
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["form-adapters.js", "content.js"]
-    });
-    await toggle();
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ["extraction-rules.js", "form-adapters.js", "content.js"]
+      });
+      await toggle();
+    } catch (error) {
+      console.warn("OfferFlow could not open the page overlay", error);
+    }
   }
 });
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message?.type === "OFFERFLOW_CLOUD_SYNC_NOW") {
+    runCloudSync()
+      .then((overview) => sendResponse({ ok: true, data: overview }))
+      .catch((error) => sendResponse({
+        ok: false,
+        error: error instanceof Error ? error.message : "云端同步失败"
+      }));
+    return true;
+  }
+
   if (message?.type === "OFFERFLOW_READ_FEISHU_SHEET" && typeof message.url === "string") {
     readFeishuSheet(message.url)
       .then((data) => sendResponse({ ok: true, data }))
@@ -366,4 +470,14 @@ chrome.tabs.onRemoved.addListener((tabId) => {
   processedSignatures.delete(tabId);
   processingTabs.delete(tabId);
   pendingUpdates.delete(tabId);
+});
+
+let cloudSyncDebounce: ReturnType<typeof setTimeout> | undefined;
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== "local" || !changes[CLOUD_SYNC_OUTBOX_KEY]) return;
+  if (cloudSyncDebounce) clearTimeout(cloudSyncDebounce);
+  cloudSyncDebounce = setTimeout(() => {
+    cloudSyncDebounce = undefined;
+    void syncCloudInBackground();
+  }, 600);
 });

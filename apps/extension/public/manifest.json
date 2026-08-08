@@ -5,6 +5,8 @@
   "version": "0.1.0",
   "permissions": [
     "activeTab",
+    "alarms",
+    "identity",
     "storage",
     "scripting",
     "sidePanel"
@@ -24,13 +26,19 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["form-adapters.js", "content.js"],
+      "exclude_matches": [
+        "http://127.0.0.1:5173/*",
+        "http://localhost:5173/*",
+        "http://127.0.0.1:8787/*",
+        "http://localhost:8787/*"
+      ],
+      "js": ["extraction-rules.js", "form-adapters.js", "content.js"],
       "run_at": "document_idle"
     }
   ],
   "web_accessible_resources": [
     {
-      "resources": ["sidepanel.html", "tailor.html", "assets/*"],
+      "resources": ["sidepanel.html", "tailor.html", "resume.html", "assets/*"],
       "matches": ["http://*/*", "https://*/*"]
     }
   ],

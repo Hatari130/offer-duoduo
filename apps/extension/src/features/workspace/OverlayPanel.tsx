@@ -72,8 +72,10 @@ import {
   type PersonalProfile,
   type RecruitmentOpportunity
 } from "@/shared/types";
+import ProfileView from "@/features/profile/ProfileView";
 import ResumeLibraryPanel from "@/features/workspace/ResumeLibraryPanel";
 import OpportunityView from "@/features/opportunities/OpportunityView";
+import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
 import {
   CHINA_MAP_HEIGHT,
   CHINA_MAP_WIDTH,
@@ -347,16 +349,35 @@ export function OverlayPanel({
       </header>
 
       <div className="overlay-scroll" ref={overlayScrollRef}>
-        {tab !== "profile" && <section className="overlay-capture-card">
-          <span className="overlay-capture-icon">
-            <Target size={19} />
-          </span>
-          <span>
-            <strong>识别当前招聘页面</strong>
-            <small>岗位、投递记录或流程变化</small>
-          </span>
-          <button onClick={onCapture}>识别</button>
-        </section>}
+        {tab !== "profile" && tab !== "opportunities" && (
+          <div className="overlay-action-stack">
+            <section className="overlay-capture-card">
+              <span className="overlay-capture-icon">
+                <Target size={19} />
+              </span>
+              <span>
+                <strong>识别当前招聘页面</strong>
+                <small>岗位、投递记录或流程变化</small>
+              </span>
+              <button onClick={onCapture}>识别</button>
+            </section>
+            {onTailor && (
+              <section className="overlay-capture-card overlay-tailor-card">
+                <span className="overlay-capture-icon overlay-tailor-icon">
+                  <Sparkles size={19} />
+                </span>
+                <span>
+                  <strong>为这个岗位定制简历</strong>
+                  <small>DeepSeek 改写 · JD × Resume 高亮 · 一键存为 PDF</small>
+                </span>
+                <button onClick={onTailor}>
+                  <Wand2 size={14} />
+                  定制
+                </button>
+              </section>
+            )}
+          </div>
+        )}
 
         {tab === "overview" && (
           <>
@@ -658,6 +679,7 @@ export function OverlayPanel({
               <div><CircleDot size={17} /><span><strong>实时监听</strong><small>{(settings.autoMonitorEnabled ?? true) ? "已开启" : "已关闭"}</small></span><i className={(settings.autoMonitorEnabled ?? true) ? "active" : ""} /></div>
               <div><FileText size={17} /><span><strong>Obsidian</strong><small>{settings.obsidianFolderName || "未连接"}</small></span><i className={settings.obsidianFolderName ? "active" : ""} /></div>
             </div>
+            <CloudSyncSettings />
             <div className="opportunity-feed-settings">
               <label htmlFor="overlay-opportunity-feed">校招机会数据源地址</label>
               <input
@@ -680,7 +702,15 @@ export function OverlayPanel({
         )}
 
         {tab === "profile" && (
-          <ResumeLibraryPanel onOpenManager={onOpenResumeManager} onSaveProfile={onSaveProfile} />
+          <>
+            <ResumeLibraryPanel onOpenManager={onOpenResumeManager} onSaveProfile={onSaveProfile} />
+            <ProfileView
+              profile={profile}
+              settings={settings}
+              onSave={onSaveProfile}
+              onBack={() => setTab("overview")}
+            />
+          </>
         )}
       </div>
 

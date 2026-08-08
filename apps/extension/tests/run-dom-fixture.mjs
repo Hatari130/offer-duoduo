@@ -24,9 +24,18 @@ if (!chromePath) {
 const fixturePath = fileURLToPath(
   new URL("./fixtures/progress-page.html", import.meta.url)
 );
+const zhiyeFixturePath = fileURLToPath(
+  new URL("./fixtures/zhiye-delivery.html", import.meta.url)
+);
+const zhiyeDetailEndedPath = fileURLToPath(
+  new URL("./fixtures/zhiye-detail-ended.html", import.meta.url)
+);
+const webAppPath = fileURLToPath(
+  new URL("./fixtures/web-app-applications.html", import.meta.url)
+);
 const profileDirectory = mkdtempSync(join(tmpdir(), "offerflow-dom-test-"));
 
-try {
+const runFixture = (fixture) => {
   const result = spawnSync(
     chromePath,
     [
@@ -38,7 +47,7 @@ try {
       "--virtual-time-budget=2500",
       `--user-data-dir=${profileDirectory}`,
       "--dump-dom",
-      pathToFileURL(fixturePath).href
+      pathToFileURL(fixture).href
     ],
     { encoding: "utf8", maxBuffer: 8 * 1024 * 1024 }
   );
@@ -48,8 +57,12 @@ try {
   assert(encoded, "fixture did not publish an extraction result");
   const response = JSON.parse(decodeURIComponent(encoded.replaceAll("&amp;", "&")));
   assert.equal(response.ok, true);
+  return response.data;
+};
 
-  const evidence = response.data.progressEvidence;
+try {
+  const data = runFixture(fixturePath);
+  const evidence = data.progressEvidence;
   assert.equal(evidence.length, 3);
   assert.deepEqual(
     evidence.map((item) => ({
@@ -74,6 +87,56 @@ try {
     false
   );
   console.log("DOM extraction fixture passed for JD, Alibaba and Baidu examples.");
+
+  const zhiye = runFixture(zhiyeFixturePath);
+  assert.equal(zhiye.progressEvidence.length, 2);
+  assert.deepEqual(
+    zhiye.progressEvidence.map((item) => ({
+      position: item.position,
+      jobId: item.jobId,
+      progress: item.currentStage,
+      appliedAt: item.appliedAt
+    })),
+    [
+      {
+        position: "【27校招】办公平台AI产品经理/AI Agent工程师（J14442）",
+        jobId: "J14442",
+        progress: "当前进度：简历筛选·初筛进行中",
+        appliedAt: "2026-08-08 19:03"
+      },
+      {
+        position: "27届校招-AI产品经理（J14379）",
+        jobId: "J14379",
+        progress: "当前进度：简历筛选·初筛进行中",
+        appliedAt: "2026-08-08 19:02"
+      }
+    ]
+  );
+  assert.equal(zhiye.progressEvidence[0].company, undefined);
+  assert.equal(zhiye.progressEvidence[0].position.includes("实习生招聘"), false);
+  assert.equal(
+    zhiye.rawExcerpt.includes("/*project config start*/"),
+    true,
+    "rawExcerpt still carries the portal marker (AI prompt sanitization is tested separately)"
+  );
+  console.log("DOM extraction fixture passed for the zhiye delivery-record page.");
+
+  const detail = runFixture(zhiyeDetailEndedPath);
+  assert.equal(
+    detail.progressEvidence.length,
+    0,
+    "a job-detail page whose position ended must not mark the application as terminated"
+  );
+  console.log("DOM extraction fixture passed: ended job details never produce terminal evidence.");
+
+  const webApp = runFixture(webAppPath);
+  assert.equal(
+    webApp.skipped,
+    true,
+    "the OfferFlow web app must never be captured as a recruitment page"
+  );
+  assert.equal(webApp.progressEvidence.length, 0);
+  console.log("DOM extraction fixture passed: the OfferFlow web app is excluded from capture.");
 } finally {
   rmSync(profileDirectory, { recursive: true, force: true });
 }

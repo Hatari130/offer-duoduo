@@ -299,7 +299,7 @@ async function activeTabMessage(message: unknown) {
       if (String(error).includes("Extension context invalidated")) {
         throw error;
       }
-      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["form-adapters.js", "content.js"] });
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["extraction-rules.js", "form-adapters.js", "content.js"] });
       return chrome.tabs.sendMessage(tab.id, message);
     }
   } catch (error) {

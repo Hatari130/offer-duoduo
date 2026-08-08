@@ -46,9 +46,11 @@ const dateKey = (value: unknown) => {
     return dateKey(numeric);
   }
 
-  const match = text.match(/(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/);
-  if (!match) return undefined;
-  const [, year, month, day] = match;
+  // "2026-07-01 至 2026-08-20" means the campaign closes at the end of the
+  // range, so prefer the last date found in the cell.
+  const matches = [...text.matchAll(/(\d{4})\s*[-/.年]\s*(\d{1,2})\s*[-/.月]\s*(\d{1,2})/g)];
+  if (!matches.length) return undefined;
+  const [, year, month, day] = matches[matches.length - 1];
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 };
 
@@ -168,7 +170,7 @@ const roleTagsFromCell = (value: unknown) => {
   return list(roleText).slice(0, 4);
 };
 
-function normalizeFeishuRows(
+export function normalizeFeishuRows(
   payload: FeishuSheetPayload,
   sourceUrl: string
 ): OpportunityFeedSnapshot {
@@ -236,23 +238,7 @@ async function readFeishuSheet(sourceUrl: string): Promise<FeishuSheetPayload> {
   return response.data;
 }
 
-export function opportunityStatus(opportunity: RecruitmentOpportunity): OpportunityStatus {
-  const today = new Date();
-  const todayKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
-  const soon = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 3);
-  const soonKey = `${soon.getFullYear()}-${String(soon.getMonth() + 1).padStart(2, "0")}-${String(soon.getDate()).padStart(2, "0")}`;
-
-  if (opportunity.status === "closed") return "closed";
-  if (opportunity.openAt && opportunity.openAt > todayKey) return "upcoming";
-  if (opportunity.deadline && opportunity.deadline < todayKey) return "closed";
-  if (opportunity.deadline && opportunity.deadline <= soonKey) return "closing";
-  if (opportunity.status === "upcoming") return "upcoming";
-  if (opportunity.status === "closing") return "closing";
-  if (opportunity.status === "open") return "open";
-  if (opportunity.status === "ongoing") return "ongoing";
-  if (!opportunity.openAt && !opportunity.deadline) return "ongoing";
-  return "open";
-}
+export { opportunityStatus } from "@offerflow/domain";
 
 const hasChromeStorage = () =>
   typeof chrome !== "undefined" && Boolean(chrome.storage?.local);
@@ -268,12 +254,42 @@ export async function loadOpportunityCache(): Promise<OpportunityFeedSnapshot> {
   };
 }
 
-async function saveOpportunityCache(snapshot: OpportunityFeedSnapshot) {
+export async function writeOpportunityCache(snapshot: OpportunityFeedSnapshot): Promise<void> {
   if (!hasChromeStorage()) {
     localStorage.setItem(OPPORTUNITY_CACHE_KEY, JSON.stringify(snapshot));
     return;
   }
   await chrome.storage.local.set({ [OPPORTUNITY_CACHE_KEY]: snapshot });
+}
+
+export function normalizeOpportunityFeed(
+  payload: unknown,
+  sourceUrl: string
+): OpportunityFeedSnapshot {
+  const record = payload && typeof payload === "object" ? (payload as Record<string, unknown>) : {};
+  const rawItems = Array.isArray(payload)
+    ? payload
+    : ([record.opportunities, record.items, record.records, record.data].find(Array.isArray) as
+        | unknown[]
+        | undefined) || [];
+  const opportunities = rawItems
+    .map((item) => {
+      const itemRecord = item && typeof item === "object" ? (item as Record<string, unknown>) : {};
+      const fields = itemRecord && "fields" in itemRecord
+        ? (itemRecord.fields as RawOpportunity)
+        : (item as RawOpportunity);
+      return normalizeOpportunity(fields);
+    })
+    .filter((item): item is RecruitmentOpportunity => Boolean(item));
+  const deduplicated = opportunities.filter(
+    (item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index
+  );
+  return {
+    opportunities: deduplicated,
+    fetchedAt: new Date().toISOString(),
+    sourceUpdatedAt: Array.isArray(payload) ? undefined : clean(record.updatedAt) || undefined,
+    sourceUrl
+  };
 }
 
 export async function refreshOpportunityFeed(
@@ -284,36 +300,15 @@ export async function refreshOpportunityFeed(
     const sourceUrl = configuredSourceUrl!;
     const payload = await readFeishuSheet(sourceUrl);
     const snapshot = normalizeFeishuRows(payload, sourceUrl);
-    await saveOpportunityCache(snapshot);
+    await writeOpportunityCache(snapshot);
     return snapshot;
   }
 
   const sourceUrl = configuredSourceUrl || new URL("opportunities.json", window.location.href).href;
   const response = await fetch(sourceUrl, { cache: "no-store" });
   if (!response.ok) throw new Error(`机会数据源读取失败（${response.status}）`);
-  const payload = (await response.json()) as RawOpportunity[] | Record<string, unknown>;
-  const rawItems = Array.isArray(payload)
-    ? payload
-    : ([payload.opportunities, payload.items, payload.records, payload.data].find(Array.isArray) as
-        | RawOpportunity[]
-        | undefined) || [];
-  const opportunities = rawItems
-    .map((item) => {
-      const fields = item && typeof item === "object" && "fields" in item
-        ? (item.fields as RawOpportunity)
-        : item;
-      return normalizeOpportunity(fields);
-    })
-    .filter((item): item is RecruitmentOpportunity => Boolean(item));
-  const deduplicated = opportunities.filter(
-    (item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index
-  );
-  const snapshot: OpportunityFeedSnapshot = {
-    opportunities: deduplicated,
-    fetchedAt: new Date().toISOString(),
-    sourceUpdatedAt: Array.isArray(payload) ? undefined : clean(payload.updatedAt) || undefined,
-    sourceUrl
-  };
-  await saveOpportunityCache(snapshot);
+  const payload = (await response.json()) as unknown;
+  const snapshot = normalizeOpportunityFeed(payload, sourceUrl);
+  await writeOpportunityCache(snapshot);
   return snapshot;
 }

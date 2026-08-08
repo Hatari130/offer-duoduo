@@ -53,7 +53,7 @@ function extensionUrl(file: string) {
 }
 
 function openPlugin() {
-  const url = extensionUrl("dashboard.html");
+  const url = extensionUrl("resume.html");
   if (typeof chrome !== "undefined" && chrome.tabs?.create) {
     void chrome.tabs.create({ url });
     return;

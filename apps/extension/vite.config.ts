@@ -14,9 +14,9 @@ export default defineConfig({
     emptyOutDir: true,
     rollupOptions: {
       input: {
-        dashboard: resolve(__dirname, "dashboard.html"),
-        sidepanel: resolve(__dirname, "sidepanel.html"),
         resume: resolve(__dirname, "resume.html"),
+        tailor: resolve(__dirname, "tailor.html"),
+        sidepanel: resolve(__dirname, "sidepanel.html"),
         background: resolve(__dirname, "src/entries/background/index.ts")
       },
       output: {

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>合合信息招聘门户</title>
+  </head>
+  <body>
+    <main>
+      <h1>【27校招】办公平台AI产品经理/AI Agent工程师（J14442）</h1>
+      <div class="detail-status">已结束</div>
+      <p>岗位职责：负责办公平台 AI 产品规划</p>
+    </main>
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script>
+      // The fixture runs from a file:// URL, so route the adapter lookup through
+      // the real zhiye.com adapter like the other delivery fixtures.
+      const offerFlowRules = globalThis.OfferFlowExtractionRules;
+      const offerFlowGetAdapter = offerFlowRules.getAdapter;
+      globalThis.OfferFlowExtractionRules = {
+        ...offerFlowRules,
+        getAdapter: (hostname) =>
+          offerFlowGetAdapter(String(hostname || "").toLowerCase() === "" ? "intsig.zhiye.com" : hostname)
+      };
+    </script>
+    <script src="../../public/content.js"></script>
+    <script>
+      (() => {
+        let captured;
+        const done = (value) => {
+          captured = value;
+          document.body.setAttribute(
+            "data-result",
+            encodeURIComponent(JSON.stringify(value)).replaceAll("&", "&amp;")
+          );
+        };
+        for (const listener of globalThis.__offerflowListeners) {
+          listener({ type: "OFFERFLOW_EXTRACT_PAGE" }, null, done);
+        }
+        if (!captured) done({ ok: false, error: "no listener responded" });
+      })();
+    </script>
+  </body>
+</html>
