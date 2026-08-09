@@ -25,8 +25,13 @@ import {
   X
 } from "lucide-react";
 import { normalizeEducationEntries, parseResumeFile } from "@/features/profile/resumeParser";
+import { arrayBufferToBase64 } from "@/shared/binary";
 import ResumeEditor from "@/features/resumes/ResumeEditor";
 import {
+  ACTIVE_RESUME_KEY,
+  BASE_PROFILE_KEY,
+  EMPTY_PROFILE,
+  RESUMES_KEY,
   loadActiveResumeId,
   loadBaseProfile,
   loadProfile,
@@ -46,6 +51,7 @@ import {
 } from "@/infrastructure/storage/storage";
 
 const createId = () => `resume_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
+const MAX_SOURCE_PDF_BYTES = 8 * 1024 * 1024;
 
 function extensionUrl(file: string) {
   if (typeof chrome !== "undefined" && chrome.runtime?.getURL) return chrome.runtime.getURL(file);
@@ -182,6 +188,11 @@ export default function ResumeManagerApp() {
       if (storedFixedProfile?.fixedSectionsVersion !== 1) await saveBaseProfile(fixedProfile);
       if (library.some((resume, index) => resume !== loadedLibrary[index])) await saveResumeLibrary(library);
       const currentId = active && library.some((resume) => resume.id === active) ? active : library[0]?.id || "";
+      const currentResume = library.find((resume) => resume.id === currentId);
+      await Promise.all([
+        currentId && active !== currentId ? setActiveResumeId(currentId) : Promise.resolve(),
+        currentResume ? saveProfile(currentResume.profile) : Promise.resolve()
+      ]);
       setResumes(library);
       setActiveId(currentId);
       setSelectedId(currentId);
@@ -190,6 +201,33 @@ export default function ResumeManagerApp() {
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+    const handleStorageChange = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string
+    ) => {
+      if (areaName !== "local") return;
+      if (!changes[RESUMES_KEY] && !changes[ACTIVE_RESUME_KEY] && !changes[BASE_PROFILE_KEY]) return;
+      void (async () => {
+        const [library, storedActiveId, fixedProfile] = await Promise.all([
+          loadResumeLibrary(),
+          loadActiveResumeId(),
+          loadBaseProfile()
+        ]);
+        const currentId = storedActiveId && library.some((resume) => resume.id === storedActiveId)
+          ? storedActiveId
+          : library[0]?.id || "";
+        setResumes(library);
+        setActiveId(currentId);
+        setSelectedId((current) => library.some((resume) => resume.id === current) ? current : currentId);
+        if (fixedProfile) setResumeFixedProfile(fixedProfile);
+      })();
+    };
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
   }, []);
 
   const selected = useMemo(
@@ -211,6 +249,13 @@ export default function ResumeManagerApp() {
   const notify = (message: string) => {
     setNotice(message);
     window.setTimeout(() => setNotice(""), 3000);
+  };
+
+  const reconcileActiveProfile = async (library: StoredResume[], expectedActiveId?: string) => {
+    const storedActiveId = expectedActiveId ?? await loadActiveResumeId();
+    const current = library.find((item) => item.id === storedActiveId);
+    if (!current) return;
+    await saveProfile(current.profile);
   };
 
   const saveLibraryUi = async (patch: Partial<{ collapsed: boolean; pinned: boolean }>) => {
@@ -240,16 +285,34 @@ export default function ResumeManagerApp() {
     if (!libraryPinned && !libraryCollapsed) void saveLibraryUi({ collapsed: true });
     await Promise.all([
       saveResumeLibrary(next),
-      setActiveResumeId(resume.id),
-      saveProfile({ ...selectedResume.profile, updatedAt: now })
+      setActiveResumeId(resume.id)
     ]);
-    notify(`已切换为当前网申简历：${resumeName(selectedResume)}`);
+    await reconcileActiveProfile(next, resume.id);
+    notify(`已切换为当前网申简历：${resumeName(selectedResume)}，插件已同步`);
   };
 
   const importResume = async (file: File) => {
     setUploading(true);
     try {
-      const result = await parseResumeFile(file);
+      const isPdf = file.name.toLowerCase().endsWith(".pdf");
+      if (isPdf && file.size > MAX_SOURCE_PDF_BYTES) {
+        throw new Error("原始 PDF 不能超过 8MB；请压缩后重新导入，才能保证定制时沿用原版式");
+      }
+      let result;
+      try {
+        result = await parseResumeFile(file);
+      } catch (parseError) {
+        if (!isPdf) throw parseError;
+        result = {
+          profile: {
+            ...EMPTY_PROFILE,
+            extraFields: { resumeSourceName: file.name, parseMode: "source-pdf" }
+          },
+          extractedCount: 0,
+          warnings: ["字段解析未完成；原 PDF 仍会作为 HTML 母版保留"],
+          textLength: 0
+        };
+      }
       const now = new Date().toISOString();
       const parsedName = fileStem(file.name) || "新简历";
       const archiveMetadata = inferArchiveMetadata(parsedName, result.profile);
@@ -266,6 +329,14 @@ export default function ResumeManagerApp() {
         position: archiveMetadata.position,
         archiveNameSource: "filename",
         sourceFileName: file.name,
+        sourcePdf: isPdf
+          ? {
+              fileName: file.name,
+              size: file.size,
+              importedAt: now,
+              base64: arrayBufferToBase64(await file.arrayBuffer())
+            }
+          : undefined,
         profile: applyResumeFixedProfile(result.profile, fixedProfile),
         createdAt: now,
         updatedAt: now
@@ -354,9 +425,9 @@ export default function ResumeManagerApp() {
     setResumeFixedProfile(nextFixedProfile);
     setResumes(next);
     await Promise.all([saveResumeLibrary(next), saveBaseProfile(nextFixedProfile)]);
-    if (resume.id === activeId) await saveProfile({ ...selectedProfile, updatedAt: now });
+    await reconcileActiveProfile(next, activeId);
     const updated = next.find((item) => item.id === resume.id) || resume;
-    notify(`《${resumeName(updated)}》已保存`);
+    notify(`《${resumeName(updated)}》已保存，插件已同步`);
   };
 
   if (loading) {
@@ -555,6 +626,9 @@ function ResumeListItem({
         <strong>{resumeName(resume)}</strong>
         <small>{resume.sourceFileName || "本地资料"}</small>
         <small>{fieldCount(resume)} 个字段 · {new Date(resume.updatedAt).toLocaleDateString("zh-CN")}</small>
+        <small className={resume.sourcePdf ? "resume-source-ready" : "resume-source-missing"}>
+          {resume.sourcePdf ? "原 PDF 母版已保存" : "缺少原 PDF 母版 · 重新导入可保持版式"}
+        </small>
       </span>
       <span className="resume-list-actions">
         {active ? (
@@ -612,6 +686,9 @@ function ResumeDetail({
             <span className="resume-eyebrow">SAVED RESUME</span>
             <h2>{resumeName(resume)}</h2>
             <p>{resume.sourceFileName || "本地保存的结构化资料"} · 更新于 {new Date(resume.updatedAt).toLocaleString("zh-CN")}</p>
+            <p className={resume.sourcePdf ? "resume-source-ready" : "resume-source-missing"}>
+              {resume.sourcePdf ? "原 PDF 母版已保存，一键改简历会沿用原排版" : "缺少原 PDF 母版，请重新导入 PDF 后再使用一键改简历"}
+            </p>
           </div>
         </div>
         <div className="resume-detail-tools">

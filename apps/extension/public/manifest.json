@@ -38,7 +38,7 @@
   ],
   "web_accessible_resources": [
     {
-      "resources": ["sidepanel.html", "tailor.html", "resume.html", "assets/*"],
+      "resources": ["dashboard.html", "sidepanel.html", "tailor.html", "resume.html", "assets/*"],
       "matches": ["http://*/*", "https://*/*"]
     }
   ],

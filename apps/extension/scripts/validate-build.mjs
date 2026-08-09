@@ -5,6 +5,12 @@ import { fileURLToPath } from "node:url";
 const extensionDirectory = dirname(dirname(fileURLToPath(import.meta.url)));
 const distDirectory = join(extensionDirectory, "dist");
 const manifestPath = join(distDirectory, "manifest.json");
+const requiredPdfJsAssets = [
+  "pdfjs/cmaps/Adobe-GB1-UCS2.bcmap",
+  "pdfjs/standard_fonts/LiberationSans-Regular.ttf",
+  "pdfjs/wasm/openjpeg.wasm",
+  "pdfjs/iccs/CGATS001Compat-v2-micro.icc"
+];
 
 if (!existsSync(manifestPath)) {
   throw new Error("Extension build is missing dist/manifest.json");
@@ -38,6 +44,12 @@ for (const relativePath of requiredFiles) {
   }
 }
 
+for (const relativePath of requiredPdfJsAssets) {
+  if (!existsSync(join(distDirectory, relativePath))) {
+    throw new Error(`Extension build is missing required PDF.js asset: ${relativePath}`);
+  }
+}
+
 for (const contentScript of manifest.content_scripts ?? []) {
   for (const script of contentScript.js ?? []) {
     const source = readFileSync(join(distDirectory, script), "utf8");
@@ -53,7 +65,7 @@ for (const contentScript of manifest.content_scripts ?? []) {
   }
 }
 
-for (const htmlFile of ["sidepanel.html", "resume.html", "tailor.html"]) {
+for (const htmlFile of ["dashboard.html", "sidepanel.html", "resume.html", "tailor.html"]) {
   const html = readFileSync(join(distDirectory, htmlFile), "utf8");
   const assetReferences = html.matchAll(/(?:src|href)="\/([^"#?]+)/g);
   for (const match of assetReferences) {

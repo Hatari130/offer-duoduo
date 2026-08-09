@@ -11,3 +11,5 @@ coverage/
 .offerflow-api.log
 .offerflow-api.err.log
 .pnpm-store/
+.tmp/
+web-preview*.log

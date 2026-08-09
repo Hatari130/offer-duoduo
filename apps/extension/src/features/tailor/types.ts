@@ -143,6 +143,7 @@ export interface JdAnalysis {
 
 export interface TailorContext {
   jobKey: string;
+  sourceResumeId?: string;
   company: string;
   position: string;
   city?: string;
@@ -209,8 +210,86 @@ export function buildJobKey(context: Pick<TailorContext, "company" | "position" 
   return `tailor_${(hash >>> 0).toString(36)}`;
 }
 
+export function normalizeTailorContext(input: TailorContext): TailorContext {
+  const raw = input.rawExcerpt || "";
+  const responsibilitySection = extractTailorSection(
+    raw,
+    /(?:岗位职责|职位职责|工作职责)/i,
+    /(?:任职资格|任职要求|职位要求|岗位要求|加分项|福利|工作地点)/i
+  );
+  const requirementSection = extractTailorSection(
+    raw,
+    /(?:任职资格|任职要求|职位要求|岗位要求)/i,
+    /(?:加分项|福利|工作地点|职位地点|岗位地点)/i
+  );
+  const responsibilities = preferTailorItems(responsibilitySection, input.responsibilities);
+  const requirements = preferTailorItems(requirementSection, input.requirements);
+  const company = normalizeTailorCompany(input.company);
+  const inferredPosition = inferTailorPosition(raw);
+  const position = isPortalLabel(input.position) ? inferredPosition || input.position : input.position;
+  const summary = normalizeTailorSummary(input.summary, responsibilities, position);
+  const normalized = { ...input, company, position, summary, responsibilities, requirements };
+  return { ...normalized, jobKey: buildJobKey(normalized) };
+}
+
+function preferTailorItems(section: string[], fallback: string[]) {
+  const parsedSection = splitTailorItems(section.join("\n"));
+  const parsedFallback = (fallback || []).flatMap((item) => splitTailorItems(item));
+  return (parsedSection.length >= 2 ? parsedSection : parsedFallback).slice(0, 20);
+}
+
+function splitTailorItems(value: string) {
+  return String(value || "")
+    .replace(/\r/g, "\n")
+    .replace(/\s+(?=(?:\d+)[.、)]\s*)/g, "\n")
+    .replace(/\s+(?=[-•·●]\s*)/g, "\n")
+    .split(/\n+/)
+    .map((item) => item
+      .replace(/^\s*(?:[-•·●]|\d+[.、)])\s*/, "")
+      .replace(/^(?:加分项|任职资格|任职要求|职位要求|岗位要求)[：:]\s*/i, "")
+      .trim())
+    .filter((item) => item.length >= 4)
+    .filter((item, index, items) => items.indexOf(item) === index);
+}
+
+function extractTailorSection(raw: string, startPattern: RegExp, endPattern: RegExp) {
+  const start = raw.search(startPattern);
+  if (start < 0) return [];
+  const body = raw.slice(start).replace(startPattern, "").replace(/^\s*[：:]\s*/, "");
+  const end = body.search(endPattern);
+  return splitTailorItems(end >= 0 ? body.slice(0, end) : body);
+}
+
+function normalizeTailorCompany(value: string) {
+  return String(value || "")
+    .replace(/\s*(?:招聘门户|招聘官网|招聘平台|人才招聘门户|人才招聘官网)$/i, "")
+    .trim();
+}
+
+function isPortalLabel(value: string) {
+  return !value || /招聘门户|招聘官网|招聘平台|招聘首页|校园招聘|社会招聘|实习生招聘/i.test(value);
+}
+
+function inferTailorPosition(raw: string) {
+  const bracketed = raw.match(/【[^】]{0,24}】\s*([^\n]{2,100}?)(?=\s+(?:校园招聘|社会招聘|实习生招聘|全职|兼职|工作地点|上海市|北京市|广州市|深圳市))/i)?.[1];
+  const candidate = String(bracketed || "")
+    .replace(/^首页\s+.*?\s+/, "")
+    .replace(/\s+/g, " ")
+    .trim();
+  return candidate && /(经理|工程师|设计师|分析师|研究员|开发|运营|销售|顾问|专员|主管|总监|算法|产品)/i.test(candidate)
+    ? candidate
+    : undefined;
+}
+
+function normalizeTailorSummary(value: string | undefined, responsibilities: string[], position: string) {
+  const summary = String(value || "").replace(/\s+/g, " ").trim();
+  if (summary && !/招聘门户|招聘首页|工作职责|任职资格|任职要求/.test(summary)) return summary.slice(0, 280);
+  const preview = responsibilities.slice(0, 2).join(" ").slice(0, 240);
+  return preview || `${position || "目标岗位"}的岗位信息`;
+}
+
 export function profileToResume(profile: PersonalProfile): ResumeData {
-  const firstEducation = profile.education?.[0];
+  const educations = (profile.education || []).slice(0, 6);
   const experiences = (profile.experiences || []).slice(0, 4);
   const projects = (profile.projects || []).slice(0, 4);
   return {
@@ -230,22 +309,18 @@ export function profileToResume(profile: PersonalProfile): ResumeData {
       ].filter(Boolean) as ResumeHeader["links"]
     },
     summary: profile.selfIntroduction || profile.strengths || "",
-    education: firstEducation
-      ? [
-          {
-            id: firstEducation.id || "edu-1",
-            school: firstEducation.school || "",
-            degree: firstEducation.educationDegree || firstEducation.degree || "",
-            major: firstEducation.major || "",
-            start: firstEducation.startDate || "",
-            end: firstEducation.endDate || "",
-            gpa: firstEducation.gpa || "",
-            rank: firstEducation.rank || "",
-            courses: firstEducation.courses || "",
-            highlights: []
-          }
-        ]
-      : [],
+    education: educations.map((item, index) => ({
+      id: item.id || `edu-${index + 1}`,
+      school: item.school || "",
+      degree: item.educationDegree || item.degree || "",
+      major: item.major || "",
+      start: item.startDate || "",
+      end: item.endDate || "",
+      gpa: item.gpa || "",
+      rank: item.rank || "",
+      courses: item.courses || "",
+      highlights: []
+    })),
     experience: experiences.map((item) => ({
       id: item.id,
       company: item.organization || "",

@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PDF fidelity harness</title>
+  <link rel="icon" href="data:,">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 4200px; background: #fff; }
+    #reference { display: block; }
+    #output { position: absolute; left: 0; top: 2000px; width: 2000px; height: 2000px; border: 0; }
+  </style>
+</head>
+<body>
+  <canvas id="reference"></canvas>
+  <iframe id="output" title="PDF HTML output"></iframe>
+  <script type="module" src="./pdf-fidelity-harness.ts"></script>
+</body>
+</html>

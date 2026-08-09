@@ -68,7 +68,9 @@ export async function tailorResumeWithDeepSeek(
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: settings.deepseekModel || "deepseek-v4-flash",
+      model: settings.deepseekModel === "deepseek-v4-flash"
+        ? "deepseek-chat"
+        : settings.deepseekModel || "deepseek-chat",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         { role: "user", content: prompt }
@@ -218,17 +220,27 @@ function buildJdAnalysis(
       : never
     : never
 ): JdAnalysis {
-  const safeMappings: JdMapping[] = (Array.isArray(mappings) ? mappings : []).map((item) => ({
-    map_id: String(item.map_id || ""),
-    category: (item.category as JdMapping["category"]) || "keyword",
-    text: String(item.text || ""),
-    resume_ids: Array.isArray(item.resume_ids) ? item.resume_ids.map(String) : [],
-    rationale: item.rationale ? String(item.rationale) : undefined
-  }));
+  const safeMappings: JdMapping[] = (Array.isArray(mappings) ? mappings : [])
+    .map((item) => ({
+      map_id: String(item.map_id || ""),
+      category: (item.category as JdMapping["category"]) || "keyword",
+      text: String(item.text || ""),
+      resume_ids: Array.isArray(item.resume_ids) ? item.resume_ids.map(String) : [],
+      rationale: item.rationale ? String(item.rationale) : undefined
+    }))
+    .filter((item) => item.map_id && item.text);
+  const mappedTexts = (category: JdMapping["category"]) =>
+    safeMappings.filter((item) => item.category === category).map((item) => item.text);
+  const responsibility = Array.isArray(jd.responsibility) && jd.responsibility.length
+    ? jd.responsibility.map(String)
+    : mappedTexts("responsibility");
+  const mustHaves = Array.isArray(jd.must_haves) && jd.must_haves.length
+    ? jd.must_haves.map(String)
+    : mappedTexts("requirement");
   return {
     source: "deepseek",
-    responsibility: Array.isArray(jd.responsibility) ? jd.responsibility.map(String) : [],
-    must_haves: Array.isArray(jd.must_haves) ? jd.must_haves.map(String) : [],
+    responsibility,
+    must_haves: mustHaves,
     differentiators: Array.isArray(jd.differentiators) ? jd.differentiators.map(String) : [],
     bonus: Array.isArray(jd.bonus) ? jd.bonus.map(String) : [],
     keywords: Array.isArray(jd.keywords) ? jd.keywords.map(String) : [],
@@ -238,15 +250,15 @@ function buildJdAnalysis(
 
 function mergeResume(baseline: ResumeData, override: Partial<ResumeData> & { unsupported_claims?: string[] }): ResumeData {
   const header = { ...baseline.header, ...(override.header || {}) };
-  const education = (override.education || baseline.education).map((item) => ({
+  const education = mergeStableSection(baseline.education, override.education, (item) => ({
     ...item,
     highlights: Array.isArray(item.highlights) ? item.highlights : []
   }));
-  const experience = (override.experience || baseline.experience).map((item) => ({
+  const experience = mergeStableSection(baseline.experience, override.experience, (item) => ({
     ...item,
     bullets: Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : []
   }));
-  const projects = (override.projects || baseline.projects).map((item) => ({
+  const projects = mergeStableSection(baseline.projects, override.projects, (item) => ({
     ...item,
     bullets: Array.isArray(item.bullets) ? item.bullets.filter(Boolean) : []
   }));
@@ -259,16 +271,31 @@ function mergeResume(baseline: ResumeData, override: Partial<ResumeData> & { uns
     education,
     experience,
     projects,
-    campus: (override.campus || baseline.campus).map((item) => ({ ...item })),
-    awards: (override.awards || baseline.awards).map((item) => ({ ...item })),
-    skills: (override.skills || baseline.skills).map((item) => ({
+    campus: mergeStableSection(baseline.campus, override.campus, (item) => ({ ...item })),
+    awards: mergeStableSection(baseline.awards, override.awards, (item) => ({ ...item })),
+    skills: mergeStableSection(baseline.skills, override.skills, (item) => ({
       ...item,
       items: Array.isArray(item.items) ? item.items : []
     })),
-    languages: (override.languages || baseline.languages).map((item) => ({ ...item })),
-    publications: (override.publications || baseline.publications).map((item) => ({ ...item })),
+    languages: mergeStableSection(baseline.languages, override.languages, (item) => ({ ...item })),
+    publications: mergeStableSection(baseline.publications, override.publications, (item) => ({ ...item })),
     interests: Array.isArray(override.interests) ? override.interests : baseline.interests
   };
+}
+
+function mergeStableSection<T extends { id: string }>(
+  baseline: T[],
+  override: T[] | undefined,
+  normalize: (item: T) => T
+) {
+  if (!Array.isArray(override) || override.length === 0) return baseline.map(normalize);
+  const overrideById = new Map(override.filter((item) => item?.id).map((item) => [item.id, item]));
+  const merged = baseline.map((item) => normalize({ ...item, ...(overrideById.get(item.id) || {}) }));
+  const baselineIds = new Set(baseline.map((item) => item.id));
+  override
+    .filter((item) => item?.id && !baselineIds.has(item.id))
+    .forEach((item) => merged.push(normalize(item)));
+  return merged;
 }
 
 // Local fallback used when the user has no DeepSeek key. We still build a

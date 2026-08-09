@@ -73,7 +73,6 @@ import {
   type RecruitmentOpportunity
 } from "@/shared/types";
 import ProfileView from "@/features/profile/ProfileView";
-import ResumeLibraryPanel from "@/features/workspace/ResumeLibraryPanel";
 import OpportunityView from "@/features/opportunities/OpportunityView";
 import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
 import {
@@ -133,7 +132,7 @@ export function OverlayPanel({
   onClose: () => void;
 }) {
   const [tab, setTab] = useState<
-    "overview" | "opportunities" | "jobs" | "agenda" | "locations" | "settings" | "profile"
+    "overview" | "opportunities" | "agenda" | "locations" | "settings" | "profile"
   >("overview");
   const [opportunityFeedDraft, setOpportunityFeedDraft] = useState(
     settings.opportunityFeedUrl || ""
@@ -194,9 +193,6 @@ export function OverlayPanel({
     .filter((job) => job.stage !== "closed")
     .sort((a, b) => (a.deadline || "9999").localeCompare(b.deadline || "9999"));
   const favoriteJobs = jobs.filter((job) => job.isFavorite);
-  const recentJobs = [...activeJobs]
-    .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
-    .slice(0, 5);
   const locationGroups = Array.from(
     activeJobs.reduce((groups, job) => {
       const location = normalizeJobLocation(job.city);
@@ -349,7 +345,7 @@ export function OverlayPanel({
       </header>
 
       <div className="overlay-scroll" ref={overlayScrollRef}>
-        {tab !== "profile" && tab !== "opportunities" && (
+        {tab === "overview" && (
           <div className="overlay-action-stack">
             <section className="overlay-capture-card">
               <span className="overlay-capture-icon">
@@ -367,12 +363,12 @@ export function OverlayPanel({
                   <Sparkles size={19} />
                 </span>
                 <span>
-                  <strong>为这个岗位定制简历</strong>
-                  <small>DeepSeek 改写 · JD × Resume 高亮 · 一键存为 PDF</small>
+                  <strong>为当前岗位定制简历</strong>
+                  <small>读取 JD、匹配经历并生成定制预览</small>
                 </span>
                 <button onClick={onTailor}>
                   <Wand2 size={14} />
-                  定制
+                  开始定制
                 </button>
               </section>
             )}
@@ -387,44 +383,8 @@ export function OverlayPanel({
                   ? `${activeJobs.length} 个岗位正在推进`
                   : "暂无岗位记录"}
               </span>
-              <button onClick={() => setTab("jobs")}>查看全部</button>
             </div>
 
-            <section className="overlay-flow">
-              <div className="overlay-flow-list">
-                {recentJobs.map((job, index) => (
-                  <div className="overlay-flow-item" key={job.id}>
-                    <span className={`flow-node flow-node--${index % 3}`} />
-                    <div className="flow-line" />
-                    {renderJob(job)}
-                  </div>
-                ))}
-                {!recentJobs.length && (
-                  <div className="overlay-empty">暂无岗位记录</div>
-                )}
-              </div>
-            </section>
-          </>
-        )}
-
-        {tab === "opportunities" && (
-          <OpportunityView
-            snapshot={opportunitySnapshot}
-            loading={opportunityLoading}
-            error={opportunityError}
-            configured={Boolean(settings.opportunityFeedUrl)}
-            onOpen={onOpenOpportunity}
-            onRefresh={onRefreshOpportunities}
-            onConfigure={() => setTab("settings")}
-          />
-        )}
-
-        {tab === "jobs" && (
-          <section className="overlay-page">
-            <div className="overlay-page-title">
-              <span className="overlay-section-icon"><BriefcaseBusiness size={18} /></span>
-              <div><h1>岗位</h1><p>{activeJobs.length} 个岗位正在推进</p></div>
-            </div>
             <section className="overlay-favorites-section">
               <div className="overlay-favorites-heading">
                 <div>
@@ -468,15 +428,38 @@ export function OverlayPanel({
                 </div>
               )}
             </section>
-            <div className="overlay-progress-heading">
-              <strong>投递进度</strong>
-              <span>{activeJobs.length} 个岗位</span>
-            </div>
-            <div className="overlay-job-list">
-              {activeJobs.map(renderJob)}
-              {!activeJobs.length && <div className="overlay-empty">暂无岗位记录</div>}
-            </div>
-          </section>
+
+            <section className="overlay-flow">
+              <div className="overlay-progress-heading">
+                <strong>投递进度</strong>
+                <span>{activeJobs.length} 个岗位</span>
+              </div>
+              <div className="overlay-flow-list">
+                {activeJobs.map((job, index) => (
+                  <div className="overlay-flow-item" key={job.id}>
+                    <span className={`flow-node flow-node--${index % 3}`} />
+                    <div className="flow-line" />
+                    {renderJob(job)}
+                  </div>
+                ))}
+                {!activeJobs.length && (
+                  <div className="overlay-empty">暂无岗位记录</div>
+                )}
+              </div>
+            </section>
+          </>
+        )}
+
+        {tab === "opportunities" && (
+          <OpportunityView
+            snapshot={opportunitySnapshot}
+            loading={opportunityLoading}
+            error={opportunityError}
+            configured={Boolean(settings.opportunityFeedUrl)}
+            onOpen={onOpenOpportunity}
+            onRefresh={onRefreshOpportunities}
+            onConfigure={() => setTab("settings")}
+          />
         )}
 
         {tab === "agenda" && (
@@ -702,22 +685,18 @@ export function OverlayPanel({
         )}
 
         {tab === "profile" && (
-          <>
-            <ResumeLibraryPanel onOpenManager={onOpenResumeManager} onSaveProfile={onSaveProfile} />
-            <ProfileView
-              profile={profile}
-              settings={settings}
-              onSave={onSaveProfile}
-              onBack={() => setTab("overview")}
-            />
-          </>
+          <ProfileView
+            profile={profile}
+            settings={settings}
+            onSave={onSaveProfile}
+            onTailor={onTailor}
+          />
         )}
       </div>
 
       <nav className="overlay-toolbar">
         <button title="总览" aria-label="总览" className={tab === "overview" ? "active" : ""} onClick={() => setTab("overview")}><LayoutDashboard size={19} /></button>
         <button title="机会" aria-label="机会" className={tab === "opportunities" ? "active" : ""} onClick={() => setTab("opportunities")}><Megaphone size={19} /></button>
-        <button title="投递" aria-label="投递" className={tab === "jobs" ? "active" : ""} onClick={() => setTab("jobs")}><BriefcaseBusiness size={19} /></button>
         <button title="日历" aria-label="日历" className={tab === "agenda" ? "active" : ""} onClick={() => setTab("agenda")}><CalendarDays size={19} /></button>
         <button title="设置" aria-label="设置" className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={19} /></button>
       </nav>

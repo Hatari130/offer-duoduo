@@ -21,6 +21,7 @@ import type {
   ResumeExperience,
   ResumeProject
 } from "./types";
+import type { PersonalProfile } from "@/shared/types";
 
 export interface ResumeShellOptions {
   resume: ResumeData;
@@ -29,6 +30,8 @@ export interface ResumeShellOptions {
   accentColor?: string;
   photoDataUrl?: string;
   showJdSidebar?: boolean;
+  variant?: "modern" | "source-aligned";
+  sourceProfile?: PersonalProfile;
 }
 
 const escape = (value: string) =>
@@ -54,16 +57,24 @@ export function buildResumeHtml(options: ResumeShellOptions): string {
     pageSize = "a4",
     accentColor = "#1d4ed8",
     photoDataUrl,
-    showJdSidebar = true
+    showJdSidebar = true,
+    variant = "modern",
+    sourceProfile
   } = options;
   const layout = pageGeometry(pageSize);
   const safeJd = jd || { source: "fallback", responsibility: [], must_haves: [], differentiators: [], bonus: [], keywords: [], mappings: [] };
   const idMap = buildIdMap(resume, safeJd);
 
-  const css = renderCss({ layout, accentColor });
+  const css = renderCss({ layout, accentColor, variant });
   const toolbar = renderToolbar();
   const jdSidebar = showJdSidebar ? renderJdSidebar(safeJd) : "";
-  const page = renderPage({ resume, photoDataUrl, idMap });
+  const page = renderPage({
+    resume,
+    photoDataUrl,
+    idMap,
+    showSummary: variant !== "source-aligned" || Boolean(sourceProfile?.selfIntroduction || sourceProfile?.strengths),
+    showTargetIntent: variant !== "source-aligned"
+  });
 
   return `<!doctype html>
 <html lang="zh-CN">
@@ -71,10 +82,10 @@ export function buildResumeHtml(options: ResumeShellOptions): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="generator" content="offerflow-tailor">
-  <title>${escape(resume.targetCompany || "")} · ${escape(resume.header.name || resume.targetRole || "定制简历")}</title>
+  <title>${escape(resume.targetCompany || "")} · ${escape(resume.targetRole || "")} · ${escape(resume.header.name || "定制简历")}</title>
   <style>${css}</style>
 </head>
-<body class="surface">
+<body class="surface ${variant}">
   ${toolbar}
   <div class="layout ${showJdSidebar ? "with-jd" : "no-jd"}">
     ${jdSidebar}
@@ -120,7 +131,7 @@ function pageGeometry(pageSize: "a4" | "letter"): PageGeometry {
   };
 }
 
-function renderCss({ layout, accentColor }: { layout: PageGeometry; accentColor: string }) {
+function renderCss({ layout, accentColor, variant }: { layout: PageGeometry; accentColor: string; variant: "modern" | "source-aligned" }) {
   return `
   @page { size: ${layout.widthPt}pt ${layout.heightPt}pt; margin: 0; }
   :root {
@@ -211,7 +222,7 @@ function renderCss({ layout, accentColor }: { layout: PageGeometry; accentColor:
     border-radius: 10px;
     padding: 8px 10px;
     cursor: pointer;
-    transition: all .15s ease;
+    transition: border-color .15s ease, box-shadow .15s ease, background .15s ease;
     background: #ffffff;
   }
   .jd-card[data-active="true"] {
@@ -442,13 +453,57 @@ function renderCss({ layout, accentColor }: { layout: PageGeometry; accentColor:
     font: inherit;
     font-size: 12px;
     cursor: pointer;
-    transition: all .15s ease;
+    transition: border-color .15s ease, color .15s ease, background-color .15s ease, filter .15s ease;
   }
   .toolbar button:hover { border-color: var(--accent); color: var(--accent); }
   .toolbar button.primary { background: var(--accent); border-color: var(--accent); color: #ffffff; }
   .toolbar button.primary:hover { filter: brightness(1.05); color: #ffffff; }
   .toolbar .status { color: var(--muted); font-size: 11px; margin-left: 8px; }
   body.editing [data-edit-key] { background: #fff8d5; outline: 1px dashed #d6a800; border-radius: 2px; }
+  ${variant === "source-aligned" ? `
+  body.source-aligned {
+    --accent: #202421;
+    --ink: #151816;
+    --muted: #4f5752;
+    --line: #cfd4d0;
+    --chip: transparent;
+    font-family: Arial, "Microsoft YaHei", "PingFang SC", "Noto Sans CJK SC", sans-serif;
+    line-height: 1.5;
+  }
+  .source-aligned .page {
+    padding: 46px 52px 52px;
+    border-radius: 0;
+  }
+  .source-aligned .page header {
+    display: block;
+    padding-bottom: 12px;
+    margin-bottom: 13px;
+    border-bottom: 1px solid var(--ink);
+    text-align: center;
+  }
+  .source-aligned .page header .identity { align-items: center; gap: 5px; }
+  .source-aligned .page header h1 { font-size: 22px; letter-spacing: .04em; }
+  .source-aligned .page header .headline { color: var(--ink); font-size: 11px; letter-spacing: .02em; }
+  .source-aligned .page header .meta-row { justify-content: center; color: #343a36; }
+  .source-aligned .page section { margin-bottom: 12px; }
+  .source-aligned .page h2 {
+    margin-bottom: 7px;
+    padding-bottom: 3px;
+    border-bottom: 1px solid var(--ink);
+    color: var(--ink);
+    font-size: 13px;
+    letter-spacing: .02em;
+    text-transform: none;
+  }
+  .source-aligned .entry { margin-bottom: 9px; }
+  .source-aligned .entry-head { font-size: 11px; }
+  .source-aligned .bullets { gap: 1px; margin-top: 3px; }
+  .source-aligned .bullets li { padding-left: 13px; }
+  .source-aligned .bullets li::before { left: 3px; width: 3px; height: 3px; background: var(--ink); opacity: 1; }
+  .source-aligned .skill-grid { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 4px 16px; }
+  .source-aligned .skill-group .items { gap: 3px 10px; }
+  .source-aligned .skill-group .chip { padding: 0; border-radius: 0; background: transparent; }
+  ` : ""}
   @media print {
     html, body { background: #ffffff; }
     .layout { padding: 0; gap: 0; }
@@ -459,7 +514,8 @@ function renderCss({ layout, accentColor }: { layout: PageGeometry; accentColor:
       border-radius: 0;
       margin: 0;
       width: var(--page-width);
-      height: var(--page-height);
+      min-height: var(--page-height);
+      height: auto;
     }
     body.editing [data-edit-key] { background: transparent; outline: none; }
     .bullets li[data-active="true"] { background: transparent; }
@@ -469,9 +525,9 @@ function renderCss({ layout, accentColor }: { layout: PageGeometry; accentColor:
 
 function renderToolbar() {
   return `<aside class="toolbar" aria-label="简历编辑工具">
-    <span class="title">OfferFlow 定制简历</span>
-    <span class="subtitle">编辑、保存或导出 PDF。所有改动仅保存在本机。</span>
-    <span class="status" id="editor-status">点击「开始编辑」后可以微调文字。</span>
+    <span class="title">流式编辑简历</span>
+    <span class="subtitle">按完整段落编辑；增删文字会自动换行和重排。</span>
+    <span class="status" id="editor-status">点击「开始编辑」后可直接修改完整字段和经历描述。</span>
     <span class="actions">
       <button type="button" id="tailor-edit-toggle" class="primary">开始编辑</button>
       <button type="button" id="tailor-save-html">保存 HTML</button>
@@ -531,9 +587,11 @@ interface ResumeRenderArgs {
   resume: ResumeData;
   photoDataUrl?: string;
   idMap: Map<string, string>;
+  showSummary: boolean;
+  showTargetIntent: boolean;
 }
 
-function renderPage({ resume, photoDataUrl, idMap }: ResumeRenderArgs) {
+function renderPage({ resume, photoDataUrl, idMap, showSummary, showTargetIntent }: ResumeRenderArgs) {
   const { header, summary } = resume;
   const headerHtml = `
     <header>
@@ -551,13 +609,13 @@ function renderPage({ resume, photoDataUrl, idMap }: ResumeRenderArgs) {
             .map((link) => `<a href="${escape(link.href)}" data-edit-key="header.link.${escape(link.label)}">${escape(link.label)}</a>`)
             .join('<span class="divider">·</span>')}
         </div>
-        ${resume.targetCompany ? `<div class="meta-row" style="margin-top:6px;"><strong style="color:var(--ink);font-size:11px;">意向：</strong><span data-edit-key="resume.targetCompany">${escape(resume.targetCompany)}</span><span class="divider">·</span><span data-edit-key="resume.targetRole">${escape(resume.targetRole)}</span></div>` : ""}
+        ${showTargetIntent && resume.targetCompany ? `<div class="meta-row" style="margin-top:6px;"><strong style="color:var(--ink);font-size:11px;">意向：</strong><span data-edit-key="resume.targetCompany">${escape(resume.targetCompany)}</span><span class="divider">·</span><span data-edit-key="resume.targetRole">${escape(resume.targetRole)}</span></div>` : ""}
       </div>
       ${photoDataUrl ? `<img src="${escape(photoDataUrl)}" alt="证件照" class="photo" />` : ""}
     </header>
   `;
 
-  const summaryHtml = summary
+  const summaryHtml = showSummary && summary
     ? `<section>
         <h2>个人摘要</h2>
         <p class="summary" data-edit-key="resume.summary">${escape(summary)}</p>
@@ -595,7 +653,7 @@ function renderPage({ resume, photoDataUrl, idMap }: ResumeRenderArgs) {
                 <span><strong data-edit-key="campus.${escape(item.id)}.role">${escape(item.type)} · ${escape(item.role)}</strong>
                   <small style="display:block;color:var(--muted);font-size:10.5px;" data-edit-key="campus.${escape(item.id)}.description">${escape(item.description)}</small>
                 </span>
-                <span class="meta">${escape(formatRange(item.start, item.end))}</span>
+                <span class="meta" data-edit-key="campus.${escape(item.id)}.date">${escape(formatRange(item.start, item.end))}</span>
               </li>`
             )
             .join("")}
@@ -611,7 +669,7 @@ function renderPage({ resume, photoDataUrl, idMap }: ResumeRenderArgs) {
             .map(
               (item) => `<li>
                 <span><strong data-edit-key="award.${escape(item.id)}.name">${escape(item.name)}</strong>${item.level ? `<small style="color:var(--muted);">${escape(item.level)}</small>` : ""}</span>
-                <span class="meta">${escape(item.date)}</span>
+                <span class="meta" data-edit-key="award.${escape(item.id)}.date">${escape(item.date)}</span>
               </li>`
             )
             .join("")}
@@ -645,7 +703,7 @@ function renderPage({ resume, photoDataUrl, idMap }: ResumeRenderArgs) {
             .map(
               (item) => `<li>
                 <span><strong data-edit-key="language.${escape(item.id)}.name">${escape(item.name)}</strong></span>
-                <span class="meta">${escape(item.level)}</span>
+                <span class="meta" data-edit-key="language.${escape(item.id)}.level">${escape(item.level)}</span>
               </li>`
             )
             .join("")}
@@ -661,7 +719,7 @@ function renderPage({ resume, photoDataUrl, idMap }: ResumeRenderArgs) {
             .map(
               (item) => `<li>
                 <span><strong data-edit-key="publication.${escape(item.id)}.title">${escape(item.title)}</strong>${item.venue ? `<small style="color:var(--muted);"> · ${escape(item.venue)}</small>` : ""}</span>
-                <span class="meta">${escape(item.date)}</span>
+                <span class="meta" data-edit-key="publication.${escape(item.id)}.date">${escape(item.date)}</span>
               </li>`
             )
             .join("")}
@@ -691,13 +749,13 @@ function renderEducation(item: ResumeEducation, idMap: Map<string, string>) {
         <span class="label" data-edit-key="edu.${escape(item.id)}.label">${escape(title)}</span>
         <span class="role" data-edit-key="edu.${escape(item.id)}.degree">${escape([item.degree, item.gpa ? `GPA ${item.gpa}` : "", item.rank].filter(Boolean).join(" · "))}</span>
       </div>
-      <span class="date">${escape(range)}</span>
+      <span class="date" data-edit-key="edu.${escape(item.id)}.date">${escape(range)}</span>
     </div>
     ${item.highlights.length
       ? `<ul class="bullets">${item.highlights
           .map(
             (bullet, index) =>
-              `<li data-edit-key="edu.${escape(item.id)}.highlight.${index}" data-resume-id="${escape(item.id)}.highlight-${index}">${escape(bullet)}</li>`
+              `<li data-edit-key="edu.${escape(item.id)}.highlight.${index}" data-resume-id="${escape(item.id)}.highlight-${index}" data-map-ids="${escape(mapIds)}">${escape(bullet)}</li>`
           )
           .join("")}</ul>`
       : ""}
@@ -714,13 +772,13 @@ function renderExperience(item: ResumeExperience, idMap: Map<string, string>) {
         <span class="label" data-edit-key="exp.${escape(item.id)}.company">${escape(item.company)}</span>
         <span class="role" data-edit-key="exp.${escape(item.id)}.title">${escape(item.title)}${item.location ? ` · ${escape(item.location)}` : ""}</span>
       </div>
-      <span class="date">${escape(range)}</span>
+      <span class="date" data-edit-key="exp.${escape(item.id)}.date">${escape(range)}</span>
     </div>
     ${item.bullets.length
       ? `<ul class="bullets">${item.bullets
           .map(
             (bullet, index) =>
-              `<li data-edit-key="exp.${escape(item.id)}.bullet.${index}" data-resume-id="${escape(item.id)}.bullet-${index}">${escape(bullet)}</li>`
+              `<li data-edit-key="exp.${escape(item.id)}.bullet.${index}" data-resume-id="${escape(item.id)}.bullet-${index}" data-map-ids="${escape(mapIds)}">${escape(bullet)}</li>`
           )
           .join("")}</ul>`
       : ""}
@@ -737,13 +795,13 @@ function renderProject(item: ResumeProject, idMap: Map<string, string>) {
         <span class="role" data-edit-key="project.${escape(item.id)}.role">${escape(item.role)}${item.link ? ` · ${escape(item.link)}` : ""}</span>
         ${item.summary ? `<p style="margin:4px 0 0;color:var(--muted);font-size:10.5px;" data-edit-key="project.${escape(item.id)}.summary">${escape(item.summary)}</p>` : ""}
       </div>
-      <span class="date">${escape(range)}</span>
+      <span class="date" data-edit-key="project.${escape(item.id)}.date">${escape(range)}</span>
     </div>
     ${item.bullets.length
       ? `<ul class="bullets">${item.bullets
           .map(
             (bullet, index) =>
-              `<li data-edit-key="project.${escape(item.id)}.bullet.${index}" data-resume-id="${escape(item.id)}.bullet-${index}">${escape(bullet)}</li>`
+              `<li data-edit-key="project.${escape(item.id)}.bullet.${index}" data-resume-id="${escape(item.id)}.bullet-${index}" data-map-ids="${escape(mapIds)}">${escape(bullet)}</li>`
           )
           .join("")}</ul>`
       : ""}
@@ -776,7 +834,7 @@ function buildIdMap(resume: ResumeData, jd: JdAnalysis) {
 function editorScript() {
   return `(() => {
     const nodes = [...document.querySelectorAll('[data-edit-key]')];
-    const storageKey = 'offerflow-tailor:' + location.pathname;
+    const storageKey = 'offerflow-tailor:' + document.title;
     const originals = Object.fromEntries(nodes.map((node) => [node.dataset.editKey, node.innerHTML]));
     const status = document.getElementById('editor-status');
     const editButton = document.getElementById('tailor-edit-toggle');
@@ -864,19 +922,25 @@ function editorScript() {
     // JD → Resume cross-highlight
     const cards = [...document.querySelectorAll('.jd-card, .jd-sidebar .keywords span')];
     const bullets = [...document.querySelectorAll('.bullets li[data-resume-id]')];
+    const highlightMap = (mapId) => {
+      if (!mapId) return;
+      cards.forEach((other) => other.dataset.active = 'false');
+      cards
+        .filter((card) => card.dataset.mapId === mapId)
+        .forEach((card) => card.dataset.active = 'true');
+      bullets.forEach((bullet) => {
+        const ids = bullet.dataset.mapIds || bullet.closest('.entry')?.dataset.mapIds || '';
+        bullet.dataset.active = ids.split(/\\s+/).includes(mapId) ? 'true' : 'false';
+      });
+      setStatus(mapId + ' · 已高亮映射 bullet');
+    };
     cards.forEach((card) => {
       const mapId = card.dataset.mapId;
       if (!mapId) return;
-      card.addEventListener('click', () => {
-        cards.forEach((other) => other.dataset.active = 'false');
-        card.dataset.active = 'true';
-        bullets.forEach((bullet) => {
-          const parent = bullet.closest('[data-resume-id]');
-          const ids = (parent && parent.dataset.mapIds) || '';
-          bullet.dataset.active = ids.split(/\\s+/).includes(mapId) ? 'true' : 'false';
-        });
-        setStatus(mapId + ' · 已高亮映射 bullet');
-      });
+      card.addEventListener('click', () => highlightMap(mapId));
+    });
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'OFFERFLOW_HIGHLIGHT_MAP') highlightMap(String(event.data.mapId || ''));
     });
 
     restoreDraft();

@@ -4,7 +4,7 @@ import type {
   ProfileExperience,
   ProfileProject
 } from "@/shared/types";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf.mjs";
+import { getDocument, GlobalWorkerOptions, OPS } from "pdfjs-dist/legacy/build/pdf.mjs";
 import workerUrl from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
 
 GlobalWorkerOptions.workerSrc = workerUrl;
@@ -14,6 +14,90 @@ export interface ResumeParseResult {
   extractedCount: number;
   warnings: string[];
   textLength: number;
+}
+
+export interface ResumePdfTextItem {
+  id: string;
+  text: string;
+  x: number;
+  top: number;
+  width: number;
+  height: number;
+  fontSize: number;
+  fontFamily: string;
+  fontWeight: 400 | 700;
+  fontStyle: "normal" | "italic";
+  fontId: string;
+  fallbackFontFamily: string;
+  color: string;
+  rotation: number;
+  direction: string;
+}
+
+export interface ResumePdfFont {
+  id: string;
+  family: string;
+  fallbackFamily: string;
+  dataBase64: string;
+  mimeType: string;
+  fontWeight: 400 | 700;
+  fontStyle: "normal" | "italic";
+}
+
+export interface ResumePdfVectorShape {
+  d: string;
+  fill: string;
+  fillRule: "nonzero" | "evenodd";
+  fillOpacity: number;
+  stroke: string;
+  strokeOpacity: number;
+  strokeWidth: number;
+  lineCap: "butt" | "round" | "square";
+  lineJoin: "miter" | "round" | "bevel";
+  miterLimit: number;
+  dashArray: number[];
+  dashOffset: number;
+}
+
+export interface ResumePdfPageLayout {
+  page: number;
+  widthPt: number;
+  heightPt: number;
+  imageDataUrl: string;
+  backgroundImageDataUrl: string;
+  vectorShapes: ResumePdfVectorShape[];
+  items: ResumePdfTextItem[];
+}
+
+export interface ResumePdfLayout {
+  pages: ResumePdfPageLayout[];
+  fonts: ResumePdfFont[];
+  characterCount: number;
+}
+
+export interface ResumePdfLayoutOptions {
+  onProgress?: (phase: string, pageNumber?: number, pageCount?: number) => void;
+}
+
+function pdfJsAssetDirectory(directory: "cmaps" | "standard_fonts" | "wasm" | "iccs") {
+  const relativePath = `pdfjs/${directory}/`;
+  if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
+    return chrome.runtime.getURL(relativePath);
+  }
+  return new URL(`/${relativePath}`, globalThis.location?.origin || "http://127.0.0.1").href;
+}
+
+function pdfDocumentOptions(buffer: ArrayBuffer) {
+  return {
+    data: new Uint8Array(buffer),
+    useWorkerFetch: false,
+    cMapUrl: pdfJsAssetDirectory("cmaps"),
+    cMapPacked: true,
+    standardFontDataUrl: pdfJsAssetDirectory("standard_fonts"),
+    wasmUrl: pdfJsAssetDirectory("wasm"),
+    iccUrl: pdfJsAssetDirectory("iccs"),
+    fontExtraProperties: true
+  };
 }
 
 const id = (prefix: string) =>
@@ -163,10 +247,7 @@ async function extractPdfTextLegacy(buffer: ArrayBuffer) {
 
 async function extractPdfText(buffer: ArrayBuffer) {
   try {
-    const pdf = await getDocument({
-      data: new Uint8Array(buffer),
-      useWorkerFetch: false
-    }).promise;
+    const pdf = await getDocument(pdfDocumentOptions(buffer)).promise;
     const pages: string[] = [];
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
       const page = await pdf.getPage(pageNumber);
@@ -200,6 +281,545 @@ async function extractPdfText(buffer: ArrayBuffer) {
     // Fall back to the lightweight extractor for older or unusual PDFs.
   }
   return extractPdfTextLegacy(buffer);
+}
+
+type PdfMatrix = [number, number, number, number, number, number];
+
+interface PdfVectorState {
+  matrix: PdfMatrix;
+  fill: string;
+  stroke: string;
+  fillOpacity: number;
+  strokeOpacity: number;
+  lineWidth: number;
+  lineCap: ResumePdfVectorShape["lineCap"];
+  lineJoin: ResumePdfVectorShape["lineJoin"];
+  miterLimit: number;
+  dashArray: number[];
+  dashOffset: number;
+}
+
+const VECTOR_PAINT_OPERATIONS = new Set<number>([
+  OPS.stroke,
+  OPS.closeStroke,
+  OPS.fill,
+  OPS.eoFill,
+  OPS.fillStroke,
+  OPS.eoFillStroke,
+  OPS.closeFillStroke,
+  OPS.closeEOFillStroke
+]);
+
+function multiplyMatrices(left: PdfMatrix, right: PdfMatrix): PdfMatrix {
+  return [
+    left[0] * right[0] + left[2] * right[1],
+    left[1] * right[0] + left[3] * right[1],
+    left[0] * right[2] + left[2] * right[3],
+    left[1] * right[2] + left[3] * right[3],
+    left[0] * right[4] + left[2] * right[5] + left[4],
+    left[1] * right[4] + left[3] * right[5] + left[5]
+  ];
+}
+
+function transformPoint(matrix: PdfMatrix, x: number, y: number) {
+  return {
+    x: matrix[0] * x + matrix[2] * y + matrix[4],
+    y: matrix[1] * x + matrix[3] * y + matrix[5]
+  };
+}
+
+function finite(value: unknown, fallback = 0) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : fallback;
+}
+
+function compactNumber(value: number) {
+  const rounded = Math.abs(value) < 0.0005 ? 0 : Math.round(value * 1000) / 1000;
+  return String(rounded);
+}
+
+function buildSvgPath(rawData: unknown, matrix: PdfMatrix) {
+  const source = Array.from((rawData || []) as ArrayLike<number>);
+  const parts: string[] = [];
+  for (let index = 0; index < source.length;) {
+    const operation = source[index++];
+    if (operation === 0 || operation === 1) {
+      const point = transformPoint(matrix, finite(source[index++]), finite(source[index++]));
+      parts.push(`${operation === 0 ? "M" : "L"}${compactNumber(point.x)} ${compactNumber(point.y)}`);
+    } else if (operation === 2) {
+      const first = transformPoint(matrix, finite(source[index++]), finite(source[index++]));
+      const second = transformPoint(matrix, finite(source[index++]), finite(source[index++]));
+      const end = transformPoint(matrix, finite(source[index++]), finite(source[index++]));
+      parts.push(`C${compactNumber(first.x)} ${compactNumber(first.y)} ${compactNumber(second.x)} ${compactNumber(second.y)} ${compactNumber(end.x)} ${compactNumber(end.y)}`);
+    } else if (operation === 3) {
+      const control = transformPoint(matrix, finite(source[index++]), finite(source[index++]));
+      const end = transformPoint(matrix, finite(source[index++]), finite(source[index++]));
+      parts.push(`Q${compactNumber(control.x)} ${compactNumber(control.y)} ${compactNumber(end.x)} ${compactNumber(end.y)}`);
+    } else if (operation === 4) {
+      parts.push("Z");
+    } else {
+      break;
+    }
+  }
+  return parts.join(" ");
+}
+
+function colorComponent(value: unknown) {
+  const component = finite(value);
+  return Math.max(0, Math.min(255, component <= 1 ? component * 255 : component));
+}
+
+function rgbColor(args: unknown[], fallback: string) {
+  if (typeof args[0] === "string") return args[0];
+  if (args.length < 3) return fallback;
+  const values = args.slice(0, 3).map(colorComponent);
+  return `#${values.map((value) => Math.round(value).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function grayColor(args: unknown[], fallback: string) {
+  if (typeof args[0] === "string") return args[0];
+  if (!args.length) return fallback;
+  const value = Math.round(colorComponent(args[0])).toString(16).padStart(2, "0");
+  return `#${value}${value}${value}`;
+}
+
+function cmykColor(args: unknown[], fallback: string) {
+  if (typeof args[0] === "string") return args[0];
+  if (args.length < 4) return fallback;
+  const [c, m, y, k] = args.slice(0, 4).map((value) => Math.max(0, Math.min(1, finite(value))));
+  const red = 255 * (1 - c) * (1 - k);
+  const green = 255 * (1 - m) * (1 - k);
+  const blue = 255 * (1 - y) * (1 - k);
+  return rgbColor([red, green, blue], fallback);
+}
+
+function cloneVectorState(state: PdfVectorState): PdfVectorState {
+  return { ...state, matrix: [...state.matrix] as PdfMatrix, dashArray: [...state.dashArray] };
+}
+
+function lineCap(value: unknown): ResumePdfVectorShape["lineCap"] {
+  return value === 1 ? "round" : value === 2 ? "square" : "butt";
+}
+
+function lineJoin(value: unknown): ResumePdfVectorShape["lineJoin"] {
+  return value === 1 ? "round" : value === 2 ? "bevel" : "miter";
+}
+
+function applyGState(state: PdfVectorState, raw: unknown) {
+  const values = Array.isArray(raw) ? raw : [];
+  for (const entry of values) {
+    if (!Array.isArray(entry) || entry.length < 2) continue;
+    const [key, value] = entry;
+    if (key === "ca") state.fillOpacity = finite(value, 1);
+    else if (key === "CA") state.strokeOpacity = finite(value, 1);
+    else if (key === "LW") state.lineWidth = finite(value, 1);
+    else if (key === "LC") state.lineCap = lineCap(value);
+    else if (key === "LJ") state.lineJoin = lineJoin(value);
+    else if (key === "ML") state.miterLimit = finite(value, 10);
+    else if (key === "D" && Array.isArray(value)) {
+      state.dashArray = Array.isArray(value[0]) ? value[0].map((item) => finite(item)) : [];
+      state.dashOffset = finite(value[1]);
+    }
+  }
+}
+
+function extractVectorShapes(
+  operatorList: { fnArray: number[]; argsArray: unknown[][] },
+  viewportMatrix: number[]
+): ResumePdfVectorShape[] {
+  const initialMatrix = viewportMatrix.slice(0, 6).map((value) => finite(value)) as PdfMatrix;
+  let state: PdfVectorState = {
+    matrix: initialMatrix,
+    fill: "#000000",
+    stroke: "#000000",
+    fillOpacity: 1,
+    strokeOpacity: 1,
+    lineWidth: 1,
+    lineCap: "butt",
+    lineJoin: "miter",
+    miterLimit: 10,
+    dashArray: [],
+    dashOffset: 0
+  };
+  const stack: PdfVectorState[] = [];
+  const shapes: ResumePdfVectorShape[] = [];
+
+  operatorList.fnArray.forEach((operation, index) => {
+    const args = operatorList.argsArray[index] || [];
+    if (operation === OPS.save) {
+      stack.push(cloneVectorState(state));
+      return;
+    }
+    if (operation === OPS.restore) {
+      state = stack.pop() || state;
+      return;
+    }
+    if (operation === OPS.transform) {
+      state.matrix = multiplyMatrices(state.matrix, args.slice(0, 6).map((value) => finite(value)) as PdfMatrix);
+      return;
+    }
+    if (operation === OPS.setFillRGBColor) state.fill = rgbColor(args, state.fill);
+    else if (operation === OPS.setStrokeRGBColor) state.stroke = rgbColor(args, state.stroke);
+    else if (operation === OPS.setFillGray) state.fill = grayColor(args, state.fill);
+    else if (operation === OPS.setStrokeGray) state.stroke = grayColor(args, state.stroke);
+    else if (operation === OPS.setFillCMYKColor) state.fill = cmykColor(args, state.fill);
+    else if (operation === OPS.setStrokeCMYKColor) state.stroke = cmykColor(args, state.stroke);
+    else if (operation === OPS.setFillTransparent) state.fillOpacity = 0;
+    else if (operation === OPS.setStrokeTransparent) state.strokeOpacity = 0;
+    else if (operation === OPS.setLineWidth) state.lineWidth = finite(args[0], 1);
+    else if (operation === OPS.setLineCap) state.lineCap = lineCap(args[0]);
+    else if (operation === OPS.setLineJoin) state.lineJoin = lineJoin(args[0]);
+    else if (operation === OPS.setMiterLimit) state.miterLimit = finite(args[0], 10);
+    else if (operation === OPS.setDash) {
+      state.dashArray = Array.isArray(args[0]) ? args[0].map((value) => finite(value)) : [];
+      state.dashOffset = finite(args[1]);
+    } else if (operation === OPS.setGState) {
+      applyGState(state, args[0]);
+    } else if (operation === OPS.constructPath) {
+      const paintOperation = finite(args[0], -1);
+      if (!VECTOR_PAINT_OPERATIONS.has(paintOperation)) return;
+      const pathContainer = args[1] as unknown;
+      const rawPath = Array.isArray(pathContainer) && pathContainer.length === 1 ? pathContainer[0] : pathContainer;
+      const d = buildSvgPath(rawPath, state.matrix);
+      if (!d) return;
+      const fills = new Set<number>([
+        OPS.fill,
+        OPS.eoFill,
+        OPS.fillStroke,
+        OPS.eoFillStroke,
+        OPS.closeFillStroke,
+        OPS.closeEOFillStroke
+      ]);
+      const strokes = new Set<number>([
+        OPS.stroke,
+        OPS.closeStroke,
+        OPS.fillStroke,
+        OPS.eoFillStroke,
+        OPS.closeFillStroke,
+        OPS.closeEOFillStroke
+      ]);
+      const determinant = Math.abs(state.matrix[0] * state.matrix[3] - state.matrix[1] * state.matrix[2]);
+      const strokeScale = determinant > 0 ? Math.sqrt(determinant) : 1;
+      shapes.push({
+        d,
+        fill: fills.has(paintOperation) ? state.fill : "none",
+        fillRule: [OPS.eoFill, OPS.eoFillStroke, OPS.closeEOFillStroke].includes(paintOperation) ? "evenodd" : "nonzero",
+        fillOpacity: state.fillOpacity,
+        stroke: strokes.has(paintOperation) ? state.stroke : "none",
+        strokeOpacity: state.strokeOpacity,
+        strokeWidth: state.lineWidth * strokeScale,
+        lineCap: state.lineCap,
+        lineJoin: state.lineJoin,
+        miterLimit: state.miterLimit,
+        dashArray: state.dashArray.map((value) => value * strokeScale),
+        dashOffset: state.dashOffset * strokeScale
+      });
+    }
+  });
+  return shapes;
+}
+
+function createPdfCanvas(viewport: { width: number; height: number }) {
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.ceil(viewport.width));
+  canvas.height = Math.max(1, Math.ceil(viewport.height));
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) throw new Error("浏览器无法创建 PDF 预览画布");
+  return { canvas, context };
+}
+
+function isVectorPaintIndex(operatorList: { fnArray: number[]; argsArray: unknown[][] }, index: number) {
+  if (operatorList.fnArray[index] !== OPS.constructPath) return false;
+  return VECTOR_PAINT_OPERATIONS.has(finite(operatorList.argsArray[index]?.[0], -1));
+}
+
+function inferPdfFontFamily(name: string, fallback = "sans-serif") {
+  const normalized = name.replace(/^[A-Z]{6}\+/, "").replace(/[-_]/g, " ");
+  if (/microsoft\s*yahei/i.test(normalized)) return "Microsoft YaHei";
+  if (/simsun|宋体/i.test(normalized)) return "SimSun";
+  if (/simhei|黑体/i.test(normalized)) return "SimHei";
+  if (/kaiti|楷体/i.test(normalized)) return "KaiTi";
+  if (/fangsong|仿宋/i.test(normalized)) return "FangSong";
+  if (/times\s*new\s*roman/i.test(normalized)) return "Times New Roman";
+  if (/arial/i.test(normalized)) return "Arial";
+  if (/calibri/i.test(normalized)) return "Calibri";
+  if (/wingdings/i.test(normalized)) return "Wingdings";
+  if (/symbol/i.test(normalized)) return "Symbol";
+  return fallback || "sans-serif";
+}
+
+function inferPdfFontWeight(name: string): 400 | 700 {
+  return /bold|black|heavy|semibold|demi|simhei|黑体/i.test(name) ? 700 : 400;
+}
+
+function inferPdfFontStyle(name: string): "normal" | "italic" {
+  return /italic|oblique/i.test(name) ? "italic" : "normal";
+}
+
+function bytesToBase64(bytes: Uint8Array) {
+  let binary = "";
+  for (let offset = 0; offset < bytes.length; offset += 0x8000) {
+    binary += String.fromCharCode(...bytes.subarray(offset, offset + 0x8000));
+  }
+  return btoa(binary);
+}
+
+function detectTextColor(
+  layerPixels: Uint8ClampedArray,
+  canvasWidth: number,
+  canvasHeight: number,
+  item: Pick<ResumePdfTextItem, "x" | "top" | "width" | "height">,
+  scale: number
+) {
+  const left = Math.max(0, Math.floor((item.x - 2) * scale));
+  const top = Math.max(0, Math.floor((item.top - 2) * scale));
+  const right = Math.min(canvasWidth, Math.ceil((item.x + item.width + 2) * scale));
+  const bottom = Math.min(canvasHeight, Math.ceil((item.top + item.height + 2) * scale));
+  const buckets = new Map<number, { score: number; red: number; green: number; blue: number; weight: number }>();
+  for (let y = top; y < bottom; y += 1) {
+    for (let x = left; x < right; x += 1) {
+      const offset = (y * canvasWidth + x) * 4;
+      const alpha = layerPixels[offset + 3];
+      if (alpha < 32) continue;
+      const red = layerPixels[offset];
+      const green = layerPixels[offset + 1];
+      const blue = layerPixels[offset + 2];
+      const key = (red >> 4) * 256 + (green >> 4) * 16 + (blue >> 4);
+      const bucket = buckets.get(key) || { score: 0, red: 0, green: 0, blue: 0, weight: 0 };
+      bucket.score += alpha;
+      bucket.red += red * alpha;
+      bucket.green += green * alpha;
+      bucket.blue += blue * alpha;
+      bucket.weight += alpha;
+      buckets.set(key, bucket);
+    }
+  }
+  const best = [...buckets.values()].sort((leftBucket, rightBucket) => rightBucket.score - leftBucket.score)[0];
+  if (!best?.weight) return "#111111";
+  const values = [best.red, best.green, best.blue].map((value) => Math.round(value / best.weight));
+  return `#${values.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function samplePatchColor(
+  pixels: Uint8ClampedArray,
+  canvasWidth: number,
+  canvasHeight: number,
+  item: Pick<ResumePdfTextItem, "x" | "top" | "width" | "height">,
+  scale: number
+) {
+  const left = Math.max(0, Math.floor((item.x - 3) * scale));
+  const top = Math.max(0, Math.floor((item.top - 3) * scale));
+  const right = Math.min(canvasWidth - 1, Math.ceil((item.x + item.width + 3) * scale));
+  const bottom = Math.min(canvasHeight - 1, Math.ceil((item.top + item.height + 3) * scale));
+  const innerLeft = Math.max(left, Math.floor((item.x - 1) * scale));
+  const innerTop = Math.max(top, Math.floor((item.top - 1) * scale));
+  const innerRight = Math.min(right, Math.ceil((item.x + item.width + 1) * scale));
+  const innerBottom = Math.min(bottom, Math.ceil((item.top + item.height + 1) * scale));
+  const buckets = new Map<number, { count: number; red: number; green: number; blue: number }>();
+  const add = (x: number, y: number) => {
+    const offset = (y * canvasWidth + x) * 4;
+    if (pixels[offset + 3] < 200) return;
+    const red = pixels[offset];
+    const green = pixels[offset + 1];
+    const blue = pixels[offset + 2];
+    const key = (red >> 4) * 256 + (green >> 4) * 16 + (blue >> 4);
+    const bucket = buckets.get(key) || { count: 0, red: 0, green: 0, blue: 0 };
+    bucket.count += 1;
+    bucket.red += red;
+    bucket.green += green;
+    bucket.blue += blue;
+    buckets.set(key, bucket);
+  };
+  for (let x = left; x <= right; x += 1) {
+    for (let y = top; y < innerTop; y += 1) add(x, y);
+    for (let y = innerBottom + 1; y <= bottom; y += 1) add(x, y);
+  }
+  for (let y = innerTop; y <= innerBottom; y += 1) {
+    for (let x = left; x < innerLeft; x += 1) add(x, y);
+    for (let x = innerRight + 1; x <= right; x += 1) add(x, y);
+  }
+  const best = [...buckets.values()].sort((leftBucket, rightBucket) => rightBucket.count - leftBucket.count)[0];
+  if (!best?.count) return "#ffffff";
+  const values = [best.red, best.green, best.blue].map((value) => Math.round(value / best.count));
+  return `#${values.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
+}
+
+function buildBackgroundPatch(
+  target: CanvasRenderingContext2D,
+  source: HTMLCanvasElement,
+  sourcePixels: Uint8ClampedArray,
+  items: ResumePdfTextItem[],
+  scale: number
+) {
+  target.drawImage(source, 0, 0);
+  for (const item of items) {
+    const padding = Math.max(2, scale * 1.2);
+    const left = Math.max(0, item.x * scale - padding);
+    const top = Math.max(0, item.top * scale - padding);
+    const width = Math.min(source.width - left, item.width * scale + padding * 2);
+    const height = Math.min(source.height - top, item.height * scale + padding * 2);
+    target.fillStyle = samplePatchColor(sourcePixels, source.width, source.height, item, scale);
+    target.fillRect(left, top, Math.max(1, width), Math.max(1, height));
+  }
+}
+
+/**
+ * Extract the source PDF's page geometry, editable text layer, and non-text
+ * visual background. Text is removed from the rendered background and added
+ * back by the HTML builder, so missing PDF canvas fonts cannot produce a blank
+ * resume and the visible copy remains searchable/editable.
+ */
+export async function extractResumePdfLayout(
+  buffer: ArrayBuffer,
+  options: ResumePdfLayoutOptions = {}
+): Promise<ResumePdfLayout> {
+  options.onProgress?.("loading-document");
+  const pdf = await getDocument(pdfDocumentOptions(buffer)).promise;
+  options.onProgress?.("document-ready", undefined, pdf.numPages);
+  const pages: ResumePdfPageLayout[] = [];
+  const fonts = new Map<string, ResumePdfFont>();
+  try {
+    for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
+      options.onProgress?.("loading-page", pageNumber, pdf.numPages);
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1 });
+      const renderViewport = page.getViewport({ scale: 2 });
+      options.onProgress?.("extracting-text", pageNumber, pdf.numPages);
+      const content = await page.getTextContent();
+      options.onProgress?.("extracting-operators", pageNumber, pdf.numPages);
+      const operatorList = await page.getOperatorList() as unknown as { fnArray: number[]; argsArray: unknown[][] };
+      const full = createPdfCanvas(renderViewport);
+      const imageAndText = createPdfCanvas(renderViewport);
+      const background = createPdfCanvas(renderViewport);
+
+      options.onProgress?.("rendering-reference", pageNumber, pdf.numPages);
+      await page.render({ canvasContext: full.context, canvas: full.canvas, viewport: renderViewport }).promise;
+      options.onProgress?.("rendering-text-image", pageNumber, pdf.numPages);
+      await page.render({
+        canvasContext: imageAndText.context,
+        canvas: imageAndText.canvas,
+        viewport: renderViewport,
+        background: "rgba(255,255,255,0)",
+        operationsFilter: (index) => !isVectorPaintIndex(operatorList, index)
+      }).promise;
+      options.onProgress?.("building-text-layer", pageNumber, pdf.numPages);
+      const fullPixels = full.context.getImageData(0, 0, full.canvas.width, full.canvas.height).data;
+      const imageAndTextPixels = imageAndText.context.getImageData(
+        0,
+        0,
+        imageAndText.canvas.width,
+        imageAndText.canvas.height
+      ).data;
+      const items = content.items
+        .filter((item): item is typeof item & {
+          str: string;
+          transform: number[];
+          width?: number;
+          height?: number;
+          fontName?: string;
+          dir?: string;
+        } =>
+          "str" in item && typeof item.str === "string" && "transform" in item && Array.isArray(item.transform)
+        )
+        .filter((item) => item.str.trim())
+        .map((item, itemIndex) => {
+          const transform = item.transform.slice(0, 6).map((value) => finite(value)) as PdfMatrix;
+          const textTransform = multiplyMatrices(viewport.transform.slice(0, 6) as PdfMatrix, transform);
+          const fontHeight = Math.max(4, Math.hypot(textTransform[2], textTransform[3]));
+          const fontName = String(item.fontName || "");
+          const style = content.styles[fontName];
+          let pdfFont: {
+            name?: string;
+            bold?: boolean;
+            black?: boolean;
+            italic?: boolean;
+            fallbackName?: string;
+            mimetype?: string;
+            data?: Uint8Array;
+          } | undefined;
+          try {
+            pdfFont = page.commonObjs.get(fontName) as typeof pdfFont;
+          } catch {
+            pdfFont = undefined;
+          }
+          const rawFontName = pdfFont?.name || fontName;
+          const fallbackFontFamily = inferPdfFontFamily(rawFontName, pdfFont?.fallbackName || style?.fontFamily);
+          const fontWeight = pdfFont?.bold || pdfFont?.black || inferPdfFontWeight(rawFontName) === 700 ? 700 as const : 400 as const;
+          const fontStyle = pdfFont?.italic || inferPdfFontStyle(rawFontName) === "italic" ? "italic" as const : "normal" as const;
+          const fontFamily = `OfferFlowPdf-${fontName.replace(/[^a-zA-Z0-9_-]/g, "-") || `page-${pageNumber}-${itemIndex}`}`;
+          if (pdfFont?.data?.length && !fonts.has(fontName)) {
+            fonts.set(fontName, {
+              id: fontName,
+              family: fontFamily,
+              fallbackFamily: fallbackFontFamily,
+              dataBase64: bytesToBase64(pdfFont.data),
+              mimeType: pdfFont.mimetype || "font/opentype",
+              fontWeight,
+              fontStyle
+            });
+          }
+          const angle = Math.atan2(textTransform[1], textTransform[0]);
+          const ascentRatio = style?.ascent || (style?.descent ? 1 + style.descent : 0.8);
+          const fontAscent = fontHeight * ascentRatio;
+          const x = angle === 0
+            ? textTransform[4]
+            : textTransform[4] + fontAscent * Math.sin(angle);
+          const top = angle === 0
+            ? textTransform[5] - fontAscent
+            : textTransform[5] - fontAscent * Math.cos(angle);
+          const result: ResumePdfTextItem = {
+            id: `pdf-${pageNumber}-${itemIndex}`,
+            text: item.str,
+            x,
+            top: Math.max(0, top),
+            width: Math.max(1, finite(item.width, item.str.length * fontHeight * 0.55)),
+            height: fontHeight,
+            fontSize: fontHeight,
+            fontFamily,
+            fontWeight,
+            fontStyle,
+            fontId: fontName,
+            fallbackFontFamily,
+            color: "#111111",
+            rotation: angle * 180 / Math.PI,
+            direction: item.dir || "ltr"
+          };
+          result.color = detectTextColor(
+            imageAndTextPixels,
+            full.canvas.width,
+            full.canvas.height,
+            result,
+            renderViewport.scale
+          );
+          return result;
+        });
+      options.onProgress?.("building-background-patch", pageNumber, pdf.numPages);
+      buildBackgroundPatch(background.context, full.canvas, fullPixels, items, renderViewport.scale);
+      options.onProgress?.("building-vector-layer", pageNumber, pdf.numPages);
+      pages.push({
+        page: pageNumber,
+        widthPt: viewport.width,
+        heightPt: viewport.height,
+        imageDataUrl: full.canvas.toDataURL("image/png"),
+        backgroundImageDataUrl: background.canvas.toDataURL("image/png"),
+        vectorShapes: extractVectorShapes(operatorList, viewport.transform),
+        items
+      });
+      options.onProgress?.("page-ready", pageNumber, pdf.numPages);
+      page.cleanup();
+    }
+  } finally {
+    await pdf.destroy();
+  }
+  options.onProgress?.("complete", pdf.numPages, pdf.numPages);
+  return {
+    pages,
+    fonts: [...fonts.values()],
+    characterCount: pages.reduce(
+      (total, page) => total + page.items.reduce((pageTotal, item) => pageTotal + [...item.text.trim()].length, 0),
+      0
+    )
+  };
 }
 
 async function extractText(file: File) {

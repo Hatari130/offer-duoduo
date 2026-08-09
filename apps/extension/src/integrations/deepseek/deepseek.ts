@@ -11,7 +11,7 @@ import { normalizeExternalStage } from "@/features/workspace/workspaceUtils";
 
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MODELS_URL = "https://api.deepseek.com/models";
-export const DEFAULT_DEEPSEEK_MODEL = "deepseek-v4-flash";
+export const DEFAULT_DEEPSEEK_MODEL = "deepseek-chat";
 
 type ModelApplication = {
   company?: string;

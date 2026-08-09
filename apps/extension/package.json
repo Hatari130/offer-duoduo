@@ -7,6 +7,9 @@
     "dev": "vite --host 127.0.0.1",
     "build": "pnpm run typecheck && vite build && pnpm run validate:build",
     "test:capture": "node --test tests/capture-matching.test.mjs tests/deepseek-sanitize.test.mjs && node tests/run-dom-fixture.mjs",
+    "test:pdf-fidelity": "node scripts/check-pdf-fidelity.mjs",
+    "test:extension-pdf-flow": "node scripts/check-extension-pdf-flow.mjs",
+    "test:tailor": "node --experimental-transform-types --test tests/pdf-backed-html.test.mjs tests/source-pdf-reference.test.mjs tests/tailor-render.test.mts",
     "test:sync": "node --experimental-transform-types --test tests/cloud-sync-outbox.test.mjs",
     "validate:build": "node scripts/validate-build.mjs",
     "typecheck": "tsc -p tsconfig.app.json --pretty false && tsc -p tsconfig.node.json --pretty false"

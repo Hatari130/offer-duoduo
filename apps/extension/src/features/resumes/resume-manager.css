@@ -249,6 +249,8 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.resume-source-ready { color: #2f7a52 !important; }
+.resume-source-missing { color: #a5682d !important; }
 
 .resume-list-copy strong {
   font-size: 10px;

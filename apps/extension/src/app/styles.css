@@ -2139,7 +2139,7 @@ button {
   left: 14px;
   height: 48px;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   justify-items: center;
   align-items: center;
   padding: 3px 5px;
@@ -2677,7 +2677,7 @@ button {
   bottom: 14px;
   left: 18px;
   height: 58px;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   padding: 4px 6px;
   border-radius: 16px;
 }
@@ -3040,8 +3040,6 @@ button {
   padding-bottom: 36px;
 }
 
-.profile-title-row,
-.profile-heading,
 .profile-autofill-card,
 .profile-section-title,
 .profile-save-bar {
@@ -3049,95 +3047,40 @@ button {
   align-items: center;
 }
 
-.profile-title-row {
-  justify-content: space-between;
-  margin-bottom: 24px;
-}
-
-.profile-title-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.profile-title-row button,
-.profile-title-row > span {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: var(--overlay-muted);
-  background: transparent;
-  border: 0;
-  font-size: 11px;
-}
-
-.profile-title-row button {
-  padding: 0;
-  cursor: pointer;
-}
-
-.profile-title-row > span {
-  color: #4f6d5b;
-}
-
-.profile-title-row .profile-manager-link,
 .profile-resume-switcher .profile-manager-link {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 7px 9px;
-  color: #315fc5;
-  background: #edf2ff;
-  border: 1px solid #dce5ff;
+  color: #4f735b;
+  background: #edf4ee;
+  border: 1px solid #dce8de;
   border-radius: 8px;
   font-size: 10px;
   font-weight: 700;
+  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
 }
 
-.profile-title-row .profile-manager-link:hover,
 .profile-resume-switcher .profile-manager-link:hover {
-  color: #244da9;
-  background: #e4ebff;
+  color: #3f654d;
+  background: #e4efe6;
+  border-color: #cfe0d2;
 }
 
-.profile-heading {
-  align-items: flex-start;
-  gap: 13px;
-}
-
-.profile-heading > span {
-  width: 38px;
-  height: 38px;
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  background: #f3f5f2;
-  border-radius: 12px;
-}
-
-.profile-heading h1 {
-  margin: 1px 0 0;
-  font-size: 20px;
-  letter-spacing: -0.035em;
-}
-
-.profile-heading p {
-  margin: 7px 0 0;
-  color: var(--overlay-muted);
-  font-size: 11px;
-  line-height: 1.55;
+.profile-resume-switcher .profile-manager-link:active {
+  transform: scale(0.96);
 }
 
 .profile-resume-switcher {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(145px, 210px) auto;
-  gap: 10px;
+  grid-template-columns: minmax(94px, 1fr) minmax(118px, 176px) auto auto;
+  gap: 8px;
   align-items: center;
-  margin-top: 16px;
-  padding: 10px 11px;
-  background: #fffdf5;
-  border: 1px solid #eee5bf;
-  border-radius: 12px;
+  margin-top: 0;
+  padding: 11px 12px;
+  background: #f7f9f7;
+  border: 1px solid #e1e7e2;
+  border-radius: 14px;
 }
 
 .profile-resume-switcher-copy,
@@ -3157,8 +3100,8 @@ button {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  color: #9b7927;
-  background: #fff2c9;
+  color: #5a7661;
+  background: #e9f0ea;
   border-radius: 8px;
 }
 
@@ -3177,12 +3120,12 @@ button {
 }
 
 .profile-resume-switcher-copy strong {
-  color: #4a3b1c;
+  color: #2c322e;
   font-size: 10px;
 }
 
 .profile-resume-switcher-copy small {
-  color: #927e4f;
+  color: #78817a;
   font-size: 9px;
 }
 
@@ -3190,286 +3133,61 @@ button {
   width: 100%;
   min-width: 0;
   padding: 8px 9px;
-  color: #3f3725;
+  color: #303631;
   background: #fff;
-  border: 1px solid #e9dfb5;
+  border: 1px solid #dfe6df;
   border-radius: 8px;
   font-size: 10px;
 }
 
-.profile-resume-import-card {
-  display: grid;
-  grid-template-columns: 40px minmax(0, 1fr) auto;
-  gap: 12px;
-  align-items: center;
-  margin-top: 16px;
-  padding: 13px;
-  background: linear-gradient(135deg, #f8fbff, #ffffff);
-  border: 1px solid #dbe3f5;
-  border-radius: 14px;
-  box-shadow: 0 7px 20px rgba(47, 80, 138, 0.06);
+.profile-resume-switcher select:focus {
+  outline: 2px solid rgba(92, 133, 99, 0.2);
+  outline-offset: 1px;
+  border-color: #9fbea5;
 }
 
-.profile-resume-import-card > span {
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  color: #3674ee;
-  background: #eaf0ff;
-  border-radius: 11px;
+.profile-resume-switcher select:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
-.profile-resume-import-card strong,
-.profile-resume-import-card small {
-  display: block;
-}
-
-.profile-resume-import-card strong {
-  color: #202321;
-  font-size: 12px;
-}
-
-.profile-resume-import-card small {
-  margin-top: 4px;
-  color: #747c77;
-  font-size: 9px;
-  line-height: 1.45;
-}
-
-.profile-resume-import-card > button {
+.profile-sync-state {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 9px 12px;
-  color: #fff;
-  background: #202321;
-  border: 0;
-  border-radius: 9px;
-  font-size: 10px;
-  font-weight: 700;
-}
-
-.profile-resume-result {
-  display: grid;
-  gap: 8px;
-  margin-top: 9px;
-  padding: 10px 12px;
-  color: #4f735b;
-  background: #f0f7ee;
-  border: 1px solid #d6e8d3;
-  border-radius: 9px;
-  font-size: 9px;
-}
-
-.profile-resume-result > div,
-.profile-resume-result > div > span {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-}
-
-.profile-resume-result > div > svg {
-  color: #5b9b66;
-}
-
-.profile-resume-result strong,
-.profile-resume-result small {
-  display: block;
-}
-
-.profile-resume-result small {
-  margin-top: 2px;
-  color: #73907a;
-  font-size: 9px;
-}
-
-.profile-resume-warning {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  color: #9b7731;
-}
-
-.profile-import-modal {
-  position: fixed;
-  z-index: 100;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  padding: 18px;
-  background: rgba(18, 25, 21, 0.38);
-  backdrop-filter: blur(4px);
-}
-
-.profile-import-dialog {
-  position: relative;
-  width: min(100%, 420px);
-  padding: 26px;
-  color: #202321;
-  text-align: center;
-  background: #fbfcfa;
-  border: 1px solid #fff;
-  border-radius: 16px;
-  box-shadow: 0 24px 70px rgba(18, 25, 21, 0.26);
-}
-
-.profile-import-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  display: grid;
-  place-items: center;
-  padding: 6px;
-  color: #858d85;
-  background: transparent;
-  border: 0;
-}
-
-.profile-import-icon {
-  width: 46px;
-  height: 46px;
-  display: grid;
-  place-items: center;
-  margin: 0 auto 13px;
-  color: #3674ee;
-  background: #eaf0ff;
-  border-radius: 12px;
-}
-
-.profile-import-eyebrow {
-  color: #9a9f98;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: 0.16em;
-}
-
-.profile-import-dialog h2 {
-  margin: 8px 0;
-  font-family: Georgia, "Songti SC", serif;
-  font-size: 23px;
-  font-weight: 500;
-  letter-spacing: -0.035em;
-}
-
-.profile-import-dialog > p {
-  margin: 0 auto 18px;
-  color: #747c77;
-  font-size: 10px;
-  line-height: 1.65;
-}
-
-.profile-import-dropzone {
-  width: 100%;
-  display: grid;
-  justify-items: center;
-  gap: 7px;
-  padding: 23px 15px;
-  color: #202321;
-  background: #fff;
-  border: 1px dashed #b9c8e6;
-  border-radius: 11px;
-}
-
-.profile-import-dropzone:hover {
-  background: #f8faff;
-  border-color: #3674ee;
-}
-
-.profile-import-dropzone > svg {
-  color: #3674ee;
-}
-
-.profile-import-dropzone strong {
-  font-size: 11px;
-}
-
-.profile-import-dropzone small {
-  color: #929a94;
-  font-size: 9px;
-}
-
-.profile-import-loading {
-  display: grid;
-  justify-items: center;
-  gap: 8px;
-  padding: 35px 14px;
-  color: #3674ee;
-}
-
-.profile-import-loading strong {
-  color: #202321;
-  font-size: 11px;
-}
-
-.profile-import-loading small {
-  color: #747c77;
-  font-size: 9px;
-}
-
-.profile-import-privacy {
-  display: flex;
-  align-items: flex-start;
-  gap: 6px;
-  margin-top: 16px;
-  padding: 9px 10px;
-  color: #718073;
-  background: #eef5e9;
-  border-radius: 7px;
-  text-align: left;
-  font-size: 9px;
-  line-height: 1.5;
-}
-
-.profile-import-privacy svg {
-  flex: 0 0 auto;
-  color: #6b9868;
-}
-
-.profile-progress {
-  margin-top: 21px;
-  padding: 15px 17px;
-  background: #fafbf9;
-  border: 1px solid var(--overlay-line);
-  border-radius: 14px;
-}
-
-.profile-progress > div {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-}
-
-.profile-progress strong {
-  font-family: Georgia, "Songti SC", serif;
-  font-size: 20px;
-}
-
-.profile-progress span {
-  color: var(--overlay-muted);
-  font-size: 10px;
-}
-
-.profile-progress > i {
-  height: 3px;
-  display: block;
-  overflow: hidden;
-  margin-top: 11px;
-  background: #e5e8e4;
+  justify-content: center;
+  min-height: 26px;
+  padding: 5px 7px;
   border-radius: 999px;
+  font-size: 8px;
+  font-weight: 750;
+  white-space: nowrap;
 }
 
-.profile-progress b {
-  height: 100%;
-  display: block;
-  background: var(--overlay-text);
-  border-radius: inherit;
-  transition: width 0.2s ease;
+.profile-sync-state.synced {
+  color: #497057;
+  background: #edf6ee;
+}
+
+.profile-sync-state.pending {
+  color: #7d6942;
+  background: #f4f0e6;
+}
+
+@media (max-width: 390px) {
+  .profile-resume-switcher {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .profile-resume-switcher-copy,
+  .profile-resume-switcher select {
+    grid-column: 1 / -1;
+  }
 }
 
 .profile-autofill-card {
   display: grid;
   grid-template-columns: 40px minmax(0, 1fr) auto;
+  align-items: center;
   gap: 12px;
   margin-top: 12px;
   padding: 13px;
@@ -3514,6 +3232,34 @@ button {
   font-size: 10px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.profile-tailor-card {
+  color: #f1f5ff;
+  background: linear-gradient(135deg, #0f1d4d, #1f3aa6);
+  border-color: rgba(255, 255, 255, 0.18);
+  box-shadow: 0 8px 22px rgba(28, 39, 102, 0.32);
+}
+
+.profile-tailor-card > span {
+  color: #ffe9b6;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.profile-tailor-card strong {
+  color: #fff;
+}
+
+.profile-tailor-card small {
+  color: rgba(241, 245, 255, 0.78);
+}
+
+.profile-tailor-card > button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #1f1f1f;
+  background: #ffe9b6;
 }
 
 .profile-status {

@@ -18,7 +18,7 @@
 // The state machine keeps `pending`/`bundle` derived properties so the
 // review grid only re-renders when the actual inputs change.
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
   ArrowRight,
@@ -45,24 +45,30 @@ import {
   EMPTY_PROFILE,
   getTailoredResume,
   loadJobs,
+  loadActiveResumeId,
   loadProfile,
+  loadResumeLibrary,
   loadSettings,
   loadTailoredPdf,
   loadTailoredResumes,
   saveTailoredPdf,
   saveTailoredResume,
+  SETTINGS_KEY,
+  type StoredResume,
   type TailoredPdfSnapshot
 } from "@/infrastructure/storage/storage";
+import { extractResumePdfLayout, type ResumePdfLayout } from "@/features/profile/resumeParser";
 import { buildResumeHtml } from "@/features/tailor/buildResumeHtml";
+import { buildSourcePdfReferenceHtml } from "@/features/tailor/buildSourcePdfReferenceHtml";
 import {
   buildLocalFallback,
   ensureJobKey,
   tailorResumeWithDeepSeek
 } from "@/features/tailor/tailor";
-import type {
-  JdAnalysis,
-  TailoredResumeBundle,
-  TailorContext
+import {
+  normalizeTailorContext,
+  type TailoredResumeBundle,
+  type TailorContext
 } from "@/features/tailor/types";
 import type {
   JobApplication,
@@ -78,6 +84,16 @@ interface UrlPayload {
 }
 
 const PARAM_CONTEXT = "context";
+const PARAM_AUTO = "auto";
+
+type GenerationStage = "idle" | "reading" | "matching" | "rewriting" | "checking" | "ready" | "error";
+
+const GENERATION_STAGES: Array<{ id: Exclude<GenerationStage, "idle" | "ready" | "error">; label: string; detail: string }> = [
+  { id: "reading", label: "读取职位描述", detail: "正在整理岗位职责和任职要求" },
+  { id: "matching", label: "匹配你的经历", detail: "正在寻找可以支撑 JD 的真实经历" },
+  { id: "rewriting", label: "改写简历重点", detail: "只调整表达，不修改事实信息" },
+  { id: "checking", label: "检查定制结果", detail: "正在检查映射关系和内容完整性" }
+];
 
 interface IntakeTab {
   id: "capture" | "existing" | "manual";
@@ -99,6 +115,8 @@ export default function TailorApp() {
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [pending, setPending] = useState<PendingSnapshot | undefined>();
   const [busy, setBusy] = useState(false);
+  const [generationStage, setGenerationStage] = useState<GenerationStage>("idle");
+  const [autoGenerateMode, setAutoGenerateMode] = useState<"deepseek" | "local">();
   const [pdfSnapshot, setPdfSnapshot] = useState<TailoredPdfSnapshot | undefined>();
   const [status, setStatus] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -106,16 +124,23 @@ export default function TailorApp() {
   const [manualDraft, setManualDraft] = useState<ManualDraft>(() => emptyManualDraft());
   const [pickedJobId, setPickedJobId] = useState<string>("");
   const [profileStatusOpen, setProfileStatusOpen] = useState(false);
+  const [sourceResume, setSourceResume] = useState<StoredResume | undefined>();
+  const [sourceLayout, setSourceLayout] = useState<ResumePdfLayout | undefined>();
+  const [sourceLayoutState, setSourceLayoutState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [sourceLayoutError, setSourceLayoutError] = useState("");
 
   useEffect(() => {
     (async () => {
-      const [storedProfile, storedSettings, storedJobs, storedEntries] = await Promise.all([
+      const [storedProfile, storedSettings, storedJobs, storedEntries, resumeLibrary, activeResumeId] = await Promise.all([
         loadProfile(),
         loadSettings(),
         loadJobs(),
-        loadTailoredResumes()
+        loadTailoredResumes(),
+        loadResumeLibrary(),
+        loadActiveResumeId()
       ]);
-      setProfile(storedProfile);
+      const activeResume = resumeLibrary.find((resume) => resume.id === activeResumeId) || resumeLibrary[0];
+      setProfile(activeResume?.profile || storedProfile);
       setSettings(storedSettings);
       setJobs(storedJobs);
       setAllEntries(
@@ -128,16 +153,21 @@ export default function TailorApp() {
       );
       const params = new URLSearchParams(location.search);
       const encoded = params.get(PARAM_CONTEXT);
+      const shouldAutoGenerate = params.get(PARAM_AUTO) === "1";
       const initialPayload = encoded ? decodeContext(encoded) : undefined;
       if (initialPayload) {
         const inner = initialPayload.context;
         const jobKey = inner.jobKey || ensureJobKey(inner);
-        const context: PendingSnapshot = { ...inner, jobKey };
+        const sourceResumeId = inner.sourceResumeId || activeResume?.id;
+        const context: PendingSnapshot = normalizeTailorContext({ ...inner, jobKey, sourceResumeId });
         setPending(context);
+        setSourceResume(resumeLibrary.find((resume) => resume.id === sourceResumeId));
         const stored = await getTailoredResume(jobKey);
         if (stored) {
           setBundle(stored);
           setStatus(`已载入历史定制（${formatRelative(stored.generatedAt)}）`);
+        } else if (shouldAutoGenerate) {
+          setAutoGenerateMode(storedSettings.deepseekApiKey?.trim() ? "deepseek" : "local");
         }
         const pdf = await loadTailoredPdf(jobKey);
         setPdfSnapshot(pdf);
@@ -145,11 +175,77 @@ export default function TailorApp() {
     })();
   }, []);
 
+  useEffect(() => {
+    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+    const handleSettingsChange = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string
+    ) => {
+      if (areaName !== "local") return;
+      const nextSettings = changes[SETTINGS_KEY]?.newValue as OfferFlowSettings | undefined;
+      if (nextSettings) {
+        setSettings(nextSettings);
+        if (nextSettings.deepseekApiKey?.trim()) {
+          setError("");
+          setStatus("DeepSeek 已配置，可以开始改写简历");
+        }
+      }
+    };
+    chrome.storage.onChanged.addListener(handleSettingsChange);
+    return () => chrome.storage.onChanged.removeListener(handleSettingsChange);
+  }, []);
+
+  useEffect(() => {
+    const sourcePdf = sourceResume?.sourcePdf;
+    if (!sourcePdf) {
+      setSourceLayout(undefined);
+      setSourceLayoutState("idle");
+      setSourceLayoutError("");
+      return;
+    }
+    let cancelled = false;
+    setSourceLayoutState("loading");
+    setSourceLayoutError("");
+    void extractResumePdfLayout(base64ToUint8Array(sourcePdf.base64).buffer)
+      .then((layout) => {
+        if (cancelled) return;
+        if (!layout.pages.length || layout.pages.some((page) => !page.imageDataUrl)) {
+          throw new Error("原 PDF 页面渲染不完整，无法生成版式预览");
+        }
+        setSourceLayout(layout);
+        setSourceLayoutState("ready");
+      })
+      .catch((caught) => {
+        if (cancelled) return;
+        setSourceLayout(undefined);
+        setSourceLayoutState("error");
+        const message = caught instanceof Error ? caught.message : "未知 PDF 读取错误";
+        setSourceLayoutError(message);
+        console.error("[OfferFlow] 原 PDF 版式读取失败", caught);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [sourceResume?.id, sourceResume?.sourcePdf?.base64]);
+
   const storedJobs = useMemo(() => Object.entries(allEntries), [allEntries]);
   const previewHtml = useMemo(() => {
     if (!bundle) return "";
-    return buildResumeHtml({ resume: bundle.resume, jd: bundle.jd });
-  }, [bundle]);
+    const sourcePage = sourceLayout?.pages[0];
+    return buildResumeHtml({
+      resume: bundle.resume,
+      jd: bundle.jd,
+      showJdSidebar: false,
+      variant: "source-aligned",
+      sourceProfile: sourceResume?.profile,
+      accentColor: "#202421",
+      pageSize: sourcePage && sourcePage.widthPt / sourcePage.heightPt > 0.74 ? "letter" : "a4"
+    });
+  }, [bundle, sourceLayout, sourceResume?.profile]);
+  const sourcePreviewHtml = useMemo(
+    () => sourceLayout ? buildSourcePdfReferenceHtml(sourceLayout) : "",
+    [sourceLayout]
+  );
 
   const phase: "pending-empty" | "jd-ready" | "jd-bundled" = !pending
     ? "pending-empty"
@@ -161,16 +257,44 @@ export default function TailorApp() {
     if (!pending) return;
     setBusy(true);
     setError("");
+    setGenerationStage("reading");
+    const stageTimers = [
+      window.setTimeout(() => setGenerationStage("matching"), 650),
+      window.setTimeout(() => setGenerationStage("rewriting"), 1400)
+    ];
     try {
+      const [resumeLibrary, activeResumeId] = await Promise.all([
+        loadResumeLibrary(),
+        loadActiveResumeId()
+      ]);
+      const requestedSource = pending.sourceResumeId
+        ? resumeLibrary.find((resume) => resume.id === pending.sourceResumeId)
+        : undefined;
+      if (pending.sourceResumeId && !requestedSource) {
+        throw new Error("这份定制记录绑定的原 PDF 已不存在，请从简历库重新选择母版");
+      }
+      const currentSource = requestedSource
+        || resumeLibrary.find((resume) => resume.id === activeResumeId)
+        || resumeLibrary[0];
+      if (!currentSource?.sourcePdf) {
+        throw new Error("当前简历没有原始 PDF 母版，请返回简历库重新导入 PDF 后再生成");
+      }
+      setSourceResume(currentSource);
+      const generationContext = pending.sourceResumeId === currentSource.id
+        ? pending
+        : { ...pending, sourceResumeId: currentSource.id };
+      if (generationContext !== pending) setPending(generationContext);
       let next: TailoredResumeBundle;
       if (mode === "deepseek") {
         if (!settings.deepseekApiKey) {
           throw new Error("未配置 DeepSeek API Key，请先在设置中填写");
         }
-        next = await tailorResumeWithDeepSeek(profile, pending, settings);
+        next = await tailorResumeWithDeepSeek(currentSource.profile, generationContext, settings);
       } else {
-        next = buildLocalFallback(profile, pending);
+        next = buildLocalFallback(currentSource.profile, generationContext);
       }
+      setGenerationStage("checking");
+      await new Promise((resolve) => window.setTimeout(resolve, 260));
       setBundle(next);
       await saveTailoredResume({
         jobKey: next.context.jobKey,
@@ -182,13 +306,23 @@ export default function TailorApp() {
         ...previous,
         [next.context.jobKey]: { savedAt: new Date().toISOString(), notes: next.notes }
       }));
+      setGenerationStage("ready");
       setStatus(mode === "deepseek" ? "DeepSeek 已生成定制简历" : "本地已生成定制简历");
     } catch (caught) {
+      setGenerationStage("error");
       setError(caught instanceof Error ? caught.message : "生成失败");
     } finally {
+      stageTimers.forEach((timer) => window.clearTimeout(timer));
       setBusy(false);
     }
   };
+
+  useEffect(() => {
+    if (!autoGenerateMode || !pending || bundle || busy) return;
+    const mode = autoGenerateMode;
+    setAutoGenerateMode(undefined);
+    void generate(mode);
+  }, [autoGenerateMode, pending, bundle, busy, settings.deepseekApiKey]);
 
   const downloadHtml = () => {
     if (!previewHtml) return;
@@ -220,6 +354,7 @@ export default function TailorApp() {
       setBundle(undefined);
       setPending(undefined);
       setPdfSnapshot(undefined);
+      setGenerationStage("idle");
     }
     setStatus("已删除定制记录");
   };
@@ -276,6 +411,7 @@ export default function TailorApp() {
     const next = { ...context, jobKey: ensureJobKey(context) };
     setBundle(undefined);
     setPending(next);
+    setGenerationStage("idle");
     setError("");
     setStatus(`已载入岗位：${next.company} · ${next.position}`);
   };
@@ -299,6 +435,7 @@ export default function TailorApp() {
     const next = { ...context, jobKey: ensureJobKey(context) };
     setBundle(undefined);
     setPending(next);
+    setGenerationStage("idle");
     setError("");
     setStatus(`已填入岗位：${next.company} · ${next.position}`);
   };
@@ -332,6 +469,20 @@ export default function TailorApp() {
     window.open(url, "_blank", "noopener,noreferrer");
   };
 
+  const openSettings = () => {
+    const url =
+      typeof chrome !== "undefined" && chrome.runtime?.getURL
+        ? chrome.runtime.getURL("dashboard.html?view=settings")
+        : new URL("dashboard.html?view=settings", window.location.href).href;
+    if (typeof chrome !== "undefined" && chrome.tabs?.create) {
+      void chrome.tabs.create({ url }).catch(() => {
+        window.open(url, "_blank", "noopener,noreferrer");
+      });
+      return;
+    }
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   const openResumeManager = () => {
     const url =
       typeof chrome !== "undefined" && chrome.runtime?.getURL
@@ -353,8 +504,10 @@ export default function TailorApp() {
         pending={pending}
         bundle={bundle}
         busy={busy}
+        generationStage={generationStage}
         hasApiKey={hasApiKey}
         onGenerate={generate}
+        onOpenSettings={openSettings}
         onOpenInNewTab={openInNewTab}
         onDownloadHtml={downloadHtml}
         onClose={() => window.close()}
@@ -404,8 +557,14 @@ export default function TailorApp() {
           pending={pending}
           bundle={bundle}
           previewHtml={previewHtml}
+          sourcePreviewHtml={sourcePreviewHtml}
+          sourceLayoutState={sourceLayoutState}
+          sourceLayoutError={sourceLayoutError}
+          sourcePdfName={sourceResume?.sourcePdf?.fileName}
+          sourceCharacterCount={sourceLayout?.characterCount}
           pdfSnapshot={pdfSnapshot}
           busy={busy}
+          generationStage={generationStage}
           hasApiKey={hasApiKey}
           onGenerate={generate}
           onOpenInNewTab={openInNewTab}
@@ -426,8 +585,16 @@ export default function TailorApp() {
           if (stored) {
             setBundle(stored);
             setPending(stored.context);
-            const pdf = await loadTailoredPdf(jobKey);
+            const [pdf, resumeLibrary, activeResumeId] = await Promise.all([
+              loadTailoredPdf(jobKey),
+              loadResumeLibrary(),
+              loadActiveResumeId()
+            ]);
             setPdfSnapshot(pdf);
+            const storedSource = stored.context.sourceResumeId
+              ? resumeLibrary.find((resume) => resume.id === stored.context.sourceResumeId)
+              : resumeLibrary.find((resume) => resume.id === activeResumeId);
+            setSourceResume(storedSource);
             setStatus(`已载入历史定制：${stored.context.company} · ${stored.context.position}`);
           }
         }} onDelete={deleteEntry} />
@@ -445,7 +612,9 @@ function Toolbar({
   pending,
   bundle,
   busy,
+  generationStage,
   hasApiKey,
+  onOpenSettings,
   onGenerate,
   onOpenInNewTab,
   onDownloadHtml,
@@ -455,7 +624,9 @@ function Toolbar({
   pending?: PendingSnapshot;
   bundle?: TailoredResumeBundle;
   busy: boolean;
+  generationStage: GenerationStage;
   hasApiKey: boolean;
+  onOpenSettings: () => void;
   onGenerate: (mode: "deepseek" | "local") => void;
   onOpenInNewTab: () => void;
   onDownloadHtml: () => void;
@@ -463,6 +634,7 @@ function Toolbar({
 }) {
   const jobLabel = pending ? `${pending.company} · ${pending.position}` : "未传入岗位上下文";
   const jobLabelClass = pending ? "toolbar-job is-set" : "toolbar-job";
+  const activeStage = GENERATION_STAGES.find((item) => item.id === generationStage);
   return (
     <header className="review-toolbar">
       <div className="toolbar-title">
@@ -470,6 +642,15 @@ function Toolbar({
         <span className={jobLabelClass}>{jobLabel}</span>
       </div>
       <div className="toolbar-actions">
+        {busy && (
+          <div className="generation-toolbar-status" aria-live="polite">
+            <RefreshCw className="spin" size={14} />
+            <span>
+              <strong>正在生成定制简历</strong>
+              <small>{activeStage?.label || "正在处理"}</small>
+            </span>
+          </div>
+        )}
         {phase === "pending-empty" && (
           <button type="button" className="ghost" onClick={onClose}>
             <X size={14} /> 关闭
@@ -482,33 +663,13 @@ function Toolbar({
                 type="button"
                 className="primary"
                 disabled={busy}
-                onClick={() => onGenerate("deepseek")}
+                onClick={() => hasApiKey ? onGenerate("deepseek") : onOpenSettings()}
                 title={hasApiKey ? "用 DeepSeek 改写简历" : "先在设置中填写 DeepSeek API Key"}
               >
                 {busy ? <RefreshCw className="spin" size={14} /> : <Sparkles size={14} />}
-                DeepSeek 改写
+                {hasApiKey ? "DeepSeek 改写" : "配置 DeepSeek"}
               </button>
-              {!hasApiKey && (
-                <span
-                  className="btn-hint"
-                  role="button"
-                  tabIndex={0}
-                  onClick={() => {
-                    if (typeof chrome !== "undefined" && chrome.tabs?.create) {
-                      void chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html?view=settings") });
-                    }
-                  }}
-                  onKeyDown={(event) => {
-                    if (event.key === "Enter" || event.key === " ") {
-                      if (typeof chrome !== "undefined" && chrome.tabs?.create) {
-                        void chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html?view=settings") });
-                      }
-                    }
-                  }}
-                >
-                  <KeyRound size={12} /> 未配置 API Key · 去设置
-                </span>
-              )}
+              {!hasApiKey && <span className="btn-hint is-status"><KeyRound size={12} /> 未配置 API Key</span>}
             </div>
             <div className="action-cluster">
               <button
@@ -1060,8 +1221,14 @@ function ReviewGrid({
   pending,
   bundle,
   previewHtml,
+  sourcePreviewHtml,
+  sourceLayoutState,
+  sourceLayoutError,
+  sourcePdfName,
+  sourceCharacterCount,
   pdfSnapshot,
   busy,
+  generationStage,
   hasApiKey,
   onGenerate,
   onOpenInNewTab,
@@ -1074,8 +1241,14 @@ function ReviewGrid({
   pending: PendingSnapshot;
   bundle?: TailoredResumeBundle;
   previewHtml: string;
+  sourcePreviewHtml: string;
+  sourceLayoutState: "idle" | "loading" | "ready" | "error";
+  sourceLayoutError: string;
+  sourcePdfName?: string;
+  sourceCharacterCount?: number;
   pdfSnapshot?: TailoredPdfSnapshot;
   busy: boolean;
+  generationStage: GenerationStage;
   hasApiKey: boolean;
   onGenerate: (mode: "deepseek" | "local") => void;
   onOpenInNewTab: () => void;
@@ -1084,75 +1257,82 @@ function ReviewGrid({
   onDownloadStoredPdf: () => void;
   onRemovePdf: () => Promise<void>;
 }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [previewMode, setPreviewMode] = useState<"editable" | "source">("editable");
+  const [previewLoaded, setPreviewLoaded] = useState(false);
+  const activePreviewHtml = previewMode === "source" ? sourcePreviewHtml : previewHtml;
+  useEffect(() => {
+    setPreviewLoaded(false);
+  }, [activePreviewHtml]);
+
+  useEffect(() => {
+    if (previewMode === "source" && !sourcePreviewHtml) setPreviewMode("editable");
+  }, [previewMode, sourcePreviewHtml]);
+
+  const handlePreviewLoad = () => {
+    setPreviewLoaded(true);
+  };
+  const rawJobDescription = pending.rawExcerpt?.trim() || [
+    pending.summary,
+    pending.responsibilities.length ? `岗位职责\n${pending.responsibilities.join("\n")}` : "",
+    pending.requirements.length ? `任职要求\n${pending.requirements.join("\n")}` : ""
+  ].filter(Boolean).join("\n\n");
+
   return (
     <div className="review-grid">
-      <section className="panel jd-panel" aria-label="职位描述与证据映射">
+      {bundle && previewHtml && (
+        <TailorResultBanner
+          bundle={bundle}
+          sourcePdfName={sourcePdfName}
+          sourceCharacterCount={sourceCharacterCount}
+          onOpenPreview={onOpenInNewTab}
+          onDownloadHtml={onDownloadHtml}
+        />
+      )}
+      <section className="panel jd-panel" aria-label="原始职位描述">
         <div className="panel-head">
-          <strong>职位描述 / JD</strong>
+          <strong>{pending.position || "职位描述 / JD"}</strong>
           <small>
-            {extractHost(pending.sourceUrl) || "手动传入"} · {pending.city || "未填写城市"}
+            {pending.company || "未填写公司"} · {pending.city || "未填写城市"} · {extractHost(pending.sourceUrl) || "手动传入"}
           </small>
         </div>
         <div className="jd-scroll">
-          <div className="jd-summary">
-            <h2>JD 摘要</h2>
-            <p>{pending.summary || "未提供摘要"}</p>
-            <div className="score-row">
-              <span className="score-pill">
-                <strong>{pending.responsibilities.length}</strong>
-                &nbsp;条工作职责
-              </span>
-              <span className="score-pill">
-                <strong>{pending.requirements.length}</strong>
-                &nbsp;条岗位要求
-              </span>
-              <span className="score-pill">
-                <strong>{bundle ? countMappings(bundle.jd) : 0}</strong>
-                &nbsp;条映射
-              </span>
-              <span className="score-pill">
-                来源：{pending.sourceUrl ? new URL(pending.sourceUrl).hostname : "手动 / 已有岗位"}
-              </span>
-            </div>
+          <div className="jd-original-meta">
+            <div><small>公司</small><strong>{pending.company || "未填写公司"}</strong></div>
+            <div><small>岗位</small><strong>{pending.position || "未填写岗位"}</strong></div>
+            {pending.city && <div><small>地点</small><strong>{pending.city}</strong></div>}
           </div>
-          <JdCardList
-            category="responsibility"
-            label="工作职责"
-            items={pending.responsibilities}
-            mappings={bundle?.jd}
-          />
-          <JdCardList
-            category="requirement"
-            label="岗位要求"
-            items={pending.requirements}
-            mappings={bundle?.jd}
-          />
-          {bundle && bundle.notes.length > 0 && (
-            <div className="jd-summary">
-              <h2>改写要点</h2>
-              <ul style={{ margin: 0, paddingLeft: 18, color: "#42505d", fontSize: 13 }}>
-                {bundle.notes.map((note, index) => (
-                  <li key={index}>{note}</li>
-                ))}
-              </ul>
-            </div>
-          )}
-          {bundle && bundle.unsupportedClaims.length > 0 && (
-            <div className="jd-summary" style={{ background: "var(--red-soft)", borderColor: "#f0c2c2" }}>
-              <h2 style={{ color: "var(--red)" }}>被砍掉的「无法核实」声明</h2>
-              <ul style={{ margin: 0, paddingLeft: 18, color: "#7a2a2a", fontSize: 13 }}>
-                {bundle.unsupportedClaims.map((claim, index) => (
-                  <li key={index}>{claim}</li>
-                ))}
-              </ul>
-            </div>
-          )}
+          <article className="jd-original-copy">
+            <h2>岗位 JD</h2>
+            <div>{rawJobDescription || "未读取到岗位原文，请回到招聘页面重新识别。"}</div>
+          </article>
         </div>
       </section>
 
       <section className="panel resume-panel" aria-label="可编辑简历与映射标注">
         <div className="panel-head">
-          <strong>简历 HTML / 可编辑版本</strong>
+          <div className="resume-panel-title">
+            <strong>{previewMode === "editable" ? "流式编辑简历" : "原 PDF 对照"}</strong>
+            {bundle && (
+              <div className="preview-mode-switch" aria-label="简历预览模式">
+                <button
+                  type="button"
+                  className={previewMode === "editable" ? "active" : ""}
+                  onClick={() => setPreviewMode("editable")}
+                >
+                  流式编辑
+                </button>
+                <button
+                  type="button"
+                  className={previewMode === "source" ? "active" : ""}
+                  disabled={!sourcePreviewHtml}
+                  onClick={() => setPreviewMode("source")}
+                >
+                  原 PDF 对照
+                </button>
+              </div>
+            )}
+          </div>
           <small>
             {bundle ? (
               <span style={{ display: "inline-flex", gap: 6, alignItems: "center" }}>
@@ -1167,15 +1347,44 @@ function ReviewGrid({
           </small>
         </div>
         <div className="resume-scroll">
-          {previewHtml && bundle ? (
-            <div className="resume-stage">
+          {busy && generationStage !== "idle" && generationStage !== "error" ? (
+            <GenerationProgress stage={generationStage} pending={pending} />
+          ) : activePreviewHtml && bundle ? (
+            <div className={`resume-stage ${previewLoaded ? "is-loaded" : "is-loading"}`}>
               <iframe
+                ref={iframeRef}
                 title="定制简历预览"
                 className="resume-iframe"
-                srcDoc={previewHtml}
+                srcDoc={activePreviewHtml}
                 sandbox="allow-same-origin allow-scripts allow-forms allow-downloads"
+                onLoad={handlePreviewLoad}
               />
+              {!previewLoaded && (
+                <div className="resume-preview-loading" aria-live="polite">
+                  <RefreshCw className="spin" size={18} />
+                  <span>正在打开简历预览…</span>
+                </div>
+              )}
             </div>
+          ) : bundle && sourceLayoutState === "loading" ? (
+            <div className="resume-preview-loading" aria-live="polite">
+              <RefreshCw className="spin" size={18} />
+              <span>正在按原 PDF 版式生成预览…</span>
+            </div>
+          ) : bundle && sourceLayoutState === "error" ? (
+            <div className="resume-empty-state">
+              <AlertTriangle size={20} />
+              <strong>原 PDF 版式读取失败</strong>
+              <span>{sourceLayoutError || "请回到简历库重新导入原始 PDF，再重新生成这份定制简历。"}</span>
+            </div>
+          ) : bundle && sourceLayoutState === "idle" ? (
+            <div className="resume-empty-state">
+              <AlertTriangle size={20} />
+              <strong>缺少原 PDF 母版</strong>
+              <span>这份定制不会使用重排模板。请回到简历库导入原始 PDF 后再生成。</span>
+            </div>
+          ) : generationStage !== "idle" && generationStage !== "error" ? (
+            <GenerationProgress stage={generationStage} pending={pending} />
           ) : (
             <ResumePendingCta
               busy={busy}
@@ -1192,6 +1401,7 @@ function ReviewGrid({
             pdfSnapshot={pdfSnapshot}
             busy={busy}
             hasBundle={Boolean(bundle)}
+            onOpenPreview={onOpenInNewTab}
             onUpload={onPdfUpload}
             onDownload={onDownloadStoredPdf}
             onRemove={async () => {
@@ -1200,6 +1410,72 @@ function ReviewGrid({
           />
         </div>
       </section>
+    </div>
+  );
+}
+
+function TailorResultBanner({
+  bundle,
+  sourcePdfName,
+  sourceCharacterCount,
+  onOpenPreview,
+  onDownloadHtml
+}: {
+  bundle: TailoredResumeBundle;
+  sourcePdfName?: string;
+  sourceCharacterCount?: number;
+  onOpenPreview: () => void;
+  onDownloadHtml: () => void;
+}) {
+  return (
+    <section className="tailor-result-banner" aria-live="polite">
+      <div className="tailor-result-copy">
+        <span className="tailor-result-mark"><Check size={18} /></span>
+        <div>
+          <strong>流式定制简历已生成</strong>
+          <small>{bundle.context.company || "当前岗位"} · {bundle.context.position} · 可整段编辑并自动重排</small>
+        </div>
+      </div>
+      <div className="tailor-result-stats">
+        <span title={sourcePdfName}>
+          {sourcePdfName || "原 PDF"} · {sourceCharacterCount || 0} 字 · 原版仅用于对照
+        </span>
+      </div>
+      <div className="tailor-result-actions">
+        <button type="button" className="primary" onClick={onOpenPreview}>
+          <ExternalLink size={14} /> 打开预览并保存 PDF
+        </button>
+        <button type="button" onClick={onDownloadHtml}>
+          <Download size={14} /> 下载 HTML
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function GenerationProgress({ stage, pending }: { stage: GenerationStage; pending: PendingSnapshot }) {
+  const currentIndex = GENERATION_STAGES.findIndex((item) => item.id === stage);
+  const active = GENERATION_STAGES[currentIndex] || GENERATION_STAGES[0];
+  return (
+    <div className="generation-progress" aria-live="polite">
+      <div className="generation-progress-mark"><Sparkles size={22} /></div>
+      <h2>正在生成岗位定制简历</h2>
+      <p>{pending.company || "当前公司"} · {pending.position || "目标岗位"}</p>
+      <div className="generation-steps">
+        {GENERATION_STAGES.map((item, index) => {
+          const state = index < currentIndex ? "complete" : index === currentIndex ? "active" : "pending";
+          return (
+            <div className={`generation-step ${state}`} key={item.id}>
+              <span>{state === "complete" ? <Check size={12} /> : index + 1}</span>
+              <strong>{item.label}</strong>
+            </div>
+          );
+        })}
+      </div>
+      <div className="generation-progress-detail">
+        <RefreshCw className="spin" size={14} />
+        <span>{active.detail}</span>
+      </div>
     </div>
   );
 }
@@ -1253,69 +1529,12 @@ function ResumePendingCta({
   );
 }
 
-function JdCardList({
-  category,
-  label,
-  items,
-  mappings
-}: {
-  category: "responsibility" | "requirement" | "bonus" | "differentiator" | "keyword";
-  label: string;
-  items: string[];
-  mappings?: JdAnalysis;
-}) {
-  if (!items?.length) return null;
-  return (
-    <>
-      <div className="jd-section-title">{label}</div>
-      <div id={`jd-${category}`}>
-        {items.map((item, index) => {
-          const mapping = mappings?.mappings?.find(
-            (m) => m.text === item && m.category === category
-          );
-          const mapId = mapping?.map_id || `JD-${category.toUpperCase()}-${index + 1}`;
-          const matched = Boolean(mapping);
-          return (
-            <div
-              key={index}
-              className="jd-card"
-              data-match={matched ? "direct" : "pending"}
-              data-map-id={mapId}
-            >
-              <div className="jd-card-top">
-                <span className="jd-id">{mapId}</span>
-                <span className={`match-pill ${matched ? "match-direct" : "match-pending"}`}>
-                  {matched ? "已映射" : "待补证"}
-                </span>
-                <span className="importance-pill">{label}</span>
-              </div>
-              <p>{item}</p>
-              {mapping?.resume_ids?.length ? (
-                <div className="evidence-row">
-                  {mapping.resume_ids.slice(0, 4).map((rid) => (
-                    <span key={rid} className="evidence-chip">
-                      {rid}
-                    </span>
-                  ))}
-                  {mapping.resume_ids.length > 4 && (
-                    <span className="evidence-chip">+{mapping.resume_ids.length - 4}</span>
-                  )}
-                </div>
-              ) : null}
-              {mapping?.rationale && <p className="review-note">{mapping.rationale}</p>}
-            </div>
-          );
-        })}
-      </div>
-    </>
-  );
-}
-
 function PdfManager({
   pending,
   pdfSnapshot,
   busy,
   hasBundle,
+  onOpenPreview,
   onUpload,
   onDownload,
   onRemove
@@ -1324,6 +1543,7 @@ function PdfManager({
   pdfSnapshot: TailoredPdfSnapshot | undefined;
   busy: boolean;
   hasBundle: boolean;
+  onOpenPreview: () => void;
   onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDownload: () => void;
   onRemove: () => Promise<void>;
@@ -1331,16 +1551,23 @@ function PdfManager({
   return (
     <div className="pdf-manager">
       <div className="pdf-manager-copy">
-        <strong>我的 PDF 简历</strong>
+        <strong>投递 PDF（可选）</strong>
         <small>
           {pdfSnapshot
             ? `已保存：${pdfSnapshot.fileName} · ${formatSize(pdfSnapshot.size)}`
+            : pending && hasBundle
+              ? "原 PDF 母版已用于定制版式；打开预览可保存最终投递 PDF。"
             : pending
-              ? "上传一份 PDF 作为「一键投递」时的参考稿（≤ 8MB）"
-              : "需要先选定岗位，再上传 PDF 作为该岗位的投递稿。"}
+                ? "当前简历库中的原 PDF 会作为定制母版；生成后可在这里保存投递稿。"
+              : "先选定岗位，再生成基于原 PDF 版式的投递稿。"}
         </small>
       </div>
       <div className="pdf-manager-actions">
+        {hasBundle && !pdfSnapshot && (
+          <button type="button" className="pdf-preview-action" onClick={onOpenPreview}>
+            <ExternalLink size={14} /> 打开预览并保存 PDF
+          </button>
+        )}
         <label className={`pdf-upload ${!pending || busy || !hasBundle ? "is-disabled" : ""}`}>
           <input
             type="file"
@@ -1349,7 +1576,7 @@ function PdfManager({
             disabled={!pending || busy || !hasBundle}
           />
           <Upload size={14} />
-          <span>{pdfSnapshot ? "替换 PDF" : "上传 PDF"}</span>
+          <span>{pdfSnapshot ? "替换 PDF" : hasBundle ? "上传自定义 PDF" : "上传 PDF"}</span>
         </label>
         {pdfSnapshot && (
           <>
@@ -1409,7 +1636,7 @@ function ArchiveStrip({
 }
 
 function jobToTailorContext(job: JobApplication): PendingSnapshot {
-  return {
+  return normalizeTailorContext({
     jobKey: "",
     company: job.company || "未填公司",
     position: job.position || "未填岗位",
@@ -1421,7 +1648,7 @@ function jobToTailorContext(job: JobApplication): PendingSnapshot {
     requirements: job.requirements || [],
     rawExcerpt: job.rawExcerpt,
     sourceUrl: job.sourceUrl
-  };
+  });
 }
 
 function splitLines(value: string): string[] {
@@ -1429,10 +1656,6 @@ function splitLines(value: string): string[] {
     .split(/\r?\n/)
     .map((line) => line.replace(/^[\s\-•·●]+/, "").trim())
     .filter(Boolean);
-}
-
-function countMappings(jd: JdAnalysis) {
-  return jd.mappings.length;
 }
 
 function extractHost(url?: string) {
@@ -1445,12 +1668,40 @@ function extractHost(url?: string) {
 }
 
 function decodeContext(payload: string): UrlPayload {
+  const parseJson = (value: string): UrlPayload | undefined => {
+    const parsed = JSON.parse(value) as Partial<UrlPayload> & Partial<PendingSnapshot>;
+    if (parsed.context) {
+      return {
+        jobKey: parsed.jobKey || parsed.context.jobKey || "",
+        context: parsed.context
+      };
+    }
+    if (typeof parsed.position === "string") {
+      const context = parsed as PendingSnapshot;
+      return {
+        jobKey: context.jobKey || "",
+        context
+      };
+    }
+    return undefined;
+  };
+
+  try {
+    const direct = parseJson(decodeURIComponent(payload));
+    if (direct) return direct;
+  } catch {
+    // Fall through to the original Base64 payload format used by history links.
+  }
+
   try {
     const decoded = decodeUtf8Base64(decodeURIComponent(payload));
-    return JSON.parse(decoded) as UrlPayload;
-  } catch (error) {
-    throw new Error("岗位上下文解析失败");
+    const parsed = parseJson(decoded);
+    if (parsed) return parsed;
+  } catch {
+    // Report a stable user-facing error below.
   }
+
+  throw new Error("岗位上下文解析失败");
 }
 
 function decodeUtf8Base64(value: string): string {

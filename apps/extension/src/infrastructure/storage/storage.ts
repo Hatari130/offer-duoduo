@@ -20,6 +20,7 @@ export interface StoredResume {
   position?: string;
   archiveNameSource?: "filename" | "manual";
   sourceFileName?: string;
+  sourcePdf?: StoredResumePdf;
   profile: PersonalProfile;
   createdAt: string;
   updatedAt: string;
@@ -175,13 +176,26 @@ export async function saveJobs(
   }
 }
 
+export interface StoredResumePdf {
+  fileName: string;
+  size: number;
+  importedAt: string;
+  base64: string;
+}
+
 export async function loadSettings(): Promise<OfferFlowSettings> {
   if (!hasChromeStorage()) {
     const value = localStorage.getItem(SETTINGS_KEY);
-    return value ? JSON.parse(value) : {};
+    return normalizeSettings(value ? JSON.parse(value) : {});
   }
   const result = await chrome.storage.local.get(SETTINGS_KEY);
-  return (result[SETTINGS_KEY] as OfferFlowSettings | undefined) ?? {};
+  return normalizeSettings((result[SETTINGS_KEY] as OfferFlowSettings | undefined) ?? {});
+}
+
+function normalizeSettings(settings: OfferFlowSettings): OfferFlowSettings {
+  return settings.deepseekModel === "deepseek-v4-flash"
+    ? { ...settings, deepseekModel: "deepseek-chat" }
+    : settings;
 }
 
 export async function saveSettings(settings: OfferFlowSettings): Promise<void> {

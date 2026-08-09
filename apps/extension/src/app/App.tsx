@@ -43,14 +43,18 @@ import {
   syncJobToObsidian
 } from "@/integrations/obsidian/obsidian";
 import {
+  ACTIVE_RESUME_KEY,
   AUTO_SYNC_NOTICE_KEY,
   EMPTY_PROFILE,
   findDuplicate,
   JOBS_KEY,
+  loadActiveResumeId,
   loadJobs,
   loadProfile,
+  loadResumeLibrary,
   loadSettings,
   PROFILE_KEY,
+  RESUMES_KEY,
   saveJobs,
   saveProfile,
   saveSettings
@@ -78,7 +82,7 @@ import {
 } from "@/shared/types";
 import OpportunityView from "@/features/opportunities/OpportunityView";
 import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
-import { buildJobKey, type TailorContext } from "@/features/tailor/types";
+import { normalizeTailorContext, type TailorContext } from "@/features/tailor/types";
 
 import {
   CalendarView,
@@ -134,7 +138,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   }>({});
 
   useEffect(() => {
-    Promise.all([loadJobs(), loadSettings(), loadProfile(), loadOpportunityCache()]).then(([storedJobs, storedSettings, storedProfile, cachedOpportunities]) => {
+    Promise.all([
+      loadJobs(),
+      loadSettings(),
+      loadProfile(),
+      loadOpportunityCache(),
+      loadResumeLibrary(),
+      loadActiveResumeId()
+    ]).then(([storedJobs, storedSettings, storedProfile, cachedOpportunities, resumeLibrary, activeResumeId]) => {
       let migrationChanged = false;
       const migratedJobs = storedJobs.map((job) => {
         const appliedAt = inferAppliedAt(job);
@@ -151,7 +162,12 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         : { ...storedSettings, opportunityFeedUrl: DEFAULT_OPPORTUNITY_FEED_URL };
       setSettings(effectiveSettings);
       if (!storedSettings.opportunityFeedUrl) void saveSettings(effectiveSettings);
-      setProfile(storedProfile);
+      const currentResumeId = activeResumeId && resumeLibrary.some((resume) => resume.id === activeResumeId)
+        ? activeResumeId
+        : resumeLibrary[0]?.id;
+      const currentResume = resumeLibrary.find((resume) => resume.id === currentResumeId);
+      setProfile(currentResume?.profile || storedProfile);
+      if (currentResume) void saveProfile(currentResume.profile);
       setOpportunitySnapshot(cachedOpportunities);
       setOpportunityLoading(true);
       refreshOpportunityFeed(effectiveSettings.opportunityFeedUrl)
@@ -180,6 +196,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       }
       if (changes[PROFILE_KEY]?.newValue) {
         setProfile(changes[PROFILE_KEY].newValue as PersonalProfile);
+      }
+      if (changes[RESUMES_KEY] || changes[ACTIVE_RESUME_KEY]) {
+        void (async () => {
+          const [library, activeId] = await Promise.all([loadResumeLibrary(), loadActiveResumeId()]);
+          const currentId = activeId && library.some((resume) => resume.id === activeId) ? activeId : library[0]?.id || "";
+          const current = library.find((resume) => resume.id === currentId);
+          if (current && !changes[PROFILE_KEY]) setProfile(current.profile);
+        })();
       }
       if (changes[OPPORTUNITY_CACHE_KEY]?.newValue) {
         setOpportunitySnapshot(
@@ -571,18 +595,31 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         throw new Error(response.error || "页面解析失败");
       }
       const job = response.data;
-      const context: TailorContext = {
-        jobKey: buildJobKey({ company: job.company, position: job.position, sourceUrl: job.sourceUrl }),
+      const [resumeLibrary, activeResumeId] = await Promise.all([
+        loadResumeLibrary(),
+        loadActiveResumeId()
+      ]);
+      const sourceResume = resumeLibrary.find((resume) => resume.id === activeResumeId) || resumeLibrary[0];
+      if (!sourceResume?.sourcePdf) {
+        throw new Error("当前网申简历没有原始 PDF 母版，请在简历库重新导入 PDF 后再使用一键改简历");
+      }
+      const context: TailorContext = normalizeTailorContext({
+        jobKey: "",
+        sourceResumeId: sourceResume.id,
         company: job.company,
         position: job.position,
         city: job.city,
         sourceUrl: job.sourceUrl,
         summary: job.summary,
         responsibilities: job.responsibilities || [],
-        requirements: job.requirements || []
-      };
-      const payload = encodeURIComponent(JSON.stringify(context));
-      const url = chrome.runtime.getURL(`tailor.html?context=${payload}`);
+        requirements: job.requirements || [],
+        rawExcerpt: job.rawExcerpt || undefined
+      });
+      const payload = encodeURIComponent(JSON.stringify({
+        jobKey: context.jobKey,
+        context
+      }));
+      const url = chrome.runtime.getURL(`tailor.html?context=${payload}&auto=1`);
       await chrome.tabs.create({ url });
     } catch (error) {
       setNotice(

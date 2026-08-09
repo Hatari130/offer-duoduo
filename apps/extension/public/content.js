@@ -26,14 +26,21 @@
     return undefined;
   };
 
+  const splitListItems = (value) => String(value || "")
+    .replace(/\r/g, "\n")
+    .replace(/\s+(?=\d+[.、)]\s*)/g, "\n")
+    .replace(/\s+(?=[-•·●]\s*)/g, "\n")
+    .split(/[\n；;]+/)
+    .map((item) => item
+      .replace(/^\s*(?:[-•·●]|\d+[.、)])\s*/, "")
+      .replace(/^(?:岗位职责|职位职责|工作职责|任职资格|任职要求|职位要求|岗位要求|加分项)[：:]\s*/i, "")
+      .trim())
+    .filter((item) => item.length >= 3);
+
   const textList = (value) => {
-    if (Array.isArray(value)) return value.map((item) => clean(String(item))).filter(Boolean);
+    if (Array.isArray(value)) return value.flatMap((item) => splitListItems(item));
     if (typeof value !== "string") return [];
-    return value
-      .split(/\n|；|;/)
-      .map(clean)
-      .filter((item) => item.length > 5)
-      .slice(0, 12);
+    return splitListItems(value).slice(0, 20);
   };
 
   const getPosting = () => {
@@ -543,15 +550,22 @@
   const extract = () => {
     const posting = getPosting();
     const text = visibleText();
+    const headingTitle = clean(document.querySelector("h1")?.textContent || "");
     const title = clean(
-      (posting && posting.title) ||
+      headingTitle ||
+        (posting && posting.title) ||
         meta("og:title", "twitter:title") ||
-        (document.querySelector("h1") && document.querySelector("h1").textContent) ||
         document.title
     );
     const organization = posting && posting.hiringOrganization;
     const address = posting && posting.jobLocation && posting.jobLocation.address;
     const titleParts = title.split(/[-–—_|｜]/).map(clean).filter(Boolean);
+    const roleFromText = (value) => {
+      const candidate = clean(value).match(
+        /【[^】]{0,24}】\s*([^\n]{2,100}?)(?=\s+(?:校园招聘|社会招聘|实习生招聘|全职|兼职|工作地点|上海市|北京市|广州市|深圳市))/i
+      )?.[1];
+      return candidate && extractionRules.occupationScore(candidate) >= 3 ? clean(candidate) : undefined;
+    };
 
     const company =
       clean(organization && organization.name) ||
@@ -561,9 +575,15 @@
       ]) ||
       titleParts.at(-1) ||
       location.hostname.replace(/^www\./, "").split(".")[0];
+    const normalizedCompany = company
+      .replace(/\s*(?:招聘门户|招聘官网|招聘平台|人才招聘门户|人才招聘官网)$/i, "")
+      .trim();
 
+    const postingPosition = clean(posting && posting.title);
     const position =
-      clean(posting && posting.title) ||
+      (postingPosition && !extractionRules.isHardRejectedPosition(postingPosition) ? postingPosition : undefined) ||
+      roleFromText(headingTitle) ||
+      roleFromText(text) ||
       firstMatch(text, [
         /(?:职位名称|招聘职位|岗位名称)[：:\s]+(.{2,40}?)(?=\s{2,}|工作地点|职位类别)/i
       ]) ||
@@ -596,11 +616,7 @@
       /(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)\s*(?:投递|申请)(?!截止|开始|时间)/i
     ]);
 
-    const description = clean(
-      (posting && posting.description) ||
-        meta("description", "og:description") ||
-        text.slice(0, 1200)
-    );
+    const description = clean((posting && posting.description) || meta("description", "og:description"));
     const responsibilities = textList(
       (posting && posting.responsibilities) ||
         firstMatch(text, [
@@ -616,7 +632,7 @@
     const confidenceParts = [posting, company, position, jobId, city].filter(Boolean).length;
 
     return {
-      company,
+      company: normalizedCompany || company,
       position,
       jobId,
       city,
@@ -627,7 +643,7 @@
         ? appliedAtRaw.replace(/[年月./]/g, "-").replace(/日(?=\s|$)/, "")
         : undefined,
       nextAction: "确认是否投递",
-      summary: description.slice(0, 280),
+      summary: (description || responsibilities.slice(0, 2).join(" ")).slice(0, 280),
       responsibilities,
       requirements,
       sourceUrl: location.href,
@@ -838,7 +854,8 @@
     if (/^推荐码$|^邀请码$|^内推码$|referral\s*code/i.test(label)) {
       return map("referralCode", "通用字段规则");
     }
-    if (/^至今$|当前在职|仍在职|current\s*employment/i.test(label)) {
+    if (element.matches?.(".currently-checkbox") ||
+      /^至今$|当前在职|仍在职|我?当前在这里工作|目前在职|current\s*employment/i.test(label)) {
       return map("experienceCurrent", "工作经历状态规则");
     }
     if (/基本信息|个人信息|basic|personal/i.test(context)) {
@@ -1000,23 +1017,46 @@
   };
 
   const fieldSection = (element) => {
-    const siteSection = normalizeFieldText(element.getAttribute("data-nc-cls") || "");
-    if (siteSection) return siteSection.slice(0, 80);
-    const moduleCard = element.closest(
-      ".module-card,section[id^='module-'],[class~='resume-section']"
-    );
-    const moduleHeading = moduleCard?.querySelector(
-      ".section-header__title,[class*='section-header__title'],[class*='section-title'],h1,h2,h3,h4,h5,h6"
-    );
-    if (moduleHeading) {
-      const value = clean(moduleHeading.innerText || moduleHeading.textContent || "");
-      if (value) return value.slice(0, 80);
+    const sectionPattern = /基本信息|个人信息|教育|学历|学业|工作|实习|任职|项目|在校|校园|获奖|奖项|奖励|外语|语言|英语|计算机|技能|资格证书|证书|家庭|家属|论文|期刊|刊物|专利|作品集|竞赛|比赛|basic|personal|education|academic|employment|work|project|campus|award|language|english|computer|skill|certificate|qualification|family|publication|paper|journal|patent|portfolio|competition|contest/i;
+    const candidates = [];
+    const addCandidate = (value) => {
+      const normalized = normalizeFieldText(value || "").slice(0, 80);
+      if (normalized && !candidates.includes(normalized)) candidates.push(normalized);
+    };
+
+    addCandidate(ancestorAttributeText(element, "data-nc-cls"));
+    addCandidate(ancestorAttributeText(element, "data-section"));
+    addCandidate(ancestorAttributeText(element, "data-section-title"));
+
+    let current = element.parentElement;
+    for (let depth = 0; current && depth < 10; depth += 1, current = current.parentElement) {
+      const labelledBy = current.getAttribute?.("aria-labelledby");
+      if (labelledBy) {
+        labelledBy.split(/\s+/).forEach((id) => {
+          const label = document.getElementById(id);
+          addCandidate(label?.innerText || label?.textContent || "");
+        });
+      }
+      Array.from(current.children || []).forEach((child) => {
+        if (child.matches?.("h1,h2,h3,h4,h5,h6,legend,[class*='section-title'],[class*='sectionTitle'],[class*='section-header__title']")) {
+          addCandidate(child.innerText || child.textContent || "");
+        }
+        // Tencent's resume editor uses a plain `.title` child for section
+        // headings (for example "工作经验" and "学历"). Keeping this exact
+        // class check avoids mistaking ordinary field labels for headings.
+        if (child.matches?.(".title,[class~='title']")) {
+          addCandidate(child.innerText || child.textContent || "");
+        }
+        if (child.matches?.("header,[class*='header'],[class*='Header']")) {
+          const heading = child.querySelector?.("h1,h2,h3,h4,h5,h6,[class*='title'],[class*='Title']");
+          addCandidate(heading?.innerText || heading?.textContent || "");
+        }
+      });
+      const matched = candidates.find((value) => sectionPattern.test(value));
+      if (matched) return matched;
     }
-    const container = element.closest(
-      '[class*="form-item"],[class*="formItem"],[class*="field"],[class*="question"],fieldset,section'
-    );
-    const heading = container?.querySelector("h1,h2,h3,h4,h5,h6,legend,[class*='title'],[class*='Title']");
-    return clean(heading?.innerText || heading?.textContent || "").slice(0, 80) || undefined;
+
+    return candidates.find(Boolean);
   };
 
   const fieldOptions = (element) => {
@@ -1071,11 +1111,39 @@
     Object.entries(repeatableFieldKeys).find(([, keys]) => keys.includes(key))?.[0];
 
   const repeatableFieldCount = (fields, group) => {
+    const indexes = fields
+      .filter((field) => field.repeatGroup === group && Number.isInteger(field.repeatIndex))
+      .map((field) => field.repeatIndex);
+    if (indexes.length) return Math.max(...indexes) + 1;
     const keys = repeatableFieldKeys[group] || [];
-    return Math.max(
-      0,
-      ...keys.map((key) => fields.filter((field) => field.repeatGroup === group && field.key === key).length)
+    return Math.max(0, ...keys.map((key) =>
+      fields.filter((field) => field.repeatGroup === group && field.key === key).length
+    ));
+  };
+
+  const repeatEntrySelectors = {
+    education: ".create-education,.education-entry,[data-education-entry]",
+    experience: ".create-empirical,.experience-entry,.work-entry,[data-experience-entry]",
+    project: ".project-entry,[data-project-entry]",
+    campus: ".campus-entry,[data-campus-entry]",
+    award: ".award-entry,[data-award-entry]"
+  };
+
+  const repeatEntryIndex = (element, group) => {
+    const selector = repeatEntrySelectors[group];
+    if (!selector) return undefined;
+    const entry = element.closest?.(selector);
+    if (!entry?.parentElement) return undefined;
+    const entries = Array.from(entry.parentElement.children).filter((candidate) =>
+      candidate.matches?.(selector)
     );
+    const index = entries.indexOf(entry);
+    return index >= 0 ? index : undefined;
+  };
+
+  const repeatEntryDomCount = (group) => {
+    const selector = repeatEntrySelectors[group];
+    return selector ? document.querySelectorAll(selector).length : 0;
   };
 
   const controlType = (element) => {
@@ -1105,11 +1173,11 @@
       return clean(element.getAttribute("aria-valuetext") || element.innerText || element.textContent || "");
     }
     if (element.matches?.(radioGroupSelector)) {
-      const selected = Array.from(element.querySelectorAll(".phoenix-radio-group__radioItem")).find((item) => {
+      const selected = Array.from(element.querySelectorAll(".phoenix-radio-group__radioItem,[role='radio'],label.el-radio")).find((item) => {
         const radio = item.querySelector(".phoenix-radio,[class*='radio--withLabel']");
         const state = String(item.className || "") + " " + String(radio?.className || "") + " " +
           String(item.getAttribute("aria-checked") || "") + " " + String(radio?.getAttribute("aria-checked") || "");
-        return /checked|selected|active/.test(state.toLowerCase());
+        return /checked|selected|active|true/.test(state.toLowerCase());
       });
       return clean(selected?.innerText || selected?.textContent || "");
     }
@@ -1120,6 +1188,11 @@
     }
     if (element.closest?.(".el-select")) {
       const root = element.closest(".el-select");
+      const tags = Array.from(root.querySelectorAll(".el-tag,.el-select__tags-text"))
+        .map((tag) => clean(tag.innerText || tag.textContent || "").replace(/[×✕]\s*$/g, ""))
+        .filter(Boolean)
+        .filter((value, index, values) => values.indexOf(value) === index);
+      if (tags.length) return tags.join("，");
       const selected = root.querySelector(".el-input__inner");
       return clean(selected?.value || element.value || "");
     }
@@ -1128,7 +1201,22 @@
     }
     if (element.matches?.(checkboxSelector)) {
       const input = element.querySelector("input[type='checkbox']");
-      return input?.checked ? "是" : "否";
+      if (input) return input.checked ? "是" : "否";
+      const state = `${element.className || ""} ${element.getAttribute("aria-checked") || ""} ${
+        Array.from(element.children || []).map((child) => child.className || "").join(" ")
+      }`.toLowerCase();
+      return /checked|selected|active|true/.test(state) ? "是" : "否";
+    }
+    if (element.matches?.(".education-select > .select")) {
+      const value = clean(element.innerText || element.textContent || "");
+      return /^(请)?选择/.test(value) ? "" : value;
+    }
+    if (element.matches?.(".test-border")) {
+      const year = clean(element.querySelector(".select-left")?.innerText || "");
+      const month = clean(element.querySelector(".select-right")?.innerText || "");
+      return /^\d{4}$/.test(year) && /^\d{1,2}$/.test(month)
+        ? `${year}-${month.padStart(2, "0")}`
+        : "";
     }
     if (element.getAttribute("contenteditable") === "true") return clean(element.innerText || element.textContent || "");
     return clean(element.value || "");
@@ -1153,19 +1241,42 @@
       version: "builtin",
       compiled: []
     };
+    document.querySelectorAll("[data-offerflow-field-id]").forEach((element) => {
+      delete element.dataset.offerflowFieldId;
+    });
     const selector = [
       "input", "textarea", "select", "[contenteditable='true']",
       "[role='textbox']", "[role='combobox']", "[role='radio']", "[role='checkbox']",
-      radioGroupSelector, checkboxSelector, cascaderSelector
+      radioGroupSelector, checkboxSelector, cascaderSelector,
+      // Tencent uses div-based controls without native roles for degree and
+      // combined year/month selectors.
+      ".education-select > .select", ".test-border"
     ].join(",");
+    const transientPopupSelector = [
+      ".el-select-dropdown", ".el-popper", ".country-select-popper",
+      ".phoenix-selectList", ".phoenix-date-picker", ".area-selector-container",
+      "[role='listbox']"
+    ].join(",");
+    const canonicalElement = (element) => {
+      const elementSelect = element.closest?.(".el-select");
+      if (elementSelect) {
+        return elementSelect.querySelector(".el-select__input:not([readonly]),.el-input__inner,input") || element;
+      }
+      return element;
+    };
     const elements = Array.from(document.querySelectorAll(selector))
+      .filter((element) => !element.closest?.(transientPopupSelector))
+      .map(canonicalElement)
       .filter((element, index, all) => {
         if (all.indexOf(element) !== index) return false;
         if (element.disabled) return false;
+        if (adapter.id === "tencent" && element.matches?.(".telephone-region")) return false;
         if (element.matches("input,textarea") && element.closest(checkboxSelector)) return false;
         return element.getClientRects().length > 0;
       });
     const seenRadioGroups = new Set();
+    const anonymousRadioGroups = new WeakMap();
+    let anonymousRadioGroupSequence = 0;
     const seenSiteFieldIds = new Set();
     const repeatCounters = new Map();
     const matches = [];
@@ -1183,7 +1294,16 @@
         seenSiteFieldIds.add(siteFieldId);
       }
       if ((element instanceof HTMLInputElement && element.type === "radio") || element.getAttribute("role") === "radio") {
-        const group = `${element.getAttribute("name") || element.closest("fieldset,[role='radiogroup']")?.id || "radio"}-${key || "unknown"}`;
+        const container = element.closest("fieldset,[role='radiogroup'],[class~='radio-group'],[class$='-radio-group']") || element.parentElement;
+        let groupIdentity = element.getAttribute("name") || container?.id || "";
+        if (!groupIdentity && container) {
+          if (!anonymousRadioGroups.has(container)) {
+            anonymousRadioGroupSequence += 1;
+            anonymousRadioGroups.set(container, `anonymous-${anonymousRadioGroupSequence}`);
+          }
+          groupIdentity = anonymousRadioGroups.get(container);
+        }
+        const group = `${groupIdentity || `radio-${index}`}-${key || "unknown"}`;
         if (seenRadioGroups.has(group)) return;
         seenRadioGroups.add(group);
       }
@@ -1192,7 +1312,8 @@
       const type = controlType(element);
       const repeatGroup = repeatableGroupForKey(key);
       const repeatCounterKey = repeatGroup ? `${repeatGroup}:${key}` : "";
-      const repeatIndex = repeatCounterKey ? (repeatCounters.get(repeatCounterKey) || 0) : undefined;
+      const structuralRepeatIndex = repeatGroup ? repeatEntryIndex(element, repeatGroup) : undefined;
+      const repeatIndex = structuralRepeatIndex ?? (repeatCounterKey ? (repeatCounters.get(repeatCounterKey) || 0) : undefined);
       if (repeatCounterKey) repeatCounters.set(repeatCounterKey, (repeatIndex || 0) + 1);
       const requiredEvidence = [
         fieldLabel(element),
@@ -1288,16 +1409,35 @@
 
   const nextFrame = () =>
     new Promise((resolve) => {
-      if (typeof requestAnimationFrame === "function") requestAnimationFrame(resolve);
-      else setTimeout(resolve, 0);
+      if (document.visibilityState === "hidden") {
+        queueMicrotask(resolve);
+        return;
+      }
+      let settled = false;
+      const finish = () => {
+        if (settled) return;
+        settled = true;
+        clearTimeout(fallback);
+        resolve();
+      };
+      // requestAnimationFrame can be suspended indefinitely when a recruitment
+      // tab loses focus. Never let that pause the entire fill queue.
+      const fallback = setTimeout(finish, 90);
+      if (typeof requestAnimationFrame === "function") requestAnimationFrame(finish);
+      else setTimeout(finish, 0);
     });
 
   const sleep = (milliseconds) =>
-    new Promise((resolve) => setTimeout(resolve, Math.max(0, milliseconds)));
+    new Promise((resolve) => {
+      // Background tabs can clamp timers to tens of seconds. Vue/React state
+      // updates still flush through microtasks, so do not hold the fill queue.
+      if (document.visibilityState === "hidden") queueMicrotask(resolve);
+      else setTimeout(resolve, Math.max(0, milliseconds));
+    });
 
   const repeatAddPatterns = {
-    education: /(?:添加|新增|增加|继续添加|再添加)\s*(?:教育经历|教育背景|学历经历)|(?:教育经历|教育背景|学历经历)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+education/i,
-    experience: /(?:添加|新增|增加|继续添加|再添加)\s*(?:工作经历|实习经历|工作背景)|(?:工作经历|实习经历|工作背景)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+(?:work|experience)/i,
+    education: /(?:添加|新增|增加|继续添加|再添加)\s*(?:教育经历|教育背景|学历经历|学历)|(?:教育经历|教育背景|学历经历|学历)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+education/i,
+    experience: /(?:添加|新增|增加|继续添加|再添加)\s*(?:工作经历|工作经验|实习经历|实习经验|工作背景)|(?:工作经历|工作经验|实习经历|实习经验|工作背景)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+(?:work|experience)/i,
     project: /(?:添加|新增|增加|继续添加|再添加)\s*(?:项目经历|项目)|(?:项目经历|项目)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+project/i,
     campus: /(?:添加|新增|增加|继续添加|再添加)\s*(?:在校经历|校园经历)|(?:在校经历|校园经历)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+campus/i,
     award: /(?:添加|新增|增加|继续添加|再添加)\s*(?:获奖情况|获奖经历|奖励)|(?:获奖情况|获奖经历|奖励)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+award/i
@@ -1321,6 +1461,10 @@
         return text && text.length <= 80 && pattern.test(text);
       });
     return candidates.sort((left, right) => {
+      // Some Vue pages (including Tencent Careers) attach the click handler to
+      // the inner text node instead of the surrounding visual container.
+      if (left.contains(right)) return 1;
+      if (right.contains(left)) return -1;
       const leftInteractive = left.matches("button,a,[role='button']") ? 0 : 1;
       const rightInteractive = right.matches("button,a,[role='button']") ? 0 : 1;
       return leftInteractive - rightInteractive ||
@@ -1333,30 +1477,31 @@
     let changed = false;
     for (const group of Object.keys(repeatableFieldKeys)) {
       const desired = Math.max(0, Math.floor(Number(repeatCounts?.[group]) || 0));
-      if (desired <= 1) continue;
+      if (desired <= 0) continue;
       let current = repeatableFieldCount(scan.fields, group);
       let attempts = 0;
       while (current < desired && attempts < desired + 2) {
         const button = repeatAddButton(group);
         if (!button) break;
+        const domCountBefore = repeatEntryDomCount(group);
         try {
           button.scrollIntoView?.({ behavior: "auto", block: "center", inline: "nearest" });
         } catch {
           // Ignore pages with a custom scroll container.
         }
         clickControl(button);
-        changed = true;
         attempts += 1;
-        await nextFrame();
-        await nextFrame();
-        await sleep(100);
+        let domCountAfter = domCountBefore;
+        for (let waitAttempt = 0; waitAttempt < 10 && domCountAfter <= domCountBefore; waitAttempt += 1) {
+          await nextFrame();
+          await sleep(60);
+          domCountAfter = repeatEntryDomCount(group);
+        }
         scan = scanApplicationForm();
         const nextCount = repeatableFieldCount(scan.fields, group);
-        if (nextCount <= current) {
-          await sleep(180);
-          scan = scanApplicationForm();
-        }
-        current = repeatableFieldCount(scan.fields, group);
+        if (nextCount <= current) break;
+        changed = true;
+        current = nextCount;
       }
     }
     return { scan, changed };
@@ -1381,8 +1526,129 @@
       );
       if (target) return target;
       await nextFrame();
+      await sleep(35);
     }
     return undefined;
+  };
+
+  const dismissOpenSelect = async (element) => {
+    const target = element?.closest?.(".el-select")?.querySelector(".el-select__input,.el-input__inner") || element;
+    if (target) {
+      for (const type of ["keydown", "keyup"]) {
+        target.dispatchEvent(new KeyboardEvent(type, {
+          key: "Escape",
+          code: "Escape",
+          keyCode: 27,
+          which: 27,
+          bubbles: true,
+          cancelable: true
+        }));
+      }
+      target.blur?.();
+    }
+    await nextFrame();
+  };
+
+  const splitMultiValue = (value) => String(value || "")
+    .split(/[,，、;；|/]+/)
+    .map((item) => clean(item))
+    .filter(Boolean);
+
+  const fillElementSelect = async (element, value) => {
+    const root = element.closest?.(".el-select");
+    if (!root) return false;
+    const multiple = root.hasAttribute("multiple") || root.classList.contains("is-multiple") ||
+      Boolean(root.querySelector(".el-select__tags"));
+    const requested = multiple ? splitMultiValue(value) : [clean(value)];
+    if (!requested.length) return false;
+    const opener = root.querySelector(".el-input__inner,.el-select__input") || root;
+    clickControl(opener);
+    await nextFrame();
+    await sleep(80);
+
+    let allFound = true;
+    for (const requestedValue of requested) {
+      const normalized = requestedValue.toLowerCase();
+      const option = await findRenderedOption(
+        ".el-select-dropdown__item:not(.is-disabled),.country-select-popper .el-select-dropdown__item,[role='option']",
+        requestedValue,
+        12
+      );
+      if (!option) {
+        allFound = false;
+        continue;
+      }
+      const text = clean(option.innerText || option.textContent || "").toLowerCase();
+      if (!(text === normalized || text.includes(normalized) || normalized.includes(text))) {
+        allFound = false;
+        continue;
+      }
+      const checkbox = option.querySelector("input[type='checkbox']");
+      const selected = option.classList.contains("selected") || option.classList.contains("is-selected") ||
+        option.getAttribute("aria-selected") === "true" || Boolean(checkbox?.checked);
+      if (!selected) {
+        clickControl(option);
+        await nextFrame();
+        await sleep(70);
+      }
+      if (!multiple) break;
+    }
+    await dismissOpenSelect(root);
+    return allFound;
+  };
+
+  const fillTencentListControl = async (element, value) => {
+    const root = element.closest?.(".education-select,.country-select,.school-select") || element.parentElement;
+    if (!root) return false;
+    clickControl(element);
+    await nextFrame();
+    await sleep(60);
+    const normalized = clean(value).toLowerCase();
+    const options = Array.from(root.querySelectorAll(".select-li,.input-select-li"));
+    const option = options.find((candidate) => {
+      const text = clean(candidate.innerText || candidate.textContent || "").toLowerCase();
+      return text === normalized || text.includes(normalized) || normalized.includes(text);
+    });
+    if (!option) {
+      // Tencent allows a school name to remain as typed even when its remote
+      // autocomplete has not returned yet. Preserve that valid text value.
+      if (element.matches?.("input") && element.closest?.(".school-select")) {
+        return clean(element.value).toLowerCase() === normalized;
+      }
+      return false;
+    }
+    clickControl(option);
+    await nextFrame();
+    return true;
+  };
+
+  const fillTencentCompoundDate = async (element, value) => {
+    const match = String(value || "").match(/(\d{4})[年./-](\d{1,2})/);
+    if (!match) return false;
+    const year = match[1];
+    const month = match[2].padStart(2, "0");
+    const yearControl = element.querySelector(".select-left");
+    const monthControl = element.querySelector(".select-right");
+    if (!yearControl || !monthControl) return false;
+
+    clickControl(yearControl);
+    await nextFrame();
+    const yearOption = Array.from(element.querySelectorAll(".small-select-li")).find(
+      (candidate) => clean(candidate.innerText || candidate.textContent || "") === year
+    );
+    if (!yearOption) return false;
+    clickControl(yearOption);
+    await nextFrame();
+
+    clickControl(monthControl);
+    await nextFrame();
+    const monthOption = Array.from(element.querySelectorAll(".splicing-select-li")).find(
+      (candidate) => clean(candidate.innerText || candidate.textContent || "").padStart(2, "0") === month
+    );
+    if (!monthOption) return false;
+    clickControl(monthOption);
+    await nextFrame();
+    return true;
   };
 
   // Beisen/Phoenix does not use role="option" for its virtualized lists. The
@@ -1692,7 +1958,9 @@
       element.setAttribute("aria-checked", String(shouldCheck));
     } else if (element.matches?.(radioGroupSelector)) {
       const normalized = clean(value).toLowerCase();
-      const options = Array.from(element.querySelectorAll(".phoenix-radio-group__radioItem,[class*='radio--withLabel']"));
+      const options = Array.from(element.querySelectorAll(
+        ".phoenix-radio-group__radioItem,[class*='radio--withLabel'],[role='radio'],label.el-radio"
+      ));
       const target = options.find((option) => clean(option.innerText || option.textContent || "").toLowerCase().includes(normalized));
       if (!target) return false;
       // Phoenix attaches React's onClick to the inner .phoenix-radio node,
@@ -1703,10 +1971,10 @@
       clickControl(clickable);
     } else if (element.matches?.(checkboxSelector)) {
       const input = element.querySelector("input[type='checkbox']");
-      if (!input) return false;
       const normalized = clean(value).toLowerCase();
       const shouldCheck = /^(1|true|yes|y|是|接受|愿意|同意|有)$/.test(normalized);
-      if (input.checked !== shouldCheck) clickControl(element);
+      const checked = input ? input.checked : readControlValue(element) === "是";
+      if (checked !== shouldCheck) clickControl(element);
     } else if (element.matches?.(cascaderSelector)) {
       clickControl(element);
       const target = await findRenderedOption(
@@ -1734,17 +2002,8 @@
         clickControl(target);
       }
     } else if (element.closest?.(".el-select")) {
-      const root = element.closest(".el-select");
-      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-      if (setter) setter.call(element, value);
-      else element.value = value;
-      dispatchInputEvents(element);
-      clickControl(root);
-      const target = await findRenderedOption(
-        ".el-select-dropdown__item,[role='option'],[class*='option']",
-        value
-      );
-      if (target) clickControl(target);
+      const selected = await fillElementSelect(element, value);
+      if (!selected) return false;
     } else if (element.closest?.(".phoenix-select") && isPhoenixDateControl(element)) {
       const selected = await choosePhoenixDate(element, value);
       if (!selected) return false;
@@ -1761,6 +2020,12 @@
       if (!target) return false;
       clickControl(target.closest?.(".phoenix-selectList__listItem") || target);
       await nextFrame();
+    } else if (element.matches?.(".education-select > .select")) {
+      const selected = await fillTencentListControl(element, value);
+      if (!selected) return false;
+    } else if (element.matches?.(".test-border")) {
+      const selected = await fillTencentCompoundDate(element, value);
+      if (!selected) return false;
     } else if (element.getAttribute("contenteditable") === "true") {
       element.textContent = value;
     } else {
@@ -1774,6 +2039,12 @@
       // React 受控组件加固：把 _valueTracker 设回旧值，确保 React 在后续事件里
       // 检测到"实际值 ≠ 跟踪值"而触发 onChange（防止赋值被 React 回滚/忽略）
       element._valueTracker?.setValue?.(oldValue);
+      dispatchInputEvents(element);
+      if (element.closest?.(".school-select")) {
+        const selected = await fillTencentListControl(element, value);
+        if (!selected) return false;
+      }
+      return true;
     }
     dispatchInputEvents(element);
     return true;

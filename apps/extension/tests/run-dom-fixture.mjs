@@ -33,18 +33,25 @@ const zhiyeDetailEndedPath = fileURLToPath(
 const webAppPath = fileURLToPath(
   new URL("./fixtures/web-app-applications.html", import.meta.url)
 );
+const repeatFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-repeat.html", import.meta.url)
+);
 const profileDirectory = mkdtempSync(join(tmpdir(), "offerflow-dom-test-"));
 
-const runFixture = (fixture) => {
+const runFixture = (fixture, virtualTimeBudget = 2500) => {
   const result = spawnSync(
     chromePath,
     [
       "--headless=new",
       "--disable-gpu",
+      "--disable-gpu-compositing",
+      "--disable-accelerated-2d-canvas",
+      "--disable-features=Dawn,Vulkan,UseSkiaRenderer,CanvasOopRasterization",
+      "--no-sandbox",
       "--no-first-run",
       "--no-default-browser-check",
       "--allow-file-access-from-files",
-      "--virtual-time-budget=2500",
+      `--virtual-time-budget=${virtualTimeBudget}`,
       `--user-data-dir=${profileDirectory}`,
       "--dump-dom",
       pathToFileURL(fixture).href
@@ -123,6 +130,16 @@ try {
 
   const detail = runFixture(zhiyeDetailEndedPath);
   assert.equal(
+    detail.position,
+    "【27校招】办公平台AI产品经理/AI Agent工程师（J14442）",
+    "job detail headings should remain the position instead of the portal title"
+  );
+  assert.deepEqual(
+    detail.responsibilities,
+    ["负责办公平台 AI 产品规划"],
+    "job detail responsibilities should be split into readable items"
+  );
+  assert.equal(
     detail.progressEvidence.length,
     0,
     "a job-detail page whose position ended must not mark the application as terminated"
@@ -137,6 +154,33 @@ try {
   );
   assert.equal(webApp.progressEvidence.length, 0);
   console.log("DOM extraction fixture passed: the OfferFlow web app is excluded from capture.");
+
+  const repeatedForm = runFixture(repeatFormPath, 4000);
+  assert.equal(repeatedForm.scan.repeatersExpanded, true);
+  assert.equal(repeatedForm.entries.length, 2);
+  assert.deepEqual(
+    repeatedForm.entries.map(({ school, major, degree }) => ({ school, major, degree })),
+    [
+      { school: "南京大学", major: "城乡规划", degree: "硕士" },
+      { school: "北京林业大学", major: "城乡规划", degree: "本科" }
+    ]
+  );
+  assert.deepEqual(
+    repeatedForm.scan.fields.filter((field) => field.key === "school").map((field) => field.repeatIndex),
+    [0, 1]
+  );
+  assert.equal(
+    repeatedForm.scan.fields.filter((field) => field.key === "targetCities").length,
+    1,
+    "an Element UI multi-select must be scanned as one field, not once per internal input"
+  );
+  assert.equal(
+    repeatedForm.scan.fields.some((field) => ["上海", "深圳"].includes(field.label)),
+    false,
+    "dropdown options must not be mistaken for form fields"
+  );
+  assert.equal(repeatedForm.fill.filled, repeatedForm.scan.fields.length);
+  console.log("DOM form fixture passed: a second education entry is added, mapped and filled independently.");
 } finally {
   rmSync(profileDirectory, { recursive: true, force: true });
 }

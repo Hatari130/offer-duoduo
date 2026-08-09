@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>多段教育经历表单测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      section { width: 760px; }
+      article { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin: 12px 0; padding: 16px; border: 1px solid #ddd; }
+      label { display: grid; gap: 5px; }
+      input { min-height: 34px; }
+      button { min-height: 36px; padding: 0 14px; }
+    </style>
+  </head>
+  <body>
+    <section class="application-section">
+      <header><h2>教育经历</h2></header>
+      <div id="education-list">
+        <article class="education-entry">
+          <label>学校<input name="school" /></label>
+          <label>专业<input name="major" /></label>
+          <label>学历<input name="degree" /></label>
+          <label>开始时间<input name="startDate" /></label>
+          <label>结束时间<input name="endDate" /></label>
+        </article>
+      </div>
+      <button id="add-education" type="button">增加学历</button>
+    </section>
+
+    <section class="application-section">
+      <div class="el-form-item">
+        <label class="el-form-item__label">期望工作城市</label>
+        <div class="el-select is-multiple" multiple>
+          <div class="el-select__tags"></div>
+          <input class="el-select__input" />
+          <input class="el-input__inner" readonly />
+        </div>
+      </div>
+      <div class="el-select-dropdown country-select-popper">
+        <ul>
+          <li class="el-select-dropdown__item">
+            <label class="el-checkbox custom-checkbox"><input type="checkbox" /></label>
+            <span>上海</span>
+          </li>
+          <li class="el-select-dropdown__item">
+            <label class="el-checkbox custom-checkbox"><input type="checkbox" /></label>
+            <span>深圳</span>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <script>
+      document.getElementById("add-education").addEventListener("click", () => {
+        const template = document.querySelector(".education-entry");
+        const clone = template.cloneNode(true);
+        clone.querySelectorAll("input").forEach((input) => { input.value = ""; });
+        document.getElementById("education-list").appendChild(clone);
+      });
+
+      document.querySelector(".el-select").addEventListener("click", () => {
+        document.querySelector(".el-select-dropdown").style.display = "block";
+      });
+      document.querySelectorAll(".el-select-dropdown__item").forEach((option) => {
+        option.addEventListener("click", () => {
+          const checkbox = option.querySelector("input[type=checkbox]");
+          checkbox.checked = true;
+          option.classList.add("selected");
+          const text = option.querySelector("span").textContent.trim();
+          const tags = document.querySelector(".el-select__tags");
+          if (!Array.from(tags.querySelectorAll(".el-tag")).some((tag) => tag.textContent.trim() === text)) {
+            const tag = document.createElement("span");
+            tag.className = "el-tag";
+            tag.textContent = text;
+            tags.appendChild(tag);
+          }
+        });
+      });
+
+      globalThis.__offerflowListeners = [];
+      // Simulate a background/throttled tab where animation frames never run.
+      // Autofill must continue via its background-tab microtask fallback.
+      Object.defineProperty(document, "visibilityState", { configurable: true, value: "hidden" });
+      globalThis.requestAnimationFrame = () => 1;
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM", repeatCounts: { education: 2 } },
+        {},
+        (scan) => {
+          const valuesByIndex = [
+            { school: "南京大学", major: "城乡规划", degree: "硕士", educationStartDate: "2023-09", educationEndDate: "2026-06" },
+            { school: "北京林业大学", major: "城乡规划", degree: "本科", educationStartDate: "2019-09", educationEndDate: "2023-06" }
+          ];
+          const fieldValues = Object.fromEntries(
+            scan.fields.map((field) => [
+              field.id,
+              field.key === "targetCities"
+                ? "上海"
+                : valuesByIndex[field.repeatIndex || 0]?.[field.key] || ""
+            ])
+          );
+          listener(
+            { type: "OFFERFLOW_FILL_APPLICATION_FORM", fields: scan.fields, fieldValues, values: {}, delayMs: 0 },
+            {},
+            (fill) => {
+              const entries = Array.from(document.querySelectorAll(".education-entry")).map((entry) =>
+                Object.fromEntries(Array.from(entry.querySelectorAll("input")).map((input) => [input.name, input.value]))
+              );
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({ ok: true, data: { scan, fill, entries } }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

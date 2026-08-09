@@ -1,6 +1,7 @@
 // Smoke test: build a representative ResumeData, run it through buildResumeHtml,
 // and write the result to .workbuddy/memory/ for visual inspection.
 import { writeFile, mkdir } from "node:fs/promises";
+import assert from "node:assert/strict";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { buildResumeHtml } from "../src/features/tailor/buildResumeHtml.ts";
@@ -195,8 +196,22 @@ const sampleJd: JdAnalysis = {
 const html = buildResumeHtml({
   resume: sampleResume,
   jd: sampleJd,
-  accentColor: "#185fa5"
+  accentColor: "#202421",
+  showJdSidebar: false,
+  variant: "source-aligned"
 });
+
+assert.match(html, /name="generator" content="offerflow-tailor"/);
+assert.match(html, /data-edit-key="exp\.[^"]+\.bullet\.0"/);
+assert.match(html, /data-edit-key="exp\.[^"]+\.date"/);
+assert.match(html, /按完整段落编辑；增删文字会自动换行和重排/);
+assert.match(html, /class="layout no-jd"/);
+assert.match(html, /class="surface source-aligned"/);
+assert.doesNotMatch(html, /class="jd-sidebar"/);
+assert.doesNotMatch(html, /<h2>个人摘要<\/h2>/);
+assert.doesNotMatch(html, /<strong>意向：<\/strong>/);
+assert.match(html, /@media print[\s\S]*height: auto/);
+assert.doesNotMatch(html, /source-overlay/);
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const outputDir = resolve(__dirname, "../.workbuddy/memory");

@@ -1,27 +1,27 @@
 ﻿import { useEffect, useMemo, useState, type ReactNode } from "react";
-import { useRef, type ChangeEvent } from "react";
 import {
   Check,
   ChevronDown,
-  ChevronLeft,
-  CircleAlert,
-  CloudUpload,
   FileCheck2,
-  FileText,
   FolderOpen,
   Plus,
-  RefreshCw,
   ScanLine,
   ShieldCheck,
+  Sparkles,
   Trash2,
-  UserRound,
+  Wand2,
   X
 } from "lucide-react";
 import { matchFormFields } from "@/integrations/deepseek/deepseek";
-import { mergeParsedProfile, parseResumeFile, type ResumeParseResult } from "@/features/profile/resumeParser";
 import {
+  ACTIVE_RESUME_KEY,
+  applyResumeFixedProfile,
+  extractResumeFixedProfile,
   loadActiveResumeId,
   loadResumeLibrary,
+  PROFILE_KEY,
+  RESUMES_KEY,
+  saveBaseProfile,
   saveResumeLibrary,
   setActiveResumeId,
   type StoredResume
@@ -242,14 +242,41 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
     recruitmentType: profile.recruitmentType,
     graduateStatus: profile.graduateStatus,
     address: profile.address,
+    currentResidence: profile.currentResidence || "",
+    nationality: profile.nationality || "",
+    idType: profile.idType || "",
+    idNumber: profile.idNumber || "",
+    studentSource: profile.studentSource || "",
+    wechat: profile.wechat || "",
+    qq: profile.qq || "",
+    politicalStatus: profile.politicalStatus || "",
+    maritalStatus: profile.maritalStatus || "",
+    healthStatus: profile.healthStatus || "",
+    specialty: profile.specialty || "",
+    workYears: profile.workYears || "",
+    emergencyContactName: profile.emergencyContactName || "",
+    emergencyContactPhone: profile.emergencyContactPhone || "",
+    countryRegion: profile.countryRegion || "",
     targetRole: profile.targetRole,
     targetCities: profile.targetCities,
     earliestStartDate: profile.earliestStartDate,
+    expectedSalary: profile.expectedSalary || "",
+    referralCode: profile.referralCode || "",
     portfolioUrl: profile.portfolioUrl,
     githubUrl: profile.githubUrl,
     school: education?.school || "",
+    educationCollege: education?.college || "",
     major: education?.major || "",
     degree: education?.degree || "",
+    educationDegree: education?.educationDegree || "",
+    educationForm: education?.educationForm || "",
+    educationCourses: education?.courses || "",
+    educationResearchDirection: education?.researchDirection || "",
+    educationThesis: education?.thesis || "",
+    educationRank: education?.rank || "",
+    overseasEducation: education?.overseasEducation || "",
+    minorMajor: education?.minorMajor || "",
+    advisorName: education?.advisorName || "",
     gpa: education?.gpa || "",
     educationStartDate: education?.startDate || "",
     educationEndDate: education?.endDate || "",
@@ -258,11 +285,23 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
     experienceStartDate: experience?.startDate || "",
     experienceEndDate: experience?.endDate || "",
     experienceDescription: experience?.description || "",
+    experienceType: experience?.type || "",
+    experienceDepartment: experience?.department || "",
+    experienceSalary: experience?.salary || "",
+    experienceAchievements: experience?.achievements || "",
+    refereeName: experience?.refereeName || "",
+    refereeTitle: experience?.refereeTitle || "",
+    refereeContact: experience?.refereeContact || "",
+    leavingReason: experience?.leavingReason || "",
+    subordinateCount: experience?.subordinateCount || "",
+    experienceCurrent: experience?.isCurrent === undefined ? "" : experience.isCurrent ? "是" : "否",
     projectName: project?.name || "",
     projectRole: project?.role || "",
     projectStartDate: project?.startDate || "",
     projectEndDate: project?.endDate || "",
     projectDescription: project?.description || "",
+    projectAchievement: project?.achievement || "",
+    projectLink: project?.link || "",
     campusExperienceType: campusExperience?.type || "",
     campusExperienceRole: campusExperience?.role || "",
     campusExperienceStartDate: campusExperience?.startDate || "",
@@ -275,6 +314,7 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
     selfIntroduction: profile.selfIntroduction,
     strengths: profile.strengths,
     careerPlan: profile.careerPlan,
+    hobbies: profile.hobbies || "",
     ...(profile.extraFields || {})
   };
 }
@@ -284,6 +324,11 @@ function profileFieldValue(
   field: Pick<FormFieldMatch, "key" | "repeatIndex">
 ): string {
   return field.key ? profileValues(profile, field.repeatIndex ?? 0)[field.key] || "" : "";
+}
+
+function comparableProfile(profile: PersonalProfile): string {
+  const { updatedAt: _updatedAt, ...content } = profile;
+  return JSON.stringify(content);
 }
 
 async function activeTabMessage(message: unknown) {
@@ -314,12 +359,12 @@ export default function ProfileView({
   profile,
   settings,
   onSave,
-  onBack
+  onTailor
 }: {
   profile: PersonalProfile;
   settings: OfferFlowSettings;
   onSave: (profile: PersonalProfile) => Promise<void>;
-  onBack: () => void;
+  onTailor?: () => void;
 }) {
   const [draft, setDraft] = useState(profile);
   const [status, setStatus] = useState("");
@@ -331,11 +376,7 @@ export default function ProfileView({
   const [fillProgress, setFillProgress] = useState<FillProgress>();
   const [openSections, setOpenSections] = useState<ProfileSectionState>(DEFAULT_OPEN_SECTIONS);
   const [pendingEntryId, setPendingEntryId] = useState<string>();
-  const [resumeImportOpen, setResumeImportOpen] = useState(false);
-  const [resumeParsing, setResumeParsing] = useState(false);
   const [resumeFileName, setResumeFileName] = useState("");
-  const [resumeResult, setResumeResult] = useState<ResumeParseResult>();
-  const resumeInputRef = useRef<HTMLInputElement>(null);
   const [resumeLibrary, setResumeLibrary] = useState<StoredResume[]>([]);
   const [activeResumeId, setActiveResumeIdState] = useState("");
 
@@ -358,6 +399,38 @@ export default function ProfileView({
     return () => {
       cancelled = true;
     };
+  }, []);
+
+  useEffect(() => {
+    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+    const handleStorageChange = (
+      changes: Record<string, chrome.storage.StorageChange>,
+      areaName: string
+    ) => {
+      if (areaName !== "local") return;
+      const profileChange = changes[PROFILE_KEY]?.newValue as PersonalProfile | undefined;
+      const libraryChanged = Boolean(changes[RESUMES_KEY] || changes[ACTIVE_RESUME_KEY]);
+      if (!libraryChanged && !profileChange) return;
+      if (!libraryChanged && profileChange) {
+        setDraft(profileChange);
+        return;
+      }
+      void (async () => {
+        const [library, activeId] = await Promise.all([loadResumeLibrary(), loadActiveResumeId()]);
+        const currentId = activeId && library.some((resume) => resume.id === activeId) ? activeId : library[0]?.id || "";
+        setResumeLibrary(library);
+        setActiveResumeIdState(currentId);
+        const current = library.find((resume) => resume.id === currentId);
+        if (current) {
+          setDraft(profileChange || current.profile);
+          setResumeFileName(current.sourceFileName || "");
+        } else if (profileChange) {
+          setDraft(profileChange);
+        }
+      })();
+    };
+    chrome.storage.onChanged.addListener(handleStorageChange);
+    return () => chrome.storage.onChanged.removeListener(handleStorageChange);
   }, []);
 
   useEffect(() => {
@@ -404,12 +477,14 @@ export default function ProfileView({
   }, []);
 
   const values = useMemo(() => profileValues(draft), [draft]);
-  const essentials = [draft.fullName, draft.phone, draft.email, draft.currentCity, draft.targetRole];
   const currentResume = resumeLibrary.find((resume) => resume.id === activeResumeId);
-  const completion = Math.round(
-    ((essentials.filter(Boolean).length + Math.min(draft.education.length, 1)) / 6) * 100
-  );
-
+  const hasPendingChanges = useMemo(() => {
+    const baseline = currentResume?.profile || profile;
+    const sourceChanged = Boolean(
+      currentResume && resumeFileName !== (currentResume.sourceFileName || "")
+    );
+    return sourceChanged || comparableProfile(draft) !== comparableProfile(baseline);
+  }, [currentResume, draft, profile, resumeFileName]);
   const set = <K extends keyof PersonalProfile>(key: K, value: PersonalProfile[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
@@ -419,78 +494,66 @@ export default function ProfileView({
     setActiveResumeIdState(id);
     setDraft(selected.profile);
     setResumeFileName(selected.sourceFileName || "");
-    await Promise.all([setActiveResumeId(id), onSave(selected.profile)]);
-    setStatus(`已切换当前网申简历：${selected.name}`);
+    await Promise.all([
+      setActiveResumeId(id),
+      saveBaseProfile(extractResumeFixedProfile(selected.profile)),
+      onSave(selected.profile)
+    ]);
+    setStatus(`已切换当前网申简历：${selected.name} · 插件资料已同步`);
+  };
+
+  const persistDraft = async () => {
+    const now = new Date().toISOString();
+    const syncedProfile = { ...draft, updatedAt: now };
+    const fixedProfile = extractResumeFixedProfile(syncedProfile);
+    let nextActiveResumeId = activeResumeId || resumeLibrary[0]?.id || "";
+    let nextLibrary = resumeLibrary;
+
+    if (!nextActiveResumeId) {
+      nextActiveResumeId = newId("resume");
+      nextLibrary = [{
+        id: nextActiveResumeId,
+        name: "我的简历",
+        sourceFileName: resumeFileName || undefined,
+        profile: syncedProfile,
+        createdAt: now,
+        updatedAt: now,
+        lastUsedAt: now
+      }];
+    } else {
+      nextLibrary = resumeLibrary.map((resume) => ({
+        ...resume,
+        profile: resume.id === nextActiveResumeId
+          ? syncedProfile
+          : applyResumeFixedProfile(resume.profile, fixedProfile),
+        sourceFileName: resume.id === nextActiveResumeId
+          ? resumeFileName || resume.sourceFileName
+          : resume.sourceFileName,
+        updatedAt: resume.id === nextActiveResumeId ? now : resume.updatedAt
+      }));
+    }
+
+    await Promise.all([
+      onSave(syncedProfile),
+      saveBaseProfile(fixedProfile),
+      saveResumeLibrary(nextLibrary),
+      nextActiveResumeId !== activeResumeId ? setActiveResumeId(nextActiveResumeId) : Promise.resolve()
+    ]);
+    setActiveResumeIdState(nextActiveResumeId);
+    setDraft(syncedProfile);
+    setResumeLibrary(nextLibrary);
+    return syncedProfile;
   };
 
   const save = async () => {
     setBusy(true);
     try {
-      await onSave(draft);
-      if (activeResumeId) {
-        const now = new Date().toISOString();
-        const nextLibrary = resumeLibrary.map((resume) =>
-          resume.id === activeResumeId
-            ? {
-                ...resume,
-                profile: draft,
-                sourceFileName: resumeFileName || resume.sourceFileName,
-                updatedAt: now
-              }
-            : resume
-        );
-        setResumeLibrary(nextLibrary);
-        await saveResumeLibrary(nextLibrary);
-      }
+      await persistDraft();
       setOpenSections(COLLAPSED_SECTIONS);
-      setStatus("个人资料已保存在本地 · 已收起各资料分组");
+      setStatus("个人资料与简历中心已同步 · 已收起各资料分组");
     } finally {
       setBusy(false);
     }
-  };
-
-  const importResume = async (file: File) => {
-    setResumeParsing(true);
-    setResumeFileName(file.name);
-    setResumeResult(undefined);
-    setStatus("正在解析简历，识别联系方式、教育和经历…");
-    try {
-      const result = await parseResumeFile(file);
-      const mergedProfile = mergeParsedProfile(draft, result.profile);
-      setDraft(mergedProfile);
-      if (activeResumeId) {
-        const now = new Date().toISOString();
-        const nextLibrary = resumeLibrary.map((resume) =>
-          resume.id === activeResumeId
-            ? {
-                ...resume,
-                profile: mergedProfile,
-                sourceFileName: file.name,
-                updatedAt: now
-              }
-            : resume
-        );
-        setResumeLibrary(nextLibrary);
-        await saveResumeLibrary(nextLibrary);
-      }
-      setResumeResult(result);
-      setResumeImportOpen(false);
-      setOpenSections({ ...DEFAULT_OPEN_SECTIONS, basic: true, education: true, experience: true, projects: true });
-      setStatus(
-        `已从 ${file.name} 提取 ${result.extractedCount} 个字段` +
-        (result.warnings.length ? ` · ${result.warnings.length} 项待确认` : " · 请检查后保存")
-      );
-    } catch (error) {
-      setStatus(error instanceof Error ? error.message : "简历解析失败，请换一个文件重试");
-    } finally {
-      setResumeParsing(false);
-    }
-  };
-
-  const handleResumeFile = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) void importResume(file);
-    event.target.value = "";
   };
 
   const scan = async () => {
@@ -498,7 +561,7 @@ export default function ProfileView({
     setStatus("");
     setFillProgress(undefined);
     try {
-      await onSave(draft);
+      await persistDraft();
       const response = (await activeTabMessage({
         type: "OFFERFLOW_SCAN_APPLICATION_FORM",
         repeatCounts: {
@@ -674,55 +737,35 @@ export default function ProfileView({
 
   return (
     <section className="profile-view">
-      <div className="profile-title-row">
-        <button onClick={onBack}><ChevronLeft size={17} />秋招工作区</button>
-        <div className="profile-title-actions">
-          <button className="profile-manager-link" onClick={openResumeManager}><FolderOpen size={14} />简历中心</button>
-          <span><ShieldCheck size={14} />仅保存在本地</span>
-        </div>
-      </div>
-
-      <div className="profile-heading">
-        <span><UserRound size={20} /></span>
-        <div><h1>个人资料库</h1><p>维护一次，重复用于不同公司的网申表单。</p></div>
-      </div>
-
       {resumeLibrary.length > 0 && (
         <div className="profile-resume-switcher">
           <div className="profile-resume-switcher-copy">
             <span><FileCheck2 size={16} /></span>
-            <div><strong>当前网申简历</strong><small>{currentResume?.name || "请选择一份简历"}</small></div>
+            <div>
+              <strong>当前网申简历</strong>
+              <small>{hasPendingChanges ? "有修改待保存" : "已与简历中心同步"}</small>
+            </div>
           </div>
-          <select value={activeResumeId} onChange={(event) => void selectResume(event.target.value)}>
+          <select value={activeResumeId} onChange={(event) => void selectResume(event.target.value)} disabled={busy}>
             {resumeLibrary.map((resume) => <option key={resume.id} value={resume.id}>{resume.name}</option>)}
           </select>
+          <span className={`profile-sync-state ${hasPendingChanges ? "pending" : "synced"}`}>
+            {hasPendingChanges ? "待保存" : "已同步"}
+          </span>
           <button className="profile-manager-link" onClick={openResumeManager}><FolderOpen size={14} />管理简历</button>
         </div>
       )}
 
-      <div className="profile-resume-import-card">
-        <span><CloudUpload size={20} /></span>
-        <div>
-          <strong>{resumeFileName ? "已导入简历，可重新解析" : "上传简历，自动填写资料"}</strong>
-          <small>{resumeFileName ? `${resumeFileName} · 本地文本解析` : "支持 PDF、DOCX、TXT；先解析，再由你确认后保存"}</small>
-        </div>
-        <button onClick={() => setResumeImportOpen(true)} disabled={resumeParsing}>
-          {resumeParsing ? <RefreshCw className="spin" size={15} /> : <FileText size={15} />}
-          {resumeParsing ? "解析中" : resumeFileName ? "重新导入" : "上传简历"}
-        </button>
-      </div>
-
-      {resumeResult && (
-        <div className="profile-resume-result">
-          <div><FileCheck2 size={16} /><span><strong>解析完成</strong><small>已提取 {resumeResult.extractedCount} 个字段 · 原文 {resumeResult.textLength} 字</small></span></div>
-          {resumeResult.warnings.length > 0 && <span className="profile-resume-warning"><CircleAlert size={13} />{resumeResult.warnings.join("、")}</span>}
+      {onTailor && (
+        <div className="profile-autofill-card profile-tailor-card">
+          <span><Sparkles size={20} /></span>
+          <div><strong>为当前岗位定制简历</strong><small>点击后自动读取 JD、匹配经历并生成预览</small></div>
+          <button onClick={onTailor}>
+            <Wand2 size={14} />
+            开始定制
+          </button>
         </div>
       )}
-
-      <div className="profile-progress">
-        <div><strong>{completion}%</strong><span>基础档案完整度</span></div>
-        <i><b style={{ width: `${completion}%` }} /></i>
-      </div>
 
       <div className="profile-autofill-card">
         <span><ScanLine size={20} /></span>
@@ -957,18 +1000,8 @@ export default function ProfileView({
         </div>
       </ProfileSection>
 
-      {resumeImportOpen && (
-        <ResumeImportModal
-          inputRef={resumeInputRef}
-          parsing={resumeParsing}
-          onClose={() => !resumeParsing && setResumeImportOpen(false)}
-          onPick={() => resumeInputRef.current?.click()}
-          onChange={handleResumeFile}
-        />
-      )}
-
       <div className="profile-save-bar">
-        <span><ShieldCheck size={15} />不会发送给 AI</span>
+        <span><ShieldCheck size={15} />不会发送给 AI · 保存后同步简历中心</span>
         <button onClick={save} disabled={busy}><Check size={15} />保存个人资料</button>
       </div>
     </section>
@@ -1025,49 +1058,6 @@ function ProfileSection({
 
 function Field({ label, wide, children }: { label: string; wide?: boolean; children: ReactNode }) {
   return <label className={wide ? "wide" : ""}><span>{label}</span>{children}</label>;
-}
-
-function ResumeImportModal({
-  inputRef,
-  parsing,
-  onClose,
-  onPick,
-  onChange
-}: {
-  inputRef: { current: HTMLInputElement | null };
-  parsing: boolean;
-  onClose: () => void;
-  onPick: () => void;
-  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
-}) {
-  return (
-    <div className="profile-import-modal" role="dialog" aria-modal="true" aria-labelledby="profile-import-title">
-      <div className="profile-import-dialog">
-        <button className="profile-import-close" onClick={onClose} disabled={parsing} aria-label="关闭"><X size={16} /></button>
-        <div className="profile-import-icon"><CloudUpload size={22} /></div>
-        <span className="profile-import-eyebrow">RESUME IMPORT</span>
-        <h2 id="profile-import-title">上传简历，自动生成个人资料</h2>
-        <p>OfferDuoDuo 会先在本地提取联系方式、教育经历和项目字段；解析结果会回填到当前资料库，确认后再保存。</p>
-        {parsing ? (
-          <div className="profile-import-loading">
-            <RefreshCw className="spin" size={22} />
-            <strong>正在解析简历…</strong>
-            <small>正在识别姓名、手机号、邮箱和教育经历</small>
-          </div>
-        ) : (
-          <>
-            <button className="profile-import-dropzone" onClick={onPick}>
-              <FileText size={22} />
-              <strong>点击选择简历文件</strong>
-              <small>支持 PDF、DOCX、TXT · 扫描件需要后续接入 OCR</small>
-            </button>
-            <input ref={inputRef} hidden type="file" accept=".pdf,.docx,.txt,.md,.html" onChange={onChange} />
-          </>
-        )}
-        <div className="profile-import-privacy"><ShieldCheck size={14} /><span>资料只写入 OfferDuoDuo 本地资料库，不会自动提交网申表单。</span></div>
-      </div>
-    </div>
-  );
 }
 
 function EntryCard({ entryId, title, onRemove, children }: { entryId: string; title: string; onRemove: () => void; children: ReactNode }) {
