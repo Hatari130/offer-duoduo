@@ -1,7 +1,8 @@
 .chat-page {
   position: relative;
   display: grid;
-  min-height: calc(100dvh - 1rem);
+  height: 100%;
+  min-height: 0;
   grid-template-rows: auto minmax(0, 1fr) auto;
   overflow: hidden;
   background:
@@ -11,13 +12,17 @@
 
 .chat-page--empty {
   display: grid;
+  height: 100%;
+  min-height: 0;
   place-items: center;
   overflow-y: auto;
 }
 
 .chat-welcome {
-  width: min(100%, 59rem);
-  padding: clamp(2rem, 8vh, 6.5rem) clamp(1.1rem, 4vw, 3rem) 2.5rem;
+  width: 100%;
+  max-width: 72rem;
+  min-width: 0;
+  padding: clamp(2rem, 7vh, 5rem) clamp(1.1rem, 4vw, 3rem) 2.5rem;
   text-align: center;
 }
 
@@ -51,6 +56,11 @@
   font-size: 0.96rem;
   line-height: 1.65;
   text-wrap: pretty;
+}
+
+.chat-welcome > .composer-shell {
+  width: min(100%, 56rem);
+  margin-inline: auto;
 }
 
 .composer-shell {
@@ -178,39 +188,119 @@
   border-radius: 50%;
 }
 
-.suggestion-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.65rem;
-  margin-block-start: 1.15rem;
+.recommendation-section {
+  width: 100%;
+  min-width: 0;
+  margin-block-start: 2rem;
   text-align: start;
 }
 
-.suggestion-grid button {
+.recommendation-section > header {
   display: flex;
-  min-height: 3.35rem;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-block-end: 0.9rem;
+  padding-inline: 0.15rem;
+}
+
+.recommendation-section > header > div { display: grid; gap: 0.25rem; }
+
+.recommendation-label {
+  display: inline-flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.7rem 0.85rem;
-  color: var(--of-text-muted);
-  background: oklch(0.985 0.006 255);
-  border: 1px solid var(--of-line);
-  border-radius: 0.9rem;
-  font-size: 0.75rem;
-  line-height: 1.4;
-  text-align: start;
+  gap: 0.35rem;
+  color: var(--of-brand-700);
+  font-size: 0.66rem;
+  font-weight: 720;
 }
 
-.suggestion-grid button svg {
-  flex: 0 0 auto;
-  color: var(--of-brand-600);
+.recommendation-section h2 {
+  margin: 0;
+  color: var(--of-text-strong);
+  font-size: 1rem;
+  font-weight: 680;
+  letter-spacing: -0.025em;
 }
 
-.suggestion-grid button:hover {
+.recommendation-section > header p {
+  max-width: 24rem;
+  margin: 0;
+  color: var(--of-text-subtle);
+  font-size: 0.66rem;
+  line-height: 1.45;
+  text-align: end;
+}
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.75rem;
+  scrollbar-width: none;
+}
+
+.recommendation-grid::-webkit-scrollbar { display: none; }
+
+.recommendation-card {
+  display: grid;
+  min-width: 0;
+  min-height: 14.5rem;
+  grid-template-rows: auto auto auto 1fr auto;
+  gap: 0.42rem;
+  padding: 0.62rem;
   color: var(--of-text);
-  background: var(--of-brand-50);
-  border-color: var(--of-brand-200);
+  background: white;
+  border: 0;
+  border-radius: 1rem;
+  box-shadow: var(--of-shadow-card);
+  text-align: start;
+  transition-property: transform, box-shadow;
+  transition-duration: 160ms;
+  transition-timing-function: ease-out;
 }
+
+.recommendation-card:hover {
+  box-shadow: 0 0 0 1px var(--of-brand-200), 0 16px 34px -24px oklch(0.38 0.13 260 / 0.42);
+  transform: translateY(-0.12rem);
+}
+
+.recommendation-visual {
+  position: relative;
+  display: grid;
+  height: 6rem;
+  margin-block-end: 0.18rem;
+  place-items: center;
+  overflow: hidden;
+  color: oklch(0.36 0.14 255);
+  background:
+    radial-gradient(circle at 75% 25%, oklch(1 0 0 / 0.9), transparent 1.8rem),
+    linear-gradient(140deg, oklch(0.92 0.06 250), oklch(0.98 0.02 255));
+  border-radius: 0.72rem;
+}
+
+.recommendation-visual::before {
+  position: absolute;
+  width: 4.8rem;
+  height: 4.8rem;
+  content: "";
+  border: 1px solid oklch(1 0 0 / 0.75);
+  border-radius: 1.5rem;
+  rotate: 18deg;
+}
+
+.recommendation-visual > svg { position: relative; z-index: 2; }
+.recommendation-visual i { position: absolute; width: 0.42rem; height: 0.42rem; background: oklch(1 0 0 / 0.95); border-radius: 50%; }
+.recommendation-visual i:nth-of-type(1) { inset: 0.7rem auto auto 1rem; }
+.recommendation-visual i:nth-of-type(2) { inset: auto 1.1rem 0.8rem auto; width: 0.28rem; height: 0.28rem; }
+.recommendation-card[data-tone="sand"] .recommendation-visual { color: oklch(0.45 0.12 70); background: linear-gradient(145deg, oklch(0.94 0.055 80), oklch(0.985 0.018 78)); }
+.recommendation-card[data-tone="mint"] .recommendation-visual { color: oklch(0.4 0.1 165); background: linear-gradient(145deg, oklch(0.91 0.055 165), oklch(0.985 0.018 165)); }
+.recommendation-card[data-tone="lilac"] .recommendation-visual { color: oklch(0.43 0.14 300); background: linear-gradient(145deg, oklch(0.93 0.05 300), oklch(0.985 0.018 300)); }
+
+.recommendation-tag { color: var(--of-brand-700); font-size: 0.6rem; font-weight: 700; }
+.recommendation-card > strong { color: var(--of-text-strong); font-size: 0.76rem; font-weight: 680; line-height: 1.4; }
+.recommendation-card > small { color: var(--of-text-muted); font-size: 0.63rem; line-height: 1.5; }
+.recommendation-action { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--of-text-subtle); font-size: 0.6rem; font-weight: 620; }
+.recommendation-card:hover .recommendation-action { color: var(--of-brand-700); }
 
 .chat-disclaimer {
   display: block;
@@ -476,14 +566,18 @@
 .chat-status:empty { display: none; }
 
 @media (max-width: 60rem) {
-  .chat-page { min-height: calc(100dvh - 4.25rem); }
+  .chat-page { height: 100%; min-height: 0; }
+  .recommendation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 @media (max-width: 40rem) {
   .chat-welcome { padding-inline: 0.8rem; padding-block-start: 2.5rem; }
   .chat-welcome h1 { font-size: 2rem; }
   .chat-welcome > p { font-size: 0.85rem; }
-  .suggestion-grid { grid-template-columns: 1fr; }
+  .recommendation-section > header { align-items: start; flex-direction: column; gap: 0.35rem; }
+  .recommendation-section > header p { text-align: start; }
+  .recommendation-grid { display: flex; gap: 0.65rem; padding-block-end: 0.4rem; overflow-x: auto; scroll-snap-type: x proximity; }
+  .recommendation-card { width: min(74vw, 15.5rem); flex: 0 0 auto; scroll-snap-align: start; }
   .composer-hint { display: none; }
   .thread-header { min-height: 4.25rem; }
   .thread-header > button { font-size: 0; width: 2.5rem; padding: 0; }

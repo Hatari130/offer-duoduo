@@ -8,6 +8,7 @@ import "./styles/auth.css";
 import "./styles/shell.css";
 import "./styles/chat.css";
 import "./styles/data-pages.css";
+import "./styles/membership.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

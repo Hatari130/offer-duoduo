@@ -9,12 +9,14 @@ import { OpportunitiesPage } from "../pages/OpportunitiesPage";
 import { ApplicationsPage } from "../pages/ApplicationsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { ExtensionConnectPage } from "../pages/ExtensionConnectPage";
+import { MembershipPage } from "../pages/MembershipPage";
 import { Logo } from "../components/Logo";
 
 const titles: Array<[RegExp, string]> = [
   [/^\/app\/chat/, "求职助手"],
   [/^\/app\/opportunities/, "校招信息速递"],
   [/^\/app\/applications/, "个人投递管理"],
+  [/^\/app\/upgrade/, "升级至 Pro"],
   [/^\/app\/settings/, "设置与设备同步"]
 ];
 
@@ -58,6 +60,7 @@ export function App() {
   }
 
   if (status === "anonymous") return <LoginPage />;
+  if (pathname.startsWith("/app/upgrade")) return <MembershipPage />;
 
   let page: React.ReactNode;
   if (extensionConnect) page = <ExtensionConnectPage />;

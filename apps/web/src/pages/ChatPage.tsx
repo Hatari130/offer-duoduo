@@ -1,12 +1,47 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChatAttachment, ChatConversation, ChatMessage } from "@offerflow/domain";
 import { CAREER_CHAT_SUGGESTIONS } from "@offerflow/domain";
-import { Compass, FileSearch, PanelTop, Sparkles } from "lucide-react";
+import { ArrowRight, Compass, FileSearch, PanelTop, Sparkles } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
 import { ChatComposer } from "../features/chat/ChatComposer";
 import { MessageList } from "../features/chat/MessageList";
+
+const recommendationCards = [
+  {
+    prompt: CAREER_CHAT_SUGGESTIONS[0],
+    tag: "秋招规划",
+    title: "把秋招拆成一张可执行时间表",
+    description: "根据目标岗位和当前进度，明确每周重点。",
+    icon: Compass,
+    tone: "sky"
+  },
+  {
+    prompt: CAREER_CHAT_SUGGESTIONS[1],
+    tag: "简历提升",
+    title: "让项目经历更有说服力",
+    description: "用成果、行动和证据重写项目表达。",
+    icon: PanelTop,
+    tone: "sand"
+  },
+  {
+    prompt: CAREER_CHAT_SUGGESTIONS[2],
+    tag: "面试准备",
+    title: "拆解职业规划类高频问题",
+    description: "得到回答结构、追问方向和练习建议。",
+    icon: FileSearch,
+    tone: "mint"
+  },
+  {
+    prompt: CAREER_CHAT_SUGGESTIONS[3],
+    tag: "岗位分析",
+    title: "从岗位描述提炼准备重点",
+    description: "识别核心能力、关键词和经验缺口。",
+    icon: Sparkles,
+    tone: "lilac"
+  }
+] as const;
 
 export function ChatPage({ conversationId }: { conversationId?: string }) {
   const { user } = useAuth();
@@ -197,17 +232,38 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
-          <div className="suggestion-grid" aria-label="常用问题">
-            {CAREER_CHAT_SUGGESTIONS.map((suggestion, index) => {
-              const Icon = [Compass, PanelTop, FileSearch, Sparkles][index];
-              return (
-                <button type="button" key={suggestion} onClick={() => void send(suggestion)}>
-                  <Icon aria-hidden="true" size={17} />
-                  <span>{suggestion}</span>
-                </button>
-              );
-            })}
-          </div>
+          <section className="recommendation-section" aria-labelledby="recommendation-title">
+            <header>
+              <div>
+                <span className="recommendation-label"><Sparkles aria-hidden="true" size={14} />为你推荐</span>
+                <h2 id="recommendation-title">从一个具体问题开始</h2>
+              </div>
+              <p>基于常见求职场景整理，选择后可继续补充你的情况。</p>
+            </header>
+            <div className="recommendation-grid">
+              {recommendationCards.map((card) => {
+                const Icon = card.icon;
+                return (
+                  <button
+                    type="button"
+                    className="recommendation-card"
+                    data-tone={card.tone}
+                    key={card.prompt}
+                    onClick={() => void send(card.prompt)}
+                  >
+                    <span className="recommendation-visual" aria-hidden="true">
+                      <Icon size={22} />
+                      <i /><i />
+                    </span>
+                    <span className="recommendation-tag">{card.tag}</span>
+                    <strong>{card.title}</strong>
+                    <small>{card.description}</small>
+                    <span className="recommendation-action">开始提问 <ArrowRight aria-hidden="true" size={14} /></span>
+                  </button>
+                );
+              })}
+            </div>
+          </section>
           <small className="chat-disclaimer">AI 回答可能不完整，重要招聘信息请以企业官方公告为准。</small>
         </div>
       ) : (

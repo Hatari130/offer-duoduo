@@ -1,14 +1,19 @@
-import { useEffect, useState, type MouseEvent, type PropsWithChildren } from "react";
+import { useEffect, useRef, useState, type FocusEvent, type MouseEvent, type PropsWithChildren } from "react";
 import type { ChatConversation } from "@offerflow/domain";
 import {
   BriefcaseBusiness,
   ChevronDown,
   Cloud,
+  Gift,
+  Home,
+  Info,
   LogOut,
   Menu,
   MessageCircleMore,
+  MonitorSmartphone,
   Newspaper,
   Plus,
+  Rocket,
   Settings,
   Sparkles,
   X
@@ -44,10 +49,35 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const [contactOpen, setContactOpen] = useState(false);
+  const accountMenuRef = useRef<HTMLDivElement>(null);
+  const contactMenuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMobileOpen(false);
+    setAccountOpen(false);
+    setContactOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const closePopovers = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (!accountMenuRef.current?.contains(target)) setAccountOpen(false);
+      if (!contactMenuRef.current?.contains(target)) setContactOpen(false);
+    };
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setAccountOpen(false);
+      setContactOpen(false);
+    };
+    document.addEventListener("pointerdown", closePopovers);
+    document.addEventListener("keydown", closeOnEscape);
+    return () => {
+      document.removeEventListener("pointerdown", closePopovers);
+      document.removeEventListener("keydown", closeOnEscape);
+    };
+  }, []);
 
   useEffect(() => {
     let active = true;
@@ -67,7 +97,14 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     };
   }, [user?.id]);
 
-  const closeMobile = () => setMobileOpen(false);
+  const closeMobile = () => {
+    setMobileOpen(false);
+    setAccountOpen(false);
+    setContactOpen(false);
+  };
+  const closeWhenFocusLeaves = (event: FocusEvent<HTMLDivElement>, close: () => void) => {
+    if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
+  };
 
   return (
     <div className="app-frame">
@@ -146,31 +183,121 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </section>
 
         <div className="sidebar-footer">
-          <div className="cloud-status" role="status">
-            <Cloud aria-hidden="true" size={15} />
-            <span><strong>云端已连接</strong><small>投递记录将自动同步</small></span>
-            <i aria-hidden="true" />
-          </div>
-          <details className="account-menu">
-            <summary>
-              <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
-              <span><strong>{user?.displayName || "OfferFlow 用户"}</strong><small>{user?.email}</small></span>
-              <ChevronDown aria-hidden="true" size={15} />
-            </summary>
-            <div className="account-popover">
-              <AppLink href="/app/settings" onNavigate={closeMobile}>
-                <Settings aria-hidden="true" size={16} />设置与设备同步
-              </AppLink>
-              <button type="button" onClick={logout}>
-                <LogOut aria-hidden="true" size={16} />退出登录
+          <AppLink href="/app/upgrade" className="upgrade-pro-button" onNavigate={closeMobile}>
+            <Rocket aria-hidden="true" size={16} />
+            <span>升级至 Pro</span>
+          </AppLink>
+
+          <div className="sidebar-account-row">
+            <div
+              className={`account-menu${accountOpen ? " is-open" : ""}`}
+              ref={accountMenuRef}
+              onMouseEnter={() => setAccountOpen(true)}
+              onMouseLeave={() => setAccountOpen(false)}
+              onFocus={() => setAccountOpen(true)}
+              onBlur={(event) => closeWhenFocusLeaves(event, () => setAccountOpen(false))}
+            >
+              <button
+                className="account-trigger"
+                type="button"
+                aria-expanded={accountOpen}
+                aria-controls="account-popover"
+                onClick={() => setAccountOpen((current) => !current)}
+              >
+                <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
+                <span><strong>{user?.displayName || "OfferFlow 用户"}</strong><small>Free</small></span>
+                <ChevronDown aria-hidden="true" size={15} />
               </button>
+
+              <div className="account-popover" id="account-popover" aria-label="账户菜单">
+                <header className="account-profile">
+                  <span className="account-avatar account-avatar--large">{user?.displayName.slice(0, 1) || "O"}</span>
+                  <span><strong>{user?.displayName || "OfferFlow 用户"}</strong><small>{user?.email}</small></span>
+                </header>
+
+                <section className="account-plan-card" aria-label="当前会员方案">
+                  <div><strong>Free</strong><AppLink href="/app/upgrade" onNavigate={closeMobile}>升级</AppLink></div>
+                  <p><span>试用额度</span><b>5 次</b></p>
+                  <p><span>云端同步</span><b className="is-connected"><Cloud aria-hidden="true" size={13} />已连接</b></p>
+                </section>
+
+                <div className="account-popover-links">
+                  <AppLink href="/app/settings" onNavigate={closeMobile}>
+                    <Settings aria-hidden="true" size={16} />设置与设备同步
+                  </AppLink>
+                  <AppLink href="/app/chat" onNavigate={closeMobile}>
+                    <Home aria-hidden="true" size={16} />返回首页
+                  </AppLink>
+                  <button type="button" onClick={() => { setAccountOpen(false); setContactOpen(true); }}>
+                    <MessageCircleMore aria-hidden="true" size={16} />联系我们
+                  </button>
+                  <button type="button" disabled title="后续接入">
+                    <Info aria-hidden="true" size={16} />更新日志<span>即将上线</span>
+                  </button>
+                  <button type="button" disabled title="后续接入">
+                    <Gift aria-hidden="true" size={16} />赠送会员<span>即将上线</span>
+                  </button>
+                  <button type="button" onClick={logout}>
+                    <LogOut aria-hidden="true" size={16} />退出登录
+                  </button>
+                </div>
+              </div>
             </div>
-          </details>
+
+            <AppLink
+              href="/app/settings"
+              className="sidebar-footer-icon"
+              onNavigate={closeMobile}
+            >
+              <MonitorSmartphone aria-hidden="true" size={17} />
+              <span className="sr-only">打开设备同步设置</span>
+            </AppLink>
+
+            <div
+              className={`contact-menu${contactOpen ? " is-open" : ""}`}
+              ref={contactMenuRef}
+              onBlur={(event) => closeWhenFocusLeaves(event, () => setContactOpen(false))}
+            >
+              <button
+                className="sidebar-footer-icon"
+                type="button"
+                aria-expanded={contactOpen}
+                aria-controls="contact-popover"
+                aria-label="联系我们"
+                onClick={() => setContactOpen((current) => !current)}
+              >
+                <MessageCircleMore aria-hidden="true" size={18} />
+              </button>
+              <section className="contact-popover" id="contact-popover" aria-labelledby="contact-title">
+                <div className="contact-popover-heading">
+                  <h2 id="contact-title">联系我们</h2>
+                  <button type="button" aria-label="关闭联系我们" onClick={() => setContactOpen(false)}>
+                    <X aria-hidden="true" size={16} />
+                  </button>
+                </div>
+                <div className="contact-illustration" aria-hidden="true">
+                  <MessageCircleMore size={28} />
+                  <i /><i /><i />
+                </div>
+                <p>遇到问题或有产品建议？欢迎加入 OfferFlow 求职交流 QQ 群。</p>
+                <div className="qq-group-placeholder">
+                  <span>OfferFlow 求职交流群</span>
+                  <strong>QQ群号待接入</strong>
+                </div>
+                <button className="contact-primary" type="button" disabled>QQ群即将开放</button>
+                <small>正式群号接入后，这里会支持一键复制。</small>
+              </section>
+            </div>
+          </div>
         </div>
       </aside>
 
       <div className="workspace-shell">
-        <main id="main-content" className="workspace-main" tabIndex={-1}>
+        <main
+          id="main-content"
+          className={`workspace-main${pathname.startsWith("/app/chat") ? " workspace-main--chat" : ""}`}
+          tabIndex={-1}
+        >
           {children}
         </main>
       </div>
