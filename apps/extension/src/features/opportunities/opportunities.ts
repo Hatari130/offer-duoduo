@@ -6,19 +6,9 @@ import type {
 
 export const OPPORTUNITY_CACHE_KEY = "offerflow.opportunities";
 export const DEFAULT_OPPORTUNITY_FEED_URL =
-  "https://zcnj0ltp8sdn.feishu.cn/wiki/MkhNwsXtXiugeEk81MMcs7RNnyh";
+  "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json";
 
 type RawOpportunity = Partial<RecruitmentOpportunity> & Record<string, unknown>;
-type FeishuSheetPayload = {
-  title?: string;
-  sheetName?: string;
-  rows: unknown[][];
-};
-type FeishuSheetResponse = {
-  ok?: boolean;
-  data?: FeishuSheetPayload;
-  error?: string;
-};
 
 const clean = (value: unknown) => String(value ?? "").trim();
 
@@ -72,38 +62,23 @@ const validHttpUrl = (value: string) => {
   }
 };
 
-const isFeishuHost = (hostname: string) =>
-  hostname === "feishu.cn" ||
-  hostname.endsWith(".feishu.cn") ||
-  hostname === "larksuite.com" ||
-  hostname.endsWith(".larksuite.com");
-
-export function isFeishuOpportunityFeed(value?: string): boolean {
-  if (!value) return false;
-  try {
-    const url = new URL(value);
-    return (
-      (url.protocol === "http:" || url.protocol === "https:") &&
-      isFeishuHost(url.hostname) &&
-      /\/(wiki|sheets)\//i.test(url.pathname)
-    );
-  } catch {
-    return false;
-  }
-}
-
 function normalizeOpportunity(raw: RawOpportunity): RecruitmentOpportunity | undefined {
   const company = clean(raw.company || raw["公司"] || raw["公司名称"]);
-  const title = clean(raw.title || raw["招聘项目"] || raw["招聘批次"] || raw["标题"]);
+  const title = clean(
+    raw.title || raw.positions || raw["招聘项目"] || raw["招聘批次"] || raw["标题"]
+  );
   const officialUrl = clean(
-    raw.officialUrl || raw["官方链接"] || raw["招聘官网"] || raw["网申地址"]
+    raw.officialUrl || raw.applyUrl || raw.announcementUrl ||
+      raw["官方链接"] || raw["招聘官网"] || raw["网申地址"]
   );
   if (!company || !title || !validHttpUrl(officialUrl)) return undefined;
 
-  const batch = clean(raw.batch || raw["批次"]) || undefined;
+  const batch = clean(raw.batch || raw.type || raw["批次"]) || undefined;
   const openAt = dateKey(clean(raw.openAt || raw["开放日期"] || raw["开始时间"]));
   const deadline = dateKey(clean(raw.deadline || raw["截止日期"] || raw["截止时间"]));
-  const sourceUrl = clean(raw.sourceUrl || raw["信息来源"] || raw["来源链接"]);
+  const sourceUrl = clean(
+    raw.sourceUrl || raw.announcementUrl || raw["信息来源"] || raw["来源链接"]
+  );
   const rawStatus = clean(raw.status || raw["状态"]);
   const statusAliases: Record<string, OpportunityStatus> = {
     upcoming: "upcoming",
@@ -133,109 +108,17 @@ function normalizeOpportunity(raw: RawOpportunity): RecruitmentOpportunity | und
     status,
     openAt,
     deadline,
-    graduationYears: list(raw.graduationYears || raw["面向届次"] || raw["届次"]),
-    roleTags: list(raw.roleTags || raw["岗位方向"] || raw["岗位"]),
-    cities: list(raw.cities || raw["城市"] || raw["工作地点"]),
+    graduationYears: list(
+      raw.graduationYears || raw.targetCohort || raw["面向届次"] || raw["届次"]
+    ),
+    roleTags: list(raw.roleTags || raw.positions || raw["岗位方向"] || raw["岗位"]),
+    cities: list(raw.cities || raw.city || raw["城市"] || raw["工作地点"]),
     officialUrl,
     sourceUrl: validHttpUrl(sourceUrl) ? sourceUrl : undefined,
     sourceName: clean(raw.sourceName || raw["来源名称"]) || undefined,
     verifiedAt: clean(raw.verifiedAt || raw["核验时间"]) || undefined,
     updatedAt: clean(raw.updatedAt || raw["更新时间"]) || undefined
   };
-}
-
-const normalizeHeader = (value: unknown) =>
-  clean(value).replace(/\s+/g, "").replace(/[（）()]/g, "");
-
-const cellText = (value: unknown) => {
-  if (value && typeof value === "object") {
-    const record = value as Record<string, unknown>;
-    return clean(record.text || record.value || record.displayValue);
-  }
-  return clean(value);
-};
-
-const columnIndex = (headers: unknown[], aliases: string[]) => {
-  const normalizedHeaders = headers.map(normalizeHeader);
-  const normalizedAliases = aliases.map(normalizeHeader);
-  return normalizedHeaders.findIndex((header) =>
-    normalizedAliases.some((alias) => header === alias || header.includes(alias))
-  );
-};
-
-const roleTagsFromCell = (value: unknown) => {
-  const roleText = cellText(value)
-    .replace(/^行业\s*[：:]\s*[^；;]+[；;]\s*/i, "")
-    .trim();
-  return list(roleText).slice(0, 4);
-};
-
-export function normalizeFeishuRows(
-  payload: FeishuSheetPayload,
-  sourceUrl: string
-): OpportunityFeedSnapshot {
-  const [headers = [], ...rows] = payload.rows;
-  const columns = {
-    updatedAt: columnIndex(headers, ["更新时间"]),
-    company: columnIndex(headers, ["公司名称", "公司"]),
-    deadline: columnIndex(headers, ["投递起止时间", "截止时间", "截止日期"]),
-    batch: columnIndex(headers, ["招聘类型", "批次"]),
-    role: columnIndex(headers, ["招聘岗位", "岗位方向", "岗位"]),
-    city: columnIndex(headers, ["城市", "工作地点"]),
-    notice: columnIndex(headers, ["公告链接", "信息来源", "来源链接"]),
-    apply: columnIndex(headers, ["投递链接", "网申地址", "官方链接", "招聘官网"])
-  };
-  const get = (row: unknown[], index: number) => (index >= 0 ? row[index] : undefined);
-  const title = clean(payload.title || payload.sheetName || "校招机会")
-    .replace(/\s*[-—]\s*飞书云文档\s*$/i, "")
-    .trim();
-
-  const opportunities = rows
-    .filter((row) => row.some((value) => cellText(value)))
-    .map((row) => {
-      const noticeUrl = cellText(get(row, columns.notice));
-      const applyUrl = cellText(get(row, columns.apply));
-      const company = cellText(get(row, columns.company));
-      const role = cellText(get(row, columns.role));
-      const roleTitle = role.replace(/^行业\s*[：:]\s*[^；;]+[；;]\s*/i, "").trim() || role;
-      return normalizeOpportunity({
-        company,
-        title: roleTitle,
-        batch: cellText(get(row, columns.batch)),
-        deadline: cellText(get(row, columns.deadline)),
-        cities: list(cellText(get(row, columns.city))),
-        roleTags: roleTagsFromCell(role),
-        officialUrl: applyUrl || noticeUrl,
-        sourceUrl: noticeUrl,
-        sourceName: `飞书表格 · ${title}`,
-        updatedAt: dateKey(get(row, columns.updatedAt))
-      });
-    })
-    .filter((item): item is RecruitmentOpportunity => Boolean(item));
-  const deduplicated = opportunities.filter(
-    (item, index, items) => items.findIndex((candidate) => candidate.id === item.id) === index
-  );
-
-  return {
-    opportunities: deduplicated,
-    fetchedAt: new Date().toISOString(),
-    sourceUpdatedAt: deduplicated.find((item) => item.updatedAt)?.updatedAt,
-    sourceUrl
-  };
-}
-
-async function readFeishuSheet(sourceUrl: string): Promise<FeishuSheetPayload> {
-  if (typeof chrome === "undefined" || typeof chrome.runtime?.sendMessage !== "function") {
-    throw new Error("飞书表格需要在 Chrome 扩展中同步");
-  }
-  const response = (await chrome.runtime.sendMessage({
-    type: "OFFERFLOW_READ_FEISHU_SHEET",
-    url: sourceUrl
-  })) as FeishuSheetResponse;
-  if (!response?.ok || !response.data?.rows) {
-    throw new Error(response?.error || "飞书表格读取失败");
-  }
-  return response.data;
 }
 
 export { opportunityStatus } from "@offerflow/domain";
@@ -295,16 +178,7 @@ export function normalizeOpportunityFeed(
 export async function refreshOpportunityFeed(
   configuredUrl?: string
 ): Promise<OpportunityFeedSnapshot> {
-  const configuredSourceUrl = configuredUrl?.trim();
-  if (isFeishuOpportunityFeed(configuredSourceUrl)) {
-    const sourceUrl = configuredSourceUrl!;
-    const payload = await readFeishuSheet(sourceUrl);
-    const snapshot = normalizeFeishuRows(payload, sourceUrl);
-    await writeOpportunityCache(snapshot);
-    return snapshot;
-  }
-
-  const sourceUrl = configuredSourceUrl || new URL("opportunities.json", window.location.href).href;
+  const sourceUrl = configuredUrl?.trim() || DEFAULT_OPPORTUNITY_FEED_URL;
   const response = await fetch(sourceUrl, { cache: "no-store" });
   if (!response.ok) throw new Error(`机会数据源读取失败（${response.status}）`);
   const payload = (await response.json()) as unknown;

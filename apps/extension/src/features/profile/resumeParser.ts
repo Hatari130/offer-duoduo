@@ -2,10 +2,15 @@ import type {
   PersonalProfile,
   ProfileEducation,
   ProfileExperience,
-  ProfileProject
+  ProfileProject,
+  ResumeAsset
 } from "@/shared/types";
 import { getDocument, GlobalWorkerOptions, OPS } from "pdfjs-dist/legacy/build/pdf.mjs";
 import workerUrl from "pdfjs-dist/legacy/build/pdf.worker.min.mjs?url";
+import {
+  parseResumeStructuredText,
+  type ResumeStructuredDiagnostics
+} from "@/features/profile/resumeStructuredParser";
 
 GlobalWorkerOptions.workerSrc = workerUrl;
 
@@ -14,6 +19,7 @@ export interface ResumeParseResult {
   extractedCount: number;
   warnings: string[];
   textLength: number;
+  diagnostics?: ResumeStructuredDiagnostics;
 }
 
 export interface ResumePdfTextItem {
@@ -30,6 +36,8 @@ export interface ResumePdfTextItem {
   fontId: string;
   fallbackFontFamily: string;
   color: string;
+  backgroundColor: string;
+  backgroundConfidence: number;
   rotation: number;
   direction: string;
 }
@@ -42,6 +50,7 @@ export interface ResumePdfFont {
   mimeType: string;
   fontWeight: 400 | 700;
   fontStyle: "normal" | "italic";
+  isSubset: boolean;
 }
 
 export interface ResumePdfVectorShape {
@@ -64,7 +73,7 @@ export interface ResumePdfPageLayout {
   widthPt: number;
   heightPt: number;
   imageDataUrl: string;
-  backgroundImageDataUrl: string;
+  backgroundImageDataUrl?: string;
   vectorShapes: ResumePdfVectorShape[];
   items: ResumePdfTextItem[];
 }
@@ -77,6 +86,12 @@ export interface ResumePdfLayout {
 
 export interface ResumePdfLayoutOptions {
   onProgress?: (phase: string, pageNumber?: number, pageCount?: number) => void;
+}
+
+export interface ResumePdfAssetExtraction {
+  assets: ResumeAsset[];
+  portraitAssetId?: string;
+  warnings: string[];
 }
 
 function pdfJsAssetDirectory(directory: "cmaps" | "standard_fonts" | "wasm" | "iccs") {
@@ -528,11 +543,6 @@ function createPdfCanvas(viewport: { width: number; height: number }) {
   return { canvas, context };
 }
 
-function isVectorPaintIndex(operatorList: { fnArray: number[]; argsArray: unknown[][] }, index: number) {
-  if (operatorList.fnArray[index] !== OPS.constructPath) return false;
-  return VECTOR_PAINT_OPERATIONS.has(finite(operatorList.argsArray[index]?.[0], -1));
-}
-
 function inferPdfFontFamily(name: string, fallback = "sans-serif") {
   const normalized = name.replace(/^[A-Z]{6}\+/, "").replace(/[-_]/g, " ");
   if (/microsoft\s*yahei/i.test(normalized)) return "Microsoft YaHei";
@@ -564,8 +574,77 @@ function bytesToBase64(bytes: Uint8Array) {
   return btoa(binary);
 }
 
+interface SampledColor {
+  css: string;
+  red: number;
+  green: number;
+  blue: number;
+  confidence: number;
+}
+
+function colorCss(red: number, green: number, blue: number) {
+  return `#${[red, green, blue]
+    .map((value) => Math.max(0, Math.min(255, Math.round(value))).toString(16).padStart(2, "0"))
+    .join("")}`;
+}
+
+function sampleItemBackground(
+  pixels: Uint8ClampedArray,
+  canvasWidth: number,
+  canvasHeight: number,
+  item: Pick<ResumePdfTextItem, "x" | "top" | "width" | "height">,
+  scale: number
+): SampledColor {
+  const padding = Math.max(3, Math.ceil(scale * 2));
+  const left = Math.max(0, Math.floor(item.x * scale));
+  const top = Math.max(0, Math.floor(item.top * scale));
+  const right = Math.min(canvasWidth - 1, Math.ceil((item.x + item.width) * scale));
+  const bottom = Math.min(canvasHeight - 1, Math.ceil((item.top + item.height) * scale));
+  const outerLeft = Math.max(0, left - padding);
+  const outerTop = Math.max(0, top - padding);
+  const outerRight = Math.min(canvasWidth - 1, right + padding);
+  const outerBottom = Math.min(canvasHeight - 1, bottom + padding);
+  const buckets = new Map<number, { count: number; red: number; green: number; blue: number }>();
+  const add = (x: number, y: number) => {
+    const offset = (y * canvasWidth + x) * 4;
+    if (pixels[offset + 3] < 220) return;
+    const red = pixels[offset];
+    const green = pixels[offset + 1];
+    const blue = pixels[offset + 2];
+    const key = (red >> 3) * 1024 + (green >> 3) * 32 + (blue >> 3);
+    const bucket = buckets.get(key) || { count: 0, red: 0, green: 0, blue: 0 };
+    bucket.count += 1;
+    bucket.red += red;
+    bucket.green += green;
+    bucket.blue += blue;
+    buckets.set(key, bucket);
+  };
+  for (let x = outerLeft; x <= outerRight; x += 1) {
+    for (let y = outerTop; y < top; y += 1) add(x, y);
+    for (let y = bottom + 1; y <= outerBottom; y += 1) add(x, y);
+  }
+  for (let y = top; y <= bottom; y += 1) {
+    for (let x = outerLeft; x < left; x += 1) add(x, y);
+    for (let x = right + 1; x <= outerRight; x += 1) add(x, y);
+  }
+  const total = [...buckets.values()].reduce((sum, bucket) => sum + bucket.count, 0);
+  const best = [...buckets.values()].sort((a, b) => b.count - a.count)[0];
+  if (!best?.count) return { css: "#ffffff", red: 255, green: 255, blue: 255, confidence: 0 };
+  const red = best.red / best.count;
+  const green = best.green / best.count;
+  const blue = best.blue / best.count;
+  return {
+    css: colorCss(red, green, blue),
+    red,
+    green,
+    blue,
+    confidence: total ? best.count / total : 0
+  };
+}
+
 function detectTextColor(
   layerPixels: Uint8ClampedArray,
+  background: Pick<SampledColor, "red" | "green" | "blue">,
   canvasWidth: number,
   canvasHeight: number,
   item: Pick<ResumePdfTextItem, "x" | "top" | "width" | "height">,
@@ -584,9 +663,11 @@ function detectTextColor(
       const red = layerPixels[offset];
       const green = layerPixels[offset + 1];
       const blue = layerPixels[offset + 2];
+      const contrast = Math.hypot(red - background.red, green - background.green, blue - background.blue);
+      if (contrast < 8) continue;
       const key = (red >> 4) * 256 + (green >> 4) * 16 + (blue >> 4);
       const bucket = buckets.get(key) || { score: 0, red: 0, green: 0, blue: 0, weight: 0 };
-      bucket.score += alpha;
+      bucket.score += alpha * contrast;
       bucket.red += red * alpha;
       bucket.green += green * alpha;
       bucket.blue += blue * alpha;
@@ -597,77 +678,14 @@ function detectTextColor(
   const best = [...buckets.values()].sort((leftBucket, rightBucket) => rightBucket.score - leftBucket.score)[0];
   if (!best?.weight) return "#111111";
   const values = [best.red, best.green, best.blue].map((value) => Math.round(value / best.weight));
-  return `#${values.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function samplePatchColor(
-  pixels: Uint8ClampedArray,
-  canvasWidth: number,
-  canvasHeight: number,
-  item: Pick<ResumePdfTextItem, "x" | "top" | "width" | "height">,
-  scale: number
-) {
-  const left = Math.max(0, Math.floor((item.x - 3) * scale));
-  const top = Math.max(0, Math.floor((item.top - 3) * scale));
-  const right = Math.min(canvasWidth - 1, Math.ceil((item.x + item.width + 3) * scale));
-  const bottom = Math.min(canvasHeight - 1, Math.ceil((item.top + item.height + 3) * scale));
-  const innerLeft = Math.max(left, Math.floor((item.x - 1) * scale));
-  const innerTop = Math.max(top, Math.floor((item.top - 1) * scale));
-  const innerRight = Math.min(right, Math.ceil((item.x + item.width + 1) * scale));
-  const innerBottom = Math.min(bottom, Math.ceil((item.top + item.height + 1) * scale));
-  const buckets = new Map<number, { count: number; red: number; green: number; blue: number }>();
-  const add = (x: number, y: number) => {
-    const offset = (y * canvasWidth + x) * 4;
-    if (pixels[offset + 3] < 200) return;
-    const red = pixels[offset];
-    const green = pixels[offset + 1];
-    const blue = pixels[offset + 2];
-    const key = (red >> 4) * 256 + (green >> 4) * 16 + (blue >> 4);
-    const bucket = buckets.get(key) || { count: 0, red: 0, green: 0, blue: 0 };
-    bucket.count += 1;
-    bucket.red += red;
-    bucket.green += green;
-    bucket.blue += blue;
-    buckets.set(key, bucket);
-  };
-  for (let x = left; x <= right; x += 1) {
-    for (let y = top; y < innerTop; y += 1) add(x, y);
-    for (let y = innerBottom + 1; y <= bottom; y += 1) add(x, y);
-  }
-  for (let y = innerTop; y <= innerBottom; y += 1) {
-    for (let x = left; x < innerLeft; x += 1) add(x, y);
-    for (let x = innerRight + 1; x <= right; x += 1) add(x, y);
-  }
-  const best = [...buckets.values()].sort((leftBucket, rightBucket) => rightBucket.count - leftBucket.count)[0];
-  if (!best?.count) return "#ffffff";
-  const values = [best.red, best.green, best.blue].map((value) => Math.round(value / best.count));
-  return `#${values.map((value) => value.toString(16).padStart(2, "0")).join("")}`;
-}
-
-function buildBackgroundPatch(
-  target: CanvasRenderingContext2D,
-  source: HTMLCanvasElement,
-  sourcePixels: Uint8ClampedArray,
-  items: ResumePdfTextItem[],
-  scale: number
-) {
-  target.drawImage(source, 0, 0);
-  for (const item of items) {
-    const padding = Math.max(2, scale * 1.2);
-    const left = Math.max(0, item.x * scale - padding);
-    const top = Math.max(0, item.top * scale - padding);
-    const width = Math.min(source.width - left, item.width * scale + padding * 2);
-    const height = Math.min(source.height - top, item.height * scale + padding * 2);
-    target.fillStyle = samplePatchColor(sourcePixels, source.width, source.height, item, scale);
-    target.fillRect(left, top, Math.max(1, width), Math.max(1, height));
-  }
+  return colorCss(values[0], values[1], values[2]);
 }
 
 /**
- * Extract the source PDF's page geometry, editable text layer, and non-text
- * visual background. Text is removed from the rendered background and added
- * back by the HTML builder, so missing PDF canvas fonts cannot produce a blank
- * resume and the visible copy remains searchable/editable.
+ * Extract the immutable page render plus a coordinate-aware text layer.
+ * The complete page image remains the visual source of truth. Editing only
+ * repaints the individual text runs that changed, so a parser miss can never
+ * erase content from the original PDF.
  */
 export async function extractResumePdfLayout(
   buffer: ArrayBuffer,
@@ -689,27 +707,13 @@ export async function extractResumePdfLayout(
       options.onProgress?.("extracting-operators", pageNumber, pdf.numPages);
       const operatorList = await page.getOperatorList() as unknown as { fnArray: number[]; argsArray: unknown[][] };
       const full = createPdfCanvas(renderViewport);
-      const imageAndText = createPdfCanvas(renderViewport);
-      const background = createPdfCanvas(renderViewport);
-
       options.onProgress?.("rendering-reference", pageNumber, pdf.numPages);
       await page.render({ canvasContext: full.context, canvas: full.canvas, viewport: renderViewport }).promise;
-      options.onProgress?.("rendering-text-image", pageNumber, pdf.numPages);
-      await page.render({
-        canvasContext: imageAndText.context,
-        canvas: imageAndText.canvas,
-        viewport: renderViewport,
-        background: "rgba(255,255,255,0)",
-        operationsFilter: (index) => !isVectorPaintIndex(operatorList, index)
-      }).promise;
+      const imageDataUrl = full.canvas.toDataURL("image/png");
+      const fullPixels = new Uint8ClampedArray(
+        full.context.getImageData(0, 0, full.canvas.width, full.canvas.height).data
+      );
       options.onProgress?.("building-text-layer", pageNumber, pdf.numPages);
-      const fullPixels = full.context.getImageData(0, 0, full.canvas.width, full.canvas.height).data;
-      const imageAndTextPixels = imageAndText.context.getImageData(
-        0,
-        0,
-        imageAndText.canvas.width,
-        imageAndText.canvas.height
-      ).data;
       const items = content.items
         .filter((item): item is typeof item & {
           str: string;
@@ -755,7 +759,8 @@ export async function extractResumePdfLayout(
               dataBase64: bytesToBase64(pdfFont.data),
               mimeType: pdfFont.mimetype || "font/opentype",
               fontWeight,
-              fontStyle
+              fontStyle,
+              isSubset: /^[A-Z]{6}\+/.test(rawFontName)
             });
           }
           const angle = Math.atan2(textTransform[1], textTransform[0]);
@@ -781,11 +786,23 @@ export async function extractResumePdfLayout(
             fontId: fontName,
             fallbackFontFamily,
             color: "#111111",
+            backgroundColor: "#ffffff",
+            backgroundConfidence: 0,
             rotation: angle * 180 / Math.PI,
             direction: item.dir || "ltr"
           };
+          const background = sampleItemBackground(
+            fullPixels,
+            full.canvas.width,
+            full.canvas.height,
+            result,
+            renderViewport.scale
+          );
+          result.backgroundColor = background.css;
+          result.backgroundConfidence = background.confidence;
           result.color = detectTextColor(
-            imageAndTextPixels,
+            fullPixels,
+            background,
             full.canvas.width,
             full.canvas.height,
             result,
@@ -793,15 +810,12 @@ export async function extractResumePdfLayout(
           );
           return result;
         });
-      options.onProgress?.("building-background-patch", pageNumber, pdf.numPages);
-      buildBackgroundPatch(background.context, full.canvas, fullPixels, items, renderViewport.scale);
       options.onProgress?.("building-vector-layer", pageNumber, pdf.numPages);
       pages.push({
         page: pageNumber,
         widthPt: viewport.width,
         heightPt: viewport.height,
-        imageDataUrl: full.canvas.toDataURL("image/png"),
-        backgroundImageDataUrl: background.canvas.toDataURL("image/png"),
+        imageDataUrl,
         vectorShapes: extractVectorShapes(operatorList, viewport.transform),
         items
       });
@@ -819,6 +833,177 @@ export async function extractResumePdfLayout(
       (total, page) => total + page.items.reduce((pageTotal, item) => pageTotal + [...item.text.trim()].length, 0),
       0
     )
+  };
+}
+
+interface ResumeImageCandidate {
+  asset: ResumeAsset;
+  portraitScore: number;
+}
+
+const clamp01 = (value: number) => Math.max(0, Math.min(1, value));
+
+function trackedImageBoxes(rawCoordinates: ArrayLike<number> | null | undefined) {
+  const boxes: Array<{ x: number; y: number; width: number; height: number }> = [];
+  if (!rawCoordinates) return boxes;
+  for (let index = 0; index + 5 < rawCoordinates.length; index += 6) {
+    const first = { x: finite(rawCoordinates[index]), y: finite(rawCoordinates[index + 1]) };
+    const second = { x: finite(rawCoordinates[index + 2]), y: finite(rawCoordinates[index + 3]) };
+    const third = { x: finite(rawCoordinates[index + 4]), y: finite(rawCoordinates[index + 5]) };
+    const fourth = {
+      x: second.x + third.x - first.x,
+      y: second.y + third.y - first.y
+    };
+    const xs = [first.x, second.x, third.x, fourth.x];
+    const ys = [first.y, second.y, third.y, fourth.y];
+    const left = clamp01(Math.min(...xs));
+    const top = clamp01(Math.min(...ys));
+    const right = clamp01(Math.max(...xs));
+    const bottom = clamp01(Math.max(...ys));
+    if (right > left && bottom > top) boxes.push({ x: left, y: top, width: right - left, height: bottom - top });
+  }
+  return boxes;
+}
+
+function cropCanvas(source: HTMLCanvasElement, box: { x: number; y: number; width: number; height: number }) {
+  const sourceX = Math.max(0, Math.floor(box.x * source.width));
+  const sourceY = Math.max(0, Math.floor(box.y * source.height));
+  const width = Math.max(1, Math.min(source.width - sourceX, Math.ceil(box.width * source.width)));
+  const height = Math.max(1, Math.min(source.height - sourceY, Math.ceil(box.height * source.height)));
+  const output = document.createElement("canvas");
+  output.width = width;
+  output.height = height;
+  const context = output.getContext("2d", { willReadFrequently: true });
+  if (!context) throw new Error("浏览器无法提取 PDF 图片");
+  context.drawImage(source, sourceX, sourceY, width, height, 0, 0, width, height);
+  return output;
+}
+
+function portraitPixelScore(canvas: HTMLCanvasElement): number {
+  const context = canvas.getContext("2d", { willReadFrequently: true });
+  if (!context) return 0;
+  const scale = Math.min(1, 96 / Math.max(canvas.width, canvas.height));
+  const width = Math.max(1, Math.round(canvas.width * scale));
+  const height = Math.max(1, Math.round(canvas.height * scale));
+  const sample = document.createElement("canvas");
+  sample.width = width;
+  sample.height = height;
+  const sampleContext = sample.getContext("2d", { willReadFrequently: true });
+  if (!sampleContext) return 0;
+  sampleContext.drawImage(canvas, 0, 0, width, height);
+  const pixels = sampleContext.getImageData(0, 0, width, height).data;
+  let skinPixels = 0;
+  const colorBuckets = new Set<number>();
+  for (let index = 0; index < pixels.length; index += 16) {
+    const red = pixels[index];
+    const green = pixels[index + 1];
+    const blue = pixels[index + 2];
+    const alpha = pixels[index + 3];
+    if (alpha < 64) continue;
+    colorBuckets.add((red >> 5) * 64 + (green >> 5) * 8 + (blue >> 5));
+    if (red > 90 && green > 35 && blue > 20 && red > green && red > blue && Math.max(red, green, blue) - Math.min(red, green, blue) > 15) {
+      skinPixels += 1;
+    }
+  }
+  const samples = Math.max(1, Math.ceil(pixels.length / 16));
+  const skinRatio = skinPixels / samples;
+  const skinScore = skinRatio >= 0.015 && skinRatio <= 0.55 ? Math.min(1, skinRatio / 0.12) : 0;
+  const detailScore = clamp01(colorBuckets.size / 90);
+  return skinScore * 0.72 + detailScore * 0.28;
+}
+
+function candidatePortraitScore(
+  box: { x: number; y: number; width: number; height: number },
+  pageNumber: number,
+  pixelScore: number
+) {
+  const aspect = box.width / box.height;
+  const aspectScore = clamp01(1 - Math.abs(aspect - 0.78) / 0.62);
+  const topScore = clamp01(1 - Math.max(0, box.y - 0.08) / 0.62);
+  const area = box.width * box.height;
+  const sizeScore = clamp01(area / 0.025) * clamp01((0.16 - area) / 0.12);
+  return clamp01(aspectScore * 0.34 + topScore * 0.2 + sizeScore * 0.16 + pixelScore * 0.25 + (pageNumber === 1 ? 0.05 : 0));
+}
+
+/**
+ * Extracts the actual raster images painted by PDF.js. Cropping the rendered
+ * source at PDF image coordinates preserves masks, clipping and colour exactly
+ * as the candidate saw them, while avoiding a fragile dependency on PDF image
+ * object encodings.
+ */
+export async function extractResumePdfAssets(buffer: ArrayBuffer): Promise<ResumePdfAssetExtraction> {
+  const pdf = await getDocument(pdfDocumentOptions(buffer)).promise;
+  const candidates: ResumeImageCandidate[] = [];
+  const warnings: string[] = [];
+  try {
+    const pageLimit = Math.min(pdf.numPages, 2);
+    for (let pageNumber = 1; pageNumber <= pageLimit; pageNumber += 1) {
+      const page = await pdf.getPage(pageNumber);
+      const viewport = page.getViewport({ scale: 1 });
+      const renderViewport = page.getViewport({ scale: 2.5 });
+      const rendered = createPdfCanvas(renderViewport);
+      await page.render({
+        canvasContext: rendered.context,
+        canvas: rendered.canvas,
+        viewport: renderViewport,
+        recordImages: true
+      }).promise;
+      const boxes = trackedImageBoxes(page.imageCoordinates as ArrayLike<number> | null);
+      boxes.forEach((box, imageIndex) => {
+        const pixelWidth = box.width * rendered.canvas.width;
+        const pixelHeight = box.height * rendered.canvas.height;
+        const area = box.width * box.height;
+        if (pixelWidth < 36 || pixelHeight < 36 || area < 0.0008 || area > 0.22 || box.width > 0.62 || box.height > 0.62) return;
+        const cropped = cropCanvas(rendered.canvas, box);
+        const pixelScore = portraitPixelScore(cropped);
+        const portraitScore = candidatePortraitScore(box, pageNumber, pixelScore);
+        const assetId = `pdf-image-${pageNumber}-${imageIndex}`;
+        candidates.push({
+          portraitScore,
+          asset: {
+            id: assetId,
+            kind: "image",
+            dataUrl: cropped.toDataURL("image/png"),
+            mimeType: "image/png",
+            width: cropped.width,
+            height: cropped.height,
+            source: "pdf",
+            sourcePage: pageNumber,
+            sourceBox: {
+              x: box.x * viewport.width,
+              y: box.y * viewport.height,
+              width: box.width * viewport.width,
+              height: box.height * viewport.height
+            },
+            confidence: Math.round(portraitScore * 100) / 100
+          }
+        });
+      });
+      page.cleanup();
+    }
+  } finally {
+    await pdf.destroy();
+  }
+
+  const unique = candidates
+    .sort((left, right) => right.portraitScore - left.portraitScore)
+    .filter((candidate, index, all) => all.findIndex((item) => (
+      item.asset.width === candidate.asset.width
+      && item.asset.height === candidate.asset.height
+      && item.asset.dataUrl.slice(-160) === candidate.asset.dataUrl.slice(-160)
+    )) === index)
+    .slice(0, 8);
+  const portrait = unique.find((candidate) => {
+    const aspect = candidate.asset.width / candidate.asset.height;
+    return candidate.portraitScore >= 0.46 && aspect >= 0.48 && aspect <= 1.28;
+  });
+  if (portrait) portrait.asset.kind = "portrait";
+  if (!unique.length) warnings.push("未在 PDF 中发现可迁移的独立图片；如有证件照，可在简历工作台手动上传");
+  else if (!portrait) warnings.push("已保留 PDF 图片，但无法可靠判断哪一张是证件照，请在简历工作台选择");
+  return {
+    assets: unique.map((candidate) => candidate.asset),
+    portraitAssetId: portrait?.asset.id,
+    warnings
   };
 }
 
@@ -1083,59 +1268,18 @@ function parseProjects(lines: string[]): ProfileProject[] {
 export async function parseResumeFile(file: File): Promise<ResumeParseResult> {
   const text = await extractText(file);
   if (text.length < 20) throw new Error("没有从文件中提取到足够文字；扫描件请先接入 OCR 解析");
-
-  const lines = linesOf(text);
-  const phone = text.match(/(?:\+?86[ -]?)?1[3-9]\d{9}/)?.[0]?.replace(/\s|-/g, "") || "";
-  const email = text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] || "";
-  const educationBlock = findHeadingBlock(lines, /(?:教育经历|教育背景|学历)/i);
-  const educationSource = educationBlock.length ? educationBlock : lines;
-  const { school, major, degree } = parseEducation(educationSource);
-  const educationDates = dateRange(educationSource.join(" "));
-  const name = labeledValue(text, ["姓名", "name"]) || lines.find((line) => /^[\u4e00-\u9fa5]{2,4}$/.test(line)) || "";
-  const gender = labeledValue(text, ["性别", "gender"]);
-  const city = labeledValue(text, ["现居城市", "所在地", "居住地"]);
-  const nativePlace = labeledValue(text, ["籍贯"]);
-  const address = labeledValue(text, ["联系地址", "地址"]);
-  const targetRole = labeledValue(text, ["求职意向", "目标岗位", "应聘职位", "期望职位"]);
-  const targetCities = labeledValue(text, ["意向城市", "期望城市"]);
-  const portfolioUrl = text.match(/https?:\/\/[^\s]+(?:framer|notion|portfolio)[^\s]*/i)?.[0] || "";
-  const githubUrl = text.match(/https?:\/\/github\.com\/[^\s]+/i)?.[0] || "";
-  const birthDate = normalizedDate(labeledValue(text, ["出生日期", "出生年月"]));
-  const graduationDate = normalizedDate(labeledValue(text, ["毕业时间", "毕业日期"])) || educationDates.endDate;
-  const education: ProfileEducation[] = school || major || degree
-    ? [{ id: id("education"), school, major, degree, startDate: educationDates.startDate, endDate: educationDates.endDate, gpa: labeledValue(text, ["GPA", "成绩", "排名"]) }]
-    : [];
-  const experiences = parseExperience(lines);
-  const projects = parseProjects(lines);
-
+  const structured = parseResumeStructuredText(text, file.name);
   const profile: PersonalProfile = {
-    fullName: name,
-    gender,
-    phone,
-    email,
-    birthDate,
-    graduationDate,
-    currentCity: city,
-    nativePlace,
-    height: labeledValue(text, ["身高"]),
-    weight: labeledValue(text, ["体重"]),
-    recruitmentType: labeledValue(text, ["是否统招", "统招"]),
-    graduateStatus: labeledValue(text, ["应届", "毕业状态"]),
-    address,
-    targetRole,
-    targetCities,
-    earliestStartDate: labeledValue(text, ["最早到岗", "可到岗时间"]),
-    portfolioUrl,
-    githubUrl,
-    education,
-    experiences,
-    projects,
-    campusExperiences: [],
-    awards: [],
-    selfIntroduction: labeledValue(text, ["自我介绍", "个人简介", "个人总结"]),
-    strengths: labeledValue(text, ["个人优势", "自我评价", "核心优势"]),
-    careerPlan: labeledValue(text, ["职业规划", "发展规划"]),
-    extraFields: { resumeSourceName: file.name, parseMode: "local-text" }
+    ...structured.profile,
+    extraFields: {
+      ...(structured.profile.extraFields || {}),
+      resumeSourceName: file.name,
+      parseMode: "layout-aware-text-v2",
+      parseCoverage: String(structured.diagnostics.coverage),
+      ...(structured.diagnostics.unclassifiedText
+        ? { resumeUnclassifiedText: structured.diagnostics.unclassifiedText }
+        : {})
+    }
   };
 
   const extractedCount = [
@@ -1148,16 +1292,23 @@ export async function parseResumeFile(file: File): Promise<ResumeParseResult> {
     profile.address,
     profile.portfolioUrl,
     profile.githubUrl,
-    ...education.flatMap((item) => Object.values(item)),
-    ...experiences.flatMap((item) => Object.values(item)),
-    ...projects.flatMap((item) => Object.values(item))
+    ...profile.education.flatMap((item) => Object.values(item)),
+    ...profile.experiences.flatMap((item) => Object.values(item)),
+    ...profile.projects.flatMap((item) => Object.values(item)),
+    ...profile.campusExperiences.flatMap((item) => Object.values(item)),
+    ...profile.awards.flatMap((item) => Object.values(item))
   ].filter((value) => typeof value === "string" && value.trim()).length;
-  const warnings: string[] = [];
-  if (!phone) warnings.push("未识别到手机号");
-  if (!email) warnings.push("未识别到邮箱");
-  if (!education.length) warnings.push("未识别到教育经历");
-  if (fileExtension(file.name) === "pdf") warnings.push("PDF 已使用结构化文本提取；扫描件仍需 OCR");
-  return { profile, extractedCount, warnings, textLength: text.length };
+  const warnings = [...structured.diagnostics.warnings];
+  if (!profile.phone) warnings.push("未识别到手机号");
+  if (!profile.email) warnings.push("未识别到邮箱");
+  if (!profile.education.length) warnings.push("未识别到教育经历");
+  return {
+    profile,
+    extractedCount,
+    warnings: [...new Set(warnings)],
+    textLength: structured.diagnostics.normalizedText.length,
+    diagnostics: structured.diagnostics
+  };
 }
 
 export function mergeParsedProfile(current: PersonalProfile, parsed: PersonalProfile): PersonalProfile {
@@ -1174,6 +1325,8 @@ export function mergeParsedProfile(current: PersonalProfile, parsed: PersonalPro
   if (parsed.education.length) next.education = parsed.education;
   if (parsed.experiences.length) next.experiences = parsed.experiences;
   if (parsed.projects.length) next.projects = parsed.projects;
+  if (parsed.campusExperiences.length) next.campusExperiences = parsed.campusExperiences;
+  if (parsed.awards.length) next.awards = parsed.awards;
   next.extraFields = { ...current.extraFields, ...parsed.extraFields };
   return next;
 }

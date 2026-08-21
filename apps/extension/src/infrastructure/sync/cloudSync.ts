@@ -1,4 +1,4 @@
-import { createApiClient } from "@offerflow/api-client";
+import { createApiClient, OfferFlowApiError } from "@offerflow/api-client";
 import type {
   ApplicationSyncChange,
   ApplicationSyncConflict,
@@ -30,6 +30,47 @@ export interface CloudSyncOverview {
   connection?: CloudConnection;
   state: CloudSyncState;
   pendingCount: number;
+}
+
+// Renew the access token when less than two days of its TTL remain, so a
+// paired extension keeps syncing indefinitely instead of silently failing
+// once the token expires (the original cause of "sync stopped after a week").
+const TOKEN_REFRESH_MARGIN_MS = 2 * 24 * 60 * 60 * 1000;
+
+async function loadConnectionWithFreshToken(): Promise<CloudConnection | undefined> {
+  const connection = await loadCloudConnection();
+  if (!connection) return undefined;
+
+  const expiresAt = Date.parse(connection.expiresAt);
+  if (!Number.isFinite(expiresAt) || expiresAt - Date.now() > TOKEN_REFRESH_MARGIN_MS) {
+    return connection;
+  }
+
+  const client = createApiClient({
+    baseUrl: connection.apiBaseUrl,
+    getAccessToken: () => connection.accessToken
+  });
+  try {
+    const session = await client.auth.refresh();
+    const renewed: CloudConnection = {
+      ...connection,
+      accessToken: session.accessToken,
+      expiresAt: session.expiresAt
+    };
+    await saveCloudConnection(renewed);
+    return renewed;
+  } catch {
+    // The token may already be expired or the API is offline. Keep the
+    // current connection so the regular sync surfaces the real error.
+    return connection;
+  }
+}
+
+function syncErrorMessage(error: unknown, fallback: string): string {
+  if (error instanceof OfferFlowApiError && error.status === 401) {
+    return "登录已过期：请在插件设置中重新登录 OfferFlow 并同步";
+  }
+  return error instanceof Error ? error.message : fallback;
 }
 
 let activeSync: Promise<CloudSyncOverview> | undefined;
@@ -156,13 +197,11 @@ function mergeConflicts(
 
 function applyRemoteChanges(
   jobs: JobApplication[],
-  changes: ApplicationSyncItem[],
-  protectedEntityIds: Set<string>
+  changes: ApplicationSyncItem[]
 ): JobApplication[] {
   const byId = new Map(jobs.map((application) => [application.id, application]));
   for (const item of changes) {
     const id = item.application.id;
-    if (protectedEntityIds.has(id)) continue;
     if (item.deletedAt) byId.delete(id);
     else byId.set(id, item.application);
   }
@@ -172,7 +211,7 @@ function applyRemoteChanges(
 }
 
 async function performCloudSync(): Promise<CloudSyncOverview> {
-  const connection = await loadCloudConnection();
+  const connection = await loadConnectionWithFreshToken();
   if (!connection) return getCloudSyncOverview();
 
   const [state, outbox, metadata, jobs] = await Promise.all([
@@ -199,14 +238,10 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
         .filter((change) => acceptedIds.has(change.changeId))
         .map((change) => change.application.id)
     );
-    const protectedEntityIds = new Set(
-      response.conflicts.map((conflict) => conflict.entityId)
-    );
-
     const remainingOutbox = outbox.filter(
       (change) => !acceptedIds.has(change.changeId) && !conflictedIds.has(change.changeId)
     );
-    const nextJobs = applyRemoteChanges(jobs, response.changes, protectedEntityIds);
+    const nextJobs = applyRemoteChanges(jobs, response.changes);
     const nextRevisions = { ...metadata.revisions };
     for (const item of response.changes) {
       nextRevisions[item.application.id] = item.revision;
@@ -233,7 +268,7 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
     ]);
     return getCloudSyncOverview();
   } catch (error) {
-    const message = error instanceof Error ? error.message : "云端同步失败";
+    const message = syncErrorMessage(error, "云端同步失败");
     await saveCloudSyncState({ ...state, lastError: message });
     throw error;
   }
@@ -258,7 +293,7 @@ function takeSyncBatch(changes: ApplicationSyncChange[]): ApplicationSyncChange[
 }
 
 async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
-  const connection = await loadCloudConnection();
+  const connection = await loadConnectionWithFreshToken();
   if (!connection) return getCloudSyncOverview();
 
   const [state, initialOutbox, metadata, jobs] = await Promise.all([
@@ -300,14 +335,10 @@ async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
       for (const change of batch) {
         if (acceptedIds.has(change.changeId)) acceptedEntities.add(change.application.id);
       }
-      const protectedEntityIds = new Set(
-        response.conflicts.map((conflict) => conflict.entityId)
-      );
-
       outbox = outbox.filter(
         (change) => !acceptedIds.has(change.changeId) && !conflictedIds.has(change.changeId)
       );
-      nextJobs = applyRemoteChanges(nextJobs, response.changes, protectedEntityIds);
+      nextJobs = applyRemoteChanges(nextJobs, response.changes);
       for (const item of response.changes) {
         nextRevisions[item.application.id] = item.revision;
       }
@@ -335,7 +366,7 @@ async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
     ]);
     return getCloudSyncOverview();
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Cloud sync failed";
+    const message = syncErrorMessage(error, "Cloud sync failed");
     await saveCloudSyncState({ ...state, lastError: message });
     throw error;
   }

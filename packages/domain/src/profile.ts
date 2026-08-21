@@ -28,6 +28,9 @@ export interface ProfileExperience {
   startDate: string;
   endDate: string;
   description: string;
+  /** Semantic resume content used by templates and AI. `description` remains
+   * available for form autofill and backwards compatibility. */
+  contentBlocks?: ResumeContentBlock[];
   achievements?: string;
   refereeName?: string;
   refereeTitle?: string;
@@ -44,6 +47,7 @@ export interface ProfileProject {
   startDate: string;
   endDate: string;
   description: string;
+  contentBlocks?: ResumeContentBlock[];
   achievement?: string;
   link?: string;
 }
@@ -55,6 +59,30 @@ export interface ProfileCampusExperience {
   startDate: string;
   endDate: string;
   description: string;
+  contentBlocks?: ResumeContentBlock[];
+}
+
+export interface ResumeEvidenceLocation {
+  source: "pdf" | "docx" | "text" | "manual";
+  page?: number;
+  startLine?: number;
+  endLine?: number;
+  sourceText?: string;
+  confidence?: number;
+}
+
+/**
+ * A resume description is not a list of visual lines. These blocks preserve
+ * the semantic hierarchy that templates and the tailoring model need.
+ */
+export interface ResumeContentBlock {
+  id: string;
+  kind: "paragraph" | "bullet" | "project";
+  text?: string;
+  label?: string;
+  title?: string;
+  children?: ResumeContentBlock[];
+  evidence?: ResumeEvidenceLocation[];
 }
 
 export interface ProfileAward {

@@ -22,6 +22,15 @@ interface AuthContextValue {
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
+const handoffExchanges = new Map<string, ReturnType<typeof api.auth.exchangeHandoff>>();
+
+function exchangeHandoffOnce(code: string) {
+  const existing = handoffExchanges.get(code);
+  if (existing) return existing;
+  const request = api.auth.exchangeHandoff({ code });
+  handoffExchanges.set(code, request);
+  return request;
+}
 
 export function AuthProvider({ children }: PropsWithChildren) {
   const [status, setStatus] = useState<AuthStatus>("loading");
@@ -43,6 +52,25 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, []);
 
   useEffect(() => {
+    const url = new URL(window.location.href);
+    const handoffCode = url.searchParams.get("handoff");
+    if (handoffCode) {
+      let active = true;
+      exchangeHandoffOnce(handoffCode)
+        .then((session) => {
+          if (!active) return;
+          url.searchParams.delete("handoff");
+          window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+          establishSession(session);
+        })
+        .catch(() => {
+          if (active) setStatus("anonymous");
+        });
+      return () => {
+        active = false;
+      };
+    }
+
     const token = window.localStorage.getItem(ACCESS_TOKEN_KEY);
     if (!token) {
       setStatus("anonymous");
@@ -62,7 +90,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
     return () => {
       active = false;
     };
-  }, [logout]);
+  }, [establishSession, logout]);
 
   useEffect(() => {
     window.addEventListener("offerflow:unauthorized", logout);

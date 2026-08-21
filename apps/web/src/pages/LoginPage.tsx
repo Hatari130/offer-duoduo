@@ -67,7 +67,7 @@ export function LoginPage() {
         <img src={loginJourney} alt="" />
         <div className="auth-brand"><Logo /></div>
         <div className="auth-visual-copy">
-          <span>YOUR NEXT MOVE</span>
+          <span>下一步，正在发生</span>
           <h1>沿着你的节奏，<br />把每一次机会接住。</h1>
           <p>从准备、投递到复盘，让求职过程变得可见、可控。</p>
         </div>
@@ -78,7 +78,7 @@ export function LoginPage() {
         <div className="auth-card">
           <div className="auth-card-orbit" aria-hidden="true"><i /><i /><i /></div>
           <header>
-            <span className="auth-eyebrow">WELCOME TO OFFERFLOW</span>
+            <span className="auth-eyebrow">欢迎来到 OfferFlow</span>
             <h2>{mode === "login" ? "继续你的求职航程" : "建立你的求职工作台"}</h2>
             <p>{mode === "login" ? "登录后同步对话、机会与投递记录。" : "创建账号，在 Web 与浏览器插件之间同步进度。"}</p>
           </header>

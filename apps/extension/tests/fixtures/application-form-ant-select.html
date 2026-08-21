@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Ant Design 下拉框自动确认测试</title>
+    <style>
+      body { margin: 0; padding: 32px; font: 16px/1.5 Arial, sans-serif; }
+      .ant-form-item { width: 360px; }
+      .ant-form-item-label { margin-bottom: 8px; }
+      .ant-select { position: relative; width: 100%; }
+      .ant-select-selector { box-sizing: border-box; min-height: 42px; padding: 9px 12px; border: 1px solid #d9d9d9; }
+      .ant-select-selection-search-input { position: absolute; inset: 0; width: 100%; opacity: 0; }
+      .ant-select-dropdown { position: absolute; top: 96px; left: 32px; z-index: 20; width: 360px; padding: 4px; background: white; border: 1px solid #ddd; }
+      .ant-select-dropdown-hidden { display: none; }
+      .ant-select-item-option { min-height: 34px; padding: 7px 10px; }
+    </style>
+  </head>
+  <body>
+    <div class="ant-form-item">
+      <div class="ant-form-item-label"><label for="educationDegree">学历</label></div>
+      <div class="ant-form-item-control">
+        <div class="ant-select ant-select-single ant-select-show-arrow">
+          <div class="ant-select-selector">
+            <span class="ant-select-selection-search">
+              <input
+                id="educationDegree"
+                class="ant-select-selection-search-input"
+                role="combobox"
+                aria-expanded="false"
+                aria-controls="educationDegree_list"
+                aria-autocomplete="list"
+                value=""
+              />
+            </span>
+            <span class="ant-select-selection-placeholder">请选择</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ant-select-dropdown ant-select-dropdown-hidden">
+      <div id="educationDegree_list" role="listbox">
+        <div class="ant-select-item ant-select-item-option" title="本科">
+          <div class="ant-select-item-option-content">本科</div>
+        </div>
+        <div class="ant-select-item ant-select-item-option" title="硕士研究生">
+          <div class="ant-select-item-option-content">硕士研究生</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+
+      const root = document.querySelector(".ant-select");
+      const selector = root.querySelector(".ant-select-selector");
+      const input = root.querySelector("input[role='combobox']");
+      const dropdown = document.querySelector(".ant-select-dropdown");
+      const closeSelect = () => {
+        root.classList.remove("ant-select-open");
+        input.setAttribute("aria-expanded", "false");
+        dropdown.classList.add("ant-select-dropdown-hidden");
+      };
+      selector.addEventListener("click", () => {
+        root.classList.add("ant-select-open");
+        input.setAttribute("aria-expanded", "true");
+        dropdown.classList.remove("ant-select-dropdown-hidden");
+      });
+      dropdown.querySelectorAll(".ant-select-item-option").forEach((option) => {
+        option.addEventListener("click", () => {
+          root.querySelector(".ant-select-selection-placeholder")?.remove();
+          let selected = root.querySelector(".ant-select-selection-item");
+          if (!selected) {
+            selected = document.createElement("span");
+            selected.className = "ant-select-selection-item";
+            selector.appendChild(selected);
+          }
+          selected.textContent = option.textContent.trim();
+          selected.setAttribute("title", option.textContent.trim());
+          closeSelect();
+        });
+      });
+      document.body.addEventListener("click", (event) => {
+        if (!root.contains(event.target) && !dropdown.contains(event.target)) closeSelect();
+      });
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
+        {},
+        (scan) => {
+          const degreeField = scan.fields.find((field) => field.key === "degree");
+          listener(
+            {
+              type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+              fields: [degreeField],
+              fieldValues: { [degreeField.id]: "硕士" },
+              values: {},
+              delayMs: 0
+            },
+            {},
+            (fill) => {
+              const selected = root.querySelector(".ant-select-selection-item")?.textContent.trim() || "";
+              const openSelects = document.querySelectorAll(".ant-select-open").length;
+              const visibleDropdowns = Array.from(document.querySelectorAll(".ant-select-dropdown"))
+                .filter((item) => getComputedStyle(item).display !== "none").length;
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: { scan, fill, selected, openSelects, visibleDropdowns }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

@@ -19,3 +19,8 @@ conversation persistence, knowledge documents/chunks, citations and idempotent
 extension synchronization. The first knowledge implementation uses PostgreSQL
 full-text search so the base schema has no external extension requirement; the
 API retrieval boundary can later move to pgvector without changing Web contracts.
+
+`0003_interview_qa.sql` stores user-private interview transcripts and normalized
+question/answer extraction results under an application. Original audio is not
+persisted: it is held only for the active transcription job and must be discarded
+after the ASR provider returns or fails.

@@ -6,6 +6,7 @@ import test from "node:test";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
+const workspaceRequire = (id) => id === "@/shared/types" ? require("@offerflow/domain") : require(id);
 const source = readFileSync(
   new URL("../src/features/workspace/workspaceUtils.ts", import.meta.url),
   "utf8"
@@ -20,7 +21,7 @@ const moduleBox = { exports: {} };
 vm.runInNewContext(output, {
   module: moduleBox,
   exports: moduleBox.exports,
-  require,
+  require: workspaceRequire,
   console,
   crypto: globalThis.crypto
 });
@@ -40,12 +41,27 @@ test("capture validation rejects process and campaign labels as positions", () =
     "百度校园招聘",
     "实习生招聘",
     "合合信息招聘门户",
-    "投递记录"
+    "投递记录",
+    "应聘记录"
   ]) {
     assert.equal(isCapturePositionRejected(value), true, value);
   }
   assert.equal(isCapturePositionRejected("技术产品经理"), false);
   assert.equal(isCapturePositionRejected("AI面试产品经理"), false);
+});
+
+test("capture review preserves a deadline that has page evidence", () => {
+  const result = prepareCaptureForReview({
+    company: "蔚来",
+    position: "提前批-AI产品经理（创新产品）",
+    deadline: "2026-08-31",
+    responsibilities: [],
+    requirements: [],
+    sourceUrl: "https://nio.jobs.feishu.cn/campus/position/application",
+    sourceHost: "nio.jobs.feishu.cn",
+    confidence: 0.98
+  });
+  assert.equal(result.deadline, "2026-08-31");
 });
 
 test("progress evidence becomes same-card capture candidates", () => {

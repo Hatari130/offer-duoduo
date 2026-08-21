@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>编辑简历 - 度小满2027校园招聘</title>
+    <style>
+      body { margin: 0; padding: 28px; font: 16px/1.5 Arial, sans-serif; }
+      .applyFormModuleWrapper__fixture { display: grid; grid-template-columns: 150px 1fr; gap: 20px; margin-bottom: 24px; }
+      .applyFormModuleWrapper-right { display: grid; gap: 14px; }
+      .education-card { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; border: 1px solid #ddd; }
+      .ud-formily-item { display: grid; gap: 6px; }
+      .ud__native-input, .ud__select__selector { box-sizing: border-box; width: 100%; min-height: 40px; border: 1px solid #bbb; background: white; }
+      .ud__select__selector { padding: 9px 12px; }
+      .ud__select__dropdown { position: fixed; z-index: 50; width: 280px; padding: 4px; background: white; border: 1px solid #bbb; }
+      .ud__select__list__item { padding: 8px 10px; }
+      .throne-biz-date-range-picker-wrapper { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    </style>
+  </head>
+  <body>
+    <section class="applyFormModuleWrapper-windows applyFormModuleWrapper__fixture">
+      <div class="applyFormModuleWrapper-left">
+        <p class="applyFormModuleWrapper-text">基本信息</p>
+      </div>
+      <div class="applyFormModuleWrapper-right">
+        <div id="formily-item-name" class="ud-formily-item">
+          <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">姓名</span></div>
+          <input class="ud__native-input" data-form-field-id="name" data-form-field-name="name" data-form-field-i18n-name="姓名" />
+        </div>
+        <div id="formily-item-gender" class="ud-formily-item">
+          <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">性别</span></div>
+          <div class="ud__select" data-select="gender">
+            <div class="ud__select__selector ud__select__selector-readOnly">
+              <div class="ud__select__selector__content">
+                <div class="ud__select__selector__placeholder">请选择</div>
+                <input class="ud__select__selector__search__input ud__native-input" role="combobox" type="search" readonly />
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="formily-item-current_city" class="ud-formily-item">
+          <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">所在地点</span></div>
+          <div class="ud__select" data-select="city">
+            <div class="ud__select__selector">
+              <div class="ud__select__selector__content">
+                <div class="ud__select__selector__placeholder">请选择</div>
+                <input class="ud__select__selector__search__input ud__native-input" role="combobox" type="search" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="education-module" class="applyFormModuleWrapper-windows applyFormModuleWrapper__fixture">
+      <div class="applyFormModuleWrapper-left">
+        <p class="applyFormModuleWrapper-text">教育经历</p>
+      </div>
+      <div class="applyFormModuleWrapper-right">
+        <div id="education-cards"></div>
+        <div class="apply-form-array-card-operate__fixture"><button id="add-education" type="button">添加</button></div>
+      </div>
+    </section>
+
+    <div id="select-popups"></div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+
+      const selectOptions = {
+        gender: ["男", "女", "保密"],
+        city: ["北京", "上海", "南京"],
+        degree: ["本科", "硕士", "博士"]
+      };
+      const bindSelect = (root) => {
+        if (root.dataset.bound === "true") return;
+        root.dataset.bound = "true";
+        const kind = root.dataset.select;
+        const selector = root.querySelector(".ud__select__selector");
+        const input = root.querySelector("input[role='combobox']");
+        const popup = document.createElement("div");
+        popup.className = "ud__select__dropdown";
+        popup.style.display = "none";
+        popup.innerHTML = `<div class="ud__select__list">${selectOptions[kind].map((option) =>
+          `<div class="ud__select__list__item"><span>${option}</span></div>`
+        ).join("")}</div>`;
+        document.getElementById("select-popups").appendChild(popup);
+        selector.addEventListener("click", () => {
+          document.querySelectorAll(".ud__select__dropdown").forEach((item) => { item.style.display = "none"; });
+          selector.classList.add("ud__select__selector-open");
+          popup.style.display = "block";
+        });
+        popup.querySelectorAll(".ud__select__list__item").forEach((option) => {
+          option.addEventListener("click", () => {
+            root.querySelector(".ud__select__selector__placeholder")?.remove();
+            let selected = root.querySelector(".ud__select__selector__selectItem");
+            if (!selected) {
+              selected = document.createElement("div");
+              selected.className = "ud__select__selector__selectItem";
+              selector.querySelector(".ud__select__selector__content").prepend(selected);
+            }
+            selected.textContent = option.textContent.trim();
+            input.value = "";
+            selector.classList.remove("ud__select__selector-open");
+            selector.classList.add("ud__select__selector-not-empty");
+            popup.style.display = "none";
+          });
+        });
+      };
+
+      const educationCards = document.getElementById("education-cards");
+      let educationAdds = 0;
+      const addEducationCard = () => {
+        const index = educationCards.children.length;
+        const card = document.createElement("article");
+        card.className = "apply-form-array-card__fixture education-card";
+        card.innerHTML = `
+          <div id="formily-item-school-${index}" class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">学校名称</span></div>
+            <input class="ud__native-input" data-form-field-id="school" data-form-field-name="school" data-form-field-i18n-name="学校名称" />
+          </div>
+          <div id="formily-item-degree-${index}" class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">学历</span></div>
+            <div class="ud__select" data-select="degree">
+              <div class="ud__select__selector ud__select__selector-readOnly">
+                <div class="ud__select__selector__content">
+                  <div class="ud__select__selector__placeholder">请选择</div>
+                  <input class="ud__select__selector__search__input ud__native-input" role="combobox" type="search" readonly />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="formily-item-field_of_study-${index}" class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">专业</span></div>
+            <input class="ud__native-input" data-form-field-id="field_of_study" data-form-field-name="field_of_study" data-form-field-i18n-name="专业" />
+          </div>
+          <div id="formily-item-start_end_time-${index}" class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">起止时间</span></div>
+            <div class="throne-biz-date-range-picker-wrapper">
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" /></div>
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" /></div>
+            </div>
+          </div>`;
+        educationCards.appendChild(card);
+        card.querySelectorAll(".ud__select").forEach(bindSelect);
+        const dateInputs = card.querySelectorAll(".throne-biz-date-range-picker-wrapper input");
+        const props = {
+          "data-form-field-id": "start_end_time",
+          "data-form-field-name": "start_end_time",
+          value: [undefined, undefined],
+          onChange: (range) => {
+            props.value = range;
+            dateInputs[0].value = range[0] || "";
+            dateInputs[1].value = range[1] || "";
+          }
+        };
+        dateInputs[0][`__reactInternalInstance$fixture${index}`] = {
+          memoizedProps: {},
+          return: { memoizedProps: {}, return: { memoizedProps: props, return: null } }
+        };
+      };
+      addEducationCard();
+      document.querySelectorAll(".ud__select").forEach(bindSelect);
+      document.getElementById("add-education").addEventListener("click", () => {
+        educationAdds += 1;
+        addEducationCard();
+      });
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
+        {},
+        (scan) => {
+          const snapshots = [
+            {
+              fullName: "林知夏", gender: "女", currentCity: "南京",
+              school: "南京大学", degree: "硕士", major: "城乡规划",
+              educationStartDate: "2024-09", educationEndDate: "2027-06"
+            },
+            {
+              school: "北京林业大学", degree: "本科", major: "城乡规划",
+              educationStartDate: "2018-09", educationEndDate: "2023-06"
+            }
+          ];
+          const fieldValues = Object.fromEntries(scan.fields.map((field) => [
+            field.id,
+            field.type === "date-range"
+              ? `${snapshots[0].educationStartDate}\u001f${snapshots[0].educationEndDate}`
+              : snapshots[0][field.key] || ""
+          ]));
+          listener(
+            {
+              type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+              fields: scan.fields,
+              fieldValues,
+              profileSnapshots: snapshots,
+              repeatCounts: { education: 2 },
+              repeatPlan: {},
+              fillDynamicFields: true,
+              maxRounds: 5,
+              delayMs: 0
+            },
+            {},
+            (fill) => {
+              const education = Array.from(document.querySelectorAll(".education-card")).map((card) => ({
+                school: card.querySelector("[data-form-field-name='school']").value,
+                degree: card.querySelector(".ud__select__selector__selectItem")?.textContent.trim() || "",
+                major: card.querySelector("[data-form-field-name='field_of_study']").value,
+                dates: Array.from(card.querySelectorAll(".throne-biz-date-range-picker-wrapper input")).map((input) => input.value)
+              }));
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: {
+                  scan,
+                  fill,
+                  educationAdds,
+                  name: document.querySelector("[data-form-field-name='name']").value,
+                  gender: document.querySelector("[data-select='gender'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                  city: document.querySelector("[data-select='city'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                  education,
+                  openDropdowns: Array.from(document.querySelectorAll(".ud__select__dropdown")).filter((item) => getComputedStyle(item).display !== "none").length
+                }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

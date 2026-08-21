@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>动态字段与弹层确认测试</title>
+    <style>
+      body { margin: 0; padding: 28px; font: 16px/1.5 Arial, sans-serif; }
+      .form-item { display: grid; gap: 8px; width: 420px; margin-bottom: 18px; }
+      [role="combobox"], input { min-height: 42px; padding: 0 12px; border: 1px solid #bbb; background: white; }
+      .custom-dropdown { position: fixed; left: 28px; top: 105px; z-index: 50; width: 320px; padding: 12px; border: 1px solid #aaa; background: white; }
+      .custom-dropdown[hidden] { display: none; }
+      [role="option"] { display: block; width: 100%; padding: 9px; text-align: left; }
+      .popup-footer { display: flex; justify-content: flex-end; margin-top: 12px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h2>个人信息</h2>
+      <div class="form-item">
+        <label id="gender-label">性别</label>
+        <div id="gender-control" role="combobox" aria-labelledby="gender-label" aria-expanded="false" aria-valuetext="" tabindex="0">请选择</div>
+      </div>
+      <div id="dynamic-fields"></div>
+    </main>
+
+    <div id="gender-popup" class="custom-dropdown" role="dialog" aria-label="性别选择" hidden>
+      <div role="listbox">
+        <button type="button" role="option">男</button>
+        <button type="button" role="option">女</button>
+      </div>
+      <div class="popup-footer"><button id="gender-confirm" type="button">确定</button></div>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+      const control = document.getElementById("gender-control");
+      const popup = document.getElementById("gender-popup");
+      let pendingGender = "";
+      let confirmClicks = 0;
+      control.addEventListener("click", () => {
+        popup.hidden = false;
+        control.setAttribute("aria-expanded", "true");
+      });
+      popup.querySelectorAll("[role='option']").forEach((option) => {
+        option.addEventListener("click", () => {
+          pendingGender = option.textContent.trim();
+          popup.querySelectorAll("[role='option']").forEach((candidate) => {
+            candidate.setAttribute("aria-selected", String(candidate === option));
+          });
+        });
+      });
+      document.getElementById("gender-confirm").addEventListener("click", () => {
+        confirmClicks += 1;
+        control.setAttribute("aria-valuetext", pendingGender);
+        control.textContent = pendingGender;
+        control.setAttribute("aria-expanded", "false");
+        popup.hidden = true;
+        setTimeout(() => {
+          if (document.getElementById("current-city")) return;
+          const item = document.createElement("div");
+          item.className = "form-item";
+          item.innerHTML = '<label for="current-city">现居城市</label><input id="current-city" name="currentCity" />';
+          document.getElementById("dynamic-fields").appendChild(item);
+        }, 55);
+      });
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
+        {},
+        (scan) => {
+          const profileSnapshots = [{ gender: "男", currentCity: "南京" }];
+          const fieldValues = Object.fromEntries(scan.fields.map((field) => [field.id, profileSnapshots[0][field.key] || ""]));
+          listener(
+            {
+              type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+              fields: scan.fields,
+              fieldValues,
+              profileSnapshots,
+              fillDynamicFields: true,
+              maxRounds: 5,
+              delayMs: 0
+            },
+            {},
+            (fill) => {
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: {
+                  scan,
+                  fill,
+                  gender: control.getAttribute("aria-valuetext"),
+                  city: document.getElementById("current-city")?.value || "",
+                  confirmClicks,
+                  popupOpen: !popup.hidden
+                }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

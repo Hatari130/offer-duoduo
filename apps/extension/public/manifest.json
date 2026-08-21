@@ -8,6 +8,7 @@
     "alarms",
     "identity",
     "storage",
+    "unlimitedStorage",
     "scripting",
     "sidePanel"
   ],
@@ -32,7 +33,7 @@
         "http://127.0.0.1:8787/*",
         "http://localhost:8787/*"
       ],
-      "js": ["extraction-rules.js", "form-adapters.js", "content.js"],
+      "js": ["extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"],
       "run_at": "document_idle"
     }
   ],

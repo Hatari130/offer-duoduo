@@ -127,7 +127,7 @@ export default function ResumeLibraryPanel({ onOpenManager, onSaveProfile }: Res
   return (
     <section className="overlay-resume-library">
       <div className="overlay-resume-intro">
-        <div><span className="overlay-resume-kicker">RESUME LIBRARY</span><h2>简历库</h2><p>按岗位自动收纳，支持折叠文件夹、切换和删除投递版本。</p></div>
+        <div><span className="overlay-resume-kicker">简历档案</span><h2>简历库</h2><p>按岗位自动收纳，支持折叠文件夹、切换和删除投递版本。</p></div>
         <button className="overlay-resume-open" onClick={onOpenManager}><FolderOpen size={15} />打开简历中心</button>
       </div>
 

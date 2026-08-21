@@ -6,6 +6,7 @@ import test from "node:test";
 
 const require = createRequire(import.meta.url);
 const ts = require("typescript");
+const workspaceRequire = (id) => id === "@/shared/types" ? require("@offerflow/domain") : require(id);
 const source = readFileSync(
   new URL("../src/integrations/deepseek/deepseek.ts", import.meta.url),
   "utf8"
@@ -30,13 +31,13 @@ const workspaceBox = { exports: {} };
 vm.runInNewContext(workspaceOutput, {
   module: workspaceBox,
   exports: workspaceBox.exports,
-  require,
+  require: workspaceRequire,
   console,
   crypto: globalThis.crypto
 });
 const moduleBox = { exports: {} };
 const deepSeekRequire = (id) =>
-  id === "@/features/workspace/workspaceUtils" ? workspaceBox.exports : require(id);
+  id === "@/features/workspace/workspaceUtils" ? workspaceBox.exports : workspaceRequire(id);
 vm.runInNewContext(output, {
   module: moduleBox,
   exports: moduleBox.exports,

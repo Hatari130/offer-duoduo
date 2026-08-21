@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import type { ChatMessage } from "@offerflow/domain";
-import { Check, Copy, RefreshCw, Sparkles } from "lucide-react";
+import { Check, Copy, RefreshCw, Waypoints } from "lucide-react";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -25,7 +25,7 @@ export function MessageList({ messages, copiedMessageId, onCopy, onRetry }: Mess
           aria-busy={message.status === "streaming"}
         >
           {message.role === "assistant" && (
-            <div className="assistant-avatar" aria-hidden="true"><Sparkles size={16} /></div>
+            <div className="assistant-avatar" aria-hidden="true"><Waypoints size={16} /></div>
           )}
           <div className="message-body">
             {message.attachments.length > 0 && (

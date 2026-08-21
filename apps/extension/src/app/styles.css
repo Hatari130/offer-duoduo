@@ -1,17 +1,19 @@
+@import "@offerflow/ui/tokens.css";
+
 :root {
-  font-family: "Segoe UI Variable", "Microsoft YaHei", sans-serif;
-  color: #17221d;
-  background: #f1f0e9;
+  font-family: var(--of-font-sans);
+  color: var(--of-text);
+  background: var(--of-canvas);
   font-synthesis: none;
-  --ink: #17221d;
-  --paper: #f7f5ee;
-  --muted: #767c75;
-  --line: #d7d6cd;
-  --acid: #d9ff43;
-  --forest: #183d2f;
-  --coral: #ff6b4a;
-  --blue: #5077ff;
-  --shadow: 0 14px 35px rgba(23, 34, 29, 0.11);
+  --ink: var(--of-ink);
+  --paper: var(--of-surface);
+  --muted: var(--of-text-muted);
+  --line: var(--of-line);
+  --acid: var(--of-rust);
+  --forest: var(--of-ink);
+  --coral: var(--of-rust);
+  --blue: var(--of-info-blue);
+  --shadow: var(--of-shadow-float);
 }
 
 * {
@@ -22,18 +24,15 @@ html,
 body,
 #root {
   width: 100%;
-  min-width: 360px;
+  min-width: 320px;
   min-height: 100%;
   margin: 0;
 }
 
 body {
   min-height: 100vh;
-  background:
-    linear-gradient(rgba(23, 34, 29, 0.035) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(23, 34, 29, 0.035) 1px, transparent 1px),
-    #f1f0e9;
-  background-size: 24px 24px;
+  color: var(--of-text);
+  background: var(--of-canvas);
 }
 
 button,
@@ -52,23 +51,23 @@ button {
 }
 
 .overlay-shell {
-  --overlay-text: #202321;
-  --overlay-muted: #777c78;
-  --overlay-line: #e8e9e6;
-  --overlay-soft: #f7f8f6;
-  --overlay-blue: #3674ee;
+  --overlay-text: var(--of-text);
+  --overlay-muted: var(--of-text-muted);
+  --overlay-line: var(--of-line);
+  --overlay-soft: var(--of-surface-muted);
+  --overlay-blue: var(--of-rust);
   width: 100%;
   min-width: 320px;
   min-height: 100vh;
   color: var(--overlay-text);
-  background: #fff;
+  background: var(--of-canvas);
 }
 
 .overlay-app,
 .overlay-capture-screen {
   position: relative;
   min-height: 100vh;
-  background: #fff;
+  background: var(--of-canvas);
 }
 
 .overlay-header {
@@ -82,9 +81,8 @@ button {
   align-items: center;
   justify-content: space-between;
   padding: 0 18px;
-  background: rgba(255, 255, 255, 0.96);
+  background: var(--of-surface);
   border-bottom: 1px solid var(--overlay-line);
-  backdrop-filter: blur(14px);
 }
 
 .overlay-identity,
@@ -187,14 +185,14 @@ button {
 }
 
 .overlay-capture-card strong {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-capture-card small {
   overflow: hidden;
   margin-top: 3px;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -205,7 +203,7 @@ button {
   background: var(--overlay-text);
   border: 0;
   border-radius: 20px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -279,7 +277,7 @@ button {
 .overlay-page-title p {
   margin: 9px 0 0;
   color: var(--overlay-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.65;
 }
 
@@ -293,7 +291,7 @@ button {
 
 .overlay-summary-row span {
   color: var(--overlay-muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -302,7 +300,7 @@ button {
   color: var(--overlay-blue);
   background: transparent;
   border: 0;
-  font-size: 8px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -314,7 +312,7 @@ button {
 }
 
 .overlay-section-heading > span {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
 }
 
@@ -323,7 +321,7 @@ button {
   color: var(--overlay-blue);
   background: transparent;
   border: 0;
-  font-size: 8px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -494,14 +492,14 @@ button {
 }
 
 .overlay-job-copy strong {
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 680;
 }
 
 .overlay-job-copy small,
 .overlay-job-meta {
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-job-copy small {
@@ -529,19 +527,19 @@ button {
 }
 
 .overlay-agenda-list > button > span:nth-child(3) strong {
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .overlay-agenda-list small {
   margin-top: 3px;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-empty {
   padding: 24px 10px;
   color: #9b9f9c;
-  font-size: 9px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -574,7 +572,7 @@ button {
   align-items: center;
   gap: 5px;
   color: #c28719;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 750;
 }
 
@@ -583,7 +581,7 @@ button {
   overflow: hidden;
   margin-top: 4px;
   color: var(--overlay-text);
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -595,7 +593,7 @@ button {
   background: #fff7df;
   border: 1px solid #f4e4b8;
   border-radius: 999px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -742,7 +740,7 @@ button {
   min-width: 0;
   margin-top: 10px;
   color: #5e655f;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .overlay-favorite-company > span:last-child {
@@ -760,7 +758,7 @@ button {
   color: #fff;
   background: #d73536;
   border-radius: 5px;
-  font-size: 7px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -780,7 +778,7 @@ button {
   overflow: hidden;
   margin: 4px 0 0;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -799,7 +797,7 @@ button {
   border: 1px solid #e1e4e0;
   border-radius: 999px;
   box-shadow: 0 5px 12px rgba(28, 34, 30, 0.08);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition: transform 0.16s ease, box-shadow 0.16s ease;
@@ -823,7 +821,7 @@ button {
   background: #fafbf9;
   border: 1px dashed #dfe3de;
   border-radius: 14px;
-  font-size: 10px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -843,7 +841,7 @@ button {
 
 .overlay-progress-heading span {
   color: var(--overlay-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 @keyframes favorite-card-in {
@@ -911,7 +909,7 @@ button {
   background: transparent;
   border: 0;
   outline: none;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .opportunity-filters {
@@ -938,7 +936,7 @@ button {
   background: #fff;
   border: 1px solid var(--overlay-line);
   border-radius: 999px;
-  font-size: 9px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -951,7 +949,7 @@ button {
 .opportunity-filters small {
   color: inherit;
   opacity: 0.72;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .opportunity-error {
@@ -967,13 +965,13 @@ button {
 }
 
 .opportunity-error strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .opportunity-error span {
   grid-column: 1;
   overflow: hidden;
-  font-size: 8px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -985,7 +983,7 @@ button {
   color: #8e4136;
   background: transparent;
   border: 0;
-  font-size: 9px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -1051,13 +1049,13 @@ button {
 }
 
 .opportunity-card-topline strong {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .opportunity-card-topline small {
   margin-top: 3px;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .opportunity-card-topline em {
@@ -1065,7 +1063,7 @@ button {
   color: #59605b;
   background: #f2f4f2;
   border-radius: 999px;
-  font-size: 8px;
+  font-size: 12px;
   font-style: normal;
   white-space: nowrap;
 }
@@ -1094,7 +1092,7 @@ button {
   color: #626863;
   background: #f5f6f4;
   border-radius: 5px;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .opportunity-card-meta {
@@ -1110,12 +1108,12 @@ button {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .opportunity-card-meta small {
   overflow: hidden;
-  font-size: 8px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -1138,7 +1136,7 @@ button {
   background: #fff;
   border: 1px solid var(--overlay-line);
   border-radius: 8px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 650;
   cursor: pointer;
 }
@@ -1183,7 +1181,7 @@ button {
   max-width: 250px;
   margin: 7px 0 0;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -1197,14 +1195,14 @@ button {
   background: var(--overlay-text);
   border: 0;
   border-radius: 8px;
-  font-size: 9px;
+  font-size: 12px;
   cursor: pointer;
 }
 
 .opportunity-footnote {
   padding: 14px 0 4px;
   color: #a0a4a1;
-  font-size: 8px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -1269,7 +1267,7 @@ button {
 .overlay-calendar-toolbar > div small {
   margin-top: 4px;
   color: var(--overlay-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-calendar-toolbar > span {
@@ -1299,7 +1297,7 @@ button {
   width: auto;
   padding: 0 8px;
   color: var(--overlay-blue);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -1315,7 +1313,7 @@ button {
   background: #fafbf9;
   border-top: 1px solid var(--overlay-line);
   border-bottom: 1px solid var(--overlay-line);
-  font-size: 9px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -1337,7 +1335,7 @@ button {
   background: transparent;
   border: 1px solid transparent;
   border-radius: 10px;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -1393,7 +1391,7 @@ button {
   gap: 14px;
   padding: 8px 15px 12px;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .overlay-calendar-legend span {
@@ -1420,7 +1418,7 @@ button {
 
 .overlay-calendar-selection-title span {
   color: var(--overlay-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-calendar-empty {
@@ -1456,7 +1454,7 @@ button {
 
 .overlay-location-overview span {
   color: var(--overlay-muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-location-overview > i {
@@ -1494,7 +1492,7 @@ button {
 .overlay-location-map-heading small {
   margin-top: 4px;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .overlay-location-map-heading em {
@@ -1502,7 +1500,7 @@ button {
   color: #666d68;
   background: #f1f3f1;
   border-radius: 999px;
-  font-size: 9px;
+  font-size: 12px;
   font-style: normal;
 }
 
@@ -1532,7 +1530,7 @@ button {
 
 .overlay-map-status {
   fill: #969c97;
-  font-size: 11px;
+  font-size: 12px;
   text-anchor: middle;
 }
 
@@ -1578,7 +1576,7 @@ button {
 .overlay-map-label {
   fill: #343936;
   font-family: "Microsoft YaHei", sans-serif;
-  font-size: 8.8px;
+  font-size: 12px;
   font-weight: 650;
   paint-order: stroke;
   stroke: #fff;
@@ -1595,12 +1593,12 @@ button {
   padding: 9px 2px 12px;
   color: #929893;
   border-top: 1px solid #e6e9e6;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-location-map-source strong {
   color: #747b76;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -1621,7 +1619,7 @@ button {
   background: #fff;
   border: 1px solid #dfe2de;
   border-radius: 999px;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
   transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease;
 }
@@ -1659,7 +1657,7 @@ button {
 
 .overlay-resume-kicker {
   color: #a1a69f;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.15em;
 }
@@ -1675,7 +1673,7 @@ button {
 .overlay-resume-intro p {
   margin: 0;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -1688,7 +1686,7 @@ button {
   background: #FFC323;
   border: 0;
   border-radius: 7px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 750;
 }
 
@@ -1726,13 +1724,13 @@ button {
 .overlay-resume-current small,
 .overlay-resume-current span {
   color: #666666;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-resume-current strong {
   overflow: hidden;
   color: #111111;
-  font-size: 11px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1782,12 +1780,12 @@ button {
 }
 
 .overlay-resume-card strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-resume-card small {
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-resume-selected,
@@ -1796,7 +1794,7 @@ button {
   gap: 4px;
   padding: 6px 7px;
   border-radius: 6px;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 750;
 }
 
@@ -1896,7 +1894,7 @@ button {
 
 .overlay-resume-folder-head > strong {
   overflow: hidden;
-  font-size: 10px;
+  font-size: 12px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1907,7 +1905,7 @@ button {
   color: var(--overlay-muted);
   background: #f1f2f0;
   border-radius: 999px;
-  font-size: 8px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -1952,12 +1950,12 @@ button {
 
 .overlay-resume-empty strong {
   color: var(--overlay-text);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-resume-empty span {
   max-width: 240px;
-  font-size: 9px;
+  font-size: 12px;
   line-height: 1.5;
 }
 
@@ -1971,7 +1969,7 @@ button {
   padding-top: 11px;
   color: #879087;
   border-top: 1px solid #e4e7e3;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-resume-footer > svg {
@@ -2000,7 +1998,7 @@ button {
   color: #747a75;
   background: #f0f2ef;
   border-radius: 999px;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .overlay-location-tags button.active small {
@@ -2026,7 +2024,7 @@ button {
 
 .overlay-location-result-title span {
   color: var(--overlay-muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-location-result .overlay-job-list {
@@ -2054,13 +2052,13 @@ button {
 }
 
 .overlay-connection-list strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-connection-list small {
   margin-top: 3px;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-connection-list i {
@@ -2084,7 +2082,7 @@ button {
 
 .opportunity-feed-settings label {
   display: block;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -2096,7 +2094,7 @@ button {
   border: 1px solid #dfe2de;
   border-radius: 8px;
   outline: none;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .opportunity-feed-settings input:focus {
@@ -2107,8 +2105,25 @@ button {
 .opportunity-feed-settings p {
   margin: 8px 0 0;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
   line-height: 1.55;
+}
+
+.opportunity-feed-settings code,
+.opportunity-source-field code {
+  display: block;
+  margin-top: 8px;
+  padding: 9px 10px;
+  overflow: hidden;
+  color: var(--of-text-muted, #5f6762);
+  background: var(--of-surface-muted, #efeee7);
+  border: 1px solid var(--of-line, #dfe2de);
+  border-radius: 8px;
+  font-family: "Cascadia Code", Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.5;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .opportunity-feed-settings > button {
@@ -2121,7 +2136,7 @@ button {
   background: var(--overlay-text);
   border: 0;
   border-radius: 8px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -2183,7 +2198,7 @@ button {
   border: 0;
   border-radius: 10px;
   box-shadow: 0 8px 26px rgba(20, 24, 22, 0.18);
-  font-size: 9px;
+  font-size: 12px;
   text-align: left;
   cursor: pointer;
 }
@@ -2196,14 +2211,14 @@ button {
   color: var(--overlay-text);
   background: transparent;
   border: 0;
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
 }
 
 .overlay-capture-screen .overlay-header > strong {
   position: absolute;
   left: 50%;
-  font-size: 10px;
+  font-size: 12px;
   transform: translateX(-50%);
 }
 
@@ -2302,7 +2317,7 @@ button {
 
 .overlay-shell .overlay-capture-card small {
   margin-top: 4px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-capture-card > button {
@@ -2347,7 +2362,7 @@ button {
 }
 
 .overlay-shell .overlay-summary-row button {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-section-heading {
@@ -2359,7 +2374,7 @@ button {
 }
 
 .overlay-shell .overlay-section-heading > button {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-flow-list {
@@ -2404,7 +2419,7 @@ button {
 
 .overlay-shell .overlay-job-copy small,
 .overlay-shell .overlay-job-meta {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-job-copy small {
@@ -2436,7 +2451,7 @@ button {
 
 .overlay-shell .overlay-favorites-count {
   padding: 6px 9px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-favorites-grid {
@@ -2485,7 +2500,7 @@ button {
 .overlay-shell .overlay-favorite-company {
   gap: 7px;
   margin-top: 12px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-favorite-company-mark {
@@ -2493,7 +2508,7 @@ button {
   height: 22px;
   padding: 0 4px;
   border-radius: 6px;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-favorite-card h2 {
@@ -2503,7 +2518,7 @@ button {
 
 .overlay-shell .overlay-favorite-card p {
   margin-top: 5px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-favorite-open {
@@ -2548,7 +2563,7 @@ button {
 
 .overlay-shell .overlay-agenda-list small,
 .overlay-shell .overlay-empty {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-empty {
@@ -2575,7 +2590,7 @@ button {
 }
 
 .overlay-shell .overlay-connection-list small {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .opportunity-feed-settings {
@@ -2610,7 +2625,7 @@ button {
 .overlay-shell .opportunity-filters button {
   min-height: 32px;
   padding: 0 12px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .opportunity-filters small,
@@ -2619,7 +2634,7 @@ button {
 .overlay-shell .opportunity-card-meta small,
 .overlay-shell .opportunity-footnote,
 .overlay-shell .opportunity-feed-settings p {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-shell .opportunity-card {
@@ -2643,7 +2658,7 @@ button {
 
 .overlay-shell .opportunity-card-topline em {
   padding: 6px 9px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-shell .opportunity-card h2 {
@@ -2653,7 +2668,7 @@ button {
 .overlay-shell .opportunity-card-meta > span,
 .overlay-shell .opportunity-card-actions button,
 .overlay-shell .opportunity-empty p {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .opportunity-card-actions button {
@@ -2669,7 +2684,7 @@ button {
 .overlay-shell .opportunity-feed-settings label,
 .overlay-shell .opportunity-feed-settings input,
 .overlay-shell .opportunity-feed-settings > button {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .overlay-toolbar {
@@ -2719,7 +2734,7 @@ button {
 
 .overlay-shell .capture-hero .eyebrow {
   color: var(--overlay-blue);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .capture-hero h1 {
@@ -2858,7 +2873,7 @@ button {
 .overlay-shell .candidate-main small,
 .overlay-shell .candidate-stage,
 .overlay-shell .candidate-mode {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .overlay-shell .candidate-stage,
@@ -2891,7 +2906,7 @@ button {
 
 .overlay-shell .drawer-header .eyebrow {
   color: var(--overlay-muted);
-  font-size: 11px;
+  font-size: 12px;
   letter-spacing: 0.08em;
 }
 
@@ -2952,7 +2967,7 @@ button {
 .overlay-shell .timeline-item span {
   margin-top: 5px;
   font-family: inherit;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .overlay-shell .drawer-footer {
@@ -2986,7 +3001,7 @@ button {
 .drawer-delete-confirm span {
   margin-top: 3px;
   color: #8a6864;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .button--danger,
@@ -3052,19 +3067,19 @@ button {
   align-items: center;
   gap: 5px;
   padding: 7px 9px;
-  color: #4f735b;
-  background: #edf4ee;
-  border: 1px solid #dce8de;
+  color: var(--overlay-text);
+  background: var(--of-surface);
+  border: 1px solid var(--overlay-line);
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
 }
 
 .profile-resume-switcher .profile-manager-link:hover {
-  color: #3f654d;
-  background: #e4efe6;
-  border-color: #cfe0d2;
+  color: var(--overlay-text);
+  background: var(--overlay-soft);
+  border-color: #cfd4d0;
 }
 
 .profile-resume-switcher .profile-manager-link:active {
@@ -3076,11 +3091,10 @@ button {
   grid-template-columns: minmax(94px, 1fr) minmax(118px, 176px) auto auto;
   gap: 8px;
   align-items: center;
-  margin-top: 0;
-  padding: 11px 12px;
-  background: #f7f9f7;
-  border: 1px solid #e1e7e2;
-  border-radius: 14px;
+  margin-top: 24px;
+  padding: 18px 0 14px;
+  background: transparent;
+  border-top: 1px solid var(--overlay-line);
 }
 
 .profile-resume-switcher-copy,
@@ -3100,8 +3114,8 @@ button {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  color: #5a7661;
-  background: #e9f0ea;
+  color: var(--overlay-text);
+  background: var(--overlay-soft);
   border-radius: 8px;
 }
 
@@ -3120,30 +3134,30 @@ button {
 }
 
 .profile-resume-switcher-copy strong {
-  color: #2c322e;
-  font-size: 10px;
+  color: var(--overlay-text);
+  font-size: 13px;
 }
 
 .profile-resume-switcher-copy small {
-  color: #78817a;
-  font-size: 9px;
+  color: var(--overlay-muted);
+  font-size: 12px;
 }
 
 .profile-resume-switcher select {
   width: 100%;
   min-width: 0;
   padding: 8px 9px;
-  color: #303631;
-  background: #fff;
-  border: 1px solid #dfe6df;
+  color: var(--overlay-text);
+  background: var(--of-surface);
+  border: 1px solid var(--overlay-line);
   border-radius: 8px;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .profile-resume-switcher select:focus {
-  outline: 2px solid rgba(92, 133, 99, 0.2);
+  outline: 2px solid rgba(37, 41, 39, 0.14);
   outline-offset: 1px;
-  border-color: #9fbea5;
+  border-color: #aeb5b0;
 }
 
 .profile-resume-switcher select:disabled {
@@ -3158,14 +3172,14 @@ button {
   min-height: 26px;
   padding: 5px 7px;
   border-radius: 999px;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 750;
   white-space: nowrap;
 }
 
 .profile-sync-state.synced {
-  color: #497057;
-  background: #edf6ee;
+  color: var(--overlay-muted);
+  background: var(--overlay-soft);
 }
 
 .profile-sync-state.pending {
@@ -3218,7 +3232,7 @@ button {
 .profile-autofill-card small {
   margin-top: 4px;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .profile-autofill-card > button,
@@ -3229,7 +3243,7 @@ button {
   background: var(--overlay-text);
   border: 0;
   border-radius: 9px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -3273,7 +3287,7 @@ button {
   background: #f4f6f3;
   border: 0;
   border-radius: 9px;
-  font-size: 10px;
+  font-size: 12px;
   text-align: left;
   cursor: pointer;
 }
@@ -3304,7 +3318,7 @@ button {
     align-items: center;
     justify-content: space-between;
     color: #247653;
-    font-size: 10px;
+    font-size: 12px;
     font-weight: 700;
   }
 
@@ -3330,7 +3344,7 @@ button {
     margin-top: 6px;
     overflow: hidden;
     color: #5a7968;
-    font-size: 9px;
+    font-size: 12px;
     white-space: nowrap;
     text-overflow: ellipsis;
   }
@@ -3390,14 +3404,14 @@ button {
 }
 
 .profile-match-list strong {
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .profile-match-list small {
   overflow: hidden;
   margin-top: 3px;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -3406,7 +3420,7 @@ button {
   max-width: 110px;
   overflow: hidden;
   color: #656c67;
-  font-size: 9px;
+  font-size: 12px;
   font-style: normal;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -3415,7 +3429,7 @@ button {
 .profile-match-list em small {
   margin-top: 3px;
   color: inherit;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .profile-fill-button {
@@ -3426,13 +3440,13 @@ button {
   justify-content: center;
   gap: 6px;
   margin-top: 13px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .profile-match-panel > p {
   margin: 9px 0 0;
   color: var(--overlay-muted);
-  font-size: 8px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -3483,7 +3497,7 @@ button {
 .profile-section-title small {
   margin-top: 4px;
   color: var(--overlay-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .profile-section-chevron {
@@ -3518,7 +3532,7 @@ button {
   background: #fff;
   border: 1px solid #dfe2de;
   border-radius: 8px;
-  font-size: 9px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -3564,7 +3578,7 @@ button {
 .profile-grid label > span,
 .profile-long-fields label > span {
   color: #656b67;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 650;
 }
 
@@ -3580,7 +3594,7 @@ button {
   border: 1px solid #dfe2de;
   border-radius: 9px;
   outline: none;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .profile-grid input:focus,
@@ -3625,7 +3639,7 @@ button {
 .profile-entry-toggle strong {
   min-width: 0;
   overflow: hidden;
-  font-size: 11px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -3642,7 +3656,7 @@ button {
 }
 
 .profile-entry-remove {
-  font-size: 11px;
+  font-size: 12px;
   width: 28px;
   height: 28px;
   display: grid;
@@ -3674,7 +3688,7 @@ button {
   color: var(--overlay-blue);
   background: transparent;
   border: 0;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -3694,7 +3708,7 @@ button {
   background: #fafbf9;
   border: 1px dashed #d5d9d5;
   border-radius: 11px;
-  font-size: 10px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -3719,7 +3733,7 @@ button {
   align-items: center;
   gap: 5px;
   color: #5a635d;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .profile-save-bar > button {
@@ -3739,12 +3753,12 @@ button {
 }
 
 .app-shell--sidepanel {
-  --panel-ink: #1b1d1b;
-  --panel-paper: #f7f6f2;
-  --panel-muted: #717671;
-  --panel-line: #dcddd8;
-  --panel-blue: #2457d6;
-  --panel-red: #d94a32;
+  --panel-ink: var(--of-ink);
+  --panel-paper: var(--of-surface);
+  --panel-muted: var(--of-text-muted);
+  --panel-line: var(--of-line);
+  --panel-blue: var(--of-rust);
+  --panel-red: var(--of-danger);
   min-width: 320px;
   min-height: 100vh;
   color: var(--panel-ink);
@@ -3792,7 +3806,7 @@ button {
   background: var(--panel-ink);
   border-radius: 4px;
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -3818,7 +3832,7 @@ button {
   background: transparent;
   border: 1px solid var(--panel-line);
   border-radius: 4px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -3843,7 +3857,7 @@ button {
   display: block;
   color: var(--panel-muted);
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 600;
   letter-spacing: 0.09em;
   text-transform: uppercase;
@@ -3874,7 +3888,7 @@ button {
 .context-panel p {
   margin: 0;
   color: #afb4b0;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .context-panel > button {
@@ -3889,7 +3903,7 @@ button {
   background: var(--panel-blue);
   border: 0;
   border-radius: 4px;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -3929,7 +3943,7 @@ button {
 .compact-metrics span {
   margin-top: 5px;
   color: var(--panel-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .compact-metrics .urgent-number {
@@ -3966,7 +3980,7 @@ button {
   color: var(--panel-blue);
   background: transparent;
   border: 0;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -4045,26 +4059,26 @@ button {
 }
 
 .compact-job-main strong {
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.35;
 }
 
 .compact-job-main small {
   margin-top: 3px;
   color: var(--panel-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .compact-job-date {
   color: var(--panel-muted);
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .compact-empty {
   padding: 24px 10px;
   color: #999d99;
-  font-size: 9px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -4095,14 +4109,14 @@ button {
 }
 
 .activity-list strong {
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 600;
 }
 
 .activity-list small {
   margin-top: 3px;
   color: var(--panel-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .compact-page-heading {
@@ -4142,7 +4156,7 @@ button {
   background: transparent;
   border: 0;
   outline: none;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .stage-filters {
@@ -4160,7 +4174,7 @@ button {
   background: transparent;
   border: 1px solid var(--panel-line);
   border-radius: 3px;
-  font-size: 8px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -4207,12 +4221,12 @@ button {
 .compact-agenda time small,
 .compact-agenda > button > span small {
   color: var(--panel-muted);
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .compact-agenda > button > span strong {
   overflow: hidden;
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -4252,13 +4266,13 @@ button {
 }
 
 .compact-settings-list strong {
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .compact-settings-list small {
   margin-top: 2px;
   color: var(--panel-muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .compact-settings-list i {
@@ -4284,7 +4298,7 @@ button {
   background: var(--panel-blue);
   border: 0;
   border-radius: 4px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
 }
@@ -4312,7 +4326,7 @@ button {
   color: #7f847f;
   background: transparent;
   border: 0;
-  font-size: 7px;
+  font-size: 12px;
   cursor: pointer;
 }
 
@@ -4322,7 +4336,7 @@ button {
 
 .compact-header-title {
   color: var(--panel-muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .compact-back {
@@ -4461,7 +4475,7 @@ button {
   background: rgba(255, 255, 255, 0.07);
   border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -4567,7 +4581,7 @@ button {
   gap: 6px;
   color: #617067;
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.13em;
   text-transform: uppercase;
@@ -4665,14 +4679,14 @@ button {
 .candidate-main small {
   margin-top: 4px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .candidate-stage,
 .candidate-mode {
   padding: 5px 7px;
   border-radius: 5px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -4728,7 +4742,7 @@ button {
 .metrics span {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .metrics .metric-urgent strong {
@@ -4770,7 +4784,7 @@ button {
   background: transparent;
   border: 1px solid var(--line);
   border-radius: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -4795,7 +4809,7 @@ button {
   justify-content: space-between;
   padding: 11px 12px;
   border-bottom: 1px solid var(--line);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -4808,7 +4822,7 @@ button {
   background: #fff;
   border-radius: 20px;
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .column-body {
@@ -4821,7 +4835,7 @@ button {
 .column-empty {
   padding: 24px 8px;
   color: #9a9d98;
-  font-size: 10px;
+  font-size: 12px;
   text-align: center;
   border: 1px dashed #cecec6;
   border-radius: 7px;
@@ -4862,7 +4876,7 @@ button {
   color: white;
   background: var(--forest);
   border-radius: 5px 5px 5px 1px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -4872,7 +4886,7 @@ button {
   gap: 4px;
   color: var(--muted);
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .deadline--soon,
@@ -4891,7 +4905,7 @@ button {
 .company-line {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .next-action {
@@ -4909,12 +4923,12 @@ button {
 .next-action span {
   margin-bottom: 3px;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .next-action strong {
   overflow: hidden;
-  font-size: 10px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -4926,7 +4940,7 @@ button {
   background: transparent;
   border: 1px solid #d2d1c8;
   border-radius: 5px;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .sync-state {
@@ -4935,7 +4949,7 @@ button {
   gap: 3px;
   color: var(--forest);
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .sync-state--muted {
@@ -5008,7 +5022,7 @@ button {
   align-items: center;
   gap: 6px;
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -5055,12 +5069,12 @@ button {
 }
 
 .calendar-data-notice strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .calendar-data-notice span {
   margin-top: 2px;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .calendar-data-notice button {
@@ -5069,7 +5083,7 @@ button {
   background: var(--forest);
   border: 0;
   border-radius: 6px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -5119,7 +5133,7 @@ button {
   background: var(--acid);
   border: 0;
   border-radius: 6px;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -5138,7 +5152,7 @@ button {
 .weekday-row span {
   padding: 8px;
   color: #737a75;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 800;
   text-align: center;
 }
@@ -5181,7 +5195,7 @@ button {
   place-items: center;
   margin-bottom: 6px;
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .calendar-day .today-number {
@@ -5204,7 +5218,7 @@ button {
   padding: 4px 5px;
   border-left: 2px solid;
   border-radius: 3px;
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
   text-overflow: ellipsis;
@@ -5224,7 +5238,7 @@ button {
 
 .day-events small {
   color: var(--muted);
-  font-size: 7px;
+  font-size: 12px;
 }
 
 .calendar-agenda {
@@ -5248,7 +5262,7 @@ button {
 
 .agenda-date small {
   color: #aab6af;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .agenda-list {
@@ -5298,19 +5312,19 @@ button {
 }
 
 .agenda-item strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .agenda-item small {
   margin-top: 3px;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .agenda-empty {
   margin: auto;
   color: #999d98;
-  font-size: 9px;
+  font-size: 12px;
   text-align: center;
 }
 
@@ -5334,7 +5348,7 @@ button {
 .upcoming-block time {
   color: var(--coral);
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -5345,7 +5359,7 @@ button {
 
 .upcoming-block strong {
   overflow: hidden;
-  font-size: 9px;
+  font-size: 12px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -5354,7 +5368,7 @@ button {
 .upcoming-block > p {
   margin-top: 3px;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .button {
@@ -5365,7 +5379,7 @@ button {
   padding: 10px 14px;
   border-radius: 8px;
   border: 1px solid transparent;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -5419,7 +5433,7 @@ button {
 .capture-hero p {
   color: #aebeb5;
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .duplicate-alert {
@@ -5439,11 +5453,11 @@ button {
 
 .duplicate-alert strong {
   margin-bottom: 2px;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .duplicate-alert span {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .form-grid,
@@ -5473,7 +5487,7 @@ button {
 .summary-field > span,
 .drawer-body label > span {
   color: #5f6963;
-  font-size: 9px;
+  font-size: 12px;
   font-weight: 800;
   letter-spacing: 0.04em;
 }
@@ -5495,7 +5509,7 @@ select {
   border: 1px solid #cfcec5;
   border-radius: 7px;
   outline: none;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .form-grid input:focus,
@@ -5570,7 +5584,7 @@ textarea {
 
 .opportunity-source-field > span {
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -5581,7 +5595,7 @@ textarea {
   border: 1px solid #cfcec5;
   border-radius: 6px;
   outline: none;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .opportunity-source-field input:focus {
@@ -5608,7 +5622,7 @@ textarea {
 .settings-card.compact p {
   margin: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1.6;
 }
 
@@ -5618,7 +5632,7 @@ textarea {
   gap: 6px;
   margin-top: 9px;
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .connected-dot,
@@ -5672,7 +5686,7 @@ textarea {
 
 .ai-fields label > span {
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -5683,7 +5697,7 @@ textarea {
   border: 1px solid #cfcec5;
   border-radius: 6px;
   outline: none;
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .secret-input {
@@ -5763,13 +5777,13 @@ textarea {
 }
 
 .toggle-copy strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .toggle-copy small {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .settings-card.compact {
@@ -5799,7 +5813,7 @@ textarea {
   background: transparent;
   border: 1px solid var(--line);
   border-radius: 6px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
   cursor: pointer;
 }
@@ -5853,7 +5867,7 @@ textarea {
 .drawer-header p {
   margin: 0;
   color: #b4c2ba;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .drawer-header .icon-button {
@@ -5879,7 +5893,7 @@ textarea {
   display: flex;
   justify-content: space-between;
   margin-bottom: 12px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -5923,14 +5937,14 @@ textarea {
 }
 
 .timeline-item strong {
-  font-size: 10px;
+  font-size: 12px;
 }
 
 .timeline-item span {
   margin-top: 3px;
   color: var(--muted);
   font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 8px;
+  font-size: 12px;
 }
 
 .drawer-footer {
@@ -6067,5 +6081,335 @@ button:disabled {
 
   .calendar-data-notice button {
     grid-column: 1 / -1;
+  }
+}
+
+/* OfferFlow visual system v2: shared semantics, extension-specific density. */
+:where(.app-shell, .overlay-shell) * {
+  backdrop-filter: none !important;
+}
+
+:where(.app-shell, .overlay-shell) :focus-visible {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
+:where(.app-shell, .overlay-shell) a:not([class]) {
+  color: var(--of-link);
+  text-underline-offset: 0.14em;
+}
+
+.overlay-header,
+.compact-header {
+  color: var(--of-text);
+  background: var(--of-surface);
+  border-color: var(--of-line);
+}
+
+.topbar,
+.drawer-header,
+.context-panel,
+.app-shell--sidepanel .capture-hero {
+  color: var(--of-text-inverse);
+  background: var(--of-ink);
+  border-color: color-mix(in oklch, var(--of-ink) 82%, var(--of-line));
+}
+
+.brand-glyph {
+  color: var(--of-text-inverse);
+  background: var(--of-rust);
+  border-radius: 0.75rem;
+  transform: none;
+}
+
+.brand-glyph svg { transform: none; }
+.brand strong { color: var(--of-sand); }
+
+.capture-button,
+.tailor-button,
+.button--primary,
+.compact-header-actions .compact-capture,
+.context-panel > button,
+.open-workspace-button {
+  color: var(--of-action-primary-text);
+  background: var(--of-action-primary);
+  border-color: var(--of-action-primary);
+  border-radius: 0.75rem;
+  box-shadow: none;
+  filter: none;
+}
+
+.capture-button:hover:not(:disabled),
+.tailor-button:hover:not(:disabled),
+.button--primary:hover:not(:disabled),
+.compact-header-actions .compact-capture:hover:not(:disabled),
+.context-panel > button:hover:not(:disabled),
+.open-workspace-button:hover:not(:disabled) {
+  color: var(--of-action-primary-text);
+  background: var(--of-action-primary-hover);
+  border-color: var(--of-action-primary-hover);
+  filter: none;
+}
+
+.tailor-button,
+.capture-hero,
+.calendar-toolbar {
+  background-image: none;
+}
+
+.rail,
+.drawer-footer,
+.capture-actions,
+.weekday-row {
+  background: var(--of-surface-muted);
+  border-color: var(--of-line);
+}
+
+.workspace,
+.compact-content,
+.compact-form-content {
+  background: var(--of-canvas);
+}
+
+.eyebrow,
+.compact-kicker {
+  color: var(--of-brand-700);
+  font-family: var(--of-font-sans);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  text-transform: none;
+}
+
+.page-heading h1,
+.capture-hero h1,
+.calendar-heading h1,
+.drawer-header h2,
+.empty-state h2 {
+  font-family: var(--of-font-display);
+  font-size: clamp(2rem, 5vw, 2.75rem);
+  font-weight: 650;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.overlay-capture-card,
+.overlay-tailor-card,
+.intake-tabs,
+.capture-step,
+.profile-status,
+.candidate-list,
+.settings-card,
+.obsidian-card,
+.opportunity-source-card,
+.ai-card,
+.calendar-board,
+.calendar-agenda,
+.job-card,
+.candidate-row,
+.agenda-item,
+.drawer,
+.compact-card,
+.context-card {
+  background: var(--of-surface);
+  border-color: var(--of-line);
+  border-radius: 1rem;
+  box-shadow: none;
+}
+
+.job-card:hover,
+.candidate-row:hover,
+.agenda-item:hover {
+  background: var(--of-surface-raised);
+  border-color: var(--of-line-strong);
+  box-shadow: none;
+  transform: none;
+}
+
+.candidate-row.selected,
+.overlay-shell .candidate-row.selected {
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-400);
+}
+
+.candidate-row.selected .candidate-check,
+.overlay-shell .candidate-row.selected .candidate-check {
+  color: var(--of-text-inverse);
+  background: var(--of-rust);
+  border-color: var(--of-rust);
+}
+
+.metrics {
+  gap: 0;
+  overflow: hidden;
+  background: var(--of-surface);
+  border: 1px solid var(--of-line);
+  border-radius: 1rem;
+}
+
+.metrics > div {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+}
+
+.metrics > div + div { border-inline-start: 1px solid var(--of-line); }
+
+.search,
+.form-grid input,
+.summary-field textarea,
+.drawer-body input,
+.drawer-body select,
+.drawer-body textarea,
+.opportunity-source-field input,
+.ai-fields input,
+.secret-input,
+.card-footer select {
+  color: var(--of-text);
+  background: var(--of-surface);
+  border-color: var(--of-line-control, var(--of-line-strong));
+  border-radius: 0.75rem;
+}
+
+.form-grid input:focus,
+.summary-field textarea:focus,
+.drawer-body input:focus,
+.drawer-body select:focus,
+.drawer-body textarea:focus,
+.opportunity-source-field input:focus,
+.ai-fields input:focus,
+.secret-input:focus-within,
+.search:focus-within {
+  border-color: var(--of-focus);
+  outline: 0;
+  box-shadow: 0 0 0 3px var(--of-brand-100);
+}
+
+.connected-dot {
+  background: var(--of-success-indicator, var(--of-success));
+  box-shadow: 0 0 0 3px var(--of-success-soft);
+}
+
+.candidate-stage,
+.day-event--applied {
+  color: var(--of-success);
+  background: var(--of-success-soft);
+}
+
+.candidate-mode.update,
+.calendar-data-notice {
+  color: var(--of-warning);
+  background: var(--of-warning-soft);
+  border-color: color-mix(in oklch, var(--of-warning) 28%, var(--of-line));
+}
+
+.duplicate-alert,
+.day-event--deadline {
+  color: var(--of-danger);
+  background: var(--of-danger-soft);
+  border-color: color-mix(in oklch, var(--of-danger) 28%, var(--of-line));
+}
+
+.empty-state {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border-color: var(--of-line-strong);
+}
+
+.empty-state::before {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  content: "";
+  background-image: var(--of-paper-texture);
+  opacity: 0.025;
+  pointer-events: none;
+}
+
+.empty-orbit {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  box-shadow: none;
+}
+
+.drawer-backdrop {
+  background: color-mix(in srgb, var(--of-ink) 30%, transparent);
+}
+
+.drawer { box-shadow: var(--of-shadow-dialog); }
+
+.compact-nav {
+  background: var(--of-surface-raised);
+  border-color: var(--of-line);
+}
+
+.kanban-column { background: var(--of-surface-muted); }
+
+.calendar-day:hover {
+  background: var(--of-surface-raised);
+}
+
+.calendar-day.selected {
+  color: var(--of-accent-foreground, var(--of-brand-700));
+  background: var(--of-brand-50);
+  box-shadow: inset 0 0 0 1px var(--of-rust);
+}
+
+.calendar-day.outside {
+  color: var(--of-text-subtle);
+  background: var(--of-surface-muted);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :where(.app-shell, .overlay-shell) button:not(:disabled),
+  :where(.app-shell, .overlay-shell) a {
+    transition-property: color, background-color, border-color, opacity, transform;
+    transition-duration: var(--of-duration-fast);
+    transition-timing-function: var(--of-ease-standard);
+  }
+
+  :where(.app-shell, .overlay-shell) button:not(:disabled):active { transform: scale(var(--of-press-scale)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(.app-shell, .overlay-shell) *,
+  :where(.app-shell, .overlay-shell) *::before,
+  :where(.app-shell, .overlay-shell) *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 720px) {
+  .topbar,
+  .overlay-header,
+  .compact-header {
+    height: calc(3.75rem + env(safe-area-inset-top));
+    padding-block-start: env(safe-area-inset-top);
+    padding-inline: max(0.75rem, env(safe-area-inset-left)) max(0.75rem, env(safe-area-inset-right));
+  }
+
+  .workspace,
+  .overlay-scroll,
+  .compact-content,
+  .compact-form-content {
+    padding-block-end: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
+  textarea,
+  select { font-size: 1rem !important; }
+}
+
+@media (pointer: coarse) {
+  :where(.app-shell, .overlay-shell) button,
+  :where(.app-shell, .overlay-shell) [role="button"],
+  :where(.app-shell, .overlay-shell) summary {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
   }
 }

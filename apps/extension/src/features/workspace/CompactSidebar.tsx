@@ -162,7 +162,6 @@ export function CompactSidebar({
         <strong>{job.position}</strong>
         <small>
           {job.company}
-          {job.externalStage ? ` · ${job.externalStage}` : ""}
         </small>
       </span>
       <span className={`compact-job-date deadline--${dueState(job.deadline)}`}>

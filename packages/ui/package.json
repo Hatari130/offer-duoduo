@@ -5,10 +5,18 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./tokens.css": "./src/tokens.css"
+    "./tokens.css": "./src/tokens.css",
+    "./primitives.css": "./src/primitives.css"
   },
   "scripts": {
     "build": "pnpm run typecheck",
     "typecheck": "tsc -p tsconfig.json --pretty false"
+  },
+  "peerDependencies": {
+    "react": ">=18"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.18",
+    "react": "^18.3.1"
   }
 }

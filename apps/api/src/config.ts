@@ -9,6 +9,9 @@ export interface ApiConfig {
   aiBaseUrl: string;
   aiModel: string;
   demoStreamDelayMs: number;
+  interviewAsrProvider: "bcut" | "disabled";
+  ffmpegPath: string;
+  ffprobePath: string;
 }
 
 function positiveNumber(value: string | undefined, fallback: number): number {
@@ -33,6 +36,10 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,
     aiBaseUrl: (env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
     aiModel: env.AI_MODEL || "deepseek-chat",
-    demoStreamDelayMs: positiveNumber(env.DEMO_STREAM_DELAY_MS, 18)
+    demoStreamDelayMs: positiveNumber(env.DEMO_STREAM_DELAY_MS, 18),
+    interviewAsrProvider:
+      env.INTERVIEW_ASR_PROVIDER?.trim().toLowerCase() === "disabled" ? "disabled" : "bcut",
+    ffmpegPath: env.FFMPEG_PATH || "ffmpeg",
+    ffprobePath: env.FFPROBE_PATH || "ffprobe"
   };
 }

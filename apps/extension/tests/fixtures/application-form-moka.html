@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Moka Sugar Design 自动填写测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      [data-nav-id] { width: 760px; margin-bottom: 24px; padding: 12px; border: 1px solid #ddd; }
+      [class*="apply-fields-"] { display: grid; gap: 10px; margin-top: 12px; padding: 12px; border: 1px solid #eee; }
+      [class*="apply-field-"] { display: grid; gap: 5px; }
+      [class*="sd-Select-container-"], [class*="sd-Input-container-"] { display: flex; min-height: 36px; border: 1px solid #bbb; }
+      input, textarea { min-height: 32px; flex: 1; }
+      .month-range-select { display: flex; gap: 6px; }
+      .month-range-select > span { display: flex; gap: 4px; }
+      .sd-Dropdown-dropdown-fixture { position: fixed; z-index: 1000; left: 820px; top: 40px; width: 240px; max-height: 320px; overflow: auto; padding: 6px; background: white; border: 1px solid #777; }
+      .sd-Menu-container-fixture { padding: 7px; cursor: pointer; }
+      .sd-Menu-container-fixture:hover { background: #eee; }
+    </style>
+  </head>
+  <body>
+    <div data-nav-id="block-basicInfo">
+      <h2 class="blockTitle-fixture">个人信息</h2>
+      <div class="apply-field-fixture"><div class="title-fixture">性别</div><label class="sd-Input-container-fixture sd-Select-container-fixture"><span class="sd-Input-display-value-fixture"></span><input class="sd-Input-input-fixture" placeholder="请选择" data-options="男|女" /></label></div>
+      <div class="apply-field-fixture"><div class="title-fixture">最高学历</div><label class="sd-Input-container-fixture sd-Select-container-fixture"><span class="sd-Input-display-value-fixture"></span><input class="sd-Input-input-fixture" placeholder="请选择" data-options="本科|硕士|博士" /></label></div>
+    </div>
+
+    <div data-nav-id="block-experienceInfo">
+      <h2 class="blockTitle-fixture">工作经历</h2><button type="button" class="add-fixture">添加</button>
+      <div class="apply-fields-fixture multi-fixture">
+        <div class="apply-field-fixture"><div class="title-fixture">起止时间</div><div class="month-range-select date_info"></div></div>
+        <div class="apply-field-fixture"><div class="title-fixture">公司名称</div><label class="sd-Input-container-fixture"><input class="sd-Input-input-fixture" placeholder="公司名称" /></label></div>
+        <div class="apply-field-fixture"><div class="title-fixture">职位名称</div><label class="sd-Input-container-fixture"><input class="sd-Input-input-fixture" placeholder="职位名称" /></label></div>
+        <div class="apply-field-fixture"><div class="title-fixture">工作职责</div><textarea placeholder="内容"></textarea></div>
+      </div>
+    </div>
+
+    <div data-nav-id="block-educationInfo">
+      <h2 class="blockTitle-fixture">教育背景</h2><button id="add-education" type="button" class="add-fixture">添加</button>
+    </div>
+
+    <div data-nav-id="block-practiceInfo">
+      <h2 class="blockTitle-fixture">实习经历</h2><button id="add-internship" type="button" class="add-fixture">添加</button>
+    </div>
+
+    <div data-nav-id="block-projectInfo">
+      <h2 class="blockTitle-fixture">项目经验</h2><button type="button" class="add-fixture">添加</button>
+      <div class="apply-fields-fixture multi-fixture">
+        <div class="apply-field-fixture"><div class="title-fixture">起止时间</div><div class="month-range-select date_info"></div></div>
+        <div class="apply-field-fixture"><div class="title-fixture">项目名称</div><input placeholder="项目名称" /></div>
+        <div class="apply-field-fixture"><div class="title-fixture">职责</div><input placeholder="职责" /></div>
+        <div class="apply-field-fixture"><div class="title-fixture">项目描述</div><textarea placeholder="内容"></textarea></div>
+      </div>
+    </div>
+
+    <div data-nav-id="block-selfDescription">
+      <h2 class="blockTitle-fixture">自我描述</h2>
+      <div class="apply-field-fixture"><div class="title-fixture">自我描述</div><textarea placeholder="简介"></textarea></div>
+    </div>
+
+    <div data-nav-id="block-awardInfo">
+      <h2 class="blockTitle-fixture">获奖经历</h2><button type="button" class="add-fixture">添加</button>
+      <div class="apply-fields-fixture multi-fixture">
+        <div class="apply-field-fixture"><div class="title-fixture">获奖时间</div><div class="month-range-select date_info award-date"></div></div>
+        <div class="apply-field-fixture"><div class="title-fixture">奖项名称</div><input placeholder="奖项名称" /></div>
+      </div>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+
+      let educationAdds = 0;
+      let internshipAdds = 0;
+      const selectMarkup = (placeholder, options) => `
+        <label class="sd-Input-container-fixture sd-Select-container-fixture">
+          <span class="sd-Input-display-value-fixture"></span>
+          <input class="sd-Input-input-fixture" placeholder="${placeholder}" data-options="${options.join("|")}" />
+          <span class="sd-Select-addon-fixture"></span>
+        </label>`;
+      const dateMarkup = (single = false) => single
+        ? `<span>${selectMarkup("年", ["2026", "2025", "2024"])}${selectMarkup("月", ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"])}</span>`
+        : `<span>${selectMarkup("年", ["2026", "2025", "2024", "2023", "2022", "2021", "2020", "2019", "2018"])}${selectMarkup("月", ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"])}</span><span>-</span><span>${selectMarkup("年", ["2027", "2026", "2025", "2024", "2023"])}${selectMarkup("月", ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"])}</span><label><input type="checkbox" />至今</label>`;
+
+      const educationCard = () => {
+        const card = document.createElement("div");
+        card.className = "apply-fields-fixture multi-fixture";
+        card.innerHTML = `
+          <div class="apply-field-fixture"><div class="title-fixture">就读时间</div><div class="month-range-select date_info">${dateMarkup()}</div></div>
+          <div class="apply-field-fixture"><div class="title-fixture">学校名称</div><label class="sd-Input-container-fixture sd-Select-container-fixture searchable"><span class="sd-Input-display-value-fixture"></span><input class="sd-Input-input-fixture" placeholder="请输入就读学校" data-searchable="true" /></label></div>
+          <div class="apply-field-fixture"><div class="title-fixture">专业名称</div><label class="sd-Input-container-fixture sd-Select-container-fixture searchable"><span class="sd-Input-display-value-fixture"></span><input class="sd-Input-input-fixture" placeholder="请输入专业名称" data-searchable="true" /></label></div>
+          <div class="apply-field-fixture"><div class="title-fixture">学历</div>${selectMarkup("请选择", ["本科", "硕士", "博士"])}</div>`;
+        return card;
+      };
+      const internshipCard = () => {
+        const card = document.createElement("div");
+        card.className = "apply-fields-fixture multi-fixture";
+        card.innerHTML = `
+          <div class="apply-field-fixture"><div class="title-fixture">起止时间</div><div class="month-range-select date_info">${dateMarkup()}</div></div>
+          <div class="apply-field-fixture"><div class="title-fixture">公司名称</div><label class="sd-Input-container-fixture"><input class="sd-Input-input-fixture" placeholder="公司名称" /></label></div>
+          <div class="apply-field-fixture"><div class="title-fixture">职位名称</div><label class="sd-Input-container-fixture"><input class="sd-Input-input-fixture" placeholder="职位名称" /></label></div>
+          <div class="apply-field-fixture"><div class="title-fixture">工作职责</div><textarea placeholder="内容"></textarea></div>`;
+        return card;
+      };
+      document.querySelector("[data-nav-id='block-educationInfo']").appendChild(educationCard());
+      document.querySelector("[data-nav-id='block-practiceInfo']").appendChild(internshipCard());
+      document.querySelector("[data-nav-id='block-experienceInfo'] .month-range-select").innerHTML = dateMarkup();
+      document.querySelector("[data-nav-id='block-projectInfo'] .month-range-select").innerHTML = dateMarkup();
+      document.querySelector(".award-date").innerHTML = dateMarkup(true);
+      document.getElementById("add-education").addEventListener("click", () => {
+        educationAdds += 1;
+        document.querySelector("[data-nav-id='block-educationInfo']").appendChild(educationCard());
+      });
+      document.getElementById("add-internship").addEventListener("click", () => {
+        internshipAdds += 1;
+        document.querySelector("[data-nav-id='block-practiceInfo']").appendChild(internshipCard());
+      });
+
+      const closePopup = () => document.querySelector(".sd-Dropdown-dropdown-fixture")?.remove();
+      const renderPopup = (input, values) => {
+        closePopup();
+        const popup = document.createElement("div");
+        popup.className = "sd-Dropdown-dropdown-fixture";
+        popup.innerHTML = `<div class="sd-Select-menu-fixture">${values.map((value) => `<div class="sd-Menu-container-fixture">${value}</div>`).join("")}</div>`;
+        popup.querySelectorAll(".sd-Menu-container-fixture").forEach((option) => {
+          option.addEventListener("click", () => {
+            const value = option.textContent.trim();
+            input.closest("label").querySelector(".sd-Input-display-value-fixture").textContent = value;
+            input.value = "";
+            closePopup();
+          });
+        });
+        document.body.appendChild(popup);
+      };
+      document.addEventListener("click", (event) => {
+        const input = event.target.closest?.("label[class*='sd-Select-container-']")?.querySelector("input");
+        if (!input) return;
+        const values = (input.dataset.options || "").split("|").filter(Boolean);
+        renderPopup(input, values);
+      });
+      document.addEventListener("input", (event) => {
+        const input = event.target;
+        if (!input.matches?.("input[data-searchable='true']")) return;
+        const requested = input.value.trim();
+        setTimeout(() => renderPopup(input, requested ? [requested, `${requested}学院`] : []), 55);
+      });
+      document.body.addEventListener("mousedown", (event) => {
+        if (!event.target.closest?.("label[class*='sd-Select-container-'],.sd-Dropdown-dropdown-fixture")) closePopup();
+      });
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        {
+          type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2",
+          repeatCounts: { education: 2, experience: 2, project: 0, award: 1 },
+          repeatPlan: { experience: { work: 0, internship: 2 } }
+        },
+        {},
+        (scan) => {
+          const education = [
+            { school: "南京大学", major: "城乡规划", degree: "硕士", educationStartDate: "2024-09", educationEndDate: "2027-06" },
+            { school: "北京林业大学", major: "城乡规划", degree: "本科", educationStartDate: "2018-09", educationEndDate: "2023-06" }
+          ];
+          const experience = [
+            { experienceOrganization: "携程集团", experienceTitle: "AI产品经理", experienceStartDate: "2026-04", experienceEndDate: "2026-07", experienceDescription: "第一段实习" },
+            { experienceOrganization: "南京开为网络科技有限公司", experienceTitle: "AI产品经理", experienceStartDate: "2025-11", experienceEndDate: "2026-03", experienceDescription: "第二段实习" }
+          ];
+          const internshipEntries = [];
+          scan.fields.filter((field) => field.repeatGroup === "experience" && /实习/.test(field.section || "")).forEach((field) => {
+            const key = field.repeatEntryFingerprint || String(field.repeatIndex || 0);
+            if (!internshipEntries.includes(key)) internshipEntries.push(key);
+          });
+          const fieldValues = Object.fromEntries(scan.fields.map((field) => {
+            let value = "";
+            if (field.key === "gender") value = "男";
+            else if (field.key === "selfIntroduction") value = "熟悉 AI 产品规划与落地。";
+            else if (field.repeatGroup === "education") {
+              const row = education[field.repeatIndex || 0] || {};
+              value = field.type === "date-range"
+                ? `${row.educationStartDate || ""}\u001f${row.educationEndDate || ""}`
+                : row[field.key] || "";
+            } else if (field.repeatGroup === "experience" && /实习/.test(field.section || "")) {
+              const localIndex = internshipEntries.indexOf(field.repeatEntryFingerprint || String(field.repeatIndex || 0));
+              const row = experience[Math.max(0, localIndex)] || {};
+              value = field.type === "date-range"
+                ? `${row.experienceStartDate || ""}\u001f${row.experienceEndDate || ""}`
+                : row[field.key] || "";
+            } else if (field.key === "awardDate") value = "2024-07";
+            else if (field.key === "awardName") value = "全国大学生创新竞赛一等奖";
+            return [field.id, value];
+          }));
+          const fillable = scan.fields.filter((field) => fieldValues[field.id]);
+          listener(
+            { type: "OFFERFLOW_FILL_APPLICATION_FORM_V2", fields: fillable, fieldValues, maxRounds: 3, delayMs: 0 },
+            {},
+            (fill) => {
+              const readDate = (card) => Array.from(card.querySelectorAll(".sd-Input-display-value-fixture")).slice(0, 4).map((node) => node.textContent.trim());
+              const readCards = (selector) => Array.from(document.querySelectorAll(selector)).map((card) => ({
+                date: readDate(card),
+                fields: Object.fromEntries(Array.from(card.querySelectorAll("[class*='apply-field-']")).map((field) => {
+                  const title = field.querySelector(":scope > [class*='title-']")?.textContent.trim() || "";
+                  const selected = field.querySelector("[class*='sd-Input-display-value-']")?.textContent.trim() || "";
+                  const control = Array.from(field.querySelectorAll("input:not([type='checkbox']),textarea")).find((input) => !input.closest(".month-range-select"));
+                  return [title, selected || control?.value || ""];
+                }))
+              }));
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: {
+                  scan,
+                  fill,
+                  educationAdds,
+                  internshipAdds,
+                  education: readCards("[data-nav-id='block-educationInfo'] > .apply-fields-fixture"),
+                  internship: readCards("[data-nav-id='block-practiceInfo'] > .apply-fields-fixture"),
+                  workCompany: document.querySelector("[data-nav-id='block-experienceInfo'] input[placeholder='公司名称']").value,
+                  gender: document.querySelector("[data-nav-id='block-basicInfo'] .sd-Input-display-value-fixture").textContent.trim(),
+                  awardDate: readDate(document.querySelector("[data-nav-id='block-awardInfo']")),
+                  openPopups: document.querySelectorAll(".sd-Dropdown-dropdown-fixture").length
+                }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

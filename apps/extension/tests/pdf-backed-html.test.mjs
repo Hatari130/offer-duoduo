@@ -17,6 +17,8 @@ const textItem = (id, text, x, top) => ({
   fontWeight: 400,
   fontStyle: "normal",
   color: "#111111",
+  backgroundColor: "#ffffff",
+  backgroundConfidence: 1,
   rotation: 0,
   direction: "ltr"
 });
@@ -79,7 +81,8 @@ test("every source PDF text item is emitted as editable HTML", () => {
         dataBase64: "AA==",
         mimeType: "font/opentype",
         fontWeight: 400,
-        fontStyle: "normal"
+        fontStyle: "normal",
+        isSubset: true
       }],
       pages: [{
         page: 1,
@@ -96,15 +99,28 @@ test("every source PDF text item is emitted as editable HTML", () => {
   });
 
   items.forEach((item) => assert.match(html, new RegExp(item.text)));
-  assert.equal((html.match(/class="source-overlay"/g) || []).length, items.length);
+  assert.equal((html.match(/class="source-overlay source-text"/g) || []).length, items.length);
   assert.match(html, new RegExp(`name="source-character-count" content="${characterCount}"`));
   assert.match(html, /name="source-font-count" content="1"/);
   assert.match(html, /name="source-vector-shape-count" content="1"/);
   assert.match(html, /name="tailored-override-count" content="0"/);
+  assert.match(html, /name="editable-block-count" content="5"/);
+  assert.match(html, /name="editable-region-count" content="1"/);
   assert.match(html, /class="source-page-vectors"/);
   assert.match(html, /@font-face\{font-family:"OfferFlowPdf-g_test"/);
   assert.match(html, /\.source-overlay \{[^}]*color: transparent/);
-  assert.match(html, /--patch-image:url\(data:image\/png;base64,BB==\)/);
+  assert.match(html, /font-family:'OfferFlowPdf-g_test','Microsoft YaHei',sans-serif/);
+  assert.match(html, /data-font-subset="true"/);
+  assert.match(html, /data-source-glyphs="[^"]*陈[^"]*"/);
+  assert.match(html, /classList\.toggle\('uses-fallback-font', needsFallback\)/);
+  assert.match(html, /const sourceHeight = Math\.max\(/);
+  assert.doesNotMatch(html, /renderedBaseHeight = String\(node\.scrollHeight\)/);
+  assert.doesNotMatch(html, /body\.editing \.source-overlay \{[^}]*color:/);
+  assert.match(html, /contenteditable', value \? 'plaintext-only'/);
+  assert.match(html, /class="source-eraser"/);
+  assert.match(html, /data-repainted="false"/);
+  assert.match(html, /background:#ffffff/);
+  assert.doesNotMatch(html, /--patch-image:/);
 });
 
 test("a PDF with no extracted text still keeps the complete source page", () => {
@@ -163,4 +179,99 @@ test("does not replace a short PDF snippet with a complete rewritten paragraph",
   assert.match(html, /name="tailored-override-count" content="0"/);
   assert.doesNotMatch(html, new RegExp(tailored));
   assert.match(html, new RegExp(partialPdfText));
+});
+
+test("applies a rewritten bullet that spans multiple PDF text runs", () => {
+  const firstLine = "负责平台日常维护、推广与留存，识别并优化沙箱权限、";
+  const secondLine = "记忆机制未触发等问题，推动性能及体验优化。";
+  const original = `${firstLine}${secondLine}`;
+  const tailored = "围绕 AI 办公场景负责平台维护与推广，定位沙箱权限及记忆机制问题，持续优化产品性能与用户体验。";
+  const html = buildPdfBackedResumeHtml({
+    layout: {
+      characterCount: original.length,
+      fonts: [],
+      pages: [{
+        page: 1,
+        widthPt: 595,
+        heightPt: 842,
+        imageDataUrl: "data:image/png;base64,AA==",
+        vectorShapes: [],
+        items: [
+          textItem("line-1", firstLine, 20, 120),
+          textItem("line-2", secondLine, 20, 131)
+        ]
+      }]
+    },
+    resume: {
+      ...resume,
+      experience: [{ id: "exp-1", company: "测试公司", title: "产品经理", start: "", end: "", location: "", bullets: [tailored] }]
+    },
+    sourceProfile: {
+      ...sourceProfile,
+      experiences: [{ id: "exp-1", organization: "测试公司", title: "产品经理", startDate: "", endDate: "", description: original, achievements: "" }]
+    }
+  });
+
+  assert.match(html, /name="tailored-override-count" content="1"/);
+  assert.match(html, new RegExp(tailored));
+  assert.match(html, /data-initial-override="true"/);
+});
+
+test("applies an exact block-id patch without relying on the parsed profile", () => {
+  const sourceText = "负责平台日常维护，推动产品性能与用户体验持续优化。";
+  const tailoredText = sourceText.replace("日常维护", "稳定运营");
+  const html = buildPdfBackedResumeHtml({
+    layout: {
+      characterCount: sourceText.length,
+      fonts: [],
+      pages: [{
+        page: 1,
+        widthPt: 595,
+        heightPt: 842,
+        imageDataUrl: "data:image/png;base64,AA==",
+        vectorShapes: [],
+        items: [textItem("run-1", sourceText, 20, 120)]
+      }]
+    },
+    resume,
+    sourceProfile,
+    pdfPatches: [{
+      page: 1,
+      blockId: "pdf-block-0",
+      sourceText,
+      tailoredText,
+      mapIds: ["JD-1"]
+    }]
+  });
+  assert.match(html, /name="tailored-override-count" content="1"/);
+  assert.match(html, new RegExp(tailoredText));
+  assert.match(html, /data-map-ids="JD-1"/);
+});
+
+test("does not render a historical PDF patch that exceeds the frozen block budget", () => {
+  const sourceText = "负责平台产品规划、用户研究、方案设计、上线验证以及数据复盘，持续优化产品体验";
+  const html = buildPdfBackedResumeHtml({
+    layout: {
+      characterCount: sourceText.length,
+      fonts: [],
+      pages: [{
+        page: 1,
+        widthPt: 595,
+        heightPt: 842,
+        imageDataUrl: "data:image/png;base64,AA==",
+        vectorShapes: [],
+        items: [textItem("run-budget", sourceText, 20, 120)]
+      }]
+    },
+    resume,
+    sourceProfile,
+    pdfPatches: [{
+      page: 1,
+      blockId: "pdf-block-0",
+      sourceText,
+      tailoredText: `${sourceText}，新增跨部门协作、商业分析、团队管理、运营增长和市场推广工作`,
+      mapIds: ["JD-1"]
+    }]
+  });
+  assert.match(html, /name="tailored-override-count" content="0"/);
 });

@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>应聘记录 - 蔚来校招</title>
+    <style>
+      body { margin: 0; padding: 28px; font: 15px/1.6 "Microsoft YaHei", Arial, sans-serif; color: #17191c; }
+      h1 { margin: 0 0 24px; }
+      .records { max-width: 960px; }
+      .application-row { margin-bottom: 24px; padding: 26px; border: 1px solid #e8ebef; border-radius: 8px; }
+      .application-row h2 { margin: 0 0 12px; font-size: 24px; }
+      .position-metadata { display: flex; gap: 20px; color: #697386; }
+      .application-action { margin-top: 30px; color: #3370ff; }
+      .application-date { color: #7b93ff; }
+    </style>
+  </head>
+  <body>
+    <h1>应聘记录</h1>
+    <main class="records">
+      <article class="application-row">
+        <h2>提前批-AI产品经理（创新产品）</h2>
+        <div class="position-metadata">
+          <span>上海</span><span>校招 - 正式</span><span>产品 - 产品经理</span><span>项目：2027届校园招聘-技术提前批</span>
+        </div>
+        <div class="application-action">投递简历</div>
+        <div class="application-date">2026-08-07</div>
+      </article>
+      <article class="application-row">
+        <h2>提前批-AI产品经理（AI平台）</h2>
+        <div class="position-metadata">
+          <span>上海</span><span>校招 - 正式</span><span>产品 - 产品经理</span><span>项目：2027届校园招聘-技术提前批</span>
+        </div>
+        <div class="application-action">投递简历</div>
+        <div class="application-date">2026-08-07</div>
+      </article>
+      <article class="application-row">
+        <h2>提前批-产品经理（APP产品）</h2>
+        <div class="position-metadata">
+          <span>上海</span><span>校招 - 正式</span><span>产品 - 产品经理</span><span>项目：2027届校园招聘-技术提前批</span>
+        </div>
+        <div class="application-action">投递简历</div>
+        <div class="application-date">2026-08-07</div>
+      </article>
+    </main>
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script>
+      const offerFlowRules = globalThis.OfferFlowExtractionRules;
+      const offerFlowGetAdapter = offerFlowRules.getAdapter;
+      globalThis.OfferFlowExtractionRules = {
+        ...offerFlowRules,
+        getAdapter: (hostname) => offerFlowGetAdapter(
+          String(hostname || "").toLowerCase() === "" ? "nio.jobs.feishu.cn" : hostname
+        )
+      };
+      history.replaceState({}, "", "/campus/position/application");
+    </script>
+    <script src="../../public/content.js"></script>
+    <script>
+      (() => {
+        let captured;
+        const done = (value) => {
+          captured = value;
+          document.body.setAttribute(
+            "data-result",
+            encodeURIComponent(JSON.stringify(value)).replaceAll("&", "&amp;")
+          );
+        };
+        for (const listener of globalThis.__offerflowListeners) {
+          listener({ type: "OFFERFLOW_EXTRACT_PAGE" }, null, done);
+        }
+        if (!captured) done({ ok: false, error: "no listener responded" });
+      })();
+    </script>
+  </body>
+</html>

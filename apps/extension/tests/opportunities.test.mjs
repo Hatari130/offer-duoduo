@@ -4,29 +4,30 @@ import test from "node:test";
 const {
   EMPTY_OPPORTUNITY_UPDATE_META,
   nextOpportunityUpdateMeta,
-  normalizeFeishuRows,
+  normalizeOpportunityFeed,
   opportunityDisplayTitle
 } = await import("../src/features/opportunities/opportunities.ts");
 
-const sourceUrl = "https://example.feishu.cn/wiki/source";
+const sourceUrl = "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json";
 
-test("Feishu rows use the end of a date range as the deadline", () => {
-  const snapshot = normalizeFeishuRows(
+test("the public campus JSON maps source fields into opportunities", () => {
+  const snapshot = normalizeOpportunityFeed(
     {
-      title: "8.4招聘 - 飞书云文档",
-      rows: [
-        ["更新时间", "公司名称", "投递起止时间", "招聘类型", "招聘岗位", "城市", "公告链接", "投递链接"],
-        [
-          "2026-08-04",
-          "拼多多",
-          "2026-07-01 至 2026-08-20",
-          "2027 秋招",
-          "技术研发、产品经理、数据分析",
-          "上海、广州",
-          "https://example.com/notice",
-          "https://example.com/apply"
-        ],
-        ["2026-08-03", "无链接公司", "2026-08-10", "秋招", "产品", "北京", "", ""]
+      updatedAt: "2026-08-14T09:26:45+08:00",
+      items: [
+        {
+          id: "pdd",
+          company: "拼多多",
+          updatedAt: "2026-08-04",
+          deadline: "2026-08-20",
+          type: "秋招",
+          targetCohort: "2027届",
+          positions: "技术研发,产品经理,数据分析",
+          city: "上海,广州",
+          announcementUrl: "https://example.com/notice",
+          applyUrl: "https://example.com/apply"
+        },
+        { company: "无链接公司", positions: "产品", city: "北京" }
       ]
     },
     sourceUrl
@@ -35,7 +36,8 @@ test("Feishu rows use the end of a date range as the deadline", () => {
   assert.equal(snapshot.opportunities.length, 1);
   assert.equal(snapshot.opportunities[0].deadline, "2026-08-20");
   assert.deepEqual(snapshot.opportunities[0].cities, ["上海", "广州"]);
-  assert.equal(snapshot.sourceUpdatedAt, "2026-08-04");
+  assert.deepEqual(snapshot.opportunities[0].roleTags, ["技术研发", "产品经理", "数据分析"]);
+  assert.equal(snapshot.sourceUpdatedAt, "2026-08-14T09:26:45+08:00");
 });
 
 test("long role lists stay searchable but receive a concise card title", () => {

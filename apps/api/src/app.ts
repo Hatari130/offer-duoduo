@@ -6,34 +6,55 @@ import type {
   AuthSession,
   ChatStreamEvent,
   CreateApplicationRequest,
+  CreateInterviewRecordFromTranscriptRequest,
+  CreateTailorTaskRequest,
   CreateConversationRequest,
   RetryMessageRequest,
   SendMessageRequest,
   UpdateApplicationRequest
 } from "@offerflow/contracts";
 import {
+  MAX_INTERVIEW_AUDIO_BYTES,
   isApplicationSyncRequest,
+  isCreateInterviewRecordFromTranscriptRequest,
+  isCreateTailorTaskRequest,
+  isExchangeHandoffRequest,
   isExchangeDeviceCodeRequest,
   isLoginRequest,
   isRecord,
   isRegisterRequest,
   isOpportunitySyncRequest,
   isRetryMessageRequest,
-  isSendMessageRequest
+  isSendMessageRequest,
+  isSupportedInterviewAudioMimeType,
+  normalizeMimeType,
+  isUpdateResumeVersionRequest
 } from "@offerflow/contracts";
 import type { JobApplication, KnowledgeCitation } from "@offerflow/domain";
-import { opportunityStatus } from "@offerflow/domain";
+import { opportunityStatus, RECRUITMENT_TYPES } from "@offerflow/domain";
 import { createAccessToken, verifyAccessToken, type AccessTokenClaims } from "./auth/crypto.ts";
 import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
+import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
-import { KnowledgeService } from "./knowledge/service.ts";
+import {
+  createInterviewQaParser,
+  type InterviewQaParser
+} from "./interviews/qa-parser.ts";
+import {
+  createInterviewTranscriptionProvider,
+  type InterviewTranscriptionProvider
+} from "./interviews/transcription.ts";
+import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
 import { MemoryStore, MemoryStoreError } from "./store/memory-store.ts";
 
 export interface OfferFlowAppOptions {
   config?: ApiConfig;
   store?: MemoryStore;
   assistant?: AssistantProvider;
+  resumeTailor?: ResumeTailorProvider;
   knowledge?: KnowledgeService;
+  interviewQaParser?: InterviewQaParser;
+  transcriber?: InterviewTranscriptionProvider;
 }
 
 class HttpError extends Error {
@@ -88,6 +109,35 @@ async function readJson(request: IncomingMessage): Promise<unknown> {
   }
 }
 
+async function readBinary(request: IncomingMessage, maximumBytes: number): Promise<Buffer> {
+  const declaredLength = Number(request.headers["content-length"]);
+  if (Number.isFinite(declaredLength) && declaredLength > maximumBytes) {
+    throw new HttpError(
+      413,
+      "AUDIO_TOO_LARGE",
+      `录音文件不能超过 ${Math.floor(maximumBytes / 1024 / 1024)} MB`
+    );
+  }
+  const chunks: Buffer[] = [];
+  let bytes = 0;
+  for await (const chunk of request) {
+    const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+    bytes += buffer.length;
+    if (bytes > maximumBytes) {
+      throw new HttpError(
+        413,
+        "AUDIO_TOO_LARGE",
+        `录音文件不能超过 ${Math.floor(maximumBytes / 1024 / 1024)} MB`
+      );
+    }
+    chunks.push(buffer);
+  }
+  if (!bytes) throw new HttpError(400, "EMPTY_AUDIO", "请选择一份非空录音文件");
+  const audio = Buffer.concat(chunks);
+  for (const chunk of chunks) chunk.fill(0);
+  return audio;
+}
+
 function bearerToken(request: IncomingMessage): string | undefined {
   const authorization = request.headers.authorization;
   if (!authorization?.startsWith("Bearer ")) return undefined;
@@ -113,6 +163,8 @@ function isJobApplication(value: unknown): value is JobApplication {
     typeof value.sourceHost === "string" &&
     typeof value.createdAt === "string" &&
     typeof value.updatedAt === "string" &&
+    (value.recruitmentType === undefined ||
+      RECRUITMENT_TYPES.includes(value.recruitmentType as (typeof RECRUITMENT_TYPES)[number])) &&
     Array.isArray(value.responsibilities) &&
     Array.isArray(value.requirements) &&
     Array.isArray(value.events)
@@ -144,7 +196,52 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const config = options.config ?? loadApiConfig();
   const store = options.store ?? new MemoryStore();
   const assistant = options.assistant ?? createAssistantProvider(config);
+  const resumeTailor = options.resumeTailor ?? createResumeTailorProvider(config);
   const knowledge = options.knowledge ?? new KnowledgeService();
+  const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
+  const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
+
+  function transcriptChunks(transcript: string, maximumCharacters = 1_200): string[] {
+    const paragraphs = transcript
+      .replace(/\r/g, "")
+      .split(/\n{2,}/)
+      .map((part) => part.trim())
+      .filter(Boolean);
+    const chunks: string[] = [];
+    for (const paragraph of paragraphs.length ? paragraphs : [transcript.trim()]) {
+      for (let offset = 0; offset < paragraph.length; offset += maximumCharacters) {
+        chunks.push(paragraph.slice(offset, offset + maximumCharacters));
+      }
+    }
+    return chunks.filter(Boolean);
+  }
+
+  function privateInterviewKnowledge(userId: string): KnowledgeEntry[] {
+    // Both lookups are user-scoped before content is materialised. Never put
+    // raw audio or another user's interview records into retrieval candidates.
+    return store.listApplications(userId).flatMap(({ application }) =>
+      store
+        .listInterviewRecords(userId, application.id)
+        .filter((record) => record.status === "ready")
+        .flatMap((record) => {
+          const sourceId = `interview-record:${record.id}`;
+          const title = `个人面试记录｜${application.company} · ${application.position}｜${record.title}`;
+          const transcriptEntries = transcriptChunks(record.transcript).map((content, index) => ({
+            id: `${sourceId}:transcript:${index}`,
+            sourceId,
+            title,
+            content
+          }));
+          const qaEntries = record.qaPairs.map((pair) => ({
+            id: `${sourceId}:qa:${pair.id}`,
+            sourceId,
+            title,
+            content: `问题：${pair.question}\n回答：${pair.answer}${pair.evidence ? `\n原文依据：${pair.evidence}` : ""}`.slice(0, 1_800)
+          }));
+          return [...qaEntries, ...transcriptEntries];
+        })
+    );
+  }
 
   function requireClaims(request: IncomingMessage): AccessTokenClaims {
     const token = bearerToken(request);
@@ -176,7 +273,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     prompt: string,
     history: ReturnType<MemoryStore["getConversationHistory"]>
   ): Promise<void> {
-    const citations = knowledge.search(prompt);
+    const citations = knowledge.search(prompt, 3, privateInterviewKnowledge(userId));
     const assistantMessage = store.beginAssistantMessage(userId, conversationId);
     const abortController = new AbortController();
     response.on("close", () => {
@@ -317,6 +414,40 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      if (method === "POST" && path === "/v1/auth/handoff-token") {
+        const body = await readJson(request);
+        if (!isExchangeHandoffRequest(body)) {
+          throw new HttpError(400, "INVALID_HANDOFF", "交接码无效");
+        }
+        const exchanged = store.exchangeHandoffCode(body.code);
+        if (!exchanged) {
+          throw new HttpError(401, "HANDOFF_EXPIRED", "交接码无效或已经过期");
+        }
+        success(response, {
+          ...issueSession(exchanged.user),
+          targetPath: exchanged.targetPath
+        });
+        return;
+      }
+
+      // Paired devices (the browser extension) hold long-lived tokens. A
+      // refresh endpoint lets them renew before expiry so background syncs
+      // never silently stop after the token TTL elapses.
+      if (method === "POST" && path === "/v1/auth/refresh") {
+        const claims = requireClaims(request);
+        const user = store.getUser(claims.sub);
+        if (!user) throw new HttpError(401, "UNAUTHORIZED", "登录状态已失效，请重新登录");
+        success(
+          response,
+          issueSession(
+            user,
+            claims.scope === "device" ? "device" : "user",
+            claims.deviceId
+          )
+        );
+        return;
+      }
+
       // The campus opportunity catalogue is shared, public data: read and
       // ingest routes live before the authentication gate so the website and
       // the extension can exchange snapshots without a user session.
@@ -390,6 +521,69 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       if (method === "POST" && path === "/v1/auth/device-codes") {
         success(response, store.createDeviceCode(userId), 201);
         return;
+      }
+
+      if (method === "POST" && path === "/v1/tailor-tasks") {
+        const body = (await readJson(request)) as CreateTailorTaskRequest;
+        if (!isCreateTailorTaskRequest(body)) {
+          throw new HttpError(400, "INVALID_TAILOR_TASK", "岗位或简历资料不完整");
+        }
+        const created = store.createTailorTask(userId, body);
+        const targetPath = `/app/resumes/tailor/${encodeURIComponent(created.task.id)}`;
+        success(response, {
+          ...created,
+          handoff: store.createHandoffCode(userId, targetPath)
+        }, 201);
+        return;
+      }
+
+      const tailorTaskMatch = path.match(/^\/v1\/tailor-tasks\/([^/]+)$/);
+      if (tailorTaskMatch) {
+        const taskId = decodePath(tailorTaskMatch[1]);
+        const task = store.getTailorTask(userId, taskId);
+        if (!task) throw new HttpError(404, "TAILOR_TASK_NOT_FOUND", "没有找到这次定制任务");
+        if (method === "GET") {
+          success(response, task);
+          return;
+        }
+        if (method === "POST") {
+          if (!resumeTailor.configured) {
+            throw new HttpError(503, "AI_NOT_CONFIGURED", "官网 AI 服务尚未配置，请设置服务端 DEEPSEEK_API_KEY");
+          }
+          success(response, {
+            proposal: await resumeTailor.generate(
+              task.task.job,
+              task.version.version.document.profile,
+              task.task.sourceEvidence || task.version.version.document.sourceEvidence
+            )
+          });
+          return;
+        }
+      }
+
+      const resumeVersionMatch = path.match(/^\/v1\/resume-versions\/([^/]+)$/);
+      if (method === "GET" && path === "/v1/resume-versions") {
+        success(response, { versions: store.listResumeVersions(userId) });
+        return;
+      }
+      if (resumeVersionMatch) {
+        const versionId = decodePath(resumeVersionMatch[1]);
+        if (method === "GET") {
+          const item = store.getResumeVersion(userId, versionId);
+          if (!item) throw new HttpError(404, "RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本");
+          success(response, { item });
+          return;
+        }
+        if (method === "PATCH") {
+          const body = await readJson(request);
+          if (!isUpdateResumeVersionRequest(body)) {
+            throw new HttpError(400, "INVALID_RESUME_VERSION", "简历保存内容不完整");
+          }
+          success(response, {
+            item: store.updateResumeVersion(userId, versionId, body.document, body.expectedRevision)
+          });
+          return;
+        }
       }
 
       if (method === "GET" && path === "/v1/conversations") {
@@ -482,6 +676,120 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      const interviewRecordsMatch = path.match(
+        /^\/v1\/applications\/([^/]+)\/interview-records$/
+      );
+      if (interviewRecordsMatch) {
+        const applicationId = decodePath(interviewRecordsMatch[1]);
+        if (!store.getApplication(userId, applicationId)) {
+          throw new HttpError(404, "APPLICATION_NOT_FOUND", "没有找到这条投递");
+        }
+        if (method === "GET") {
+          success(response, { records: store.listInterviewRecords(userId, applicationId) });
+          return;
+        }
+        if (method === "POST") {
+          const body = (await readJson(request)) as CreateInterviewRecordFromTranscriptRequest;
+          if (!isCreateInterviewRecordFromTranscriptRequest(body) || !body.transcript.trim()) {
+            throw new HttpError(400, "INVALID_TRANSCRIPT", "请上传或粘贴非空的面试文字稿");
+          }
+          if (body.title !== undefined && body.title.trim().length > 120) {
+            throw new HttpError(400, "TITLE_TOO_LONG", "面试记录标题不能超过 120 个字符");
+          }
+          const processing = store.createInterviewRecord(userId, applicationId, {
+            title: body.title,
+            sourceType: "transcript",
+            status: "processing",
+            transcript: body.transcript
+          });
+          try {
+            const qaPairs = await interviewQaParser.parse(body.transcript);
+            success(response, {
+              record: store.completeInterviewRecord(
+                userId,
+                processing.id,
+                body.transcript,
+                qaPairs
+              )
+            }, 201);
+          } catch (error) {
+            success(response, {
+              record: store.failInterviewRecord(
+                userId,
+                processing.id,
+                error instanceof Error
+                  ? `文字稿问答解析失败：${error.message}`
+                  : "文字稿问答解析失败，请稍后重试。"
+              )
+            }, 201);
+          }
+          return;
+        }
+      }
+
+      const interviewAudioMatch = path.match(
+        /^\/v1\/applications\/([^/]+)\/interview-records\/audio$/
+      );
+      if (method === "POST" && interviewAudioMatch) {
+        const applicationId = decodePath(interviewAudioMatch[1]);
+        if (!store.getApplication(userId, applicationId)) {
+          throw new HttpError(404, "APPLICATION_NOT_FOUND", "没有找到这条投递");
+        }
+        const title = url.searchParams.get("title")?.trim() || undefined;
+        const fileName = url.searchParams.get("fileName")?.trim();
+        const mimeType = normalizeMimeType(request.headers["content-type"]);
+        if (!fileName || fileName.length > 255) {
+          throw new HttpError(400, "INVALID_AUDIO_FILE_NAME", "录音文件名缺失或过长");
+        }
+        if (title && title.length > 120) {
+          throw new HttpError(400, "TITLE_TOO_LONG", "面试记录标题不能超过 120 个字符");
+        }
+        if (!isSupportedInterviewAudioMimeType(mimeType)) {
+          throw new HttpError(
+            415,
+            "UNSUPPORTED_AUDIO_TYPE",
+            "暂不支持这种录音格式，请上传 MP3、M4A、WAV、WebM、OGG、AAC 或 FLAC"
+          );
+        }
+        const audio = await readBinary(request, MAX_INTERVIEW_AUDIO_BYTES);
+        const record = store.createInterviewRecord(userId, applicationId, {
+          title,
+          sourceType: "audio",
+          status: "processing"
+        });
+        success(response, { record }, 202);
+
+        setImmediate(() => {
+          void (async () => {
+            try {
+              const transcript = (await transcriber.transcribe({
+                audio,
+                fileName,
+                mimeType
+              })).trim();
+              if (!transcript) throw new Error("语音转写服务没有返回文字稿");
+              store.completeInterviewRecord(
+                userId,
+                record.id,
+                transcript,
+                await interviewQaParser.parse(transcript)
+              );
+            } catch (error) {
+              store.failInterviewRecord(
+                userId,
+                record.id,
+                error instanceof Error ? error.message : "录音转写失败，请重试或上传文字稿。"
+              );
+            } finally {
+              // Audio is sensitive and only needed for this transient ASR job.
+              // Zero the in-memory buffer; it is never persisted or indexed.
+              audio.fill(0);
+            }
+          })();
+        });
+        return;
+      }
+
       const applicationMatch = path.match(/^\/v1\/applications\/([^/]+)$/);
       if (applicationMatch) {
         const applicationId = decodePath(applicationMatch[1]);
@@ -533,5 +841,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     }
   }
 
-  return { handler, store, config, assistant, knowledge };
+  return {
+    handler,
+    store,
+    config,
+    assistant,
+    knowledge,
+    interviewQaParser,
+    transcriber
+  };
 }

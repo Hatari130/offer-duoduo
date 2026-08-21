@@ -1,6 +1,6 @@
 import type { KnowledgeCitation } from "@offerflow/domain";
 
-interface KnowledgeEntry {
+export interface KnowledgeEntry {
   id: string;
   sourceId: string;
   title: string;
@@ -48,9 +48,10 @@ function queryTokens(query: string): string[] {
 }
 
 export class KnowledgeService {
-  search(query: string, limit = 3): KnowledgeCitation[] {
+  search(query: string, limit = 3, additionalEntries: KnowledgeEntry[] = []): KnowledgeCitation[] {
     const tokens = queryTokens(query);
-    const ranked = KNOWLEDGE.map((entry) => {
+    const entries = [...additionalEntries, ...KNOWLEDGE];
+    const ranked = entries.map((entry) => {
       const haystack = `${entry.title}${entry.content}`.toLowerCase();
       const score = tokens.reduce(
         (total, token) => total + (haystack.includes(token) ? Math.max(1, token.length) : 0),
@@ -59,9 +60,10 @@ export class KnowledgeService {
       return { entry, score };
     }).sort((left, right) => right.score - left.score);
 
-    const relevant = ranked.some((result) => result.score > 0)
-      ? ranked.filter((result) => result.score > 0)
-      : ranked.slice(0, 1);
+    // Returning an arbitrary first entry on a zero-score query creates a false
+    // citation. This matters even more for private interview material: it
+    // should enter a prompt only when the user's question actually matches it.
+    const relevant = ranked.filter((result) => result.score > 0);
 
     return relevant.slice(0, limit).map(({ entry, score }) => ({
       id: entry.id,

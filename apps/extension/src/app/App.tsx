@@ -83,6 +83,7 @@ import {
 import OpportunityView from "@/features/opportunities/OpportunityView";
 import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
 import { normalizeTailorContext, type TailorContext } from "@/features/tailor/types";
+import { openWebTailorWorkspace } from "@/features/tailor/openWebTailor";
 
 import {
   CalendarView,
@@ -157,11 +158,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       });
       setJobs(migratedJobs);
       if (migrationChanged) void saveJobs(migratedJobs);
-      const effectiveSettings = storedSettings.opportunityFeedUrl?.trim()
-        ? storedSettings
-        : { ...storedSettings, opportunityFeedUrl: DEFAULT_OPPORTUNITY_FEED_URL };
+      const effectiveSettings = {
+        ...storedSettings,
+        opportunityFeedUrl: DEFAULT_OPPORTUNITY_FEED_URL
+      };
       setSettings(effectiveSettings);
-      if (!storedSettings.opportunityFeedUrl) void saveSettings(effectiveSettings);
+      if (storedSettings.opportunityFeedUrl !== DEFAULT_OPPORTUNITY_FEED_URL) {
+        void saveSettings(effectiveSettings);
+      }
       const currentResumeId = activeResumeId && resumeLibrary.some((resume) => resume.id === activeResumeId)
         ? activeResumeId
         : resumeLibrary[0]?.id;
@@ -294,22 +298,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           error: error instanceof Error ? error.message : "Web 端同步失败"
         })
       );
-  };
-
-  const saveOpportunityFeedUrl = async (sourceUrl: string) => {
-    const normalizedUrl = sourceUrl.trim() || DEFAULT_OPPORTUNITY_FEED_URL;
-    const next: OfferFlowSettings = {
-      ...settings,
-      opportunityFeedUrl: normalizedUrl || undefined
-    };
-    setSettings(next);
-    await saveSettings(next);
-    try {
-      const snapshot = await refreshOpportunities(next.opportunityFeedUrl || "");
-      setNotice(`机会数据已同步：${snapshot.opportunities.length} 条`);
-    } catch {
-      setNotice("数据源已保存，但当前无法读取；请检查地址和访问权限");
-    }
   };
 
   const openOpportunity = async (opportunity: RecruitmentOpportunity) => {
@@ -450,11 +438,12 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     const now = new Date().toISOString();
 
     if (mode === "update" && duplicate) {
+      const nextStage = capture.suggestedStage || duplicate.stage;
       const updated: JobApplication = {
         ...duplicate,
         ...capture,
         id: duplicate.id,
-        stage: duplicate.stage,
+        stage: nextStage,
         createdAt: duplicate.createdAt,
         updatedAt: now,
         events: [
@@ -600,9 +589,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         loadActiveResumeId()
       ]);
       const sourceResume = resumeLibrary.find((resume) => resume.id === activeResumeId) || resumeLibrary[0];
-      if (!sourceResume?.sourcePdf) {
-        throw new Error("当前网申简历没有原始 PDF 母版，请在简历库重新导入 PDF 后再使用一键改简历");
-      }
+      if (!sourceResume) throw new Error("请先在简历中心选择一份母版简历");
       const context: TailorContext = normalizeTailorContext({
         jobKey: "",
         sourceResumeId: sourceResume.id,
@@ -615,12 +602,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         requirements: job.requirements || [],
         rawExcerpt: job.rawExcerpt || undefined
       });
-      const payload = encodeURIComponent(JSON.stringify({
-        jobKey: context.jobKey,
-        context
-      }));
-      const url = chrome.runtime.getURL(`tailor.html?context=${payload}&auto=1`);
-      await chrome.tabs.create({ url });
+      const linkedApplication = findDuplicate(jobs, {
+        company: job.company,
+        position: job.position,
+        jobId: job.jobId,
+        city: job.city,
+        sourceUrl: job.sourceUrl
+      });
+      await openWebTailorWorkspace(context, sourceResume, linkedApplication?.id);
     } catch (error) {
       setNotice(
         error instanceof Error ? error.message : "定制功能暂时不可用，请先识别当前页面的岗位信息"
@@ -877,7 +866,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             opportunityError={opportunityError}
             profile={profile}
             onSaveProfile={persistProfile}
-            onSaveOpportunityFeed={saveOpportunityFeedUrl}
             onCapture={capturePage}
             onTailor={handleTailor}
             onOpenOpportunity={(opportunity) => void openOpportunity(opportunity)}
@@ -1028,18 +1016,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               </div>
               <div className="setting-copy">
                 <h3>校招机会数据源</h3>
-                <p>接入飞书云表格或公开 JSON，在插件中完整展示招聘批次并直达官方申请页。</p>
-                <label className="opportunity-source-field">
-                  <span>飞书云表格链接或公开 JSON 地址</span>
-                  <input
-                    type="url"
-                    value={settings.opportunityFeedUrl || ""}
-                    placeholder="飞书云表格链接或公开 JSON 地址"
-                    onChange={(event) =>
-                      setSettings({ ...settings, opportunityFeedUrl: event.target.value })
-                    }
-                  />
-                </label>
+                <p>直连公开 JSON 数据源，自动更新招聘批次并直达官方申请页。</p>
+                <div className="opportunity-source-field">
+                  <span>当前数据源</span>
+                  <code>{DEFAULT_OPPORTUNITY_FEED_URL}</code>
+                </div>
                 <div className="connection-state">
                   <span className={opportunitySnapshot.opportunities.length ? "connected-dot" : "empty-dot"} />
                   {opportunitySnapshot.opportunities.length
@@ -1057,11 +1038,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               </div>
               <button
                 className="button button--secondary"
-                onClick={() => void saveOpportunityFeedUrl(settings.opportunityFeedUrl || "")}
+                onClick={() => void refreshOpportunities(DEFAULT_OPPORTUNITY_FEED_URL)}
                 disabled={opportunityLoading}
               >
                 <RefreshCw className={opportunityLoading ? "spin" : ""} size={16} />
-                保存并同步
+                立即同步
               </button>
             </div>
 

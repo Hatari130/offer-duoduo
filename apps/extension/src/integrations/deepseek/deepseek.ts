@@ -395,6 +395,7 @@ function documentSafe(value: string): string {
 
 const AI_NAV_PLACEHOLDER_WORDS = [
   "首页",
+  "应聘记录",
   "投递记录",
   "申请记录",
   "我的申请",
@@ -552,6 +553,9 @@ export async function extractWithDeepSeek(
       const trustedEvidence = Boolean(
         progressEvidence && progressEvidence.confidence >= 0.8 && evidenceStage
       );
+      // When progress evidence exists (even with lower confidence), prefer it
+      // over the AI model's stage guess, which is often wrong for application lists.
+      const hasAnyEvidence = Boolean(progressEvidence && evidenceStage);
       const isProgressPage =
         inferredPageType === "application_list" || inferredPageType === "application_update";
 
@@ -577,19 +581,28 @@ export async function extractWithDeepSeek(
         rawExcerpt: page.rawExcerpt,
         suggestedStage: trustedEvidence
           ? evidenceStage
-          : isProgressPage
-            ? undefined
-            : normalizeStage(item.stage),
+          : hasAnyEvidence
+            ? evidenceStage
+            : isProgressPage
+              ? undefined
+              : normalizeStage(item.stage),
         externalStage: trustedEvidence
           ? (normalizeExternalStage(
-              progressEvidence?.terminalStatus || progressEvidence?.currentStage
+              progressEvidence!.terminalStatus || progressEvidence!.currentStage
             ) ||
-              progressEvidence?.terminalStatus ||
-              progressEvidence?.currentStage ||
+              progressEvidence!.terminalStatus ||
+              progressEvidence!.currentStage ||
               undefined)
-          : isProgressPage
-            ? undefined
-            : normalizeExternalStage(item.stage) || item.stage?.trim() || undefined,
+          : hasAnyEvidence
+            ? (normalizeExternalStage(
+                progressEvidence!.terminalStatus || progressEvidence!.currentStage
+              ) ||
+                progressEvidence!.terminalStatus ||
+                progressEvidence!.currentStage ||
+                undefined)
+            : isProgressPage
+              ? undefined
+              : normalizeExternalStage(item.stage) || item.stage?.trim() || undefined,
         extractionSource: "deepseek",
         confidence: trustedEvidence
           ? progressEvidence!.confidence

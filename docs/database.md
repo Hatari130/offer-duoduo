@@ -12,7 +12,7 @@ is an extension offline cache, not a replacement for authenticated cloud data.
 | `companies` | normalized company identity |
 | `recruitment_campaigns` | spring/autumn/internship recruitment batches |
 | `job_postings` | individual jobs belonging to an optional campaign |
-| `opportunity_sources` | Feishu, official site, JSON and manual sources |
+| `opportunity_sources` | Public JSON, official site and manual sources |
 | `opportunity_import_runs` | observable ingestion history |
 | `opportunity_source_records` | source-row identity, payload hash and raw evidence |
 
@@ -36,7 +36,7 @@ browser bundles or committed files.
 ## Source-of-truth rules
 
 - `apps/extension/public/opportunities.json` is development/offline fallback data.
-- Feishu and official sites are import sources, not application runtime databases.
+- Public JSON and official sites are import sources, not application runtime databases.
 - PostgreSQL catalogue records become canonical after import and verification.
 - user application data is always scoped by `user_id` at the API boundary.
 - `job_posting_id` is nullable because a user may capture a job not yet in the catalogue.

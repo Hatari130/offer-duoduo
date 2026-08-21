@@ -8,7 +8,7 @@ platform-owned AI credentials.
 - `applications`: private application records and timelines
 - `opportunities`: public recruitment campaigns and job postings
 - `sync`: extension offline-first synchronization
-- `imports`: Feishu/official-site ingestion jobs
+- `imports`: public JSON/official-site ingestion jobs
 
 This application is intentionally a compile-checked boundary for now. Add the
 HTTP runtime and database adapter here when backend implementation begins.

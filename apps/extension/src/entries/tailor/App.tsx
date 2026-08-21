@@ -54,12 +54,14 @@ import {
   saveTailoredPdf,
   saveTailoredResume,
   SETTINGS_KEY,
+  updateResumeSourceLayoutMetadata,
   type StoredResume,
   type TailoredPdfSnapshot
 } from "@/infrastructure/storage/storage";
 import { extractResumePdfLayout, type ResumePdfLayout } from "@/features/profile/resumeParser";
+import { buildPdfBackedResumeHtml } from "@/features/tailor/buildPdfBackedResumeHtml";
 import { buildResumeHtml } from "@/features/tailor/buildResumeHtml";
-import { buildSourcePdfReferenceHtml } from "@/features/tailor/buildSourcePdfReferenceHtml";
+import { collectPdfTailoringSourceBlocks } from "@/features/tailor/pdfTailoringPatches";
 import {
   buildLocalFallback,
   ensureJobKey,
@@ -77,6 +79,87 @@ import type {
 } from "@/shared/types";
 
 type PendingSnapshot = TailorContext;
+
+type SourceLayoutState = "idle" | "loading" | "ready" | "error";
+type TailorPreviewMode = "empty" | "loading" | "coordinate" | "flow" | "error";
+
+interface TailorPreviewInput {
+  hasBundle: boolean;
+  hasSourcePdf: boolean;
+  allowFlowPreview: boolean;
+  sourceLayoutState: SourceLayoutState;
+  sourceLayoutError?: string;
+  coordinatePreviewHtml: string;
+  coordinatePreviewError?: string;
+  flowPreviewHtml: string;
+}
+
+interface TailorPreviewResolution {
+  mode: TailorPreviewMode;
+  html: string;
+  error: string;
+}
+
+export function isHistoricalBundleForSource(
+  storedSourceResumeId: string | undefined,
+  currentSourceResumeId: string | undefined
+) {
+  return Boolean(
+    storedSourceResumeId
+    && currentSourceResumeId
+    && storedSourceResumeId === currentSourceResumeId
+  );
+}
+
+export function isFlowPreviewSource(sourceFileName: string | undefined, hasSourcePdf: boolean) {
+  if (hasSourcePdf) return false;
+  return /\.(?:docx|txt)$/i.test(sourceFileName?.trim() || "");
+}
+
+export function resolveTailorPreview(input: TailorPreviewInput): TailorPreviewResolution {
+  if (!input.hasBundle) return { mode: "empty", html: "", error: "" };
+
+  if (input.hasSourcePdf) {
+    if (input.sourceLayoutState === "idle" || input.sourceLayoutState === "loading") {
+      return { mode: "loading", html: "", error: "" };
+    }
+    if (input.sourceLayoutState === "error") {
+      return {
+        mode: "error",
+        html: "",
+        error: input.sourceLayoutError || "原 PDF 版式读取失败，请重试。"
+      };
+    }
+    if (input.coordinatePreviewError) {
+      return { mode: "error", html: "", error: input.coordinatePreviewError };
+    }
+    if (input.coordinatePreviewHtml) {
+      return { mode: "coordinate", html: input.coordinatePreviewHtml, error: "" };
+    }
+    return {
+      mode: "error",
+      html: "",
+      error: "原 PDF 已读取，但坐标版预览生成失败，请重试。"
+    };
+  }
+
+  if (input.allowFlowPreview) {
+    if (input.flowPreviewHtml) {
+      return { mode: "flow", html: input.flowPreviewHtml, error: "" };
+    }
+    return { mode: "error", html: "", error: "DOCX/TXT 简历预览生成失败，请重新生成。" };
+  }
+
+  return {
+    mode: "error",
+    html: "",
+    error: "未找到本次定制对应的原 PDF、DOCX 或 TXT 简历，请重新选择源简历后生成。"
+  };
+}
+
+export function formatSourceCharacterCount(sourceCharacterCount: number | undefined) {
+  return typeof sourceCharacterCount === "number" ? `${sourceCharacterCount} 字` : "正在读取";
+}
 
 interface UrlPayload {
   jobKey: string;
@@ -126,8 +209,10 @@ export default function TailorApp() {
   const [profileStatusOpen, setProfileStatusOpen] = useState(false);
   const [sourceResume, setSourceResume] = useState<StoredResume | undefined>();
   const [sourceLayout, setSourceLayout] = useState<ResumePdfLayout | undefined>();
-  const [sourceLayoutState, setSourceLayoutState] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [sourceLayoutState, setSourceLayoutState] = useState<SourceLayoutState>("idle");
+  const [sourceLayoutOwnerId, setSourceLayoutOwnerId] = useState<string>();
   const [sourceLayoutError, setSourceLayoutError] = useState("");
+  const [sourceLayoutAttempt, setSourceLayoutAttempt] = useState(0);
 
   useEffect(() => {
     (async () => {
@@ -160,17 +245,33 @@ export default function TailorApp() {
         const jobKey = inner.jobKey || ensureJobKey(inner);
         const sourceResumeId = inner.sourceResumeId || activeResume?.id;
         const context: PendingSnapshot = normalizeTailorContext({ ...inner, jobKey, sourceResumeId });
+        const requestedSourceResume = resumeLibrary.find((resume) => resume.id === sourceResumeId);
         setPending(context);
-        setSourceResume(resumeLibrary.find((resume) => resume.id === sourceResumeId));
+        setSourceResume(requestedSourceResume);
         const stored = await getTailoredResume(jobKey);
-        if (stored) {
+        const canLoadStored = Boolean(
+          stored
+          && isHistoricalBundleForSource(stored.context.sourceResumeId, requestedSourceResume?.id)
+        );
+        if (stored && canLoadStored) {
           setBundle(stored);
           setStatus(`已载入历史定制（${formatRelative(stored.generatedAt)}）`);
+          setPdfSnapshot(await loadTailoredPdf(jobKey));
+        } else if (stored) {
+          setBundle(undefined);
+          setPdfSnapshot(undefined);
+          setStatus("");
+          setError(
+            requestedSourceResume
+              ? "该岗位的历史定制来自另一份简历，已忽略。请基于当前简历重新生成。"
+              : "历史定制绑定的源简历已不存在，已忽略。请重新选择简历并生成。"
+          );
+          if (shouldAutoGenerate) {
+            setAutoGenerateMode(storedSettings.deepseekApiKey?.trim() ? "deepseek" : "local");
+          }
         } else if (shouldAutoGenerate) {
           setAutoGenerateMode(storedSettings.deepseekApiKey?.trim() ? "deepseek" : "local");
         }
-        const pdf = await loadTailoredPdf(jobKey);
-        setPdfSnapshot(pdf);
       }
     })();
   }, []);
@@ -199,39 +300,65 @@ export default function TailorApp() {
     const sourcePdf = sourceResume?.sourcePdf;
     if (!sourcePdf) {
       setSourceLayout(undefined);
+      setSourceLayoutOwnerId(undefined);
       setSourceLayoutState("idle");
       setSourceLayoutError("");
       return;
     }
+    const ownerId = sourceResume.id;
     let cancelled = false;
+    setSourceLayout(undefined);
+    setSourceLayoutOwnerId(ownerId);
     setSourceLayoutState("loading");
     setSourceLayoutError("");
     void extractResumePdfLayout(base64ToUint8Array(sourcePdf.base64).buffer)
-      .then((layout) => {
+      .then(async (layout) => {
         if (cancelled) return;
         if (!layout.pages.length || layout.pages.some((page) => !page.imageDataUrl)) {
           throw new Error("原 PDF 页面渲染不完整，无法生成版式预览");
         }
+        try {
+          await updateResumeSourceLayoutMetadata(ownerId, {
+            layoutStatus: "ready",
+            pageCount: layout.pages.length,
+            characterCount: layout.characterCount
+          });
+        } catch (metadataError) {
+          console.warn("[OfferFlow] PDF 版式元数据同步失败", metadataError);
+        }
+        if (cancelled) return;
         setSourceLayout(layout);
+        setSourceLayoutOwnerId(ownerId);
         setSourceLayoutState("ready");
       })
       .catch((caught) => {
         if (cancelled) return;
         setSourceLayout(undefined);
+        setSourceLayoutOwnerId(ownerId);
         setSourceLayoutState("error");
         const message = caught instanceof Error ? caught.message : "未知 PDF 读取错误";
         setSourceLayoutError(message);
+        void updateResumeSourceLayoutMetadata(ownerId, { layoutStatus: "failed" });
         console.error("[OfferFlow] 原 PDF 版式读取失败", caught);
       });
     return () => {
       cancelled = true;
     };
-  }, [sourceResume?.id, sourceResume?.sourcePdf?.base64]);
+  }, [sourceResume?.id, sourceResume?.sourcePdf?.base64, sourceLayoutAttempt]);
 
   const storedJobs = useMemo(() => Object.entries(allEntries), [allEntries]);
-  const previewHtml = useMemo(() => {
-    if (!bundle) return "";
-    const sourcePage = sourceLayout?.pages[0];
+  const hasSourcePdf = Boolean(sourceResume?.sourcePdf);
+  const allowFlowPreview = Boolean(
+    sourceResume
+    && isFlowPreviewSource(sourceResume.sourceFileName, hasSourcePdf)
+  );
+  const currentSourceLayout = sourceLayoutOwnerId === sourceResume?.id ? sourceLayout : undefined;
+  const currentSourceLayoutState: SourceLayoutState = hasSourcePdf && sourceLayoutOwnerId !== sourceResume?.id
+    ? "loading"
+    : sourceLayoutState;
+  const currentSourceLayoutError = sourceLayoutOwnerId === sourceResume?.id ? sourceLayoutError : "";
+  const flowPreviewHtml = useMemo(() => {
+    if (!bundle || !allowFlowPreview) return "";
     return buildResumeHtml({
       resume: bundle.resume,
       jd: bundle.jd,
@@ -239,13 +366,44 @@ export default function TailorApp() {
       variant: "source-aligned",
       sourceProfile: sourceResume?.profile,
       accentColor: "#202421",
-      pageSize: sourcePage && sourcePage.widthPt / sourcePage.heightPt > 0.74 ? "letter" : "a4"
+      pageSize: "a4"
     });
-  }, [bundle, sourceLayout, sourceResume?.profile]);
-  const sourcePreviewHtml = useMemo(
-    () => sourceLayout ? buildSourcePdfReferenceHtml(sourceLayout) : "",
-    [sourceLayout]
-  );
+  }, [allowFlowPreview, bundle, sourceResume?.profile]);
+  const coordinatePreview = useMemo(() => {
+    if (!bundle || !currentSourceLayout || !sourceResume?.profile) {
+      return { html: "", error: "", overrideCount: 0 };
+    }
+    try {
+      const html = buildPdfBackedResumeHtml({
+        layout: currentSourceLayout,
+        resume: bundle.resume,
+        sourceProfile: sourceResume.profile,
+        jd: bundle.jd,
+        pdfPatches: bundle.pdfPatches
+      });
+      const overrideCount = Number(html.match(/name="tailored-override-count" content="(\d+)"/)?.[1] || 0);
+      return {
+        html,
+        error: "",
+        overrideCount
+      };
+    } catch (caught) {
+      const message = caught instanceof Error ? caught.message : "未知坐标预览错误";
+      console.error("[OfferFlow] PDF 坐标复刻失败", caught);
+      return { html: "", error: `原 PDF 坐标预览生成失败：${message}`, overrideCount: 0 };
+    }
+  }, [bundle, currentSourceLayout, sourceResume?.profile]);
+  const preview = resolveTailorPreview({
+    hasBundle: Boolean(bundle),
+    hasSourcePdf,
+    allowFlowPreview,
+    sourceLayoutState: currentSourceLayoutState,
+    sourceLayoutError: currentSourceLayoutError,
+    coordinatePreviewHtml: coordinatePreview.html,
+    coordinatePreviewError: coordinatePreview.error,
+    flowPreviewHtml
+  });
+  const previewHtml = preview.html;
 
   const phase: "pending-empty" | "jd-ready" | "jd-bundled" = !pending
     ? "pending-empty"
@@ -276,8 +434,11 @@ export default function TailorApp() {
       const currentSource = requestedSource
         || resumeLibrary.find((resume) => resume.id === activeResumeId)
         || resumeLibrary[0];
-      if (!currentSource?.sourcePdf) {
-        throw new Error("当前简历没有原始 PDF 母版，请返回简历库重新导入 PDF 后再生成");
+      if (!currentSource) {
+        throw new Error("没有找到可用于定制的源简历，请返回简历库重新选择");
+      }
+      if (!currentSource.sourcePdf && !isFlowPreviewSource(currentSource.sourceFileName, false)) {
+        throw new Error("当前简历缺少可用的 PDF、DOCX 或 TXT 原文件，请返回简历库重新导入后再生成");
       }
       setSourceResume(currentSource);
       const generationContext = pending.sourceResumeId === currentSource.id
@@ -289,7 +450,15 @@ export default function TailorApp() {
         if (!settings.deepseekApiKey) {
           throw new Error("未配置 DeepSeek API Key，请先在设置中填写");
         }
-        next = await tailorResumeWithDeepSeek(currentSource.profile, generationContext, settings);
+        let layoutForTailoring = sourceLayoutOwnerId === currentSource.id ? sourceLayout : undefined;
+        if (!layoutForTailoring && currentSource.sourcePdf) {
+          layoutForTailoring = await extractResumePdfLayout(base64ToUint8Array(currentSource.sourcePdf.base64).buffer);
+          setSourceLayout(layoutForTailoring);
+          setSourceLayoutOwnerId(currentSource.id);
+          setSourceLayoutState("ready");
+        }
+        const sourceBlocks = collectPdfTailoringSourceBlocks(layoutForTailoring);
+        next = await tailorResumeWithDeepSeek(currentSource.profile, generationContext, settings, sourceBlocks);
       } else {
         next = buildLocalFallback(currentSource.profile, generationContext);
       }
@@ -556,12 +725,10 @@ export default function TailorApp() {
           phase={phase}
           pending={pending}
           bundle={bundle}
-          previewHtml={previewHtml}
-          sourcePreviewHtml={sourcePreviewHtml}
-          sourceLayoutState={sourceLayoutState}
-          sourceLayoutError={sourceLayoutError}
+          preview={preview}
           sourcePdfName={sourceResume?.sourcePdf?.fileName}
-          sourceCharacterCount={sourceLayout?.characterCount}
+          sourceCharacterCount={currentSourceLayout?.characterCount}
+          overrideCount={coordinatePreview.overrideCount}
           pdfSnapshot={pdfSnapshot}
           busy={busy}
           generationStage={generationStage}
@@ -571,6 +738,7 @@ export default function TailorApp() {
           onDownloadHtml={downloadHtml}
           onPdfUpload={handlePdfUpload}
           onDownloadStoredPdf={downloadStoredPdf}
+          onRetrySourceLayout={() => setSourceLayoutAttempt((attempt) => attempt + 1)}
           onRemovePdf={async () => {
             await dropTailoredPdf(pending.jobKey);
             setPdfSnapshot(undefined);
@@ -583,18 +751,15 @@ export default function TailorApp() {
         <ArchiveStrip storedJobs={storedJobs} onLoad={async (jobKey) => {
           const stored = await getTailoredResume(jobKey);
           if (stored) {
+            if (!isHistoricalBundleForSource(stored.context.sourceResumeId, sourceResume?.id)) {
+              setStatus("");
+              setError("这份历史定制来自另一份简历，已忽略。请基于当前简历重新生成。");
+              return;
+            }
             setBundle(stored);
             setPending(stored.context);
-            const [pdf, resumeLibrary, activeResumeId] = await Promise.all([
-              loadTailoredPdf(jobKey),
-              loadResumeLibrary(),
-              loadActiveResumeId()
-            ]);
-            setPdfSnapshot(pdf);
-            const storedSource = stored.context.sourceResumeId
-              ? resumeLibrary.find((resume) => resume.id === stored.context.sourceResumeId)
-              : resumeLibrary.find((resume) => resume.id === activeResumeId);
-            setSourceResume(storedSource);
+            setPdfSnapshot(await loadTailoredPdf(jobKey));
+            setError("");
             setStatus(`已载入历史定制：${stored.context.company} · ${stored.context.position}`);
           }
         }} onDelete={deleteEntry} />
@@ -1220,12 +1385,10 @@ function ReviewGrid({
   phase,
   pending,
   bundle,
-  previewHtml,
-  sourcePreviewHtml,
-  sourceLayoutState,
-  sourceLayoutError,
+  preview,
   sourcePdfName,
   sourceCharacterCount,
+  overrideCount,
   pdfSnapshot,
   busy,
   generationStage,
@@ -1235,17 +1398,16 @@ function ReviewGrid({
   onDownloadHtml,
   onPdfUpload,
   onDownloadStoredPdf,
+  onRetrySourceLayout,
   onRemovePdf
 }: {
   phase: "jd-ready" | "jd-bundled";
   pending: PendingSnapshot;
   bundle?: TailoredResumeBundle;
-  previewHtml: string;
-  sourcePreviewHtml: string;
-  sourceLayoutState: "idle" | "loading" | "ready" | "error";
-  sourceLayoutError: string;
+  preview: TailorPreviewResolution;
   sourcePdfName?: string;
   sourceCharacterCount?: number;
+  overrideCount: number;
   pdfSnapshot?: TailoredPdfSnapshot;
   busy: boolean;
   generationStage: GenerationStage;
@@ -1255,19 +1417,15 @@ function ReviewGrid({
   onDownloadHtml: () => void;
   onPdfUpload: (event: React.ChangeEvent<HTMLInputElement>) => void;
   onDownloadStoredPdf: () => void;
+  onRetrySourceLayout: () => void;
   onRemovePdf: () => Promise<void>;
 }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [previewMode, setPreviewMode] = useState<"editable" | "source">("editable");
   const [previewLoaded, setPreviewLoaded] = useState(false);
-  const activePreviewHtml = previewMode === "source" ? sourcePreviewHtml : previewHtml;
+  const activePreviewHtml = preview.html;
   useEffect(() => {
     setPreviewLoaded(false);
   }, [activePreviewHtml]);
-
-  useEffect(() => {
-    if (previewMode === "source" && !sourcePreviewHtml) setPreviewMode("editable");
-  }, [previewMode, sourcePreviewHtml]);
 
   const handlePreviewLoad = () => {
     setPreviewLoaded(true);
@@ -1280,11 +1438,12 @@ function ReviewGrid({
 
   return (
     <div className="review-grid">
-      {bundle && previewHtml && (
+      {bundle && preview.mode === "coordinate" && (
         <TailorResultBanner
           bundle={bundle}
           sourcePdfName={sourcePdfName}
           sourceCharacterCount={sourceCharacterCount}
+          overrideCount={overrideCount}
           onOpenPreview={onOpenInNewTab}
           onDownloadHtml={onDownloadHtml}
         />
@@ -1312,26 +1471,17 @@ function ReviewGrid({
       <section className="panel resume-panel" aria-label="可编辑简历与映射标注">
         <div className="panel-head">
           <div className="resume-panel-title">
-            <strong>{previewMode === "editable" ? "流式编辑简历" : "原 PDF 对照"}</strong>
-            {bundle && (
-              <div className="preview-mode-switch" aria-label="简历预览模式">
-                <button
-                  type="button"
-                  className={previewMode === "editable" ? "active" : ""}
-                  onClick={() => setPreviewMode("editable")}
-                >
-                  流式编辑
-                </button>
-                <button
-                  type="button"
-                  className={previewMode === "source" ? "active" : ""}
-                  disabled={!sourcePreviewHtml}
-                  onClick={() => setPreviewMode("source")}
-                >
-                  原 PDF 对照
-                </button>
-              </div>
-            )}
+            <strong>
+              {preview.mode === "coordinate"
+                ? "原 PDF 高保真编辑"
+                : preview.mode === "flow"
+                  ? "兼容编辑预览"
+                  : preview.mode === "loading"
+                    ? "正在读取原 PDF 版式"
+                    : preview.mode === "error"
+                      ? "简历预览不可用"
+                      : "定制简历预览"}
+            </strong>
           </div>
           <small>
             {bundle ? (
@@ -1349,6 +1499,25 @@ function ReviewGrid({
         <div className="resume-scroll">
           {busy && generationStage !== "idle" && generationStage !== "error" ? (
             <GenerationProgress stage={generationStage} pending={pending} />
+          ) : preview.mode === "loading" ? (
+            <div className="resume-preview-loading" aria-live="polite">
+              <RefreshCw className="spin" size={18} />
+              <span>正在读取原 PDF 并按原版式生成预览…</span>
+            </div>
+          ) : preview.mode === "error" ? (
+            <div className="resume-empty-state" role="alert">
+              <AlertTriangle size={20} />
+              <strong>{sourcePdfName ? "原 PDF 版式读取失败" : "简历预览不可用"}</strong>
+              <span>{preview.error}</span>
+              {sourcePdfName && (
+                <>
+                  <button type="button" onClick={onRetrySourceLayout}>
+                    <RefreshCw size={14} /> 重试读取原 PDF
+                  </button>
+                  <small>请先重试；若仍失败，请回到简历库重新导入原始 PDF 后再生成。</small>
+                </>
+              )}
+            </div>
           ) : activePreviewHtml && bundle ? (
             <div className={`resume-stage ${previewLoaded ? "is-loaded" : "is-loading"}`}>
               <iframe
@@ -1365,23 +1534,6 @@ function ReviewGrid({
                   <span>正在打开简历预览…</span>
                 </div>
               )}
-            </div>
-          ) : bundle && sourceLayoutState === "loading" ? (
-            <div className="resume-preview-loading" aria-live="polite">
-              <RefreshCw className="spin" size={18} />
-              <span>正在按原 PDF 版式生成预览…</span>
-            </div>
-          ) : bundle && sourceLayoutState === "error" ? (
-            <div className="resume-empty-state">
-              <AlertTriangle size={20} />
-              <strong>原 PDF 版式读取失败</strong>
-              <span>{sourceLayoutError || "请回到简历库重新导入原始 PDF，再重新生成这份定制简历。"}</span>
-            </div>
-          ) : bundle && sourceLayoutState === "idle" ? (
-            <div className="resume-empty-state">
-              <AlertTriangle size={20} />
-              <strong>缺少原 PDF 母版</strong>
-              <span>这份定制不会使用重排模板。请回到简历库导入原始 PDF 后再生成。</span>
             </div>
           ) : generationStage !== "idle" && generationStage !== "error" ? (
             <GenerationProgress stage={generationStage} pending={pending} />
@@ -1418,12 +1570,14 @@ function TailorResultBanner({
   bundle,
   sourcePdfName,
   sourceCharacterCount,
+  overrideCount,
   onOpenPreview,
   onDownloadHtml
 }: {
   bundle: TailoredResumeBundle;
   sourcePdfName?: string;
   sourceCharacterCount?: number;
+  overrideCount: number;
   onOpenPreview: () => void;
   onDownloadHtml: () => void;
 }) {
@@ -1432,13 +1586,17 @@ function TailorResultBanner({
       <div className="tailor-result-copy">
         <span className="tailor-result-mark"><Check size={18} /></span>
         <div>
-          <strong>流式定制简历已生成</strong>
-          <small>{bundle.context.company || "当前岗位"} · {bundle.context.position} · 可整段编辑并自动重排</small>
+          <strong>{overrideCount > 0 ? "原 PDF 版式定制已生成" : "定制文案尚未写入原 PDF"}</strong>
+          <small>
+            {overrideCount > 0
+              ? `${bundle.context.company || "当前岗位"} · ${bundle.context.position} · 已按原坐标替换文本`
+              : "当前预览仍是母版原文，请重新生成；系统不会把零替换结果标记为成功。"}
+          </small>
         </div>
       </div>
       <div className="tailor-result-stats">
         <span title={sourcePdfName}>
-          {sourcePdfName || "原 PDF"} · {sourceCharacterCount || 0} 字 · 原版仅用于对照
+          {sourcePdfName || "原 PDF"} · {formatSourceCharacterCount(sourceCharacterCount)} · DeepSeek 改写 {bundle.changeSummary?.modelChanges ?? "—"} 处 · PDF 落版 {overrideCount} 处
         </span>
       </div>
       <div className="tailor-result-actions">

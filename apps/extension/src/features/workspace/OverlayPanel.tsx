@@ -28,7 +28,6 @@ import {
   KeyRound,
   Target,
   Trash2,
-  Wand2,
   X
 } from "lucide-react";
 import {
@@ -80,13 +79,11 @@ import {
   CHINA_MAP_WIDTH,
   LOCATION_COORDINATES,
   calendarDateKey,
-  companyMark,
   coordinatesToPath,
   formatDeadline,
   localDateKey,
   normalizeJobLocation,
   projectChinaPoint,
-  sourceLabel,
   type ChinaMapFeature
 } from "./workspaceUtils";
 
@@ -98,7 +95,6 @@ export function OverlayPanel({
   opportunityError,
   profile,
   onSaveProfile,
-  onSaveOpportunityFeed,
   onCapture,
   onTailor,
   onOpenOpportunity,
@@ -118,7 +114,6 @@ export function OverlayPanel({
   opportunityError?: string;
   profile: PersonalProfile;
   onSaveProfile: (profile: PersonalProfile) => Promise<void>;
-  onSaveOpportunityFeed: (url: string) => Promise<void>;
   onCapture: () => void;
   onTailor?: () => void;
   onOpenOpportunity: (opportunity: RecruitmentOpportunity) => void;
@@ -134,9 +129,6 @@ export function OverlayPanel({
   const [tab, setTab] = useState<
     "overview" | "opportunities" | "agenda" | "locations" | "settings" | "profile"
   >("overview");
-  const [opportunityFeedDraft, setOpportunityFeedDraft] = useState(
-    settings.opportunityFeedUrl || ""
-  );
   const overlayScrollRef = useRef<HTMLDivElement>(null);
   const today = localDateKey(new Date());
   const [calendarMonth, setCalendarMonth] = useState(
@@ -146,10 +138,6 @@ export function OverlayPanel({
   const [selectedLocation, setSelectedLocation] = useState("全部");
   const [chinaMapFeatures, setChinaMapFeatures] = useState<ChinaMapFeature[]>([]);
   const [chinaMapError, setChinaMapError] = useState(false);
-
-  useEffect(() => {
-    setOpportunityFeedDraft(settings.opportunityFeedUrl || "");
-  }, [settings.opportunityFeedUrl]);
 
   useEffect(() => {
     overlayScrollRef.current?.scrollTo(0, 0);
@@ -192,7 +180,6 @@ export function OverlayPanel({
   const activeJobs = jobs
     .filter((job) => job.stage !== "closed")
     .sort((a, b) => (a.deadline || "9999").localeCompare(b.deadline || "9999"));
-  const favoriteJobs = jobs.filter((job) => job.isFavorite);
   const locationGroups = Array.from(
     activeJobs.reduce((groups, job) => {
       const location = normalizeJobLocation(job.city);
@@ -285,7 +272,6 @@ export function OverlayPanel({
           <strong>{job.position}</strong>
           <small>
             {job.company}
-            {job.externalStage ? ` · ${job.externalStage}` : ""}
           </small>
         </span>
         <span className="overlay-job-meta">
@@ -357,21 +343,6 @@ export function OverlayPanel({
               </span>
               <button onClick={onCapture}>识别</button>
             </section>
-            {onTailor && (
-              <section className="overlay-capture-card overlay-tailor-card">
-                <span className="overlay-capture-icon overlay-tailor-icon">
-                  <Sparkles size={19} />
-                </span>
-                <span>
-                  <strong>为当前岗位定制简历</strong>
-                  <small>读取 JD、匹配经历并生成定制预览</small>
-                </span>
-                <button onClick={onTailor}>
-                  <Wand2 size={14} />
-                  开始定制
-                </button>
-              </section>
-            )}
           </div>
         )}
 
@@ -384,50 +355,6 @@ export function OverlayPanel({
                   : "暂无岗位记录"}
               </span>
             </div>
-
-            <section className="overlay-favorites-section">
-              <div className="overlay-favorites-heading">
-                <div>
-                  <span className="overlay-favorites-kicker"><Star size={14} fill="currentColor" />收藏夹</span>
-                  <strong>{favoriteJobs.length ? `${favoriteJobs.length} 个岗位值得继续看看` : "先收藏几个想去的岗位"}</strong>
-                </div>
-                <span className="overlay-favorites-count">{favoriteJobs.length} 个</span>
-              </div>
-              {favoriteJobs.length ? (
-                <div className="overlay-favorites-grid">
-                  {favoriteJobs.map((job) => (
-                    <article className="overlay-favorite-card" key={job.id}>
-                      <button
-                        className="overlay-favorite-star"
-                        onClick={() => onToggleFavorite(job)}
-                        aria-label={`取消收藏 ${job.position}`}
-                        title="取消收藏"
-                      >
-                        <Star size={16} fill="currentColor" />
-                      </button>
-                      <div className="overlay-favorite-art" aria-hidden="true">
-                        <span className="overlay-favorite-art-ring" />
-                        <strong>{companyMark(job.company)}</strong>
-                      </div>
-                      <div className="overlay-favorite-company">
-                        <span className="overlay-favorite-company-mark">{companyMark(job.company).slice(0, 2)}</span>
-                        <span>{sourceLabel(job)}</span>
-                      </div>
-                      <h2 title={job.position}>{job.position}</h2>
-                      <p>{job.company}{job.externalStage ? ` · ${job.externalStage}` : ""}</p>
-                      <button className="overlay-favorite-open" onClick={() => onOpenSource(job)}>
-                        打开 <ExternalLink size={13} />
-                      </button>
-                    </article>
-                  ))}
-                </div>
-              ) : (
-                <div className="overlay-favorites-empty">
-                  <Star size={21} />
-                  <span>点击岗位右侧的星标，把想去的岗位放进这里</span>
-                </div>
-              )}
-            </section>
 
             <section className="overlay-flow">
               <div className="overlay-progress-heading">
@@ -664,21 +591,15 @@ export function OverlayPanel({
             </div>
             <CloudSyncSettings />
             <div className="opportunity-feed-settings">
-              <label htmlFor="overlay-opportunity-feed">校招机会数据源地址</label>
-              <input
-                id="overlay-opportunity-feed"
-                type="url"
-                value={opportunityFeedDraft}
-                placeholder="飞书云表格链接或公开 JSON 地址"
-                onChange={(event) => setOpportunityFeedDraft(event.target.value)}
-              />
-              <p>支持飞书云表格链接和公开 JSON；留空恢复默认校招表格。</p>
+              <label>校招机会数据源</label>
+              <p>已直连公开 JSON，后台每 15 分钟自动同步。</p>
+              <code>{DEFAULT_OPPORTUNITY_FEED_URL}</code>
               <button
-                onClick={() => void onSaveOpportunityFeed(opportunityFeedDraft)}
+                onClick={onRefreshOpportunities}
                 disabled={opportunityLoading}
               >
                 {opportunityLoading ? <RefreshCw className="spin" size={14} /> : <Check size={14} />}
-                保存并同步
+                立即同步
               </button>
             </div>
           </section>

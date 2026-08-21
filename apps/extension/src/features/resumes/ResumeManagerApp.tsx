@@ -24,7 +24,11 @@ import {
   UserRound,
   X
 } from "lucide-react";
-import { normalizeEducationEntries, parseResumeFile } from "@/features/profile/resumeParser";
+import {
+  extractResumePdfAssets,
+  normalizeEducationEntries,
+  parseResumeFile
+} from "@/features/profile/resumeParser";
 import { arrayBufferToBase64 } from "@/shared/binary";
 import ResumeEditor from "@/features/resumes/ResumeEditor";
 import {
@@ -46,9 +50,20 @@ import {
   loadResumeLibraryUi,
   saveResumeLibraryUi,
   setActiveResumeId,
+  dropTailoredResumesForSourceResumeIds,
+  pruneOrphanedTailoredResumes,
   type ResumeFixedProfile,
-  type StoredResume
+  type StoredResume,
+  type StoredResumeKind,
+  type StoredResumeParseMetadata,
+  type StoredResumeSourceMetadata
 } from "@/infrastructure/storage/storage";
+import {
+  calculateResumeCoverage,
+  collectResumeRemovalIds,
+  countResumeFields,
+  resolveActiveResumeId
+} from "@/features/resumes/resumeLifecycle";
 
 const createId = () => `resume_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 const MAX_SOURCE_PDF_BYTES = 8 * 1024 * 1024;
@@ -111,28 +126,99 @@ function migrateLegacyResumeName(resume: StoredResume): StoredResume {
   return resume;
 }
 
-function resumeFolderName(resume: StoredResume) {
-  return resume.position?.trim() || resume.profile.targetRole?.trim() || "未指定岗位";
-}
-
-function resumeFolderKey(resume: StoredResume) {
-  return resumeFolderName(resume).toLocaleLowerCase().replace(/[\s·•\-_/]+/g, "");
-}
-
 function fieldCount(resume: StoredResume) {
-  const profile = resume.profile;
-  return [
-    profile.fullName,
-    profile.phone,
-    profile.email,
-    profile.currentCity,
-    profile.targetRole,
-    profile.graduationDate,
-    profile.portfolioUrl,
-    ...profile.education.flatMap((item) => [item.school, item.major, item.degree, item.startDate, item.endDate]),
-    ...profile.experiences.flatMap((item) => [item.organization, item.title, item.startDate, item.endDate, item.description]),
-    ...profile.projects.flatMap((item) => [item.name, item.role, item.startDate, item.endDate, item.description])
-  ].filter(Boolean).length;
+  return countResumeFields(resume);
+}
+
+const RESUME_GROUPS: Array<{
+  key: StoredResumeKind;
+  label: string;
+  description: string;
+}> = [
+  { key: "master", label: "原始母版", description: "保留原文件与来源信息" },
+  { key: "base", label: "通用版本", description: "日常维护和网申复用" },
+  { key: "job", label: "岗位定制", description: "按公司与岗位沉淀" }
+];
+
+function meaningfulParseWarnings(warnings: string[]): string[] {
+  return warnings.filter((warning) => !warning.includes("PDF 已使用结构化文本提取"));
+}
+
+function buildParseMetadata(
+  result: Awaited<ReturnType<typeof parseResumeFile>>,
+  parsedAt: string
+): StoredResumeParseMetadata {
+  const warnings = meaningfulParseWarnings(result.warnings);
+  const status = result.extractedCount <= 0 || result.textLength <= 0
+    ? "failed"
+    : warnings.length
+      ? "needs-review"
+      : "ready";
+  return {
+    schemaVersion: 1,
+    status,
+    coverage: calculateResumeCoverage({ profile: result.profile }),
+    extractedFieldCount: result.extractedCount,
+    textLength: result.textLength,
+    warnings,
+    parsedAt,
+    parserVersion: "resume-parser-v2-semantic",
+    sourceText: result.diagnostics?.normalizedText,
+    unclassifiedText: result.diagnostics?.unclassifiedText
+  };
+}
+
+async function sha256Hex(buffer: ArrayBuffer): Promise<string | undefined> {
+  if (!globalThis.crypto?.subtle) return undefined;
+  try {
+    const digest = await globalThis.crypto.subtle.digest("SHA-256", buffer.slice(0));
+    return [...new Uint8Array(digest)].map((byte) => byte.toString(16).padStart(2, "0")).join("");
+  } catch {
+    return undefined;
+  }
+}
+
+function estimatePdfPageCount(buffer: ArrayBuffer): number | undefined {
+  try {
+    const source = new TextDecoder("latin1").decode(buffer);
+    const count = source.match(/\/Type\s*\/Page\b/g)?.length || 0;
+    return count > 0 ? count : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function resumeKindLabel(kind?: StoredResumeKind) {
+  return RESUME_GROUPS.find((group) => group.key === kind)?.label || "通用版本";
+}
+
+function parseHealth(resume: StoredResume) {
+  const parse = resume.parse;
+  const warnings = parse?.warnings?.length || 0;
+  switch (parse?.status) {
+    case "ready":
+      return { className: "is-ready", label: "解析完成", detail: "关键结构已识别" };
+    case "needs-review":
+      return { className: "needs-review", label: "待核对", detail: `${warnings} 项需要确认` };
+    case "failed":
+      return { className: "is-failed", label: "解析失败", detail: "原件已保留，可重新解析" };
+    case "pending":
+      return { className: "is-pending", label: "解析中", detail: "正在建立结构化资料" };
+    default:
+      return { className: "is-unknown", label: "待复核", detail: "旧记录没有解析报告" };
+  }
+}
+
+function cloneProfile(profile: StoredResume["profile"]): StoredResume["profile"] {
+  return {
+    ...profile,
+    education: profile.education.map((item) => ({ ...item })),
+    experiences: profile.experiences.map((item) => ({ ...item })),
+    projects: profile.projects.map((item) => ({ ...item })),
+    campusExperiences: (profile.campusExperiences || []).map((item) => ({ ...item })),
+    awards: (profile.awards || []).map((item) => ({ ...item })),
+    extraFields: { ...(profile.extraFields || {}) }
+  };
 }
 
 export default function ResumeManagerApp() {
@@ -187,11 +273,12 @@ export default function ResumeManagerApp() {
       setLibraryPinned(libraryUi.pinned);
       if (storedFixedProfile?.fixedSectionsVersion !== 1) await saveBaseProfile(fixedProfile);
       if (library.some((resume, index) => resume !== loadedLibrary[index])) await saveResumeLibrary(library);
-      const currentId = active && library.some((resume) => resume.id === active) ? active : library[0]?.id || "";
+      const currentId = resolveActiveResumeId(library, active);
       const currentResume = library.find((resume) => resume.id === currentId);
       await Promise.all([
         currentId && active !== currentId ? setActiveResumeId(currentId) : Promise.resolve(),
-        currentResume ? saveProfile(currentResume.profile) : Promise.resolve()
+        currentResume ? saveProfile(currentResume.profile) : Promise.resolve(),
+        pruneOrphanedTailoredResumes(library.map((resume) => resume.id))
       ]);
       setResumes(library);
       setActiveId(currentId);
@@ -217,13 +304,12 @@ export default function ResumeManagerApp() {
           loadActiveResumeId(),
           loadBaseProfile()
         ]);
-        const currentId = storedActiveId && library.some((resume) => resume.id === storedActiveId)
-          ? storedActiveId
-          : library[0]?.id || "";
+        const currentId = resolveActiveResumeId(library, storedActiveId);
         setResumes(library);
         setActiveId(currentId);
         setSelectedId((current) => library.some((resume) => resume.id === current) ? current : currentId);
         if (fixedProfile) setResumeFixedProfile(fixedProfile);
+        if (currentId && currentId !== storedActiveId) await setActiveResumeId(currentId);
       })();
     };
     chrome.storage.onChanged.addListener(handleStorageChange);
@@ -235,15 +321,13 @@ export default function ResumeManagerApp() {
     [resumes, selectedId]
   );
 
-  const folders = useMemo(() => {
-    const grouped = new Map<string, { label: string; resumes: StoredResume[] }>();
-    resumes.forEach((resume) => {
-      const key = resumeFolderKey(resume);
-      const current = grouped.get(key);
-      if (current) current.resumes.push(resume);
-      else grouped.set(key, { label: resumeFolderName(resume), resumes: [resume] });
-    });
-    return [...grouped.entries()].map(([key, value]) => ({ key, ...value }));
+  const libraryGroups = useMemo(() => {
+    return RESUME_GROUPS.map((group) => ({
+      ...group,
+      resumes: resumes
+        .filter((resume) => (resume.kind || "base") === group.key)
+        .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
+    }));
   }, [resumes]);
 
   const notify = (message: string) => {
@@ -298,7 +382,8 @@ export default function ResumeManagerApp() {
       if (isPdf && file.size > MAX_SOURCE_PDF_BYTES) {
         throw new Error("原始 PDF 不能超过 8MB；请压缩后重新导入，才能保证定制时沿用原版式");
       }
-      let result;
+      const sourceBuffer = await file.arrayBuffer();
+      let result: Awaited<ReturnType<typeof parseResumeFile>>;
       try {
         result = await parseResumeFile(file);
       } catch (parseError) {
@@ -313,41 +398,101 @@ export default function ResumeManagerApp() {
           textLength: 0
         };
       }
+      const extractedAssets = isPdf
+        ? await extractResumePdfAssets(sourceBuffer.slice(0)).catch(() => ({
+            assets: [],
+            portraitAssetId: undefined,
+            warnings: ["PDF 图片提取失败；原 PDF 仍已保留，可在简历工作台手动上传证件照"]
+          }))
+        : { assets: [], portraitAssetId: undefined, warnings: [] };
+      result.warnings.push(...extractedAssets.warnings);
       const now = new Date().toISOString();
       const parsedName = fileStem(file.name) || "新简历";
       const archiveMetadata = inferArchiveMetadata(parsedName, result.profile);
+      const [sha256] = await Promise.all([sha256Hex(sourceBuffer)]);
+      const pageCount = isPdf ? estimatePdfPageCount(sourceBuffer) : undefined;
+      const parse = buildParseMetadata(result, now);
+      const sourceRevisionId = sha256 ? `source_${sha256.slice(0, 20)}` : `source_${createId()}`;
+      const source: StoredResumeSourceMetadata = {
+        revisionId: sourceRevisionId,
+        fileName: file.name,
+        mimeType: file.type || (isPdf ? "application/pdf" : "application/octet-stream"),
+        size: file.size,
+        importedAt: now,
+        sha256,
+        pageCount,
+        characterCount: result.textLength,
+        storageStatus: isPdf ? "stored" : "missing",
+        layoutStatus: isPdf ? "pending" : "unknown"
+      };
       let fixedProfile = resumeFixedProfile;
       if (!fixedProfile || fixedProfile.fixedSectionsVersion !== 1) {
         fixedProfile = extractResumeFixedProfile(result.profile);
         setResumeFixedProfile(fixedProfile);
         await saveBaseProfile(fixedProfile);
       }
+      const parsedProfile = applyResumeFixedProfile(result.profile, fixedProfile);
+      const masterId = isPdf ? createId() : undefined;
+      const sourcePdf = isPdf
+        ? {
+            fileName: file.name,
+            size: file.size,
+            importedAt: now,
+            base64: arrayBufferToBase64(sourceBuffer),
+            sha256,
+            pageCount,
+            characterCount: result.textLength
+          }
+        : undefined;
+      const master: StoredResume | undefined = masterId
+        ? {
+            id: masterId,
+            name: parsedName,
+            kind: "master",
+            masterResumeId: masterId,
+            versionNumber: 1,
+            lifecycleStatus: "active",
+            company: archiveMetadata.company,
+            position: archiveMetadata.position,
+            archiveNameSource: "filename",
+            sourceFileName: file.name,
+            sourcePdf,
+            assets: structuredClone(extractedAssets.assets),
+            portraitAssetId: extractedAssets.portraitAssetId,
+            source,
+            parse,
+            profile: cloneProfile(parsedProfile),
+            createdAt: now,
+            updatedAt: now
+          }
+        : undefined;
       const created: StoredResume = {
         id: createId(),
         name: parsedName,
+        kind: "base",
+        masterResumeId: masterId,
+        parentResumeId: masterId,
+        versionNumber: 1,
+        lifecycleStatus: "active",
         company: archiveMetadata.company,
         position: archiveMetadata.position,
         archiveNameSource: "filename",
         sourceFileName: file.name,
-        sourcePdf: isPdf
-          ? {
-              fileName: file.name,
-              size: file.size,
-              importedAt: now,
-              base64: arrayBufferToBase64(await file.arrayBuffer())
-            }
-          : undefined,
-        profile: applyResumeFixedProfile(result.profile, fixedProfile),
+        sourcePdf,
+        sourcePdfInherited: Boolean(master),
+        assets: structuredClone(extractedAssets.assets),
+        portraitAssetId: extractedAssets.portraitAssetId,
+        sourceAssetsInherited: Boolean(master && extractedAssets.assets.length),
+        source: { ...source, storageStatus: master ? "referenced" : source.storageStatus },
+        parse: { ...parse, warnings: [...parse.warnings] },
+        profile: cloneProfile(parsedProfile),
         createdAt: now,
         updatedAt: now
       };
-      const next = [created, ...resumes];
-      setResumes(next);
-      setSelectedId(created.id);
-      await saveResumeLibrary(next);
-      if (!resumes.length) await activate(created, next);
+      const next = [created, ...(master ? [master] : []), ...resumes];
+      await activate(created, next);
       notify(
-        `已导入《${parsedName}》· 提取 ${result.extractedCount} 个字段${result.warnings.length ? ` · ${result.warnings.length} 项待核对` : ""}`
+        `已导入并启用《${parsedName}》通用版 · 提取 ${result.extractedCount} 个字段${parse.warnings.length ? ` · ${parse.warnings.length} 项待核对` : ""}`
       );
     } catch (error) {
       notify(error instanceof Error ? error.message : "简历解析失败，请换一个文件重试");
@@ -379,21 +524,29 @@ export default function ResumeManagerApp() {
   };
 
   const removeResume = async (resume: StoredResume) => {
-    if (!window.confirm(`确定删除《${resumeName(resume)}》吗？删除后不能恢复。`)) return;
-    const next = resumes.filter((item) => item.id !== resume.id);
+    const removalIds = collectResumeRemovalIds(resumes, resume.id);
+    const linkedCount = Math.max(0, removalIds.size - 1);
+    const relationshipWarning = linkedCount
+      ? `\n同时会删除 ${linkedCount} 个关联版本及其岗位定制记录，避免版本串档。`
+      : "";
+    if (!window.confirm(`确定删除《${resumeName(resume)}》吗？${relationshipWarning}\n删除后不能恢复。`)) return;
+    const next = resumes.filter((item) => !removalIds.has(item.id));
+    const nextActiveId = resolveActiveResumeId(next, removalIds.has(activeId) ? undefined : activeId);
+    const nextActiveResume = next.find((item) => item.id === nextActiveId);
     setResumes(next);
-    await saveResumeLibrary(next);
-    if (resume.id === activeId) {
-      if (next[0]) {
-        await activate(next[0], next);
-      } else {
-        setActiveId("");
-        await setActiveResumeId("");
-        await saveProfile(await loadProfile());
-      }
-    }
-    setSelectedId(next[0]?.id || "");
-    notify("简历已删除");
+    setActiveId(nextActiveId);
+    setSelectedId(nextActiveId || next[0]?.id || "");
+    const [, removedTailoredCount] = await Promise.all([
+      saveResumeLibrary(next),
+      dropTailoredResumesForSourceResumeIds(removalIds),
+      setActiveResumeId(nextActiveId),
+      nextActiveResume ? saveProfile(nextActiveResume.profile) : saveProfile({ ...EMPTY_PROFILE })
+    ]);
+    notify(
+      linkedCount || removedTailoredCount
+        ? `已删除 ${removalIds.size} 个关联版本，并清理 ${removedTailoredCount} 份岗位定制`
+        : "简历已删除"
+    );
   };
 
   const saveEditedResume = async (
@@ -502,7 +655,7 @@ export default function ResumeManagerApp() {
             </button>
           </div>
           <div className="resume-library-heading">
-            <div><span className="resume-eyebrow">RESUME LIBRARY</span><h1>我的简历</h1></div>
+            <div><span className="resume-eyebrow">简历档案</span><h1>我的简历</h1></div>
             <div className="resume-library-tools">
               <span className="resume-total">{resumes.length}</span>
               <button onClick={() => void saveLibraryUi({ collapsed: true })} aria-label="收起简历库" title="收起简历库">
@@ -518,34 +671,36 @@ export default function ResumeManagerApp() {
               </button>
             </div>
           </div>
-          <p className="resume-library-subtitle">为不同岗位准备不同版本，申请时随时切换。</p>
+          <p className="resume-library-subtitle">原件、通用版和岗位版分开管理，来源和修改关系始终可追溯。</p>
           <button className="resume-new-card" onClick={() => inputRef.current?.click()}>
             <span><CloudUpload size={18} /></span>
             <div><strong>上传一份新简历</strong><small>点击或拖拽 PDF / DOCX / TXT</small></div>
             <ChevronRight size={15} />
           </button>
           <div className="resume-list">
-            {folders.map((folder) => {
-              const collapsed = collapsedFolders.has(folder.key);
+            {libraryGroups.map((group) => {
+              const collapsed = collapsedFolders.has(group.key);
               return (
-                <section className="resume-folder" key={folder.key}>
+                <section className={`resume-folder resume-library-group group-${group.key}`} key={group.key}>
                   <button
                     className="resume-folder-head"
                     onClick={() => setCollapsedFolders((current) => {
                       const next = new Set(current);
-                      if (next.has(folder.key)) next.delete(folder.key);
-                      else next.add(folder.key);
+                      if (next.has(group.key)) next.delete(group.key);
+                      else next.add(group.key);
                       return next;
                     })}
                     aria-expanded={!collapsed}
                   >
-                    <span className="resume-folder-icon"><Folder size={15} /></span>
-                    <strong>{folder.label}</strong>
-                    <small>{folder.resumes.length}</small>
+                    <span className="resume-folder-icon">
+                      {group.key === "master" ? <FileCheck2 size={15} /> : group.key === "job" ? <BriefcaseBusiness size={15} /> : <Folder size={15} />}
+                    </span>
+                    <span className="resume-group-heading"><strong>{group.label}</strong><em>{group.description}</em></span>
+                    <small>{group.resumes.length}</small>
                     <ChevronDown className={collapsed ? "is-collapsed" : ""} size={15} />
                   </button>
                   {!collapsed && <div className="resume-folder-items">
-                    {folder.resumes.map((resume) => (
+                    {group.resumes.map((resume) => (
                       <ResumeListItem
                         key={resume.id}
                         resume={resume}
@@ -556,6 +711,15 @@ export default function ResumeManagerApp() {
                         onDelete={() => void removeResume(resume)}
                       />
                     ))}
+                    {!group.resumes.length && (
+                      <div className="resume-group-empty">
+                        {group.key === "master"
+                          ? "上传 PDF 后在这里保留不可丢失的原件"
+                          : group.key === "base"
+                            ? "上传简历后自动建立一个通用版本"
+                            : "针对岗位生成的版本会归档在这里"}
+                      </div>
+                    )}
                   </div>}
                 </section>
               );
@@ -573,15 +737,18 @@ export default function ResumeManagerApp() {
 
         <section className="resume-detail">
           {selected ? (
-            <ResumeEditor
-              resume={selected}
-              active={selected.id === activeId}
-              onBack={() => setSelectedId(resumes[0]?.id || "")}
-              onActivate={() => void activate(selected)}
-              onDelete={() => void removeResume(selected)}
-              onSave={(profile, metadata) => saveEditedResume(selected, profile, metadata)}
-              onOpenPlugin={openPlugin}
-            />
+            <>
+              <ResumeLifecycleSummary resume={selected} />
+              <ResumeEditor
+                resume={selected}
+                active={selected.id === activeId}
+                onBack={() => setSelectedId(resolveActiveResumeId(resumes, activeId) || resumes[0]?.id || "")}
+                onActivate={() => void activate(selected)}
+                onDelete={() => void removeResume(selected)}
+                onSave={(profile, metadata) => saveEditedResume(selected, profile, metadata)}
+                onOpenPlugin={openPlugin}
+              />
+            </>
           ) : (
             <EmptyResumeState onUpload={() => inputRef.current?.click()} />
           )}
@@ -590,6 +757,48 @@ export default function ResumeManagerApp() {
 
       {notice && <button className="resume-manager-notice" onClick={() => setNotice("")}><Check size={15} />{notice}<X size={14} /></button>}
     </main>
+  );
+}
+
+function ResumeLifecycleSummary({ resume }: { resume: StoredResume }) {
+  const health = parseHealth(resume);
+  const source = resume.source;
+  const parse = resume.parse;
+  const coverage = Math.round((parse?.coverage || 0) * 100);
+  const sourceMessage = resume.lifecycleStatus === "invalid"
+    ? resume.invalidReason || "版本关系已失效"
+    : resume.kind === "master"
+      ? source?.storageStatus === "stored"
+        ? source.layoutStatus === "ready"
+          ? "原始文件与版式母版均已验证"
+          : "原始文件已保存，版式母版尚待验证"
+        : "原始文件缺失，需要重新导入"
+      : resume.masterResumeId
+        ? "此版本引用原始母版，修改不会覆盖原文件"
+        : "独立结构化版本，尚未关联原始母版";
+
+  return (
+    <section className={`resume-lifecycle-summary ${health.className}`} aria-label="简历版本与解析状态">
+      <div className="resume-lifecycle-main">
+        <span className="resume-lifecycle-kind">{resumeKindLabel(resume.kind)} · v{resume.versionNumber || 1}</span>
+        <strong>{sourceMessage}</strong>
+        <small>
+          {source?.fileName || resume.sourceFileName || "无来源文件"}
+          {source?.sha256 ? ` · SHA-256 ${source.sha256.slice(0, 10)}…` : " · 来源哈希待补全"}
+        </small>
+      </div>
+      <div className="resume-lifecycle-stats">
+        <span><strong>{source?.pageCount || "—"}</strong><small>页数</small></span>
+        <span><strong>{parse?.textLength || source?.characterCount || "—"}</strong><small>字符</small></span>
+        <span><strong>{coverage}%</strong><small>结构覆盖</small></span>
+        <span className={`resume-health-stat ${health.className}`}><strong>{health.label}</strong><small>{health.detail}</small></span>
+      </div>
+      {parse?.warnings.length ? (
+        <div className="resume-lifecycle-warning">
+          <strong>待核对：</strong>{parse.warnings.slice(0, 2).join("；")}{parse.warnings.length > 2 ? ` 等 ${parse.warnings.length} 项` : ""}
+        </div>
+      ) : null}
+    </section>
   );
 }
 
@@ -608,6 +817,9 @@ function ResumeListItem({
   onActivate: () => void;
   onDelete: () => void;
 }) {
+  const health = parseHealth(resume);
+  const pageCount = resume.source?.pageCount;
+  const characterCount = resume.parse?.textLength || resume.source?.characterCount || 0;
   return (
     <div
       className={`resume-list-item ${selected ? "selected" : ""}`}
@@ -623,11 +835,11 @@ function ResumeListItem({
     >
       <span className="resume-list-file"><FileText size={17} /></span>
       <span className="resume-list-copy">
-        <strong>{resumeName(resume)}</strong>
+        <span className="resume-list-title"><strong>{resumeName(resume)}</strong><i>{resumeKindLabel(resume.kind)} v{resume.versionNumber || 1}</i></span>
         <small>{resume.sourceFileName || "本地资料"}</small>
-        <small>{fieldCount(resume)} 个字段 · {new Date(resume.updatedAt).toLocaleDateString("zh-CN")}</small>
-        <small className={resume.sourcePdf ? "resume-source-ready" : "resume-source-missing"}>
-          {resume.sourcePdf ? "原 PDF 母版已保存" : "缺少原 PDF 母版 · 重新导入可保持版式"}
+        <small>{fieldCount(resume)} 个字段 · {pageCount ? `${pageCount} 页` : "页数待确认"} · {characterCount ? `${characterCount} 字` : "字符待识别"}</small>
+        <small className={`resume-parse-health ${health.className}`}>
+          <i />{health.label}{resume.parse?.warnings.length ? ` · ${resume.parse.warnings.length} 项` : ""}
         </small>
       </span>
       <span className="resume-list-actions">
@@ -676,6 +888,7 @@ function ResumeDetail({
   const education = profile.education[0];
   const experience = profile.experiences[0];
   const project = profile.projects[0];
+  const portrait = resume.assets?.find((asset) => asset.id === resume.portraitAssetId);
 
   return (
     <div className="resume-detail-inner">
@@ -686,8 +899,8 @@ function ResumeDetail({
             <span className="resume-eyebrow">SAVED RESUME</span>
             <h2>{resumeName(resume)}</h2>
             <p>{resume.sourceFileName || "本地保存的结构化资料"} · 更新于 {new Date(resume.updatedAt).toLocaleString("zh-CN")}</p>
-            <p className={resume.sourcePdf ? "resume-source-ready" : "resume-source-missing"}>
-              {resume.sourcePdf ? "原 PDF 母版已保存，一键改简历会沿用原排版" : "缺少原 PDF 母版，请重新导入 PDF 后再使用一键改简历"}
+            <p className={resume.parse?.status === "ready" ? "resume-source-ready" : "resume-source-missing"}>
+              {parseHealth(resume).label} · {resume.source?.storageStatus === "stored" ? "原件已保存" : resume.masterResumeId ? "引用关联母版" : "缺少原始母版"}
             </p>
           </div>
         </div>
@@ -702,10 +915,12 @@ function ResumeDetail({
       </div>
 
       <div className="resume-profile-banner">
-        <div className="resume-avatar">{profile.fullName?.slice(0, 1) || "简"}</div>
+        <div className={`resume-avatar ${portrait ? "has-photo" : ""}`}>
+          {portrait ? <img src={portrait.dataUrl} alt={`${profile.fullName || "候选人"}的简历照片`} /> : profile.fullName?.slice(0, 1) || "简"}
+        </div>
         <div><strong>{profile.fullName || "待识别姓名"}</strong><span>{profile.targetRole || "尚未填写目标岗位"}</span></div>
         <div className="resume-banner-stat"><strong>{fieldCount(resume)}</strong><span>已识别字段</span></div>
-        <div className="resume-banner-stat"><strong>{profile.education.length + profile.experiences.length + profile.projects.length}</strong><span>经历条目</span></div>
+        <div className="resume-banner-stat"><strong>{profile.education.length + profile.experiences.length + profile.projects.length + (profile.campusExperiences || []).length + (profile.awards || []).length}</strong><span>经历与奖项</span></div>
       </div>
 
       <div className="resume-detail-grid">
@@ -747,7 +962,7 @@ function EmptyResumeState({ onUpload }: { onUpload: () => void }) {
   return (
     <div className="resume-empty-state">
       <div className="resume-empty-icon"><CloudUpload size={27} /></div>
-      <span className="resume-eyebrow">YOUR RESUME LIBRARY</span>
+      <span className="resume-eyebrow">简历档案</span>
       <h2>先上传一份简历</h2>
       <p>解析后保存多个版本，申请不同岗位时一键切换。</p>
       <button className="resume-upload-button" onClick={onUpload}><Plus size={16} />上传简历</button>

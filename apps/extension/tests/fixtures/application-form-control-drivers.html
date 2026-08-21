@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>组件驱动与弹层归属测试</title>
+    <style>
+      body { margin: 0; padding: 28px; font: 16px/1.5 Arial, sans-serif; }
+      form { display: grid; gap: 20px; width: 480px; }
+      .form-item { display: grid; gap: 7px; }
+      [role="combobox"] { min-height: 40px; padding: 0 12px; border: 1px solid #bbb; }
+      .popup { position: fixed; z-index: 100; width: 300px; padding: 10px; background: white; border: 1px solid #999; }
+      .popup[hidden] { display: none; }
+      .ivu-select-dropdown { left: 28px; top: 105px; }
+      .semi-portal { left: 28px; top: 250px; }
+      .generic-listbox { left: 28px; top: 395px; }
+      [role="option"] { display: block; width: 100%; padding: 8px; text-align: left; }
+      .popup-footer { display: flex; justify-content: flex-end; margin-top: 10px; }
+    </style>
+  </head>
+  <body>
+    <form id="application-form">
+      <div class="form-item">
+        <label id="degree-label">最高学历</label>
+        <div class="ivu-select ivu-select-filterable">
+          <input id="degree-control" class="ivu-select-input" role="combobox" aria-labelledby="degree-label" aria-controls="degree-options" aria-expanded="false" />
+          <span class="ivu-select-selected-value"></span>
+        </div>
+      </div>
+
+      <div class="form-item">
+        <label id="city-label">现居城市</label>
+        <div class="semi-cascader">
+          <input id="city-control" role="combobox" aria-labelledby="city-label" aria-controls="city-options" aria-expanded="false" />
+          <span class="semi-cascader-selection-text"></span>
+        </div>
+      </div>
+
+      <div class="form-item">
+        <label id="years-label">Work years</label>
+        <input id="years-control" role="combobox" aria-labelledby="years-label" aria-controls="years-options" aria-expanded="false" />
+        <span id="years-selected"></span>
+      </div>
+
+      <button id="final-submit" type="submit">确认</button>
+    </form>
+
+    <div id="degree-options" class="popup ivu-select-dropdown" hidden>
+      <div class="ivu-select-item">暂无数据</div>
+    </div>
+
+    <div id="city-options" class="popup semi-portal" role="dialog" hidden>
+      <div class="semi-cascader">
+        <button type="button" class="semi-cascader-option" role="option" data-level="1">江苏省</button>
+      </div>
+      <div class="popup-footer"><button id="city-confirm" type="button">确定</button></div>
+    </div>
+
+    <div id="years-options" class="popup generic-listbox" role="listbox" hidden>
+      <button type="button" role="option">Less than 1 year</button>
+    </div>
+
+    <div id="decoy-popup" class="popup" role="dialog" style="left: 520px; top: 250px">
+      <p>其他同时打开的弹层</p>
+      <button id="decoy-confirm" type="button">确定</button>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+
+      const degreeControl = document.getElementById("degree-control");
+      const degreePopup = document.getElementById("degree-options");
+      const cityControl = document.getElementById("city-control");
+      const cityPopup = document.getElementById("city-options");
+      const yearsControl = document.getElementById("years-control");
+      const yearsPopup = document.getElementById("years-options");
+      let degreeSearches = 0;
+      let cityConfirmClicks = 0;
+      let yearsEnterConfirmations = 0;
+      let decoyConfirmClicks = 0;
+      let finalSubmitClicks = 0;
+      let pendingCity = "";
+
+      degreeControl.addEventListener("click", () => {
+        degreePopup.hidden = false;
+        degreeControl.setAttribute("aria-expanded", "true");
+      });
+      degreeControl.addEventListener("input", () => {
+        degreeSearches += 1;
+        const requested = degreeControl.value;
+        setTimeout(() => {
+          degreePopup.innerHTML = `<button type="button" class="ivu-select-item" role="option">${requested}</button>`;
+          const option = degreePopup.querySelector("[role='option']");
+          option.addEventListener("click", () => {
+            document.querySelector(".ivu-select-selected-value").textContent = requested;
+            degreeControl.setAttribute("aria-valuetext", requested);
+            degreeControl.setAttribute("aria-expanded", "false");
+            degreePopup.hidden = true;
+          });
+        }, 45);
+      });
+
+      cityControl.addEventListener("click", () => {
+        cityPopup.hidden = false;
+        cityControl.setAttribute("aria-expanded", "true");
+      });
+      cityPopup.querySelector("[data-level='1']").addEventListener("click", () => {
+        setTimeout(() => {
+          if (cityPopup.querySelector("[data-level='2']")) return;
+          const option = document.createElement("button");
+          option.type = "button";
+          option.className = "semi-cascader-option";
+          option.setAttribute("role", "option");
+          option.dataset.level = "2";
+          option.textContent = "南京市";
+          option.addEventListener("click", () => {
+            pendingCity = "江苏省/南京市";
+            option.setAttribute("aria-selected", "true");
+          });
+          cityPopup.querySelector(".semi-cascader").appendChild(option);
+        }, 35);
+      });
+      document.getElementById("city-confirm").addEventListener("click", () => {
+        cityConfirmClicks += 1;
+        cityControl.setAttribute("aria-valuetext", pendingCity);
+        document.querySelector(".semi-cascader-selection-text").textContent = pendingCity;
+        cityControl.setAttribute("aria-expanded", "false");
+        cityPopup.hidden = true;
+      });
+      yearsControl.addEventListener("click", () => {
+        yearsPopup.hidden = false;
+        yearsControl.setAttribute("aria-expanded", "true");
+      });
+      yearsPopup.querySelector("[role='option']").addEventListener("click", (event) => {
+        event.currentTarget.setAttribute("aria-selected", "true");
+        yearsControl.dataset.pendingValue = event.currentTarget.textContent;
+      });
+      yearsControl.addEventListener("keydown", (event) => {
+        if (event.key !== "Enter" || yearsControl.getAttribute("aria-expanded") !== "true") return;
+        yearsEnterConfirmations += 1;
+        yearsControl.setAttribute("aria-valuetext", yearsControl.dataset.pendingValue || "");
+        document.getElementById("years-selected").textContent = yearsControl.dataset.pendingValue || "";
+        yearsControl.setAttribute("aria-expanded", "false");
+        yearsPopup.hidden = true;
+      });
+      document.getElementById("decoy-confirm").addEventListener("click", () => {
+        decoyConfirmClicks += 1;
+      });
+      document.getElementById("application-form").addEventListener("submit", (event) => {
+        event.preventDefault();
+        finalSubmitClicks += 1;
+      });
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
+        {},
+        (scan) => {
+          const profileSnapshots = [{ degree: "硕士", currentCity: "江苏省/南京市", workYears: "Less than 1 year" }];
+          const fieldValues = Object.fromEntries(
+            scan.fields.map((field) => [field.id, profileSnapshots[0][field.key] || ""])
+          );
+          listener(
+            {
+              type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+              fields: scan.fields,
+              fieldValues,
+              profileSnapshots,
+              maxRounds: 3,
+              delayMs: 0
+            },
+            {},
+            (fill) => {
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: {
+                  scan,
+                  fill,
+                  degree: degreeControl.getAttribute("aria-valuetext"),
+                  city: cityControl.getAttribute("aria-valuetext"),
+                  workYears: yearsControl.getAttribute("aria-valuetext"),
+                  degreeSearches,
+                  cityConfirmClicks,
+                  yearsEnterConfirmations,
+                  decoyConfirmClicks,
+                  finalSubmitClicks,
+                  cityPopupOpen: !cityPopup.hidden
+                }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

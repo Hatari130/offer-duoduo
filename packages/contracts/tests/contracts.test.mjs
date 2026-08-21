@@ -2,12 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   isApplicationSyncRequest,
+  isCreateInterviewRecordFromTranscriptRequest,
   isExchangeDeviceCodeRequest,
   isLoginRequest,
   isOpportunitySyncRequest,
   isRegisterRequest,
   isRetryMessageRequest,
-  isSendMessageRequest
+  isSendMessageRequest,
+  isSupportedInterviewAudioMimeType,
+  normalizeMimeType
 } from "../src/index.ts";
 
 test("auth contracts accept complete payloads and reject ambiguous input", () => {
@@ -79,7 +82,7 @@ test("opportunity sync contract accepts a normalized feed snapshot", () => {
     isOpportunitySyncRequest({
       opportunities: [opportunity],
       fetchedAt: "2026-08-08T10:00:00.000Z",
-      sourceUrl: "https://feishu.cn/wiki/source"
+      sourceUrl: "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json"
     }),
     true
   );
@@ -90,4 +93,18 @@ test("opportunity sync contract accepts a normalized feed snapshot", () => {
     false
   );
   assert.equal(isOpportunitySyncRequest({ opportunities: "not-an-array" }), false);
+});
+
+test("interview contracts validate transcripts and supported audio MIME parameters", () => {
+  assert.equal(
+    isCreateInterviewRecordFromTranscriptRequest({
+      title: "一面复盘",
+      transcript: "面试官：请介绍项目。\n候选人：我负责需求分析。"
+    }),
+    true
+  );
+  assert.equal(isCreateInterviewRecordFromTranscriptRequest({ transcript: 42 }), false);
+  assert.equal(normalizeMimeType("audio/webm; codecs=opus"), "audio/webm");
+  assert.equal(isSupportedInterviewAudioMimeType("audio/webm; codecs=opus"), true);
+  assert.equal(isSupportedInterviewAudioMimeType("text/plain"), false);
 });

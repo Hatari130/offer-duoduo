@@ -18,10 +18,19 @@ export interface FormPlatformInfo {
 
 export interface FormFieldMatch {
   id: string;
+  /** Stable identity derived from page structure rather than a scan timestamp. */
+  fingerprint?: string;
+  /** Best-effort selector used to recover a control after a framework rerender. */
+  domPath?: string;
   label: string;
   key?: ProfileFieldKey;
   repeatGroup?: "education" | "experience" | "project" | "campus" | "award";
   repeatIndex?: number;
+  /** Profile record selected for this field when one ATS splits a shared group into sub-sections. */
+  profileRepeatIndex?: number;
+  repeatIndexSource?: "attribute" | "structural" | "occurrence";
+  repeatEntryFingerprint?: string;
+  domOrder?: number;
   type: string;
   currentValue?: string;
   section?: string;
@@ -43,18 +52,25 @@ export interface FormScanResponse {
 
 export interface FormFieldResult {
   id: string;
+  fingerprint?: string;
   label: string;
   key?: ProfileFieldKey;
   status: "filled" | "missing" | "failed" | "skipped";
   expectedValue?: string;
   actualValue?: string;
   reason?: string;
+  attempts?: number;
+  controlDriver?: string;
+  commitMethod?: "button" | "enter" | "none";
 }
 
 export interface FormFillResponse {
   ok: boolean;
   filled: number;
   results: FormFieldResult[];
+  rounds?: number;
+  rescanned?: boolean;
+  finalFields?: FormFieldMatch[];
   error?: string;
 }
 

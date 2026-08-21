@@ -2,8 +2,11 @@ import { useEffect, useRef, useState, type FocusEvent, type MouseEvent, type Pro
 import type { ChatConversation } from "@offerflow/domain";
 import {
   BriefcaseBusiness,
+  Building2,
   ChevronDown,
+  Clock3,
   Cloud,
+  FileText,
   Gift,
   Home,
   Info,
@@ -12,10 +15,11 @@ import {
   MessageCircleMore,
   MonitorSmartphone,
   Newspaper,
+  PanelLeftClose,
+  PanelLeftOpen,
   Plus,
   Rocket,
   Settings,
-  Sparkles,
   X
 } from "lucide-react";
 import { api } from "../app/api";
@@ -27,32 +31,43 @@ interface AppLinkProps extends PropsWithChildren {
   href: string;
   className?: string;
   onNavigate?: () => void;
+  ariaCurrent?: "page";
+  title?: string;
 }
 
-function AppLink({ href, className, onNavigate, children }: AppLinkProps) {
+function AppLink({ href, className, onNavigate, ariaCurrent, title, children }: AppLinkProps) {
   const open = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
     event.preventDefault();
     navigate(href);
     onNavigate?.();
   };
-  return <a href={href} className={className} onClick={open}>{children}</a>;
+  return <a href={href} className={className} aria-current={ariaCurrent} title={title} onClick={open}>{children}</a>;
 }
 
 const primaryNavigation = [
-  { href: "/app/chat", label: "求职助手", icon: MessageCircleMore },
-  { href: "/app/opportunities", label: "校招信息速递", icon: Newspaper },
-  { href: "/app/applications", label: "个人投递管理", icon: BriefcaseBusiness }
+  { href: "/app/chat", label: "求职助手", mobileLabel: "助手", icon: MessageCircleMore },
+  { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper },
+  { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2 },
+  { href: "/app/resumes", label: "简历中心", mobileLabel: "简历", icon: FileText },
+  { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness }
 ];
 
 export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: string }>) {
   const { user, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return window.localStorage.getItem("offerflow:sidebar-collapsed") === "true";
+  });
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
   const [accountOpen, setAccountOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const contactMenuRef = useRef<HTMLDivElement>(null);
+  const activeNavigationIndex = primaryNavigation.findIndex(
+    (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
+  );
 
   useEffect(() => {
     setMobileOpen(false);
@@ -68,6 +83,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      setMobileOpen(false);
       setAccountOpen(false);
       setContactOpen(false);
     };
@@ -105,12 +121,27 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const closeWhenFocusLeaves = (event: FocusEvent<HTMLDivElement>, close: () => void) => {
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
   };
+  const toggleSidebar = () => {
+    setSidebarCollapsed((current) => {
+      const next = !current;
+      window.localStorage.setItem("offerflow:sidebar-collapsed", String(next));
+      setAccountOpen(false);
+      setContactOpen(false);
+      return next;
+    });
+  };
 
   return (
-    <div className="app-frame">
+    <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
       <header className="mobile-header">
-        <button type="button" aria-label="打开导航" onClick={() => setMobileOpen(true)}>
+        <button
+          type="button"
+          aria-label="打开更多菜单"
+          aria-expanded={mobileOpen}
+          aria-controls="app-sidebar"
+          onClick={() => setMobileOpen(true)}
+        >
           <Menu aria-hidden="true" size={21} />
         </button>
         <Logo />
@@ -124,21 +155,34 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         onClick={closeMobile}
       />
 
-      <aside className={`app-sidebar${mobileOpen ? " is-open" : ""}`} aria-label="主导航">
+      <aside id="app-sidebar" className={`app-sidebar${mobileOpen ? " is-open" : ""}`} aria-label="更多功能与账户">
         <div className="sidebar-brand-row">
           <AppLink href="/app/chat" onNavigate={closeMobile}><Logo /></AppLink>
+          <button
+            className="sidebar-collapse-toggle"
+            type="button"
+            aria-label={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+            aria-expanded={!sidebarCollapsed}
+            aria-controls="app-sidebar"
+            title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+            onClick={toggleSidebar}
+          >
+            {sidebarCollapsed
+              ? <PanelLeftOpen aria-hidden="true" size={19} strokeWidth={1.8} />
+              : <PanelLeftClose aria-hidden="true" size={19} strokeWidth={1.8} />}
+          </button>
           <button className="sidebar-close" type="button" aria-label="关闭导航" onClick={closeMobile}>
             <X aria-hidden="true" size={19} />
           </button>
         </div>
 
-        <AppLink href="/app/chat" className="new-chat-button" onNavigate={closeMobile}>
+        <AppLink href="/app/chat" className="new-chat-button" title={sidebarCollapsed ? "新对话" : undefined} onNavigate={closeMobile}>
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
           新对话
           <span>⌘ K</span>
         </AppLink>
 
-        <nav className="primary-nav" aria-label="功能页">
+        <nav className="primary-nav" aria-label="功能页" data-active-index={activeNavigationIndex}>
           {primaryNavigation.map((item) => {
             const Icon = item.icon;
             const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
@@ -147,11 +191,13 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                 key={item.href}
                 href={item.href}
                 className={`nav-link${active ? " is-active" : ""}`}
+                ariaCurrent={active ? "page" : undefined}
+                title={sidebarCollapsed ? item.label : undefined}
                 onNavigate={closeMobile}
               >
-                <Icon aria-hidden="true" size={18} strokeWidth={active ? 2 : 1.7} />
+                <Icon aria-hidden="true" size={18} strokeWidth={1.8} />
                 <span>{item.label}</span>
-                {item.href === "/app/opportunities" && <em>待接入</em>}
+                {item.href === "/app/opportunities" && <em>实时</em>}
               </AppLink>
             );
           })}
@@ -160,7 +206,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         <section className="recent-threads" aria-labelledby="recent-thread-title">
           <div className="sidebar-section-heading">
             <span id="recent-thread-title">最近对话</span>
-            <Sparkles aria-hidden="true" size={14} />
+            <Clock3 aria-hidden="true" size={14} />
           </div>
           <div className="thread-links">
             {conversations.map((conversation) => {
@@ -183,7 +229,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </section>
 
         <div className="sidebar-footer">
-          <AppLink href="/app/upgrade" className="upgrade-pro-button" onNavigate={closeMobile}>
+          <AppLink href="/app/upgrade" className="upgrade-pro-button" title={sidebarCollapsed ? "升级至 Pro" : undefined} onNavigate={closeMobile}>
             <Rocket aria-hidden="true" size={16} />
             <span>升级至 Pro</span>
           </AppLink>
@@ -200,6 +246,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               <button
                 className="account-trigger"
                 type="button"
+                aria-label="打开账户菜单"
                 aria-expanded={accountOpen}
                 aria-controls="account-popover"
                 onClick={() => setAccountOpen((current) => !current)}
@@ -301,6 +348,24 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           {children}
         </main>
       </div>
+
+      <nav className="mobile-bottom-nav" aria-label="主要功能" data-active-index={activeNavigationIndex}>
+        {primaryNavigation.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <AppLink
+              key={item.href}
+              href={item.href}
+              className={`mobile-bottom-link${active ? " is-active" : ""}`}
+              ariaCurrent={active ? "page" : undefined}
+            >
+              <Icon aria-hidden="true" size={20} strokeWidth={1.8} />
+              <span>{item.mobileLabel}</span>
+            </AppLink>
+          );
+        })}
+      </nav>
     </div>
   );
 }

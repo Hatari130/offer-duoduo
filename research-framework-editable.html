@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>数字媒介介入下的城市空间感知研究框架（可编辑）</title>
+  <style>
+    :root { --ink: #111; --paper: #fff; --ui: #18212f; --accent: #0b6bcb; }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: #ecebe8; color: var(--ink); }
+    body { font-family: "SimSun", "Songti SC", "Noto Serif CJK SC", serif; overflow: hidden; }
+    .toolbar {
+      position: fixed; z-index: 100; top: 14px; right: 16px; display: flex; gap: 8px;
+      padding: 8px; border: 1px solid rgba(255,255,255,.18); border-radius: 11px;
+      background: rgba(24,33,47,.92); box-shadow: 0 8px 28px rgba(0,0,0,.18);
+      font-family: "Microsoft YaHei", sans-serif; backdrop-filter: blur(10px);
+    }
+    .toolbar button {
+      appearance: none; border: 0; border-radius: 7px; padding: 8px 13px; color: #fff;
+      background: rgba(255,255,255,.1); font: 600 13px/1 "Microsoft YaHei", sans-serif;
+      cursor: pointer; transition: background .15s, transform .15s;
+    }
+    .toolbar button:hover { background: rgba(255,255,255,.2); transform: translateY(-1px); }
+    .toolbar button.primary { background: var(--accent); }
+    .stage { width: 100vw; height: 100vh; display: grid; place-items: center; padding: 18px; }
+    .scaler { position: relative; width: 1400px; height: 1050px; flex: none; }
+    .page {
+      position: absolute; inset: 0; width: 1400px; height: 1050px; overflow: hidden;
+      background: var(--paper); box-shadow: 0 16px 45px rgba(0,0,0,.14);
+    }
+    .editable { outline: none; cursor: text; }
+    .editing .editable:hover { background: rgba(11,107,203,.06); box-shadow: inset 0 0 0 1px rgba(11,107,203,.25); }
+    .editing .editable:focus { background: rgba(255,244,174,.38); box-shadow: inset 0 0 0 2px rgba(11,107,203,.5); }
+    .headline, .subtitle { position: absolute; left: 0; width: 100%; text-align: center; white-space: nowrap; }
+    .headline { top: 9px; font-size: 31px; font-weight: 700; letter-spacing: 1px; }
+    .subtitle { top: 54px; font: 23px/1.2 "Times New Roman", "SimSun", serif; letter-spacing: .2px; }
+    .diagram { position: absolute; inset: 0; }
+    .wires { position: absolute; inset: 0; z-index: 1; pointer-events: none; }
+    .node, .label, .stage-title, .legend { position: absolute; z-index: 2; }
+    .node {
+      border: 2px solid var(--ink); border-radius: 11px; background: #fff;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      text-align: center; line-height: 1.45;
+    }
+    .node.strong { border-width: 4px; }
+    .node-title { font-size: 25px; font-weight: 700; line-height: 1.15; margin-bottom: 8px; white-space: nowrap; }
+    .node-copy { font-size: 20px; line-height: 1.42; }
+    .major { left: 350px; top: 90px; width: 700px; height: 108px; }
+    .major .node-title { margin-bottom: 7px; }
+    .major-row { display: flex; align-items: center; font-size: 20px; line-height: 1; }
+    .major-row span { padding: 0 36px; white-space: nowrap; }
+    .major-row i { width: 2px; height: 20px; background: var(--ink); display: block; }
+    .major-note { font-size: 18px; margin-top: 11px; }
+    .media { left: 280px; top: 230px; width: 840px; height: 113px; padding-top: 34px; }
+    .media > .node-title { position: absolute; top: 10px; margin: 0; }
+    .media-flow { width: 100%; display: flex; justify-content: center; align-items: center; gap: 39px; }
+    .step {
+      position: relative; width: 146px; height: 56px; border: 1.8px solid var(--ink); border-radius: 7px;
+      display: grid; place-items: center; padding: 2px 8px; font-size: 18px; line-height: 1.2; background: #fff;
+    }
+    .step:not(:last-child)::after { content: ""; position: absolute; left: 100%; top: 27px; width: 39px; border-top: 2px solid var(--ink); }
+    .step:not(:last-child)::before {
+      content: ""; position: absolute; left: calc(100% + 30px); top: 21px;
+      border-left: 10px solid var(--ink); border-top: 6px solid transparent; border-bottom: 6px solid transparent;
+    }
+    .physical { left: 120px; top: 400px; width: 220px; height: 150px; }
+    .virtual { left: 1060px; top: 400px; width: 225px; height: 150px; }
+    .subject { left: 480px; top: 390px; width: 440px; height: 170px; padding-top: 37px; }
+    .subject > .node-title { position: absolute; top: 11px; margin: 0; }
+    .person {
+      position: absolute; top: 42px; left: 194px; width: 51px; height: 51px; border: 1.8px solid var(--ink);
+      border-radius: 50%; display: grid; place-items: center; background: #fff; font-size: 28px; line-height: 1;
+    }
+    .mind-flow { display: flex; align-items: center; gap: 35px; margin-top: 22px; }
+    .mind {
+      position: relative; width: 76px; height: 41px; border: 1.6px solid var(--ink); border-radius: 6px;
+      display: grid; place-items: center; font-size: 19px; background: #fff;
+    }
+    .mind:not(:last-child)::after { content: ""; position: absolute; left: 100%; top: 19px; width: 35px; border-top: 2px solid var(--ink); }
+    .mind:not(:last-child)::before {
+      content: ""; position: absolute; left: calc(100% + 27px); top: 14px;
+      border-left: 9px solid var(--ink); border-top: 5px solid transparent; border-bottom: 5px solid transparent;
+    }
+    .subject-note { font-size: 18px; margin-top: 7px; }
+    .link-label { position: absolute; z-index: 3; top: 409px; width: 130px; font-size: 17px; line-height: 1.4; text-align: center; background: #fff; }
+    .link-left { left: 349px; }
+    .link-right { left: 923px; }
+    .practice { left: 365px; top: 592px; width: 670px; height: 78px; border-radius: 9px; }
+    .practice .node-title { margin: -2px 0 5px; }
+    .practice-row { display: flex; align-items: center; font-size: 17px; line-height: 1; white-space: nowrap; }
+    .practice-row i { width: 1.5px; height: 18px; background: var(--ink); margin: 0 20px; }
+    .reaction { left: 120px; top: 728px; width: 210px; height: 165px; }
+    .reaction .node-title, .feedback .node-title { font-size: 20px; margin-bottom: 7px; }
+    .reaction .node-copy, .feedback .node-copy { font-size: 18px; line-height: 1.45; }
+    .feedback { left: 1035px; top: 728px; width: 250px; height: 165px; }
+    .place { left: 430px; top: 727px; width: 540px; height: 170px; }
+    .place .node-title { font-size: 21px; margin: 0 0 5px; }
+    .place-name { font-size: 38px; font-weight: 700; line-height: 1.1; margin-bottom: 6px; }
+    .place .node-copy { font-size: 18px; line-height: 1.52; white-space: nowrap; }
+    .regen-label { left: 742px; top: 680px; padding: 0 8px; background: #fff; font-size: 17px; }
+    .stage-title { left: 465px; top: 940px; width: 470px; background: #fff; text-align: center; font-size: 25px; font-weight: 700; }
+    .legend {
+      left: 330px; top: 993px; width: 740px; height: 44px; border: 1.7px dashed var(--ink); border-radius: 10px;
+      display: grid; place-items: center; background: #fff; font-size: 20px;
+    }
+    @media print {
+      @page { size: 1400px 1050px; margin: 0; }
+      html, body { width: 1400px; height: 1050px; background: #fff; overflow: hidden; }
+      .toolbar { display: none !important; }
+      .stage { width: 1400px; height: 1050px; padding: 0; display: block; }
+      .scaler { width: 1400px !important; height: 1050px !important; }
+      .page { box-shadow: none; transform: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="toolbar" aria-label="编辑工具">
+    <button type="button" id="toggleEdit">关闭编辑提示</button>
+    <button type="button" id="printBtn">打印 / PDF</button>
+    <button type="button" class="primary" id="downloadBtn">下载修改版 HTML</button>
+  </nav>
+
+  <main class="stage">
+    <div class="scaler" id="scaler">
+      <article class="page editing" id="page" aria-label="数字媒介介入下的城市空间感知研究框架图">
+        <div class="headline editable" contenteditable="true">图2 数字媒介介入下的城市空间感知研究框架</div>
+        <div class="subtitle editable" contenteditable="true">Fig.2&nbsp; A Research Framework for Urban Spatial Perception Mediated by Digital Media</div>
+
+        <section class="diagram">
+          <svg class="wires" viewBox="0 0 1400 1050" aria-hidden="true">
+            <defs>
+              <marker id="arrow" viewBox="0 0 10 10" refX="8.7" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+                <path d="M 0 0 L 10 5 L 0 10 z" fill="#111"/>
+              </marker>
+            </defs>
+            <!-- main action paths -->
+            <path d="M700 198 V229" fill="none" stroke="#111" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M700 343 V390" fill="none" stroke="#111" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M700 343 V365 H250 V399" fill="none" stroke="#111" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M700 365 H1172 V399" fill="none" stroke="#111" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M340 475 H479" fill="none" stroke="#111" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <path d="M921 475 H1060" fill="none" stroke="#111" stroke-width="2" marker-start="url(#arrow)" marker-end="url(#arrow)"/>
+            <path d="M700 560 V592" fill="none" stroke="#111" stroke-width="2" marker-end="url(#arrow)"/>
+            <path d="M665 670 V727" fill="none" stroke="#111" stroke-width="2" marker-end="url(#arrow)"/>
+            <!-- feedback arrows -->
+            <path d="M430 802 H330" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+            <path d="M970 802 H1035" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+            <path d="M225 728 V550" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+            <path d="M1177 728 V550" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+            <path d="M728 727 V671" fill="none" stroke="#111" stroke-width="2" stroke-dasharray="9 8" marker-end="url(#arrow)"/>
+            <!-- outer perception-practice-feedback loop -->
+            <path d="M280 280 H115 Q90 280 90 308 V925 Q90 960 125 960 H1275 Q1310 960 1310 925 V308 Q1310 280 1283 280 H1120"
+                  fill="none" stroke="#111" stroke-width="2.4" stroke-dasharray="10 9" marker-end="url(#arrow)"/>
+          </svg>
+
+          <div class="node major">
+            <div class="node-title editable" contenteditable="true">结构性条件（权力维度）</div>
+            <div class="major-row">
+              <span class="editable" contenteditable="true">平台权力</span><i></i>
+              <span class="editable" contenteditable="true">算法治理</span><i></i>
+              <span class="editable" contenteditable="true">数字资本</span><i></i>
+              <span class="editable" contenteditable="true">社会规范</span>
+            </div>
+            <div class="major-note editable" contenteditable="true">限制、塑造并规训媒介机制与主体实践</div>
+          </div>
+
+          <div class="node media">
+            <div class="node-title editable" contenteditable="true">媒介中介（媒介维度）</div>
+            <div class="media-flow">
+              <div class="step editable" contenteditable="true">数字终端/平台</div>
+              <div class="step editable" contenteditable="true">位置服务/<br>社交媒体</div>
+              <div class="step editable" contenteditable="true">信息筛选</div>
+              <div class="step editable" contenteditable="true">算法排序与推荐</div>
+              <div class="step editable" contenteditable="true">内容生成与<br>数字表征</div>
+            </div>
+          </div>
+
+          <div class="node physical">
+            <div class="node-title editable" contenteditable="true">实体空间</div>
+            <div class="node-copy editable" contenteditable="true">建筑、街道、设施、<br>商业、公共空间、<br>社会活动等</div>
+          </div>
+          <div class="link-label link-left editable" contenteditable="true">通过数字媒介<br>获取与连接</div>
+
+          <div class="node subject">
+            <div class="node-title editable" contenteditable="true">主体感知过程（心理维度）</div>
+            <div class="person editable" contenteditable="true">人</div>
+            <div class="mind-flow">
+              <div class="mind editable" contenteditable="true">感知</div>
+              <div class="mind editable" contenteditable="true">认知</div>
+              <div class="mind editable" contenteditable="true">情感</div>
+              <div class="mind editable" contenteditable="true">判断</div>
+            </div>
+            <div class="subject-note editable" contenteditable="true">记忆、经验、动机参与其中</div>
+          </div>
+
+          <div class="link-label link-right editable" contenteditable="true">通过数字媒介<br>获取与连接</div>
+          <div class="node virtual">
+            <div class="node-title editable" contenteditable="true">虚拟空间（数字表征）</div>
+            <div class="node-copy editable" contenteditable="true">地图、POI、评论、<br>短视频、榜单、标签、<br>图文等</div>
+          </div>
+
+          <div class="node practice">
+            <div class="node-title editable" contenteditable="true">空间实践</div>
+            <div class="practice-row">
+              <span class="editable" contenteditable="true">探索与浏览</span><i></i>
+              <span class="editable" contenteditable="true">导航与到访</span><i></i>
+              <span class="editable" contenteditable="true">选择与消费</span><i></i>
+              <span class="editable" contenteditable="true">互动与交流</span><i></i>
+              <span class="editable" contenteditable="true">分享与表达</span>
+            </div>
+          </div>
+
+          <div class="node reaction">
+            <div class="node-title editable" contenteditable="true">对实体空间的反作用</div>
+            <div class="node-copy editable" contenteditable="true">空间可见性变化<br>活动与消费重组<br>设施与布局调整<br>物理环境更新</div>
+          </div>
+
+          <div class="node strong place">
+            <div class="node-title editable" contenteditable="true">数字地方的生成与再生产</div>
+            <div class="place-name editable" contenteditable="true">数字地方</div>
+            <div class="node-copy editable" contenteditable="true">实体空间 × 虚拟空间 × 媒介表征 × 算法排序 × 主体实践<br>在选择、排序、放大、遮蔽与再赋值过程中形成地方意义</div>
+          </div>
+          <div class="label regen-label editable" contenteditable="true">地方意义再生产 / 影响感知预期</div>
+
+          <div class="node feedback">
+            <div class="node-title editable" contenteditable="true">数据反馈与内容生产</div>
+            <div class="node-copy editable" contenteditable="true">行为数据：搜索、点击、停留、<br>移动、消费、互动等<br>用户内容：评价、图文、<br>短视频、打卡等</div>
+          </div>
+
+          <div class="stage-title editable" contenteditable="true">感知—实践—反馈—再生产闭环</div>
+          <div class="legend editable" contenteditable="true">图例：实线箭头 = 主要作用路径；虚线箭头 = 反馈路径</div>
+        </section>
+      </article>
+    </div>
+  </main>
+
+  <script>
+    const scaler = document.getElementById('scaler');
+    const page = document.getElementById('page');
+    const toggleEdit = document.getElementById('toggleEdit');
+
+    function fitPage() {
+      const margin = 24;
+      const scale = Math.min((innerWidth - margin * 2) / 1400, (innerHeight - margin * 2) / 1050, 1);
+      scaler.style.width = `${1400 * scale}px`;
+      scaler.style.height = `${1050 * scale}px`;
+      page.style.transformOrigin = 'top left';
+      page.style.transform = `scale(${scale})`;
+    }
+    addEventListener('resize', fitPage);
+    fitPage();
+
+    toggleEdit.addEventListener('click', () => {
+      page.classList.toggle('editing');
+      toggleEdit.textContent = page.classList.contains('editing') ? '关闭编辑提示' : '显示编辑提示';
+    });
+    document.getElementById('printBtn').addEventListener('click', () => print());
+    document.getElementById('downloadBtn').addEventListener('click', () => {
+      const clone = document.documentElement.cloneNode(true);
+      clone.querySelector('#page').classList.remove('editing');
+      const source = '<!doctype html>\n' + clone.outerHTML;
+      const blob = new Blob([source], { type: 'text/html;charset=utf-8' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = '数字媒介城市空间感知研究框架-修改版.html';
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+    });
+    document.addEventListener('keydown', (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 's') {
+        event.preventDefault();
+        document.getElementById('downloadBtn').click();
+      }
+    });
+  </script>
+</body>
+</html>

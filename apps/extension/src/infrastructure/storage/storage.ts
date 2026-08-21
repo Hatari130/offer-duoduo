@@ -1,6 +1,18 @@
-import type { JobApplication, OfferFlowSettings, PersonalProfile } from "@/shared/types";
+import {
+  inferRecruitmentType,
+  type JobApplication,
+  type OfferFlowSettings,
+  type PersonalProfile,
+  type ResumeAsset
+} from "@/shared/types";
 import type { TailoredResumeBundle, TailoredResumeEntry } from "@/features/tailor/types";
 import { enqueueApplicationChanges } from "@/infrastructure/sync/syncState";
+import {
+  countResumeFields,
+  dehydrateResumeLibrary,
+  migrateResumeLibrary,
+  resolveActiveResumeId
+} from "@/features/resumes/resumeLifecycle";
 
 export const JOBS_KEY = "offerflow.jobs";
 export const SETTINGS_KEY = "offerflow.settings";
@@ -13,14 +25,61 @@ export const RESUMES_KEY = "offerflow.resumes";
 export const ACTIVE_RESUME_KEY = "offerflow.activeResumeId";
 export const RESUME_LIBRARY_UI_KEY = "offerflow.resumeLibraryUi";
 
+export type StoredResumeKind = "master" | "base" | "job";
+export type ResumeLifecycleStatus = "active" | "archived" | "invalid";
+export type ResumeParseStatus = "pending" | "ready" | "needs-review" | "failed" | "unknown";
+
+export interface StoredResumeParseMetadata {
+  schemaVersion: 1;
+  status: ResumeParseStatus;
+  coverage: number;
+  extractedFieldCount: number;
+  textLength: number;
+  warnings: string[];
+  parsedAt?: string;
+  parserVersion?: string;
+  /** Geometry-normalized source text retained for evidence-based repair and tailoring. */
+  sourceText?: string;
+  unclassifiedText?: string;
+}
+
+export interface StoredResumeSourceMetadata {
+  revisionId: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  importedAt: string;
+  sha256?: string;
+  pageCount?: number;
+  characterCount?: number;
+  storageStatus: "stored" | "referenced" | "missing";
+  layoutStatus: "pending" | "ready" | "failed" | "unknown";
+}
+
 export interface StoredResume {
   id: string;
   name: string;
+  kind?: StoredResumeKind;
+  masterResumeId?: string;
+  parentResumeId?: string;
+  versionNumber?: number;
+  jobKey?: string;
+  lifecycleStatus?: ResumeLifecycleStatus;
+  invalidReason?: string;
   company?: string;
   position?: string;
   archiveNameSource?: "filename" | "manual";
   sourceFileName?: string;
   sourcePdf?: StoredResumePdf;
+  /** Runtime marker: inherited PDF blobs are never duplicated in persistent storage. */
+  sourcePdfInherited?: boolean;
+  /** Extracted PDF images live on the master and are inherited by versions. */
+  assets?: ResumeAsset[];
+  portraitAssetId?: string;
+  /** Runtime marker: inherited image data is not duplicated in persistent storage. */
+  sourceAssetsInherited?: boolean;
+  source?: StoredResumeSourceMetadata;
+  parse?: StoredResumeParseMetadata;
   profile: PersonalProfile;
   createdAt: string;
   updatedAt: string;
@@ -54,18 +113,15 @@ export type ResumeBasics = Pick<
   | "address"
 >;
 
-/**
- * User-level profile data that should survive importing another resume.
- * `fixedSectionsVersion` lets us distinguish the older basics-only payload.
- */
+/** Candidate-level identity shared between versions. Resume evidence such as
+ * campus work, awards and skills intentionally remains version-local. */
 export interface ResumeFixedProfile extends ResumeBasics {
+  /** Legacy fields are retained only so old storage can be read safely. */
   campusExperiences?: PersonalProfile["campusExperiences"];
   awards?: PersonalProfile["awards"];
   extraFields?: Record<string, string>;
   fixedSectionsVersion?: 1;
 }
-
-const FIXED_PROFILE_INTERNAL_EXTRA_KEYS = new Set(["resumeSourceName", "parseMode"]);
 
 const RESUME_BASICS_KEYS: Array<keyof ResumeBasics> = [
   "fullName",
@@ -98,26 +154,12 @@ export function hasResumeBasics(basics: ResumeBasics): boolean {
 export function extractResumeFixedProfile(profile: PersonalProfile): ResumeFixedProfile {
   return {
     ...extractResumeBasics(profile),
-    campusExperiences: (profile.campusExperiences || []).map((item) => ({ ...item })),
-    awards: (profile.awards || []).map((item) => ({ ...item })),
-    extraFields: Object.fromEntries(
-      Object.entries(profile.extraFields || {}).filter(([key]) => !FIXED_PROFILE_INTERNAL_EXTRA_KEYS.has(key))
-    ),
     fixedSectionsVersion: 1
   };
 }
 
 export function applyResumeFixedProfile(profile: PersonalProfile, fixed: ResumeFixedProfile): PersonalProfile {
-  if (fixed.fixedSectionsVersion !== 1) return applyResumeBasics(profile, fixed);
-  const internalFields = Object.fromEntries(
-    Object.entries(profile.extraFields || {}).filter(([key]) => FIXED_PROFILE_INTERNAL_EXTRA_KEYS.has(key))
-  );
-  return {
-    ...applyResumeBasics(profile, fixed),
-    campusExperiences: (fixed.campusExperiences || []).map((item) => ({ ...item })),
-    awards: (fixed.awards || []).map((item) => ({ ...item })),
-    extraFields: { ...(fixed.extraFields || {}), ...internalFields }
-  };
+  return applyResumeBasics(profile, fixed);
 }
 export const EMPTY_PROFILE: PersonalProfile = {
   fullName: "",
@@ -153,12 +195,21 @@ const hasChromeStorage = () =>
   typeof chrome !== "undefined" && Boolean(chrome.storage?.local);
 
 export async function loadJobs(): Promise<JobApplication[]> {
+  const normalize = (jobs: JobApplication[]) => jobs.map((job) => ({
+    ...job,
+    recruitmentType: job.recruitmentType || inferRecruitmentType(
+      job.position,
+      job.jobType,
+      job.summary,
+      job.rawExcerpt
+    )
+  }));
   if (!hasChromeStorage()) {
     const value = localStorage.getItem(JOBS_KEY);
-    return value ? JSON.parse(value) : [];
+    return normalize(value ? JSON.parse(value) : []);
   }
   const result = await chrome.storage.local.get(JOBS_KEY);
-  return (result[JOBS_KEY] as JobApplication[] | undefined) ?? [];
+  return normalize((result[JOBS_KEY] as JobApplication[] | undefined) ?? []);
 }
 
 export async function saveJobs(
@@ -181,6 +232,9 @@ export interface StoredResumePdf {
   size: number;
   importedAt: string;
   base64: string;
+  sha256?: string;
+  pageCount?: number;
+  characterCount?: number;
 }
 
 export async function loadSettings(): Promise<OfferFlowSettings> {
@@ -243,9 +297,138 @@ export async function saveTailoredResumes(
   await chrome.storage.local.set({ [TAILORED_RESUMES_KEY]: next });
 }
 
+function tailoredResumeProfile(
+  sourceProfile: PersonalProfile,
+  bundle: TailoredResumeBundle
+): PersonalProfile {
+  const resume = bundle.resume;
+  const github = resume.header.links.find((link) => /github/i.test(`${link.label} ${link.href}`))?.href;
+  const portfolio = resume.header.links.find((link) => !/github/i.test(`${link.label} ${link.href}`) && link.href)?.href;
+  return {
+    ...sourceProfile,
+    fullName: resume.header.name || sourceProfile.fullName,
+    email: resume.header.email || sourceProfile.email,
+    phone: resume.header.phone || sourceProfile.phone,
+    currentCity: resume.header.city || sourceProfile.currentCity,
+    targetRole: resume.targetRole || bundle.context.position || sourceProfile.targetRole,
+    githubUrl: github || sourceProfile.githubUrl,
+    portfolioUrl: portfolio || sourceProfile.portfolioUrl,
+    selfIntroduction: resume.summary || sourceProfile.selfIntroduction,
+    education: resume.education.map((item, index) => ({
+      id: item.id || `tailored_education_${index + 1}`,
+      school: item.school,
+      major: item.major,
+      degree: item.degree,
+      educationDegree: item.degree,
+      courses: item.courses,
+      rank: item.rank,
+      startDate: item.start,
+      endDate: item.end,
+      gpa: item.gpa
+    })),
+    experiences: resume.experience.map((item, index) => ({
+      id: item.id || `tailored_experience_${index + 1}`,
+      organization: item.company,
+      title: item.title,
+      startDate: item.start,
+      endDate: item.end === "至今" ? "" : item.end,
+      description: item.bullets.join("\n"),
+      achievements: item.bullets.join("\n"),
+      isCurrent: item.end === "至今"
+    })),
+    projects: resume.projects.map((item, index) => ({
+      id: item.id || `tailored_project_${index + 1}`,
+      name: item.name,
+      role: item.role,
+      startDate: item.start,
+      endDate: item.end,
+      description: item.summary,
+      achievement: item.bullets.join("\n"),
+      link: item.link
+    })),
+    campusExperiences: resume.campus.map((item, index) => ({
+      id: item.id || `tailored_campus_${index + 1}`,
+      type: item.type,
+      role: item.role,
+      startDate: item.start,
+      endDate: item.end,
+      description: item.description
+    })),
+    awards: resume.awards.map((item, index) => ({
+      id: item.id || `tailored_award_${index + 1}`,
+      date: item.date,
+      name: item.name,
+      level: item.level,
+      description: ""
+    })),
+    computerSkills: resume.skills.length
+      ? resume.skills.map((group) => ({ type: group.label, proficiency: group.items.join("、") }))
+      : sourceProfile.computerSkills,
+    hobbies: resume.interests.length ? resume.interests.join("、") : sourceProfile.hobbies,
+    extraFields: {
+      ...(sourceProfile.extraFields || {}),
+      tailoredJobKey: entrySafeValue(bundle.context.jobKey),
+      tailoredGeneratedAt: entrySafeValue(bundle.generatedAt),
+      tailoredCompany: entrySafeValue(bundle.context.company),
+      tailoredPosition: entrySafeValue(bundle.context.position)
+    }
+  };
+}
+
+function entrySafeValue(value: string | undefined): string {
+  return String(value || "").trim();
+}
+
+async function upsertJobResumeVersion(entry: TailoredResumeEntry): Promise<void> {
+  const sourceResumeId = entry.bundle.context.sourceResumeId;
+  if (!sourceResumeId) return;
+  const library = await loadResumeLibrary();
+  const sourceResume = library.find((resume) => resume.id === sourceResumeId);
+  if (!sourceResume) return;
+  const existing = library.find((resume) => resume.kind === "job" && resume.jobKey === entry.jobKey);
+  const masterResumeId = sourceResume.kind === "master" ? sourceResume.id : sourceResume.masterResumeId;
+  const now = entry.savedAt || new Date().toISOString();
+  const profile = tailoredResumeProfile(sourceResume.profile, entry.bundle);
+  const nextJob: StoredResume = {
+    id: existing?.id || `resume_job_${entry.jobKey.replace(/[^a-z0-9_-]/gi, "_")}`,
+    name: [entry.bundle.context.company, entry.bundle.context.position].filter(Boolean).join(" · ") || "岗位定制简历",
+    kind: "job",
+    masterResumeId,
+    parentResumeId: sourceResume.id,
+    versionNumber: (existing?.versionNumber || 0) + 1,
+    jobKey: entry.jobKey,
+    lifecycleStatus: "active",
+    company: entry.bundle.context.company,
+    position: entry.bundle.context.position,
+    archiveNameSource: "manual",
+    sourceFileName: sourceResume.sourceFileName,
+    source: sourceResume.source
+      ? {
+          ...sourceResume.source,
+          storageStatus: masterResumeId ? "referenced" : sourceResume.source.storageStatus
+        }
+      : undefined,
+    parse: sourceResume.parse
+      ? {
+          ...sourceResume.parse,
+          extractedFieldCount: countResumeFields({ profile }),
+          warnings: [...sourceResume.parse.warnings]
+        }
+      : undefined,
+    profile,
+    createdAt: existing?.createdAt || now,
+    updatedAt: now,
+    lastUsedAt: existing?.lastUsedAt
+  };
+  await saveResumeLibrary([nextJob, ...library.filter((resume) => resume.id !== nextJob.id)]);
+}
+
 export async function saveTailoredResume(entry: TailoredResumeEntry): Promise<void> {
   const current = await loadTailoredResumes();
-  await saveTailoredResumes({ ...current, [entry.jobKey]: entry });
+  await Promise.all([
+    saveTailoredResumes({ ...current, [entry.jobKey]: entry }),
+    upsertJobResumeVersion(entry)
+  ]);
 }
 
 export async function getTailoredResume(jobKey: string): Promise<TailoredResumeBundle | undefined> {
@@ -255,9 +438,64 @@ export async function getTailoredResume(jobKey: string): Promise<TailoredResumeB
 
 export async function dropTailoredResume(jobKey: string): Promise<void> {
   const current = await loadTailoredResumes();
-  if (!current[jobKey]) return;
-  delete current[jobKey];
-  await saveTailoredResumes(current);
+  if (current[jobKey]) delete current[jobKey];
+  const library = await loadResumeLibrary();
+  const removedIds = new Set(
+    library.filter((resume) => resume.kind === "job" && resume.jobKey === jobKey).map((resume) => resume.id)
+  );
+  const nextLibrary = removedIds.size ? library.filter((resume) => !removedIds.has(resume.id)) : library;
+  const activeId = await loadActiveResumeId();
+  const nextActiveId = resolveActiveResumeId(nextLibrary, removedIds.has(activeId || "") ? undefined : activeId);
+  const nextActiveResume = nextLibrary.find((resume) => resume.id === nextActiveId);
+  await Promise.all([
+    saveTailoredResumes(current),
+    removedIds.size ? saveResumeLibrary(nextLibrary) : Promise.resolve(),
+    removedIds.size ? setActiveResumeId(nextActiveId) : Promise.resolve(),
+    removedIds.size && nextActiveResume ? saveProfile(nextActiveResume.profile) : Promise.resolve()
+  ]);
+}
+
+/** Removes job drafts that were generated from deleted resume versions. */
+export async function dropTailoredResumesForSourceResumeIds(
+  resumeIds: Iterable<string>,
+  explicitJobKeys: Iterable<string> = []
+): Promise<number> {
+  const ids = new Set(resumeIds);
+  const jobKeys = new Set(explicitJobKeys);
+  if (!ids.size && !jobKeys.size) return 0;
+  const current = await loadTailoredResumes();
+  const removedJobKeys = Object.entries(current)
+    .filter(([jobKey, entry]) => {
+      const sourceResumeId = entry.bundle.context.sourceResumeId;
+      return jobKeys.has(jobKey) || Boolean(sourceResumeId && ids.has(sourceResumeId));
+    })
+    .map(([jobKey]) => jobKey);
+  if (!removedJobKeys.length) return 0;
+  removedJobKeys.forEach((jobKey) => delete current[jobKey]);
+  await Promise.all([
+    saveTailoredResumes(current),
+    ...removedJobKeys.map((jobKey) => dropTailoredPdf(jobKey))
+  ]);
+  return removedJobKeys.length;
+}
+
+/** One-time/ongoing repair for historical job drafts whose source resume was deleted. */
+export async function pruneOrphanedTailoredResumes(validResumeIds: Iterable<string>): Promise<number> {
+  const validIds = new Set(validResumeIds);
+  const current = await loadTailoredResumes();
+  const removedJobKeys = Object.entries(current)
+    .filter(([, entry]) => {
+      const sourceResumeId = entry.bundle.context.sourceResumeId;
+      return Boolean(sourceResumeId && !validIds.has(sourceResumeId));
+    })
+    .map(([jobKey]) => jobKey);
+  if (!removedJobKeys.length) return 0;
+  removedJobKeys.forEach((jobKey) => delete current[jobKey]);
+  await Promise.all([
+    saveTailoredResumes(current),
+    ...removedJobKeys.map((jobKey) => dropTailoredPdf(jobKey))
+  ]);
+  return removedJobKeys.length;
 }
 
 export interface TailoredPdfSnapshot {
@@ -335,7 +573,7 @@ export async function saveResumeLibraryUi(state: ResumeLibraryUiState): Promise<
   await chrome.storage.local.set({ [RESUME_LIBRARY_UI_KEY]: state });
 }
 
-export async function loadResumeLibrary(): Promise<StoredResume[]> {
+async function readStoredResumeLibrary(): Promise<StoredResume[] | undefined> {
   if (hasChromeStorage()) {
     const result = await chrome.storage.local.get(RESUMES_KEY);
     const stored = result[RESUMES_KEY] as StoredResume[] | undefined;
@@ -344,6 +582,12 @@ export async function loadResumeLibrary(): Promise<StoredResume[]> {
     const value = localStorage.getItem(RESUMES_KEY);
     if (value) return JSON.parse(value) as StoredResume[];
   }
+  return undefined;
+}
+
+export async function loadResumeLibrary(): Promise<StoredResume[]> {
+  const stored = await readStoredResumeLibrary();
+  if (stored) return migrateResumeLibrary(stored);
 
   const profile = await loadProfile();
   const hasProfile = Boolean(
@@ -361,6 +605,9 @@ export async function loadResumeLibrary(): Promise<StoredResume[]> {
     {
       id: `resume_${Date.now().toString(36)}`,
       name: "我的简历",
+      kind: "base",
+      versionNumber: 1,
+      lifecycleStatus: "active",
       sourceFileName: profile.extraFields?.resumeSourceName,
       profile,
       createdAt: now,
@@ -374,17 +621,100 @@ export async function loadResumeLibrary(): Promise<StoredResume[]> {
 }
 
 export async function saveResumeLibrary(resumes: StoredResume[]): Promise<void> {
+  const persisted = dehydrateResumeLibrary(resumes);
   if (!hasChromeStorage()) {
-    localStorage.setItem(RESUMES_KEY, JSON.stringify(resumes));
+    localStorage.setItem(RESUMES_KEY, JSON.stringify(persisted));
     return;
   }
-  await chrome.storage.local.set({ [RESUMES_KEY]: resumes });
+  await chrome.storage.local.set({ [RESUMES_KEY]: persisted });
+}
+
+export async function updateResumeSourceLayoutMetadata(
+  resumeId: string,
+  patch: {
+    layoutStatus: StoredResumeSourceMetadata["layoutStatus"];
+    pageCount?: number;
+    characterCount?: number;
+  }
+): Promise<void> {
+  const library = await loadResumeLibrary();
+  const owner = library.find((resume) => resume.id === resumeId);
+  if (!owner) return;
+  const masterResumeId = owner.kind === "master" ? owner.id : owner.masterResumeId;
+  const linkedIds = new Set(
+    library
+      .filter((resume) => (
+        resume.id === owner.id
+        || Boolean(masterResumeId && (resume.id === masterResumeId || resume.masterResumeId === masterResumeId))
+      ))
+      .map((resume) => resume.id)
+  );
+  const next = library.map((resume) => {
+    if (!linkedIds.has(resume.id)) return resume;
+    const source = resume.source
+      ? {
+          ...resume.source,
+          layoutStatus: patch.layoutStatus,
+          pageCount: patch.pageCount ?? resume.source.pageCount,
+          characterCount: patch.characterCount ?? resume.source.characterCount
+        }
+      : resume.source;
+    const sourcePdf = resume.kind === "master" && resume.sourcePdf
+      ? {
+          ...resume.sourcePdf,
+          pageCount: patch.pageCount ?? resume.sourcePdf.pageCount,
+          characterCount: patch.characterCount ?? resume.sourcePdf.characterCount
+        }
+      : resume.sourcePdf;
+    const parse = resume.parse && patch.characterCount !== undefined
+      ? { ...resume.parse, textLength: patch.characterCount }
+      : resume.parse;
+    return { ...resume, source, sourcePdf, parse };
+  });
+  await saveResumeLibrary(next);
+}
+
+export async function updateResumeSourceAssets(
+  resumeId: string,
+  assets: ResumeAsset[],
+  portraitAssetId?: string
+): Promise<void> {
+  const library = await loadResumeLibrary();
+  const owner = library.find((resume) => resume.id === resumeId);
+  if (!owner) return;
+  const masterResumeId = owner.kind === "master" ? owner.id : owner.masterResumeId;
+  const linkedIds = new Set(
+    library
+      .filter((resume) => (
+        resume.id === owner.id
+        || Boolean(masterResumeId && (resume.id === masterResumeId || resume.masterResumeId === masterResumeId))
+      ))
+      .map((resume) => resume.id)
+  );
+  const next = library.map((resume) => linkedIds.has(resume.id)
+    ? {
+        ...resume,
+        assets: structuredClone(assets),
+        portraitAssetId,
+        sourceAssetsInherited: resume.kind !== "master" && Boolean(masterResumeId && assets.length)
+      }
+    : resume);
+  await saveResumeLibrary(next);
 }
 
 export async function loadActiveResumeId(): Promise<string | undefined> {
-  if (!hasChromeStorage()) return localStorage.getItem(ACTIVE_RESUME_KEY) || undefined;
-  const result = await chrome.storage.local.get(ACTIVE_RESUME_KEY);
-  return typeof result[ACTIVE_RESUME_KEY] === "string" ? result[ACTIVE_RESUME_KEY] : undefined;
+  let storedId: string | undefined;
+  if (!hasChromeStorage()) {
+    storedId = localStorage.getItem(ACTIVE_RESUME_KEY) || undefined;
+  } else {
+    const result = await chrome.storage.local.get(ACTIVE_RESUME_KEY);
+    storedId = typeof result[ACTIVE_RESUME_KEY] === "string" ? result[ACTIVE_RESUME_KEY] : undefined;
+  }
+  const storedLibrary = await readStoredResumeLibrary();
+  if (!storedLibrary?.length) return storedId || undefined;
+  const repairedId = resolveActiveResumeId(migrateResumeLibrary(storedLibrary), storedId);
+  if (repairedId !== (storedId || "")) await setActiveResumeId(repairedId);
+  return repairedId || undefined;
 }
 
 export async function setActiveResumeId(id: string): Promise<void> {

@@ -5,8 +5,6 @@ import { CLOUD_SYNC_OUTBOX_KEY } from "@/infrastructure/sync/syncState";
 import { normalizeExternalStage } from "@/features/workspace/workspaceUtils";
 import {
   DEFAULT_OPPORTUNITY_FEED_URL,
-  isFeishuOpportunityFeed,
-  normalizeFeishuRows,
   normalizeOpportunityFeed,
   writeOpportunityCache
 } from "@/features/opportunities/opportunities";
@@ -30,137 +28,6 @@ const pendingUpdates = new Map<
   number,
   { signature: string; pageData: ExtractedJob }
 >();
-
-type FeishuSheetPayload = {
-  title?: string;
-  sheetName?: string;
-  rows: unknown[][];
-};
-
-function isFeishuSheetUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    const host = url.hostname.toLowerCase();
-    const supportedHost =
-      host === "feishu.cn" ||
-      host.endsWith(".feishu.cn") ||
-      host === "larksuite.com" ||
-      host.endsWith(".larksuite.com");
-    return (
-      (url.protocol === "http:" || url.protocol === "https:") &&
-      supportedHost &&
-      /\/(wiki|sheets)\//i.test(url.pathname)
-    );
-  } catch {
-    return false;
-  }
-}
-
-function sameFeishuDocument(left: string, right: string): boolean {
-  try {
-    const leftUrl = new URL(left);
-    const rightUrl = new URL(right);
-    return (
-      leftUrl.hostname === rightUrl.hostname &&
-      leftUrl.pathname.replace(/\/$/, "") === rightUrl.pathname.replace(/\/$/, "")
-    );
-  } catch {
-    return false;
-  }
-}
-
-async function waitForTabComplete(tabId: number): Promise<void> {
-  const timeoutAt = Date.now() + 30_000;
-  while (Date.now() < timeoutAt) {
-    const tab = await chrome.tabs.get(tabId);
-    if (tab.status === "complete") return;
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error("飞书页面加载超时，请确认链接可公开访问");
-}
-
-async function extractFeishuSheetRows(): Promise<FeishuSheetPayload> {
-  const timeoutAt = Date.now() + 25_000;
-  while (Date.now() < timeoutAt) {
-    const app = (globalThis as Record<string, any>).spreadApp;
-    const workbook = app?.collaborativeSpread?._spread;
-    const activeSheetIndex = Number(workbook?._activeSheetIndex);
-    const sheet =
-      workbook?.sheets?.[Number.isFinite(activeSheetIndex) ? activeSheetIndex : 0] ||
-      workbook?.sheets?.[0];
-    const dataModel = sheet?._dataModel;
-    const lastRow = Number(sheet?.getLastBlankRowPos?.());
-    const lastColumn = Number(sheet?.getLastBlankColPos?.());
-
-    if (
-      dataModel &&
-      typeof dataModel.getValue === "function" &&
-      lastRow > 0 &&
-      lastColumn > 0
-    ) {
-      const rows: unknown[][] = [];
-      const rowCount = Math.min(lastRow, 1000);
-      const columnCount = Math.min(lastColumn, 100);
-      for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
-        const row: unknown[] = [];
-        let hasValue = false;
-        for (let columnIndex = 0; columnIndex < columnCount; columnIndex += 1) {
-          const value = dataModel.getValue(rowIndex, columnIndex);
-          row.push(value ?? null);
-          if (value !== null && value !== undefined && String(value).trim()) {
-            hasValue = true;
-          }
-        }
-        if (hasValue || rowIndex === 0) rows.push(row);
-      }
-
-      const headers = rows[0]?.map((value) => String(value ?? "")).join("|") || "";
-      if (rows.length > 1 && /公司名称|招聘岗位|公告链接/.test(headers)) {
-        return {
-          title: typeof document !== "undefined" ? document.title : undefined,
-          sheetName: String(sheet._name || ""),
-          rows
-        };
-      }
-    }
-
-    await new Promise((resolve) => setTimeout(resolve, 250));
-  }
-  throw new Error("没有读到飞书表格内容，请确认页面有可见的表格数据");
-}
-
-async function readFeishuSheet(sourceUrl: string): Promise<FeishuSheetPayload> {
-  if (!isFeishuSheetUrl(sourceUrl)) throw new Error("只支持飞书云表格链接");
-
-  const tabs = await chrome.tabs.query({});
-  const existing = tabs.find(
-    (tab) => tab.id !== undefined && tab.url && sameFeishuDocument(tab.url, sourceUrl)
-  );
-  let tabId = existing?.id;
-  let createdTab = false;
-
-  if (tabId === undefined) {
-    const tab = await chrome.tabs.create({ url: sourceUrl, active: false });
-    if (tab.id === undefined) throw new Error("无法打开飞书页面");
-    tabId = tab.id;
-    createdTab = true;
-  }
-
-  try {
-    await waitForTabComplete(tabId);
-    const [result] = await chrome.scripting.executeScript({
-      target: { tabId },
-      world: "MAIN",
-      func: extractFeishuSheetRows
-    });
-    if (!result?.result) throw new Error("没有读到飞书表格内容");
-    return result.result;
-  } finally {
-    if (createdTab) {
-      await chrome.tabs.remove(tabId).catch(() => undefined);
-    }
-  }
-}
 
 function createEventId(): string {
   return `evt_${Date.now().toString(36)}${crypto.randomUUID().slice(0, 8)}`;
@@ -357,15 +224,12 @@ async function syncOpportunityFeedInBackground(): Promise<void> {
     const configuredUrl = settings.opportunityFeedUrl?.trim();
     const sourceUrl = configuredUrl || DEFAULT_OPPORTUNITY_FEED_URL;
 
-    let snapshot: OpportunityFeedSnapshot;
-    if (isFeishuOpportunityFeed(sourceUrl)) {
-      const payload = await readFeishuSheet(sourceUrl);
-      snapshot = normalizeFeishuRows(payload, sourceUrl);
-    } else {
-      const response = await fetch(sourceUrl, { cache: "no-store" });
-      if (!response.ok) throw new Error(`机会数据源读取失败（${response.status}）`);
-      snapshot = normalizeOpportunityFeed(await response.json(), sourceUrl);
-    }
+    const response = await fetch(sourceUrl, { cache: "no-store" });
+    if (!response.ok) throw new Error(`机会数据源读取失败（${response.status}）`);
+    const snapshot: OpportunityFeedSnapshot = normalizeOpportunityFeed(
+      await response.json(),
+      sourceUrl
+    );
 
     await writeOpportunityCache(snapshot);
     await publishOpportunityFeed(snapshot);
@@ -430,18 +294,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
         ok: false,
         error: error instanceof Error ? error.message : "云端同步失败"
       }));
-    return true;
-  }
-
-  if (message?.type === "OFFERFLOW_READ_FEISHU_SHEET" && typeof message.url === "string") {
-    readFeishuSheet(message.url)
-      .then((data) => sendResponse({ ok: true, data }))
-      .catch((error) => {
-        sendResponse({
-          ok: false,
-          error: error instanceof Error ? error.message : "飞书表格同步失败"
-        });
-      });
     return true;
   }
 

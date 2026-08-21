@@ -16,11 +16,16 @@ import {
   type JdAnalysis,
   type JdMapping,
   type ResumeData,
+  type PdfTailoringSourceBlock,
   type TailorContext,
   type TailoredResumeBundle
 } from "./types";
+import { parseDeepSeekJson } from "./deepseekJson";
+import { collectResumeTextChanges } from "./tailoringDiff";
+import { validatePdfTailoringPatches } from "./pdfTailoringPatches";
 
 const API_URL = "https://api.deepseek.com/chat/completions";
+const MAX_OUTPUT_TOKENS = 8192;
 
 const SYSTEM_PROMPT = `你是 OfferDuoDuo 的简历定制助手。基于候选人已上传的真实资料 + 招聘JD的事实陈述，输出一份针对该JD量身定制的中文简历结构化 JSON。
 严格要求：
@@ -28,7 +33,8 @@ const SYSTEM_PROMPT = `你是 OfferDuoDuo 的简历定制助手。基于候选�
 2. 不得删除既有内容来"凑"JD 关键词；只能改写措辞、调整顺序。
 3. 教育/工作/项目的雇主、岗位名、起止时间、学位、专业名称保持原样。
 4. 每条 bullet 必须能映射到一条招聘JD里的描述，否则标 unsupported 并不要写入 resume。
-5. 必须在每条 bullet 前面放一个或多个 resume_ids 与之绑定的 JD map_id，体现简历如何回应 JD。`;
+5. 必须在每条 bullet 前面放一个或多个 resume_ids 与之绑定的 JD map_id，体现简历如何回应 JD。
+6. 至少改写 3 条与 JD 最相关的现有 bullet：保持事实、数字和长度基本不变，但把 JD 相关能力前置；不得仅原样复制候选人简历。`;
 
 interface TailorModelResponse {
   jd?: {
@@ -48,78 +54,126 @@ interface TailorModelResponse {
       resume_ids: string[];
       rationale?: string;
     }>;
+    pdf_patches?: Array<{
+      block_id: string;
+      page: number;
+      source_text: string;
+      tailored_text: string;
+      map_ids?: string[];
+    }>;
   };
 }
 
 export async function tailorResumeWithDeepSeek(
   profile: PersonalProfile,
   context: TailorContext,
-  settings: OfferFlowSettings
+  settings: OfferFlowSettings,
+  sourceBlocks: PdfTailoringSourceBlock[] = []
 ): Promise<TailoredResumeBundle> {
   const apiKey = settings.deepseekApiKey?.trim();
   if (!apiKey) throw new Error("请先在设置中填写 DeepSeek API Key 后再生成定制简历");
 
   const baseline = profileToResume(profile);
-  const prompt = buildPrompt(profile, context, baseline);
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      model: settings.deepseekModel === "deepseek-v4-flash"
-        ? "deepseek-chat"
-        : settings.deepseekModel || "deepseek-chat",
-      messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: prompt }
-      ],
-      response_format: { type: "json_object" },
-      thinking: { type: "disabled" },
-      temperature: 0.2,
-      max_tokens: 3600,
-      stream: false
-    })
-  });
-  if (!response.ok) {
-    const detail = await response.text();
-    throw new Error(`DeepSeek 定制请求失败（${response.status}）：${detail.slice(0, 200)}`);
+  const prompt = buildPrompt(profile, context, baseline, sourceBlocks);
+  let parsed = await requestTailoredJson(apiKey, settings, prompt);
+  let resume = mergeResume(baseline, parsed.resume || {});
+  let changes = collectResumeTextChanges(baseline, resume);
+  let pdfPatches = validatePdfTailoringPatches(parsed.resume?.pdf_patches, sourceBlocks);
+  if (sourceBlocks.length > 0 && pdfPatches.length === 0) {
+    parsed = await requestTailoredJson(
+      apiKey,
+      settings,
+      `${prompt}\n\n关键纠错：上一次没有生成可验证的 PDF 补丁。本次必须逐字复制原 PDF 文本块的 page、block_id、source_text，并为至少 ${Math.min(3, sourceBlocks.length)} 个文本块提供等长改写。`
+    );
+    resume = mergeResume(baseline, parsed.resume || {});
+    changes = collectResumeTextChanges(baseline, resume);
+    pdfPatches = validatePdfTailoringPatches(parsed.resume?.pdf_patches, sourceBlocks);
   }
-  const payload = (await response.json()) as {
-    choices?: Array<{ message?: { content?: string } }>;
-  };
-  const content = payload.choices?.[0]?.message?.content;
-  if (!content) throw new Error("DeepSeek 没有返回定制结果");
-  let parsed: TailorModelResponse;
-  try {
-    parsed = JSON.parse(stripCodeFence(content)) as TailorModelResponse;
-  } catch (error) {
-    throw new Error(`DeepSeek 定制结果无法解析：${(error as Error).message}`);
+  if (sourceBlocks.length > 0 && pdfPatches.length === 0) {
+    throw new Error("DeepSeek 改写了结构化简历，但没有返回能与原 PDF 文本块校验一致的补丁，已停止生成，避免再次出现‘改写有内容、落版为 0’。请重试一次。");
   }
-  const resume = mergeResume(baseline, parsed.resume || {});
+  if (changes.length === 0 && pdfPatches.length === 0) {
+    throw new Error("DeepSeek 已返回结果，但没有实际改写任何简历内容。请重新生成；系统不会再把原文复制版标记为定制成功。");
+  }
   const jd = buildJdAnalysis(parsed.jd || {}, parsed.resume?.mapping || []);
   return {
     context,
     jd,
     resume,
     generatedAt: new Date().toISOString(),
-    notes: parsed.resume?.notes || [],
-    unsupportedClaims: parsed.resume?.unsupported_claims || []
+    notes: [`已改写 ${changes.length} 处结构化内容，并生成 ${pdfPatches.length} 个原 PDF 定位补丁。`, ...(parsed.resume?.notes || [])],
+    unsupportedClaims: parsed.resume?.unsupported_claims || [],
+    changeSummary: { modelChanges: changes.length },
+    pdfPatches
   };
 }
 
-function stripCodeFence(value: string): string {
-  return value
-    .trim()
-    .replace(/^```(?:json)?\s*/i, "")
-    .replace(/\s*```$/, "");
+async function requestTailoredJson(
+  apiKey: string,
+  settings: OfferFlowSettings,
+  prompt: string
+): Promise<TailorModelResponse> {
+  const model = settings.deepseekModel === "deepseek-v4-flash"
+    ? "deepseek-chat"
+    : settings.deepseekModel || "deepseek-chat";
+  let lastFailure = "";
+
+  for (let attempt = 0; attempt < 2; attempt += 1) {
+    const retryInstruction = attempt === 0
+      ? ""
+      : "\n\n上一次输出未形成完整 JSON。请压缩 notes、rationale 和措辞，但必须返回语法完整的单个 JSON 对象，不要使用 Markdown。";
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: "system", content: SYSTEM_PROMPT },
+          { role: "user", content: `${prompt}${retryInstruction}` }
+        ],
+        response_format: { type: "json_object" },
+        thinking: { type: "disabled" },
+        temperature: 0.2,
+        max_tokens: MAX_OUTPUT_TOKENS,
+        stream: false
+      })
+    });
+    if (!response.ok) {
+      const detail = await response.text();
+      throw new Error(`DeepSeek 定制请求失败（${response.status}）：${detail.slice(0, 200)}`);
+    }
+
+    const payload = (await response.json()) as {
+      choices?: Array<{
+        finish_reason?: string;
+        message?: { content?: string };
+      }>;
+    };
+    const choice = payload.choices?.[0];
+    const content = choice?.message?.content;
+    if (!content) throw new Error("DeepSeek 没有返回定制结果");
+
+    const result = parseDeepSeekJson<TailorModelResponse>(content);
+    const hitOutputLimit = choice?.finish_reason === "length";
+    if (result.value && !hitOutputLimit) return result.value;
+
+    const reason = hitOutputLimit || result.likelyTruncated
+      ? "输出达到长度上限并被截断"
+      : "返回内容不是合法 JSON";
+    lastFailure = `${reason}（${result.normalized.length} 字符；${result.error?.message || `finish_reason=${choice?.finish_reason || "unknown"}`}）`;
+  }
+
+  throw new Error(`DeepSeek 定制结果无法解析：${lastFailure}。已自动重试，请缩短简历内容或稍后再试。`);
 }
 
 function buildPrompt(
   profile: PersonalProfile,
   context: TailorContext,
-  baseline: ResumeData
+  baseline: ResumeData,
+  sourceBlocks: PdfTailoringSourceBlock[]
 ): string {
   const candidate = redactForLLM(profile, baseline);
   return `## 招聘JD（请基于此定制）
@@ -137,6 +191,12 @@ ${context.rawExcerpt ? `\nJD 原始文本（仅供参考，避免幻觉）：\n$
 ## 候选人原始资料
 \`\`\`json
 ${JSON.stringify(candidate, null, 2)}
+\`\`\`
+
+## 原 PDF 可改写文本块
+下面文本直接来自 PDF 坐标层。只改写其中与 JD 最相关的叙述块；必须原样复用 block_id 和 source_text。不要改教育、日期、公司、岗位、数字或专有名词。tailored_text 的字符数必须为 source_text 的 90%-110%，视觉宽度不得增加超过 8%；优先做关键词前置和同义替换，不要新增句子、bullet 或换行。
+\`\`\`json
+${JSON.stringify(sourceBlocks, null, 2)}
 \`\`\`
 
 ## 输出结构
@@ -171,12 +231,15 @@ ${JSON.stringify(candidate, null, 2)}
     "unsupported_claims": ["被砍掉的虚假事实"],
     "mapping": [
       {"map_id":"JD-AGENT","category":"responsibility","text":"...","resume_ids":["exp-1.bullet-1"],"rationale":"..."}
+    ],
+    "pdf_patches": [
+      {"page":1,"block_id":"pdf-block-15","source_text":"必须逐字复制上方对应文本块","tailored_text":"长度保持在原文 90%-110% 的改写文本","map_ids":["JD-AGENT"]}
     ]
   }
 }
 \`\`\`
 
-请只返回上述 JSON，所有 id 字段必须复用候选人资料中已有的 id；如要新增 bullet，请使用 \`<exp-id>.bullet-<index>\` 命名。`;
+请只返回上述 JSON，所有 id 字段必须复用候选人资料中已有的 id；如要新增 bullet，请使用 \`<exp-id>.bullet-<index>\` 命名。${sourceBlocks.length ? `pdf_patches 必须从上方文本块中选择至少 ${Math.min(3, sourceBlocks.length)} 个，并逐字复制 page、block_id、source_text。` : "pdf_patches 返回空数组。"}`;
 }
 
 function escapeString(value: string): string {

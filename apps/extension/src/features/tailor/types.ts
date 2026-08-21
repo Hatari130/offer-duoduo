@@ -163,6 +163,24 @@ export interface TailoredResumeBundle {
   generatedAt: string;
   notes: string[];
   unsupportedClaims: string[];
+  changeSummary?: {
+    modelChanges: number;
+  };
+  pdfPatches?: PdfTailoringPatch[];
+}
+
+export interface PdfTailoringSourceBlock {
+  blockId: string;
+  page: number;
+  text: string;
+}
+
+export interface PdfTailoringPatch {
+  blockId: string;
+  page: number;
+  sourceText: string;
+  tailoredText: string;
+  mapIds: string[];
 }
 
 export interface TailoredResumeEntry {

@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>小米多段实习经历表单测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      section { width: 760px; }
+      .experience-shell { margin: 12px 0; }
+      .work-entry { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; border: 1px solid #ddd; }
+      label { display: grid; gap: 5px; }
+      input, textarea { min-height: 34px; }
+      textarea { grid-column: 1 / -1; }
+      .atsx-date-picker { display: flex; gap: 8px; }
+      .atsx-date-picker-period-hidden-input { width: 1px; min-height: 1px; opacity: 0; }
+      .atsx-select-dropdown-hidden { display: none; }
+    </style>
+  </head>
+  <body>
+    <div class="atsx-row atsx-form-item">
+      <label for="degree-fixture">学历</label>
+      <div class="atsx-form-item-control">
+        <div id="degree-fixture" class="atsx-select atsx-select-open atsx-select-enabled">
+          <div class="atsx-select-selection" role="combobox" aria-expanded="true" aria-controls="degree-popup" data-cy="degreeInput">
+            <div data-cy="selectedValue" class="atsx-select-selection-selected-value"></div>
+            <input class="atsx-select-search__field" value="" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <section class="application-section">
+      <header><h2>实习经历</h2></header>
+      <div id="experience-list">
+        <div class="experience-shell">
+          <article class="work-entry">
+            <label class="time-range">起止时间
+              <div class="atsx-date-picker atsx-date-picker-period-month" data-cy="internship[0].periodInput">
+                <div class="atsx-date-picker-period-month-label" data-cy="internship[0].periodInputBegin"><span data-cy="year">YYYY</span>-<span data-cy="month">MM</span></div>
+                <div class="atsx-date-picker-period-month-label" data-cy="internship[0].periodInputEnd"><span data-cy="year">YYYY</span>-<span data-cy="month">MM</span></div>
+                <input class="atsx-date-picker-period-hidden-input" />
+              </div>
+            </label>
+            <label>公司名称<input name="company" /></label>
+            <label>职位名称<input name="position" /></label>
+            <label>描述<textarea name="description"></textarea></label>
+          </article>
+        </div>
+        <div class="experience-shell">
+          <article class="work-entry">
+            <label class="time-range">起止时间
+              <div class="atsx-date-picker atsx-date-picker-period-month" data-cy="internship[1].periodInput">
+                <div class="atsx-date-picker-period-month-label" data-cy="internship[1].periodInputBegin"><span data-cy="year">YYYY</span>-<span data-cy="month">MM</span></div>
+                <div class="atsx-date-picker-period-month-label" data-cy="internship[1].periodInputEnd"><span data-cy="year">YYYY</span>-<span data-cy="month">MM</span></div>
+                <input class="atsx-date-picker-period-hidden-input" />
+              </div>
+            </label>
+            <label>公司名称<input name="company" /></label>
+            <label>职位名称<input name="position" /></label>
+            <label>描述<textarea name="description"></textarea></label>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <div class="atsx-select-dropdown" id="degree-popup-shell">
+      <div id="degree-popup" data-cy="degreeInputDropdown">
+        <ul role="listbox" class="atsx-select-dropdown-menu">
+          <li role="option" class="atsx-select-dropdown-menu-item" aria-selected="false"><span data-cy-value="本科">本科</span></li>
+          <li role="option" class="atsx-select-dropdown-menu-item" aria-selected="false"><span data-cy-value="硕士">硕士</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+      document.querySelectorAll(".atsx-date-picker-period-month").forEach((root) => {
+        const input = root.querySelector("input");
+        const props = {
+          id: `${root.dataset.cy.replace("Input", "")}`,
+          value: [],
+          onChange: (range) => {
+            const labels = root.querySelectorAll(".atsx-date-picker-period-month-label");
+            range.forEach((part, index) => {
+              labels[index].querySelector("[data-cy='year']").textContent = typeof part === "string" ? part : part.year;
+              labels[index].querySelector("[data-cy='month']").textContent = typeof part === "string" ? "" : part.month;
+            });
+            input.value = typeof range[0] === "string" ? range[0] : `${range[0].year}-${range[0].month}`;
+          },
+          onBlur: () => { throw new Error("ATSX period onBlur requires its private event payload"); }
+        };
+        input.__reactInternalInstance$fixture = {
+          memoizedProps: {},
+          return: { memoizedProps: {}, return: { memoizedProps: props, return: null } }
+        };
+      });
+      const degreeControl = document.querySelector("[data-cy='degreeInput']");
+      const degreeRoot = degreeControl.closest(".atsx-select");
+      const degreePopup = document.getElementById("degree-popup-shell");
+      const closeDegree = () => {
+        degreeControl.setAttribute("aria-expanded", "false");
+        degreeRoot.classList.remove("atsx-select-open");
+        degreePopup.classList.add("atsx-select-dropdown-hidden");
+      };
+      degreeControl.addEventListener("click", () => {
+        degreeControl.setAttribute("aria-expanded", "true");
+        degreeRoot.classList.add("atsx-select-open");
+        degreePopup.classList.remove("atsx-select-dropdown-hidden");
+      });
+      degreePopup.querySelectorAll("[role='option']").forEach((option) => {
+        option.addEventListener("click", () => {
+          degreePopup.querySelectorAll("[role='option']").forEach((candidate) => candidate.setAttribute("aria-selected", String(candidate === option)));
+          degreeRoot.querySelector("[data-cy='selectedValue']").textContent = option.textContent.trim();
+          degreeRoot.querySelector("input").value = option.textContent.trim();
+          degreeRoot.closest(".atsx-form-item-control").classList.add("has-success");
+          closeDegree();
+        });
+      });
+      document.body.addEventListener("mousedown", (event) => {
+        if (!degreeRoot.contains(event.target) && !degreePopup.contains(event.target)) closeDegree();
+      });
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM", repeatCounts: { experience: 2 } },
+        {},
+        (scan) => {
+          const valuesByIndex = [
+            {
+              experienceOrganization: "携程集团",
+              experienceTitle: "AI产品经理",
+              experienceStartDate: "2026-04",
+              experienceEndDate: "2026-07",
+              experienceDescription: "第一段经历"
+            },
+            {
+              experienceOrganization: "南京开为网络科技有限公司",
+              experienceTitle: "产品部门｜AI产品经理",
+              experienceStartDate: "2025-11",
+              experienceEndDate: "2026-03",
+              experienceDescription: "第二段经历"
+            }
+          ];
+          const fieldValues = Object.fromEntries(
+            scan.fields.map((field) => [
+              field.id,
+              field.type === "date-range"
+                ? `${valuesByIndex[field.repeatIndex || 0].experienceStartDate}\u001f${valuesByIndex[field.repeatIndex || 0].experienceEndDate}`
+                : field.key === "degree"
+                  ? "硕士"
+                  : valuesByIndex[field.repeatIndex || 0]?.[field.key] || ""
+            ])
+          );
+          listener(
+            { type: "OFFERFLOW_FILL_APPLICATION_FORM", fields: scan.fields, fieldValues, values: {}, delayMs: 0 },
+            {},
+            (fill) => {
+              const entries = Array.from(document.querySelectorAll(".work-entry")).map((entry) => {
+                const labels = entry.querySelectorAll(".atsx-date-picker-period-month-label");
+                const month = (label) => `${label.querySelector("[data-cy='year']").textContent}-${label.querySelector("[data-cy='month']").textContent}`;
+                return {
+                  startDate: month(labels[0]),
+                  endDate: month(labels[1]),
+                  company: entry.querySelector("[name='company']").value,
+                  position: entry.querySelector("[name='position']").value,
+                  description: entry.querySelector("[name='description']").value
+                };
+              });
+              document.body.dataset.ready = "true";
+              const degree = degreeRoot.querySelector("[data-cy='selectedValue']").textContent.trim();
+              const openAtsxSelects = document.querySelectorAll(".atsx-select-open,[role='combobox'][aria-expanded='true']").length;
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({ ok: true, data: { scan, fill, entries, degree, openAtsxSelects } }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

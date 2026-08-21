@@ -1,7 +1,8 @@
-import type {
-  ApplicationStage,
-  ExtractedJob,
-  JobApplication
+import {
+  inferRecruitmentType,
+  type ApplicationStage,
+  type ExtractedJob,
+  type JobApplication
 } from "@/shared/types";
 
 export type View = "dashboard" | "calendar" | "capture" | "settings";
@@ -218,10 +219,12 @@ export function applicationStageFromProgress(
 const CAPTURE_OCCUPATION_PATTERN = /产品经理|项目经理|工程师|设计师|架构师|分析师|研究员|科学家|算法|开发|测试|运营|销售|市场|顾问|管培生|实习生|专员|主管|总监|HRBP|财务|法务|审计|采购|供应链|商务|策划|编辑|翻译|教师|讲师|医生/i;
 const CAPTURE_PROCESS_PATTERN = /^(?:(?:简历|网申|在线|AI|人才|资格|视频|业务|主管|薪酬|录用|Offer)?(?:投递|提交|筛选|初筛|复筛|评估|审核|测评|笔试|面试|一面|二面|三面|HR面|群面|终面|沟通|背调|背景调查|体检|签约|审批|发放|意向书|Offer评估|Offer|录用|入职)(?:简历|申请)?(?:中|完成|通过|不通过|结果|待定)?|等待.{0,10}(?:筛选|评估|审核|面试|笔试|测评|背调|体检|审批|结果)|待(?:筛选|评估|审核|面试|笔试|测评|背调|体检|签约|审批|入职)|未通过|不合适|淘汰|流程终止|已结束|拒绝|未录用|已撤回)$/i;
 const CAPTURE_CAMPAIGN_PATTERN = /(?:校园招聘|社会招聘|实习生招聘|招聘官网|招聘平台|招聘门户|招聘首页|职位列表|职位详情|申请记录|投递记录|我的申请|JD\s*YOUNG.*计划)$/i;
+const CAPTURE_PAGE_LABEL_PATTERN = /^(?:应聘记录|应聘进度|投递记录|申请记录|我的申请|我的投递)$/i;
 
 export function isCapturePositionRejected(value?: string): boolean {
   const position = value?.trim();
   if (!position) return true;
+  if (CAPTURE_PAGE_LABEL_PATTERN.test(position)) return true;
   const segments = position.split(/[｜|]/).map((segment) => segment.trim()).filter(Boolean);
   const candidate = segments.at(-1) || position;
   // Campaign/site labels win over occupation words: “实习生招聘” contains the
@@ -334,7 +337,12 @@ export function prepareCaptureForReview(page: ExtractedJob): ExtractedJob {
   return {
     ...page,
     position: rejectedPosition ? "" : page.position,
-    deadline: undefined,
+    recruitmentType: page.recruitmentType || inferRecruitmentType(
+      page.position,
+      page.jobType,
+      page.summary,
+      page.rawExcerpt
+    ),
     nextAction: undefined,
     summary: undefined,
     externalStage,
@@ -360,6 +368,10 @@ export function captureCandidatesFromProgress(page: ExtractedJob): ExtractedJob[
         company: evidence.company?.trim() || pageCompany,
         position: evidence.position!.trim(),
         jobId: evidence.jobId || page.jobId,
+        // A page-level deadline on a multi-record application list cannot be
+        // attributed to every card. Keep deadlines only when an individual
+        // extracted application carries its own evidence.
+        deadline: undefined,
         city:
           evidence.city?.trim().replace(/[省市]$/, "") ||
           captureCity(evidence.position, evidence.context, page.city),

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>自动填写运行时重注入测试</title>
+    <style>
+      body { padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      label { display: grid; width: 320px; gap: 6px; }
+      input { min-height: 36px; }
+    </style>
+  </head>
+  <body>
+    <form>
+      <label>姓名<input name="fullName" /></label>
+    </form>
+    <script>
+      globalThis.__offerflowDesiredContentSession = "test-session-a";
+      globalThis.__offerflowListeners = new Set();
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: {
+            addListener: (listener) => globalThis.__offerflowListeners.add(listener),
+            removeListener: (listener) => globalThis.__offerflowListeners.delete(listener)
+          },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>globalThis.__offerflowDesiredContentSession = "test-session-b";</script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listeners = Array.from(globalThis.__offerflowListeners);
+      const listener = listeners[0];
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
+        {},
+        (scan) => {
+          document.body.dataset.ready = "true";
+          document.body.dataset.result = encodeURIComponent(JSON.stringify({
+            ok: true,
+            data: {
+              listenerCount: listeners.length,
+              contentSession: globalThis.__offerflowContentRuntimeSession,
+              runtimeVersion: scan.runtimeVersion,
+              fieldCount: scan.fields.length
+            }
+          }));
+        }
+      );
+    </script>
+  </body>
+</html>

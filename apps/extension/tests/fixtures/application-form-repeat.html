@@ -13,10 +13,20 @@
     </style>
   </head>
   <body>
+    <aside aria-label="profile editor decoy">
+      <button id="decoy-add-education" type="button">增加学历</button>
+    </aside>
     <section class="application-section">
       <header><h2>教育经历</h2></header>
       <div id="education-list">
         <article class="education-entry">
+          <label>学校<input name="school" /></label>
+          <label>专业<input name="major" /></label>
+          <label>学历<input name="degree" /></label>
+          <label>开始时间<input name="startDate" /></label>
+          <label>结束时间<input name="endDate" /></label>
+        </article>
+        <article class="education-entry" data-template style="display: none">
           <label>学校<input name="school" /></label>
           <label>专业<input name="major" /></label>
           <label>学历<input name="degree" /></label>
@@ -51,8 +61,12 @@
     </section>
 
     <script>
+      globalThis.__decoyAddClicks = 0;
+      document.getElementById("decoy-add-education").addEventListener("click", () => {
+        globalThis.__decoyAddClicks += 1;
+      });
       document.getElementById("add-education").addEventListener("click", () => {
-        const template = document.querySelector(".education-entry");
+        const template = document.querySelector(".education-entry:not([data-template])");
         const clone = template.cloneNode(true);
         clone.querySelectorAll("input").forEach((input) => { input.value = ""; });
         document.getElementById("education-list").appendChild(clone);
@@ -93,6 +107,8 @@
     </script>
     <script src="../../public/extraction-rules.js"></script>
     <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
     <script src="../../public/content.js"></script>
     <script>
       const listener = globalThis.__offerflowListeners.at(-1);
@@ -116,11 +132,14 @@
             { type: "OFFERFLOW_FILL_APPLICATION_FORM", fields: scan.fields, fieldValues, values: {}, delayMs: 0 },
             {},
             (fill) => {
-              const entries = Array.from(document.querySelectorAll(".education-entry")).map((entry) =>
+              const entries = Array.from(document.querySelectorAll(".education-entry:not([data-template])")).map((entry) =>
                 Object.fromEntries(Array.from(entry.querySelectorAll("input")).map((input) => [input.name, input.value]))
               );
               document.body.dataset.ready = "true";
-              document.body.dataset.result = encodeURIComponent(JSON.stringify({ ok: true, data: { scan, fill, entries } }));
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: { scan, fill, entries, decoyAddClicks: globalThis.__decoyAddClicks }
+              }));
             }
           );
         }

@@ -13,6 +13,7 @@ import {
   X
 } from "lucide-react";
 import { matchFormFields } from "@/integrations/deepseek/deepseek";
+import { normalizeRepeatableFormFields } from "@/features/profile/repeatableFormFields";
 import {
   ACTIVE_RESUME_KEY,
   applyResumeFixedProfile,
@@ -319,12 +320,106 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
   };
 }
 
+function profileRepeatCounts(profile: PersonalProfile) {
+  return {
+    education: profile.education.length,
+    experience: profile.experiences.length,
+    project: profile.projects.length,
+    campus: profile.campusExperiences.length,
+    award: profile.awards.length
+  };
+}
+
+function mokaExperienceIndexes(profile: PersonalProfile) {
+  const work: number[] = [];
+  const internship: number[] = [];
+  profile.experiences.forEach((experience, index) => {
+    const type = String(experience.type || "").trim();
+    if (/工作|全职|兼职|work|employment/i.test(type) && !/实习|intern/i.test(type)) work.push(index);
+    else internship.push(index);
+  });
+  return { work, internship };
+}
+
+function profileRepeatPlan(profile: PersonalProfile) {
+  const experience = mokaExperienceIndexes(profile);
+  return {
+    experience: {
+      work: experience.work.length,
+      internship: experience.internship.length
+    }
+  };
+}
+
+function assignPlatformProfileIndexes(fields: FormFieldMatch[], profile: PersonalProfile): FormFieldMatch[] {
+  const buckets = mokaExperienceIndexes(profile);
+  const entryIndexes = new Map<string, number>();
+  const sectionCounts = new Map<string, number>();
+
+  for (const field of fields) {
+    if (!["moka", "feishu-career"].includes(field.adapterId || "") || field.repeatGroup !== "experience") continue;
+    const sectionKind: "internship" | "work" | "" = /实习|practice|intern/i.test(field.section || "")
+      ? "internship"
+      : /工作|work|employment/i.test(field.section || "")
+        ? "work"
+        : "";
+    if (!sectionKind) continue;
+    const entryKey = `${sectionKind}:${field.repeatEntryFingerprint || field.repeatIndex || 0}`;
+    if (!entryIndexes.has(entryKey)) {
+      const localIndex = sectionCounts.get(sectionKind) || 0;
+      entryIndexes.set(entryKey, localIndex);
+      sectionCounts.set(sectionKind, localIndex + 1);
+    }
+  }
+
+  return fields.map((field) => {
+    if (!["moka", "feishu-career"].includes(field.adapterId || "") || field.repeatGroup !== "experience") return field;
+    const sectionKind: "internship" | "work" | "" = /实习|practice|intern/i.test(field.section || "")
+      ? "internship"
+      : /工作|work|employment/i.test(field.section || "")
+        ? "work"
+        : "";
+    if (!sectionKind) return field;
+    const entryKey = `${sectionKind}:${field.repeatEntryFingerprint || field.repeatIndex || 0}`;
+    const localIndex = entryIndexes.get(entryKey) || 0;
+    return { ...field, profileRepeatIndex: buckets[sectionKind][localIndex] ?? -1 };
+  });
+}
+
+function profileFormSnapshots(profile: PersonalProfile): Record<string, string>[] {
+  const counts = profileRepeatCounts(profile);
+  const snapshotCount = Math.max(1, ...Object.values(counts));
+  return Array.from({ length: snapshotCount }, (_, index) => profileValues(profile, index));
+}
+
+const PROFILE_DATE_RANGE_SEPARATOR = "\u001f";
+const FORM_CONTENT_RUNTIME_VERSION = "2026-08-20.autofill-v6";
+const FORM_CONTENT_SESSION_ID = `${FORM_CONTENT_RUNTIME_VERSION}:${
+  globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
+}`;
+const dateRangeEndKey: Partial<Record<NonNullable<FormFieldMatch["key"]>, NonNullable<FormFieldMatch["key"]>>> = {
+  educationStartDate: "educationEndDate",
+  experienceStartDate: "experienceEndDate",
+  projectStartDate: "projectEndDate"
+};
+
 function profileFieldValue(
   profile: PersonalProfile,
-  field: Pick<FormFieldMatch, "key" | "repeatIndex">
+  field: Pick<FormFieldMatch, "key" | "repeatIndex" | "profileRepeatIndex" | "type">
 ): string {
-  return field.key ? profileValues(profile, field.repeatIndex ?? 0)[field.key] || "" : "";
+  if (!field.key) return "";
+  const repeatIndex = field.profileRepeatIndex ?? field.repeatIndex ?? 0;
+  if (repeatIndex < 0) return "";
+  const values = profileValues(profile, repeatIndex);
+  const value = values[field.key] || "";
+  const endKey = field.type === "date-range" ? dateRangeEndKey[field.key] : undefined;
+  return endKey ? `${value}${PROFILE_DATE_RANGE_SEPARATOR}${values[endKey] || ""}` : value;
 }
+
+const displayProfileFieldValue = (value: string) =>
+  value.includes(PROFILE_DATE_RANGE_SEPARATOR)
+    ? value.split(PROFILE_DATE_RANGE_SEPARATOR).filter(Boolean).join(" — ")
+    : value;
 
 function comparableProfile(profile: PersonalProfile): string {
   const { updatedAt: _updatedAt, ...content } = profile;
@@ -338,15 +433,35 @@ async function activeTabMessage(message: unknown) {
     }
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!tab?.id || !tab.url?.startsWith("http")) throw new Error("当前页面不支持表单填写");
-    try {
-      return await chrome.tabs.sendMessage(tab.id, message);
-    } catch (error) {
-      if (String(error).includes("Extension context invalidated")) {
-        throw error;
-      }
-      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["extraction-rules.js", "form-adapters.js", "content.js"] });
-      return chrome.tabs.sendMessage(tab.id, message);
+    const payload: Record<string, unknown> = message && typeof message === "object"
+      ? { ...(message as Record<string, unknown>) }
+      : { value: message };
+    if (payload.type === "OFFERFLOW_SCAN_APPLICATION_FORM") payload.type = "OFFERFLOW_SCAN_APPLICATION_FORM_V2";
+    if (payload.type === "OFFERFLOW_FILL_APPLICATION_FORM") payload.type = "OFFERFLOW_FILL_APPLICATION_FORM_V2";
+
+    // An unpacked extension reload does not replace content scripts already
+    // living in an open recruitment tab. Always inject the current artifact;
+    // content.js is version-guarded, so this is idempotent.
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: (sessionId: string) => {
+        (globalThis as typeof globalThis & { __offerflowDesiredContentSession?: string })
+          .__offerflowDesiredContentSession = sessionId;
+      },
+      args: [FORM_CONTENT_SESSION_ID]
+    });
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: ["extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"]
+    });
+    const response = await chrome.tabs.sendMessage(tab.id, payload);
+    if (
+      (payload.type === "OFFERFLOW_SCAN_APPLICATION_FORM_V2" || payload.type === "OFFERFLOW_FILL_APPLICATION_FORM_V2") &&
+      response?.runtimeVersion !== FORM_CONTENT_RUNTIME_VERSION
+    ) {
+      throw new Error("招聘页面仍在使用旧版填写脚本，请重新加载插件后重试");
     }
+    return response;
   } catch (error) {
     if (String(error).includes("Extension context invalidated")) {
       throw new Error("扩展刚刚更新，请关闭当前侧边栏后重新打开；必要时刷新招聘页面");
@@ -564,13 +679,8 @@ export default function ProfileView({
       await persistDraft();
       const response = (await activeTabMessage({
         type: "OFFERFLOW_SCAN_APPLICATION_FORM",
-        repeatCounts: {
-          education: draft.education.length,
-          experience: draft.experiences.length,
-          project: draft.projects.length,
-          campus: draft.campusExperiences.length,
-          award: draft.awards.length
-        }
+        repeatCounts: profileRepeatCounts(draft),
+        repeatPlan: profileRepeatPlan(draft)
       })) as FormScanResponse;
       if (!response?.ok) throw new Error(response?.error || "表单识别失败");
       let matches = (response.fields || []) as FormFieldMatch[];
@@ -587,6 +697,7 @@ export default function ProfileView({
           setStatus(`${adapterName}：规则命中 ${ruleMatched} 个，DeepSeek 暂不可用：${error instanceof Error ? error.message : "请求失败"}`);
         }
       }
+      matches = assignPlatformProfileIndexes(normalizeRepeatableFormFields(matches), draft);
       setFields(matches);
       setResultMap({});
       const fillable = matches.filter(
@@ -610,10 +721,18 @@ export default function ProfileView({
               fields: fillable,
               values,
               fieldValues: Object.fromEntries(fillable.map((field) => [field.id, profileFieldValue(draft, field)])),
+              profileSnapshots: profileFormSnapshots(draft),
+              repeatCounts: profileRepeatCounts(draft),
+              repeatPlan: profileRepeatPlan(draft),
+              maxRounds: 5,
+              fillDynamicFields: true,
               delayMs: 55
             });
             if (!fillResponse?.ok) throw new Error(fillResponse?.error || "填写失败");
             const report = fillResponse as FormFillResponse;
+            if (report.finalFields?.length) {
+              setFields(assignPlatformProfileIndexes(normalizeRepeatableFormFields(report.finalFields), draft));
+            }
             setResultMap(Object.fromEntries((report.results || []).map((result) => [result.id, result])));
             const failed = (report.results || []).filter((result) => result.status === "failed").length;
             setStatus(
@@ -653,10 +772,18 @@ export default function ProfileView({
         fields: chosen,
         values,
         fieldValues: Object.fromEntries(chosen.map((field) => [field.id, profileFieldValue(draft, field)])),
+        profileSnapshots: profileFormSnapshots(draft),
+        repeatCounts: profileRepeatCounts(draft),
+        repeatPlan: profileRepeatPlan(draft),
+        fillDynamicFields: true,
+        maxRounds: 5,
         delayMs: 55
       });
       if (!response?.ok) throw new Error(response?.error || "填写失败");
       const report = response as FormFillResponse;
+      if (report.finalFields?.length) {
+        setFields(assignPlatformProfileIndexes(normalizeRepeatableFormFields(report.finalFields), draft));
+      }
       setResultMap(Object.fromEntries((report.results || []).map((result) => [result.id, result])));
       const missing = (report.results || []).filter((result) => result.status === "missing").length;
       const failed = (report.results || []).filter((result) => result.status === "failed").length;
@@ -737,6 +864,17 @@ export default function ProfileView({
 
   return (
     <section className="profile-view">
+      {onTailor && (
+        <div className="profile-autofill-card profile-tailor-card">
+          <span><Sparkles size={20} /></span>
+          <div><strong>为当前岗位定制简历</strong><small>点击后自动读取 JD、匹配经历并生成预览</small></div>
+          <button onClick={onTailor}>
+            <Wand2 size={14} />
+            开始定制
+          </button>
+        </div>
+      )}
+
       {resumeLibrary.length > 0 && (
         <div className="profile-resume-switcher">
           <div className="profile-resume-switcher-copy">
@@ -756,22 +894,35 @@ export default function ProfileView({
         </div>
       )}
 
-      {onTailor && (
-        <div className="profile-autofill-card profile-tailor-card">
-          <span><Sparkles size={20} /></span>
-          <div><strong>为当前岗位定制简历</strong><small>点击后自动读取 JD、匹配经历并生成预览</small></div>
-          <button onClick={onTailor}>
-            <Wand2 size={14} />
-            开始定制
-          </button>
-        </div>
-      )}
-
       <div className="profile-autofill-card">
         <span><ScanLine size={20} /></span>
         <div><strong>填写当前网申</strong><small>识别后直接填写，缺少资料自动跳过</small></div>
         <button onClick={scan} disabled={busy}>识别表单</button>
       </div>
+
+      <ProfileSection
+        sectionKey="basic"
+        open={openSections.basic}
+        onToggle={toggleSection}
+        title="基本信息"
+        description="常见网申字段"
+      >
+        <div className="profile-grid">
+          <Field label="姓名"><input value={draft.fullName} onChange={(e) => set("fullName", e.target.value)} /></Field>
+          <Field label="性别"><select value={draft.gender} onChange={(e) => set("gender", e.target.value)}><option value="">请选择</option><option>男</option><option>女</option><option>不便透露</option></select></Field>
+          <Field label="手机号"><input type="tel" value={draft.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
+          <Field label="邮箱"><input type="email" value={draft.email} onChange={(e) => set("email", e.target.value)} /></Field>
+          <Field label="出生日期"><input type="date" value={draft.birthDate} onChange={(e) => set("birthDate", e.target.value)} /></Field>
+          <Field label="毕业时间"><input type="month" value={draft.graduationDate} onChange={(e) => set("graduationDate", e.target.value)} /></Field>
+          <Field label="现居城市"><input value={draft.currentCity} onChange={(e) => set("currentCity", e.target.value)} /></Field>
+          <Field label="籍贯"><input value={draft.nativePlace} onChange={(e) => set("nativePlace", e.target.value)} /></Field>
+          <Field label="身高（厘米）"><input inputMode="numeric" value={draft.height} onChange={(e) => set("height", e.target.value)} /></Field>
+          <Field label="体重（公斤）"><input inputMode="decimal" value={draft.weight} onChange={(e) => set("weight", e.target.value)} /></Field>
+          <Field label="是否统招"><select value={draft.recruitmentType} onChange={(e) => set("recruitmentType", e.target.value)}><option value="">请选择</option><option>是</option><option>否</option></select></Field>
+          <Field label="应届/往届"><select value={draft.graduateStatus} onChange={(e) => set("graduateStatus", e.target.value)}><option value="">请选择</option><option>应届</option><option>往届</option></select></Field>
+          <Field label="联系地址" wide><input value={draft.address} onChange={(e) => set("address", e.target.value)} /></Field>
+        </div>
+      </ProfileSection>
 
       {status && <button className="profile-status" onClick={() => setStatus("")}><span>{status}</span><X size={13} /></button>}
 
@@ -804,7 +955,7 @@ export default function ProfileView({
                   <input type="checkbox" checked={selectedFields.has(field.id)} disabled={!available} onChange={() => toggleField(field.id)} />
                   <span className="profile-match-check">{selectedFields.has(field.id) && <Check size={12} />}</span>
                   <span><strong>{field.key ? FIELD_NAMES[field.key] || field.label : "待识别字段"}</strong><small>{field.section ? `${field.section} · ` : ""}{field.label}</small></span>
-                  <em>{available ? value : result?.reason || "资料未填写"}<small>{resultLabel}</small></em>
+                  <em>{available ? displayProfileFieldValue(value) : result?.reason || "资料未填写"}<small>{resultLabel}</small></em>
                 </label>
               );
             })}
@@ -815,30 +966,6 @@ export default function ProfileView({
           <p>已自动填写可用资料；请在网页中检查，OfferDuoDuo 不会点击提交按钮。</p>
         </div>
       )}
-
-      <ProfileSection
-        sectionKey="basic"
-        open={openSections.basic}
-        onToggle={toggleSection}
-        title="基本信息"
-        description="常见网申字段"
-      >
-        <div className="profile-grid">
-          <Field label="姓名"><input value={draft.fullName} onChange={(e) => set("fullName", e.target.value)} /></Field>
-          <Field label="性别"><select value={draft.gender} onChange={(e) => set("gender", e.target.value)}><option value="">请选择</option><option>男</option><option>女</option><option>不便透露</option></select></Field>
-          <Field label="手机号"><input type="tel" value={draft.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
-          <Field label="邮箱"><input type="email" value={draft.email} onChange={(e) => set("email", e.target.value)} /></Field>
-          <Field label="出生日期"><input type="date" value={draft.birthDate} onChange={(e) => set("birthDate", e.target.value)} /></Field>
-          <Field label="毕业时间"><input type="month" value={draft.graduationDate} onChange={(e) => set("graduationDate", e.target.value)} /></Field>
-          <Field label="现居城市"><input value={draft.currentCity} onChange={(e) => set("currentCity", e.target.value)} /></Field>
-          <Field label="籍贯"><input value={draft.nativePlace} onChange={(e) => set("nativePlace", e.target.value)} /></Field>
-          <Field label="身高（厘米）"><input inputMode="numeric" value={draft.height} onChange={(e) => set("height", e.target.value)} /></Field>
-          <Field label="体重（公斤）"><input inputMode="decimal" value={draft.weight} onChange={(e) => set("weight", e.target.value)} /></Field>
-          <Field label="是否统招"><select value={draft.recruitmentType} onChange={(e) => set("recruitmentType", e.target.value)}><option value="">请选择</option><option>是</option><option>否</option></select></Field>
-          <Field label="应届/往届"><select value={draft.graduateStatus} onChange={(e) => set("graduateStatus", e.target.value)}><option value="">请选择</option><option>应届</option><option>往届</option></select></Field>
-          <Field label="联系地址" wide><input value={draft.address} onChange={(e) => set("address", e.target.value)} /></Field>
-        </div>
-      </ProfileSection>
 
       <ProfileSection
         sectionKey="preference"

@@ -35,7 +35,7 @@ export function SettingsPage() {
   return (
     <section className="data-page settings-page">
       <header className="page-header">
-        <div><span className="page-kicker"><ShieldCheck aria-hidden="true" size={14} />ACCOUNT & SYNC</span><h1 tabIndex={-1}>设置与设备同步</h1><p>管理账号，并把浏览器插件连接到同一个 OfferFlow 工作台。</p></div>
+        <div><span className="page-kicker"><ShieldCheck aria-hidden="true" size={14} />账号与同步</span><h1 tabIndex={-1}>设置与设备同步</h1><p>管理账号，并把浏览器插件连接到同一个 OfferFlow 工作台。</p></div>
       </header>
 
       <div className="settings-grid">

@@ -61,11 +61,14 @@ import {
   refreshOpportunityFeed
 } from "@/features/opportunities/opportunities";
 import {
+  RECRUITMENT_TYPES,
+  RECRUITMENT_TYPE_LABELS,
   STAGES,
   STAGE_LABELS,
   type ApplicationStage,
   type ExtractedJob,
   type JobApplication,
+  type RecruitmentType,
   type OfferFlowSettings,
   type OpportunityFeedSnapshot,
   type PersonalProfile,
@@ -185,6 +188,21 @@ export function CaptureForm({
         <label>
           <span>岗位</span>
           <input value={value.position} onChange={(e) => update("position", e.target.value)} />
+        </label>
+        <label>
+          <span>岗位类型</span>
+          <select
+            value={value.recruitmentType || ""}
+            onChange={(event) => update(
+              "recruitmentType",
+              (event.target.value || undefined) as RecruitmentType | undefined
+            )}
+          >
+            <option value="">未识别 / 待选择</option>
+            {RECRUITMENT_TYPES.map((type) => (
+              <option key={type} value={type}>{RECRUITMENT_TYPE_LABELS[type]}</option>
+            ))}
+          </select>
         </label>
         <label>
           <span>城市</span>
@@ -317,12 +335,6 @@ export function CandidatePicker({
                   {candidate.jobId ? ` · ${candidate.jobId}` : ""}
                 </small>
               </span>
-              <span className="candidate-stage">
-                {candidate.externalStage ||
-                  (candidate.suggestedStage
-                  ? STAGE_LABELS[candidate.suggestedStage]
-                  : "待确认")}
-              </span>
               <span className={`candidate-mode ${duplicate ? "update" : ""}`}>
                 {duplicate ? "更新" : "新建"}
               </span>
@@ -383,6 +395,21 @@ export function EditDrawer({
         </div>
 
         <div className="drawer-body">
+          <label>
+            <span>岗位类型</span>
+            <select
+              value={draft.recruitmentType || ""}
+              onChange={(event) => set(
+                "recruitmentType",
+                (event.target.value || undefined) as RecruitmentType | undefined
+              )}
+            >
+              <option value="">未识别 / 待选择</option>
+              {RECRUITMENT_TYPES.map((type) => (
+                <option key={type} value={type}>{RECRUITMENT_TYPE_LABELS[type]}</option>
+              ))}
+            </select>
+          </label>
           <label>
             <span>当前阶段</span>
             <select

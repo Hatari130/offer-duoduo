@@ -7,18 +7,26 @@ import type {
   ApplicationSyncItem,
   ApplicationSyncRequest,
   ApplicationSyncResponse,
+  CreateTailorTaskRequest,
+  ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
 import {
   decideApplicationRevision,
   mergeAcceptedApplication,
+  createResumeDocument,
   type ChatAttachment,
   type ChatConversation,
   type ChatMessage,
+  type InterviewQaPair,
+  type InterviewRecord,
+  type InterviewRecordSourceType,
   type JobApplication,
   type KnowledgeCitation,
   type OpportunityFeedSnapshot,
-  type RecruitmentOpportunity
+  type RecruitmentOpportunity,
+  type ResumeDocument,
+  type TailorTask
 } from "@offerflow/domain";
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
 
@@ -49,6 +57,27 @@ interface DeviceCode {
   expiresAt: string;
 }
 
+interface HandoffCode {
+  userId: string;
+  targetPath: string;
+  expiresAt: string;
+}
+
+interface StoredResumeVersion {
+  userId: string;
+  item: ResumeVersionRecord;
+}
+
+interface StoredTailorTask {
+  userId: string;
+  task: TailorTask;
+}
+
+interface StoredInterviewRecord {
+  userId: string;
+  record: InterviewRecord;
+}
+
 export interface MemoryStoreOptions {
   /**
    * Set false to keep the store fully in-memory (used by tests). Persistence is
@@ -65,6 +94,9 @@ interface PersistedStoreState {
   conversations: StoredConversation[];
   messages: Record<string, ChatMessage[]>;
   applications: StoredApplication[];
+  resumeVersions?: StoredResumeVersion[];
+  tailorTasks?: StoredTailorTask[];
+  interviewRecords?: StoredInterviewRecord[];
   appliedChanges: Record<string, number>;
   syncLog: SyncLogEntry[];
   sequence: number;
@@ -108,7 +140,11 @@ export class MemoryStore {
   private readonly conversations = new Map<string, StoredConversation>();
   private readonly messages = new Map<string, ChatMessage[]>();
   private readonly applications = new Map<string, StoredApplication>();
+  private readonly resumeVersions = new Map<string, StoredResumeVersion>();
+  private readonly tailorTasks = new Map<string, StoredTailorTask>();
+  private readonly interviewRecords = new Map<string, StoredInterviewRecord>();
   private readonly deviceCodes = new Map<string, DeviceCode>();
+  private readonly handoffCodes = new Map<string, HandoffCode>();
   private readonly appliedChanges = new Map<string, number>();
   private readonly syncLog: SyncLogEntry[] = [];
   private opportunityFeed?: OpportunityFeedSnapshot;
@@ -144,6 +180,26 @@ export class MemoryStore {
       for (const stored of parsed.applications ?? []) {
         this.applications.set(`${stored.userId}:${stored.item.application.id}`, stored);
       }
+      for (const stored of parsed.resumeVersions ?? []) {
+        this.resumeVersions.set(`${stored.userId}:${stored.item.version.id}`, stored);
+      }
+      for (const stored of parsed.tailorTasks ?? []) {
+        this.tailorTasks.set(`${stored.userId}:${stored.task.id}`, stored);
+      }
+      for (const stored of parsed.interviewRecords ?? []) {
+        const record = clone(stored.record);
+        // Raw audio is deliberately never persisted. A process that was
+        // interrupted by a restart therefore cannot safely resume the job.
+        if (record.status === "processing") {
+          record.status = "failed";
+          record.error = "转写任务因服务重启而中断，请重新上传录音或直接上传文字稿。";
+          record.updatedAt = new Date().toISOString();
+        }
+        this.interviewRecords.set(`${stored.userId}:${record.id}`, {
+          userId: stored.userId,
+          record
+        });
+      }
       for (const [key, revision] of Object.entries(parsed.appliedChanges ?? {})) {
         this.appliedChanges.set(key, revision);
       }
@@ -169,6 +225,9 @@ export class MemoryStore {
       conversations: [...this.conversations.values()],
       messages: Object.fromEntries(this.messages),
       applications: [...this.applications.values()],
+      resumeVersions: [...this.resumeVersions.values()],
+      tailorTasks: [...this.tailorTasks.values()],
+      interviewRecords: [...this.interviewRecords.values()],
       appliedChanges: Object.fromEntries(this.appliedChanges),
       syncLog: this.syncLog,
       sequence: this.sequence,
@@ -418,6 +477,94 @@ export class MemoryStore {
     return clone(stored.item);
   }
 
+  listInterviewRecords(userId: string, applicationId: string): InterviewRecord[] {
+    return [...this.interviewRecords.values()]
+      .filter(
+        (stored) =>
+          stored.userId === userId && stored.record.applicationId === applicationId
+      )
+      .map((stored) => clone(stored.record))
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt));
+  }
+
+  createInterviewRecord(
+    userId: string,
+    applicationId: string,
+    input: {
+      title?: string;
+      sourceType: InterviewRecordSourceType;
+      transcript?: string;
+      qaPairs?: InterviewQaPair[];
+      status?: InterviewRecord["status"];
+      error?: string;
+    }
+  ): InterviewRecord {
+    const application = this.getApplication(userId, applicationId);
+    if (!application) {
+      throw new MemoryStoreError("APPLICATION_NOT_FOUND", "没有找到这条投递", 404);
+    }
+    const now = new Date().toISOString();
+    const record: InterviewRecord = {
+      id: randomUUID(),
+      applicationId,
+      title:
+        input.title?.trim() ||
+        `${application.application.company} · ${application.application.position} 面试问答`,
+      sourceType: input.sourceType,
+      status: input.status ?? "processing",
+      transcript: input.transcript?.trim() ?? "",
+      qaPairs: clone(input.qaPairs ?? []),
+      error: input.error,
+      createdAt: now,
+      updatedAt: now
+    };
+    this.interviewRecords.set(`${userId}:${record.id}`, { userId, record: clone(record) });
+    this.persist();
+    return clone(record);
+  }
+
+  completeInterviewRecord(
+    userId: string,
+    recordId: string,
+    transcript: string,
+    qaPairs: InterviewQaPair[]
+  ): InterviewRecord {
+    return this.updateInterviewRecord(userId, recordId, {
+      status: "ready",
+      transcript: transcript.trim(),
+      qaPairs,
+      error: undefined
+    });
+  }
+
+  failInterviewRecord(userId: string, recordId: string, error: string): InterviewRecord {
+    return this.updateInterviewRecord(userId, recordId, {
+      status: "failed",
+      error: error.trim() || "录音处理失败，请重试或直接上传文字稿。"
+    });
+  }
+
+  private updateInterviewRecord(
+    userId: string,
+    recordId: string,
+    changes: Partial<Pick<InterviewRecord, "status" | "transcript" | "qaPairs" | "error">>
+  ): InterviewRecord {
+    const key = `${userId}:${recordId}`;
+    const stored = this.interviewRecords.get(key);
+    if (!stored) {
+      throw new MemoryStoreError("INTERVIEW_RECORD_NOT_FOUND", "没有找到这份面试问答记录", 404);
+    }
+    const record: InterviewRecord = {
+      ...stored.record,
+      ...clone(changes),
+      updatedAt: new Date().toISOString()
+    };
+    if (changes.error === undefined && changes.status === "ready") delete record.error;
+    this.interviewRecords.set(key, { userId, record: clone(record) });
+    this.persist();
+    return clone(record);
+  }
+
   createApplication(userId: string, application: JobApplication): ApplicationSyncItem {
     return this.applyApplicationChange(userId, {
       changeId: `web:${randomUUID()}`,
@@ -507,9 +654,22 @@ export class MemoryStore {
 
     const cursor = Number.parseInt(request.cursor || "0", 10) || 0;
     const pulled = this.changesSince(userId, cursor);
+
+    // Include the server's current version for conflicted entities so the
+    // client can see what changed on other devices and stay in sync.
+    const changesById = new Map(pulled.changes.map((item) => [item.application.id, item]));
+    for (const conflict of conflicts) {
+      if (conflict.server && !changesById.has(conflict.entityId)) {
+        changesById.set(conflict.entityId, conflict.server);
+      }
+    }
+    const allChanges = [...changesById.values()].sort(
+      (left, right) => left.application.updatedAt.localeCompare(right.application.updatedAt)
+    );
+
     return {
       cursor: String(pulled.cursor),
-      changes: pulled.changes,
+      changes: allChanges,
       acceptedChangeIds,
       conflicts
     };
@@ -538,5 +698,154 @@ export class MemoryStore {
         .sort((left, right) => left.sequence - right.sequence)
         .map((entry) => clone(entry.item))
     };
+  }
+
+  createTailorTask(userId: string, request: CreateTailorTaskRequest): {
+    task: TailorTask;
+    version: ResumeVersionRecord;
+  } {
+    const now = new Date().toISOString();
+    const taskId = randomUUID();
+    const versionId = randomUUID();
+    const document = createResumeDocument({
+      id: randomUUID(),
+      title: `${request.job.company} · ${request.job.position}`,
+      profile: request.sourceProfile,
+      assets: request.sourceAssets,
+      portraitAssetId: request.sourcePortraitAssetId,
+      sourceEvidence: request.sourceEvidence,
+      now
+    });
+    document.profile.targetRole = request.job.position;
+    document.updatedAt = now;
+
+    const version: ResumeVersionRecord = {
+      revision: 1,
+      version: {
+        id: versionId,
+        tailorTaskId: taskId,
+        sourceResumeId: request.sourceResumeId,
+        sourceResumeName: request.sourceResumeName,
+        applicationId: request.applicationId,
+        company: request.job.company,
+        position: request.job.position,
+        document,
+        status: "draft",
+        createdAt: now,
+        updatedAt: now
+      }
+    };
+    const task: TailorTask = {
+      id: taskId,
+      sourceResumeId: request.sourceResumeId,
+      applicationId: request.applicationId,
+      job: clone(request.job),
+      sourceEvidence: request.sourceEvidence ? clone(request.sourceEvidence) : undefined,
+      versionId,
+      status: "draft",
+      createdAt: now,
+      updatedAt: now
+    };
+    this.resumeVersions.set(`${userId}:${versionId}`, { userId, item: clone(version) });
+    this.tailorTasks.set(`${userId}:${taskId}`, { userId, task: clone(task) });
+    if (request.applicationId) {
+      const linked = this.getApplication(userId, request.applicationId);
+      if (linked) {
+        this.updateApplication(userId, {
+          ...linked.application,
+          tailorTaskId: taskId,
+          tailoredResumeVersionId: versionId,
+          tailoredResumeName: `${request.job.company} · ${request.job.position}`,
+          tailoredResumeUpdatedAt: now,
+          updatedAt: now,
+          events: [
+            ...linked.application.events,
+            {
+              id: randomUUID(),
+              type: "updated",
+              title: "已创建岗位定制简历",
+              occurredAt: now
+            }
+          ]
+        }, linked.revision);
+      }
+    }
+    this.persist();
+    return { task: clone(task), version: clone(version) };
+  }
+
+  getTailorTask(userId: string, taskId: string): {
+    task: TailorTask;
+    version: ResumeVersionRecord;
+  } | undefined {
+    const stored = this.tailorTasks.get(`${userId}:${taskId}`);
+    if (!stored) return undefined;
+    const version = this.resumeVersions.get(`${userId}:${stored.task.versionId}`)?.item;
+    if (!version) return undefined;
+    return { task: clone(stored.task), version: clone(version) };
+  }
+
+  getResumeVersion(userId: string, versionId: string): ResumeVersionRecord | undefined {
+    const stored = this.resumeVersions.get(`${userId}:${versionId}`);
+    return stored ? clone(stored.item) : undefined;
+  }
+
+  listResumeVersions(userId: string): ResumeVersionRecord[] {
+    return [...this.resumeVersions.values()]
+      .filter((stored) => stored.userId === userId && stored.item.version.status !== "archived")
+      .map((stored) => clone(stored.item))
+      .sort((left, right) => right.version.updatedAt.localeCompare(left.version.updatedAt));
+  }
+
+  updateResumeVersion(
+    userId: string,
+    versionId: string,
+    document: ResumeDocument,
+    expectedRevision: number
+  ): ResumeVersionRecord {
+    const key = `${userId}:${versionId}`;
+    const stored = this.resumeVersions.get(key);
+    if (!stored) {
+      throw new MemoryStoreError("RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本", 404);
+    }
+    if (stored.item.revision !== expectedRevision) {
+      throw new MemoryStoreError(
+        "REVISION_CONFLICT",
+        "这份简历已在其他页面更新，请刷新后重试",
+        409,
+        { serverRevision: stored.item.revision, server: stored.item }
+      );
+    }
+    if (document.id !== stored.item.version.document.id) {
+      throw new MemoryStoreError("INVALID_RESUME_DOCUMENT", "简历文档与当前版本不匹配", 400);
+    }
+    const now = new Date().toISOString();
+    const item: ResumeVersionRecord = {
+      revision: expectedRevision + 1,
+      version: {
+        ...stored.item.version,
+        document: { ...clone(document), updatedAt: now },
+        updatedAt: now
+      }
+    };
+    this.resumeVersions.set(key, { userId, item: clone(item) });
+    this.persist();
+    return clone(item);
+  }
+
+  createHandoffCode(userId: string, targetPath: string): { code: string; expiresAt: string } {
+    const code = randomUUID().replace(/-/g, "");
+    const expiresAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
+    this.handoffCodes.set(code, { userId, targetPath, expiresAt });
+    return { code, expiresAt };
+  }
+
+  exchangeHandoffCode(code: string): { user: SessionUser; targetPath: string } | undefined {
+    const normalized = code.trim();
+    const stored = this.handoffCodes.get(normalized);
+    this.handoffCodes.delete(normalized);
+    if (!stored || new Date(stored.expiresAt).getTime() <= Date.now()) return undefined;
+    const user = this.getUser(stored.userId);
+    return user ? { user, targetPath: stored.targetPath } : undefined;
   }
 }

@@ -1,10 +1,12 @@
 import { getDocument } from "pdfjs-dist/legacy/build/pdf.mjs";
-import { extractResumePdfLayout } from "@/features/profile/resumeParser";
+import { extractResumePdfLayout, parseResumeFile } from "@/features/profile/resumeParser";
 import { buildPdfBackedResumeHtml } from "@/features/tailor/buildPdfBackedResumeHtml";
+import { buildPdfEditableRegions } from "@/features/tailor/pdfEditableBlocks";
 
 declare global {
   interface Window {
     __PDF_FIDELITY_HTML__?: string;
+    __PDF_PATCH_REFLOW_HTML__?: string;
     __PDF_FIDELITY_RESULT__?: {
       ready: boolean;
       characterCount: number;
@@ -15,6 +17,15 @@ declare global {
       symbolFontCount: number;
       pageWidthPt: number;
       pageHeightPt: number;
+      parsedEducationCount: number;
+      parsedExperienceCount: number;
+      parsedProjectCount: number;
+      parsedCampusCount: number;
+      parsedAwardCount: number;
+      parseCoverage: number;
+      parseWarningCount: number;
+      parseSections: Array<{ kind: string; heading: string; entryCount: number; sourceText: string }>;
+      parseUnclassifiedText: string;
     };
   }
 }
@@ -23,6 +34,7 @@ const fixture = new URLSearchParams(location.search).get("fixture") || "0";
 const response = await fetch(`/__pdf_fixture__/${encodeURIComponent(fixture)}`);
 if (!response.ok) throw new Error(`Unable to load PDF fixture ${fixture}`);
 const source = await response.arrayBuffer();
+const parseResult = await parseResumeFile(new File([source.slice(0)], `fixture-${fixture}.pdf`, { type: "application/pdf" }));
 
 const layout = await extractResumePdfLayout(source.slice(0), {
   onProgress: (phase, pageNumber, pageCount) => {
@@ -71,6 +83,31 @@ const generatedHtml = buildPdfBackedResumeHtml({
   sourceProfile: emptyProfile
 });
 window.__PDF_FIDELITY_HTML__ = generatedHtml;
+const reflowCandidate = layout.pages.flatMap((page) => buildPdfEditableRegions(page).flatMap((region) => region.blocks.map((block, index) => ({
+  page: page.page,
+  block,
+  hasDownstream: region.blocks.slice(index + 1).some((next) => {
+    const overlap = Math.max(0, Math.min(block.x + block.width, next.x + next.width) - Math.max(block.x, next.x));
+    return overlap / Math.max(1, Math.min(block.width, next.width)) >= 0.2;
+  })
+})))).find((candidate) => candidate.hasDownstream && candidate.block.text.replace(/\s+/g, "").length >= 36);
+if (reflowCandidate) {
+  const sourceCharacters = [...reflowCandidate.block.text];
+  const forcedBreakIndex = Math.max(1, Math.floor(sourceCharacters.length / 2));
+  sourceCharacters[forcedBreakIndex] = "\n";
+  window.__PDF_PATCH_REFLOW_HTML__ = buildPdfBackedResumeHtml({
+    layout,
+    resume: emptyResume,
+    sourceProfile: emptyProfile,
+    pdfPatches: [{
+      page: reflowCandidate.page,
+      blockId: reflowCandidate.block.id,
+      sourceText: reflowCandidate.block.text,
+      tailoredText: sourceCharacters.join(""),
+      mapIds: ["QA-REFLOW"]
+    }]
+  });
+}
 output.srcdoc = generatedHtml;
 await loaded;
 const outputDocument = output.contentDocument;
@@ -116,5 +153,14 @@ window.__PDF_FIDELITY_RESULT__ = {
   symbolItemCount: layout.pages.reduce((total, page) => total + page.items.filter((item) => /[•▪■◆●★✓]/u.test(item.text)).length, 0),
   symbolFontCount: layout.fonts.filter((font) => /wingdings|symbol/i.test(font.fallbackFamily)).length,
   pageWidthPt: pageLayout.widthPt,
-  pageHeightPt: pageLayout.heightPt
+  pageHeightPt: pageLayout.heightPt,
+  parsedEducationCount: parseResult.profile.education.length,
+  parsedExperienceCount: parseResult.profile.experiences.length,
+  parsedProjectCount: parseResult.profile.projects.length,
+  parsedCampusCount: parseResult.profile.campusExperiences.length,
+  parsedAwardCount: parseResult.profile.awards.length,
+  parseCoverage: parseResult.diagnostics?.coverage || 0,
+  parseWarningCount: parseResult.warnings.length,
+  parseSections: parseResult.diagnostics?.sections || [],
+  parseUnclassifiedText: parseResult.diagnostics?.unclassifiedText || ""
 };

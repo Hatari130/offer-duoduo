@@ -9,11 +9,18 @@ import type {
   ConversationListResponse,
   ConversationResponse,
   CreateApplicationRequest,
+  CreateTailorTaskRequest,
+  CreateTailorTaskResponse,
   CreateConversationRequest,
   DeviceCodeResponse,
   ExchangeDeviceCodeRequest,
   ExchangeDeviceCodeResponse,
+  ExchangeHandoffRequest,
+  ExchangeHandoffResponse,
+  GenerateTailorTaskResponse,
   HealthResponse,
+  InterviewRecordListResponse,
+  InterviewRecordResponse,
   LoginRequest,
   OpportunityDetailResponse,
   OpportunityImportStatusResponse,
@@ -21,12 +28,17 @@ import type {
   OpportunitySyncRequest,
   OpportunitySyncResponse,
   ProfileResponse,
+  ResumeVersionResponse,
+  ResumeVersionListResponse,
   RegisterRequest,
   RetryMessageRequest,
   SendMessageRequest,
   SessionResponse,
-  UpdateApplicationRequest
+  TailorTaskDetailResponse,
+  UpdateApplicationRequest,
+  UpdateResumeVersionRequest
 } from "@offerflow/contracts";
+import type { CreateInterviewRecordFromTranscriptRequest } from "@offerflow/contracts";
 
 export interface ApiClientOptions {
   baseUrl: string;
@@ -51,11 +63,28 @@ export function createApiClient(options: ApiClientOptions) {
   const fetchImpl = options.fetchImpl ?? globalThis.fetch;
   const baseUrl = options.baseUrl.replace(/\/$/, "");
 
+  function interviewAudioMimeType(file: File): string {
+    if (file.type) return file.type;
+    const extension = file.name.split(".").pop()?.toLowerCase();
+    return ({
+      aac: "audio/aac",
+      flac: "audio/flac",
+      m4a: "audio/mp4",
+      mp3: "audio/mpeg",
+      mp4: "audio/mp4",
+      ogg: "audio/ogg",
+      wav: "audio/wav",
+      webm: "audio/webm"
+    } as Record<string, string>)[extension ?? ""] ?? "application/octet-stream";
+  }
+
   async function createHeaders(init?: RequestInit): Promise<Headers> {
     const token = await options.getAccessToken?.();
     const headers = new Headers(init?.headers);
     headers.set("accept", "application/json");
-    if (init?.body) headers.set("content-type", "application/json");
+    if (init?.body && !headers.has("content-type")) {
+      headers.set("content-type", "application/json");
+    }
     if (token) headers.set("authorization", `Bearer ${token}`);
     return headers;
   }
@@ -151,11 +180,17 @@ export function createApiClient(options: ApiClientOptions) {
         body: JSON.stringify(body)
       }),
     demo: () => request<AuthSession>("/v1/auth/demo", { method: "POST" }),
+    refresh: () => request<AuthSession>("/v1/auth/refresh", { method: "POST" }),
     session: () => request<SessionResponse>("/v1/session"),
     createDeviceCode: () =>
       request<DeviceCodeResponse>("/v1/auth/device-codes", { method: "POST" }),
     exchangeDeviceCode: (body: ExchangeDeviceCodeRequest) =>
       request<ExchangeDeviceCodeResponse>("/v1/auth/device-token", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
+    exchangeHandoff: (body: ExchangeHandoffRequest) =>
+      request<ExchangeHandoffResponse>("/v1/auth/handoff-token", {
         method: "POST",
         body: JSON.stringify(body)
       })
@@ -238,11 +273,71 @@ export function createApiClient(options: ApiClientOptions) {
       })
   };
 
+  const resumes = {
+    listVersions: () => request<ResumeVersionListResponse>("/v1/resume-versions"),
+    createTailorTask: (body: CreateTailorTaskRequest) =>
+      request<CreateTailorTaskResponse>("/v1/tailor-tasks", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
+    getTailorTask: (taskId: string) =>
+      request<TailorTaskDetailResponse>(
+        `/v1/tailor-tasks/${encodeURIComponent(taskId)}`
+      ),
+    generateTailorTask: (taskId: string) =>
+      request<GenerateTailorTaskResponse>(
+        `/v1/tailor-tasks/${encodeURIComponent(taskId)}`,
+        { method: "POST" }
+      ),
+    getVersion: (versionId: string) =>
+      request<ResumeVersionResponse>(
+        `/v1/resume-versions/${encodeURIComponent(versionId)}`
+      ),
+    updateVersion: (versionId: string, body: UpdateResumeVersionRequest) =>
+      request<ResumeVersionResponse>(
+        `/v1/resume-versions/${encodeURIComponent(versionId)}`,
+        { method: "PATCH", body: JSON.stringify(body) }
+      )
+  };
+
+  const interviews = {
+    list: (applicationId: string) =>
+      request<InterviewRecordListResponse>(
+        `/v1/applications/${encodeURIComponent(applicationId)}/interview-records`
+      ),
+    createFromTranscript: (
+      applicationId: string,
+      body: CreateInterviewRecordFromTranscriptRequest
+    ) =>
+      request<InterviewRecordResponse>(
+        `/v1/applications/${encodeURIComponent(applicationId)}/interview-records`,
+        { method: "POST", body: JSON.stringify(body) }
+      ),
+    uploadAudio: (
+      applicationId: string,
+      file: File,
+      options: { title?: string } = {}
+    ) => {
+      const query = new URLSearchParams({ fileName: file.name });
+      if (options.title?.trim()) query.set("title", options.title.trim());
+      return request<InterviewRecordResponse>(
+        `/v1/applications/${encodeURIComponent(applicationId)}/interview-records/audio?${query}`,
+        {
+          method: "POST",
+          body: file,
+          headers: { "content-type": interviewAudioMimeType(file) }
+        }
+      );
+    }
+  };
+
   return {
     auth,
     chat,
     opportunities,
     applications,
+    interviews,
+    resumes,
     health: () => request<HealthResponse>("/health"),
     profile: { get: () => request<ProfileResponse>("/v1/profile") },
     // Compatibility aliases for the extension's existing call sites.

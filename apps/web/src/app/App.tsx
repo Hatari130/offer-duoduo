@@ -6,16 +6,22 @@ import { AppShell } from "../layouts/AppShell";
 import { LoginPage } from "../pages/LoginPage";
 import { ChatPage } from "../pages/ChatPage";
 import { OpportunitiesPage } from "../pages/OpportunitiesPage";
+import { CompanyDirectoryPage } from "../pages/CompanyDirectoryPage";
 import { ApplicationsPage } from "../pages/ApplicationsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { ExtensionConnectPage } from "../pages/ExtensionConnectPage";
 import { MembershipPage } from "../pages/MembershipPage";
+import { ResumeStudioPage } from "../pages/ResumeStudioPage";
+import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
 import { Logo } from "../components/Logo";
 
 const titles: Array<[RegExp, string]> = [
   [/^\/app\/chat/, "求职助手"],
   [/^\/app\/opportunities/, "校招信息速递"],
+  [/^\/app\/companies/, "公司投递一键直达"],
   [/^\/app\/applications/, "个人投递管理"],
+  [/^\/app\/resumes\/tailor/, "岗位定制简历"],
+  [/^\/app\/resumes/, "简历中心"],
   [/^\/app\/upgrade/, "升级至 Pro"],
   [/^\/app\/settings/, "设置与设备同步"]
 ];
@@ -61,11 +67,15 @@ export function App() {
 
   if (status === "anonymous") return <LoginPage />;
   if (pathname.startsWith("/app/upgrade")) return <MembershipPage />;
+  const tailorMatch = pathname.match(/^\/app\/resumes\/tailor\/([^/]+)$/);
+  if (tailorMatch) return <ResumeStudioPage taskId={decodeURIComponent(tailorMatch[1])} />;
 
   let page: React.ReactNode;
   if (extensionConnect) page = <ExtensionConnectPage />;
   else if (pathname.startsWith("/app/opportunities")) page = <OpportunitiesPage />;
+  else if (pathname.startsWith("/app/companies")) page = <CompanyDirectoryPage />;
   else if (pathname.startsWith("/app/applications")) page = <ApplicationsPage />;
+  else if (pathname.startsWith("/app/resumes")) page = <ResumeLibraryPage />;
   else if (pathname.startsWith("/app/settings")) page = <SettingsPage />;
   else page = <ChatPage conversationId={conversationIdFromPath(pathname)} />;
 

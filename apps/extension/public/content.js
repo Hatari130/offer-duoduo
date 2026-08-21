@@ -9,7 +9,23 @@
   );
   if (isOfferFlowWebApp) return;
 
+  // Static MV3 content scripts stay alive when an unpacked extension is
+  // reloaded. ProfileView therefore injects the current artifact before every
+  // form operation and uses versioned messages that stale listeners ignore.
+  const OFFERFLOW_CONTENT_RUNTIME_VERSION = "2026-08-20.autofill-v6";
+  const contentSession = globalThis.__offerflowDesiredContentSession || `manifest:${OFFERFLOW_CONTENT_RUNTIME_VERSION}`;
+  if (globalThis.__offerflowContentRuntimeSession === contentSession) return;
+  try {
+    globalThis.__offerflowContentCleanup?.();
+  } catch {
+    // A listener from a reloaded extension can keep its page world while its
+    // chrome.runtime context is invalid. DOM cleanup still runs where possible.
+  }
+  globalThis.__offerflowContentRuntimeSession = contentSession;
+
   const clean = (value) => (value || "").replace(/\s+/g, " ").trim();
+  const formRuntime = globalThis.OfferFlowFormRuntime;
+  const formControlDrivers = globalThis.OfferFlowControlDrivers;
   const extractionRules = globalThis.OfferFlowExtractionRules;
   if (!extractionRules) {
     console.error("OfferFlow extraction rules were not loaded");
@@ -248,6 +264,135 @@
       .forEach((value) => values.add(value));
     if (!rendered.includes("\n") && clean(rendered)) values.add(clean(rendered));
     return [...values];
+  };
+
+  const applicationDateValue = (value) =>
+    clean(value)
+      .replace(/[年月./]/g, "-")
+      .replace(/日(?=\s|$)/, "");
+
+  const applicationDateFromText = (value, allowBareDate = false) => {
+    const text = String(value || "");
+    const explicit =
+      text.match(
+        /(?:投递时间|申请时间|提交时间|申请日期)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)/i
+      )?.[1] ||
+      text.match(
+        /(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)\s*(?:投递|申请)(?!截止|开始|时间)/i
+      )?.[1];
+    const bare = allowBareDate
+      ? text.match(/(?:^|\s)(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?)(?=\s|$)/)?.[1]
+      : undefined;
+    return explicit || bare ? applicationDateValue(explicit || bare) : undefined;
+  };
+
+  const companyFromDocumentTitle = () => {
+    const title = clean(document.title);
+    const titleCompany = title.match(
+      /(?:^|[-–—_|｜]\s*)([^\s｜|_-]{2,30}?)(?:官方)?(?:校招|校园招聘|招聘官网|招聘平台|招聘门户|人才招聘|招聘)(?:\s*[-–—_|｜]|$)/i
+    )?.[1];
+    if (titleCompany && !/^(?:应聘记录|投递记录|申请记录|我的申请)$/.test(titleCompany)) {
+      return titleCompany;
+    }
+    const tenant = location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
+    return tenant === "nio" ? "蔚来" : undefined;
+  };
+
+  const feishuPositionCandidateFromCard = (card, excludedRegions) => {
+    const candidates = Array.from(card.querySelectorAll("*")).slice(0, 1000).flatMap((element) => {
+      if (!isVisibleElement(element) || isWithinAnyRegion(element, excludedRegions)) return [];
+      const value = ownText(element);
+      if (!value || value.length < 2 || value.length > 80) return [];
+      if (extractionRules.isHardRejectedPosition(value)) return [];
+      if (/项目[：:]|意向城市|投递简历|申请时间|投递时间|20\d{2}[./-]\d{1,2}/.test(value)) return [];
+      // Feishu renders taxonomy as “产品 - 产品经理”. It contains an
+      // occupation token but is metadata, while real titles are independent
+      // leaf lines such as “提前批-AI产品经理（创新产品）”.
+      if (/^.{1,12}\s+[-–—]\s+.{1,30}$/.test(value)) return [];
+      const occupationScore = extractionRules.occupationScore(value);
+      if (occupationScore < 3) return [];
+      const style = getComputedStyle(element);
+      const fontSize = Number.parseFloat(style.fontSize) || 0;
+      const fontWeight = Number.parseInt(style.fontWeight, 10) || 400;
+      const className = String(element.className || "");
+      const score =
+        occupationScore * 8 +
+        (/^H[1-6]$/.test(element.tagName) ? 32 : 0) +
+        (/position.*(?:title|name)|job.*(?:title|name)/i.test(className) ? 28 : 0) +
+        (fontWeight >= 600 ? 10 : 0) +
+        Math.min(12, Math.max(0, fontSize - 14));
+      return [{ value, score, element }];
+    });
+    return candidates.sort((left, right) => right.score - left.score)[0];
+  };
+
+  const feishuApplicationEvidence = () => {
+    if (platformAdapter.id !== "feishu-jobs") {
+      return [];
+    }
+
+    const allElements = Array.from(document.body.querySelectorAll("*")).slice(0, 16000);
+    const anchors = allElements.filter((element) => {
+      if (!isVisibleElement(element)) return false;
+      const value = ownText(element);
+      return /^(?:投递简历|已投递|申请成功|已申请)$/.test(value);
+    });
+    const cards = [];
+    for (const anchor of anchors) {
+      let current = anchor.parentElement;
+      let best;
+      for (let depth = 0; current && current !== document.body && depth < 9; depth += 1) {
+        const text = clean(current.innerText || "");
+        if (!text || text.length > 1800) break;
+        const date = applicationDateFromText(text, true);
+        const position =
+          feishuPositionCandidateFromCard(current, [anchor]) ||
+          positionCandidateFromCard(current, [anchor]);
+        const otherAnchorCount = anchors.filter(
+          (candidate) => candidate !== anchor && current.contains(candidate)
+        ).length;
+        if (date && position && !otherAnchorCount) {
+          best = { card: current, position, appliedAt: date };
+        }
+        current = current.parentElement;
+      }
+      if (best && !cards.some((item) => item.card === best.card)) cards.push(best);
+    }
+
+    const company = companyFromDocumentTitle();
+    return cards.map(({ card, position, appliedAt }) => {
+      const cardText = clean(card.innerText || "");
+      const recordUrl = Array.from(card.querySelectorAll("a[href]"))
+        .map((anchor) => anchor.href)
+        .find((href) => /(?:position|job|detail)/i.test(href));
+      const jobId =
+        extractionRules.extractApplicationId(cardText, platformAdapter) ||
+        (() => {
+          try {
+            const url = new URL(recordUrl || "", location.href);
+            return url.searchParams.get("jobId") || url.searchParams.get("positionId") || undefined;
+          } catch {
+            return undefined;
+          }
+        })();
+      const city = cardText.match(
+        /(?:^|\s)(北京|天津|上海|重庆|广州|深圳|杭州|南京|苏州|武汉|成都|西安|郑州|济南|青岛|长沙|厦门|福州|合肥|南昌|昆明|贵阳|南宁|海口|沈阳|大连|长春|哈尔滨)(?:市)?(?=\s|$)/
+      )?.[1];
+      return {
+        jobId,
+        recordUrl,
+        position: position.value,
+        company,
+        city,
+        appliedAt,
+        currentStage: "已投递",
+        terminalStatus: undefined,
+        context: cardText.slice(0, 1200),
+        adapterId: platformAdapter.id,
+        steps: [{ label: "已投递", state: "current" }],
+        confidence: 0.98
+      };
+    });
   };
 
   const positionCandidateFromCard = (card, progressRegions) => {
@@ -500,6 +645,9 @@
   };
 
   const extractProgressEvidence = () => {
+    const feishuEvidence = feishuApplicationEvidence();
+    if (feishuEvidence.length) return feishuEvidence;
+
     const allElements = Array.from(document.body.querySelectorAll("*")).slice(0, 16000);
     const regions = findProgressRegions(allElements);
     const byCard = new Map();
@@ -567,8 +715,12 @@
       return candidate && extractionRules.occupationScore(candidate) >= 3 ? clean(candidate) : undefined;
     };
 
+    const adapterCompany = platformAdapter.id === "feishu-jobs"
+      ? companyFromDocumentTitle()
+      : undefined;
     const company =
       clean(organization && organization.name) ||
+      adapterCompany ||
       firstMatch(text, [
         /(?:公司名称|招聘单位|企业名称)[：:\s]+([^\s｜|]{2,30})/i,
         /([^\s｜|]{2,30}(?:有限公司|集团))/
@@ -631,11 +783,24 @@
     );
     const confidenceParts = [posting, company, position, jobId, city].filter(Boolean).length;
 
+    const recruitmentType = [position, description, text.slice(0, 6000)]
+      .map((source, sourceIndex) => {
+        if (/(?:秋招|秋季(?:校园)?招聘|校园招聘|校招).{0,16}提前批|提前批.{0,16}(?:秋招|秋季(?:校园)?招聘|校园招聘|校招)/i.test(source || "")) return "autumn_early";
+        if (/暑期实习|暑假实习|暑期(?:项目|项目制)|summer\s+intern(?:ship)?/i.test(source || "")) return "summer_internship";
+        if (/春招|春季(?:校园)?招聘|spring\s+(?:campus\s+)?recruit(?:ment)?/i.test(source || "")) return "spring";
+        if (/日常实习|长期实习|滚动实习|off[- ]?cycle\s+intern(?:ship)?/i.test(source || "")) return "daily_internship";
+        if (sourceIndex === 0 && /实习生(?:招聘|岗位|职位)?|(?:^|[^暑])实习(?:岗位|职位|招聘)?/i.test(source || "")) return "daily_internship";
+        if (/秋招|秋季(?:校园)?招聘|校园招聘|校招|autumn\s+(?:campus\s+)?recruit(?:ment)?|campus\s+recruit(?:ment)?/i.test(source || "")) return "autumn";
+        return undefined;
+      })
+      .find(Boolean);
+
     return {
       company: normalizedCompany || company,
       position,
       jobId,
       city,
+      recruitmentType,
       deadline: deadlineRaw
         ? deadlineRaw.replace(/[年月./]/g, "-").replace(/日$/, "")
         : undefined,
@@ -668,7 +833,7 @@
     ["politicalStatus", /政治面貌|政治身份|political\s*status/i],
     ["maritalStatus", /婚姻状况|婚姻|marital\s*status/i],
     ["graduationDate", /毕业时间|毕业日期|graduation|graduates*date/i],
-    ["currentCity", /现居|当前城市|所在城市|居住地|current\s*(city|location)/i],
+    ["currentCity", /现居|当前城市|所在城市|所在地点|所在地|居住地|current\s*(city|location)/i],
     ["nativePlace", /籍贯|户籍|户口|户口所在地|生源地|家乡|natives*place|hometown/i],
     ["height", /身高|height/i],
     ["weight", /体重|weight/i],
@@ -676,7 +841,7 @@
     ["graduateStatus", /应届|往届|毕业身份|应届往届|graduates*status/i],
     ["healthStatus", /健康状况|健康情况|身体状况|health/i],
     ["specialty", /特长|专长|specialty|strengths?/i],
-    ["workYears", /工作年限|工作经验年限|从业年限|work\s*years?/i],
+    ["workYears", /工作年限|工作经验年限|工作经验|从业年限|work\s*years?/i],
     ["emergencyContactName", /紧急联系人姓名|紧急联系人|emergency\s*contact.*name/i],
     ["emergencyContactPhone", /紧急联系人电话|紧急联系人手机|emergency\s*contact.*phone/i],
     ["countryRegion", /国家[与或/]地区|国家地区|所在国家|country|region/i],
@@ -692,7 +857,7 @@
     ["major", /专业名称|所学专业|专业|major/i],
     ["degree", /学历|学位|degree|education\s*level/i],
     ["gpa", /绩点|gpa|平均成绩/i],
-    ["selfIntroduction", /自我介绍|个人简介|个人总结|self.?intro|about\s*you/i],
+    ["selfIntroduction", /自我介绍|自我描述|个人简介|个人总结|self.?intro|about\s*you/i],
     ["strengths", /个人优势|优势与不足|核心优势|strength/i],
     ["careerPlan", /职业规划|未来规划|发展规划|职业目标|career\s*plan/i],
     ["hobbies", /兴趣爱好|兴趣|爱好|hobbies?/i]
@@ -772,6 +937,32 @@
     return "";
   };
 
+  const mokaFieldTitle = (element) => {
+    const field = element.closest?.("[class*='apply-field-']");
+    if (!field) return "";
+    const title = Array.from(field.children || []).find((child) =>
+      Array.from(child.classList || []).some((className) => className.startsWith("title-"))
+    );
+    return normalizeFieldText(title?.innerText || title?.textContent || "");
+  };
+
+  const formilyFieldMetadata = (element) => {
+    const item = element.closest?.(".ud-formily-item,[id^='formily-item-']");
+    const label = normalizeFieldText(
+      element.getAttribute?.("data-form-field-i18n-name") ||
+      item?.querySelector?.(".ud-formily-item-label-content")?.innerText ||
+      item?.querySelector?.(".ud-formily-item-label")?.innerText ||
+      ""
+    );
+    const fieldName = normalizeFieldText(
+      element.getAttribute?.("data-form-field-name") ||
+      element.getAttribute?.("data-form-field-id") ||
+      item?.id?.replace(/^formily-item-/, "") ||
+      ""
+    );
+    return { item, label, fieldName };
+  };
+
   const fieldLabel = (element) => {
     const labels = element.labels ? Array.from(element.labels) : [];
     const explicit = labels.map(labelText).find(Boolean) || "";
@@ -783,10 +974,14 @@
     const labelledBy = ariaLabelledByText(element);
     const siteLabel = ancestorAttributeText(element, "data-nc-label");
     const dataField = ancestorAttributeText(element, "data-field");
+    const mokaTitle = mokaFieldTitle(element);
+    const formilyLabel = formilyFieldMetadata(element).label;
     const nearby = nearbyLabelText(element);
     return clean(
       explicit ||
         labelText(structural) ||
+        mokaTitle ||
+        formilyLabel ||
         normalizeFieldText(wrapping?.innerText || "") ||
         labelledBy ||
         siteLabel ||
@@ -817,6 +1012,8 @@
     return clean(
       explicit ||
         labelText(structural) ||
+        mokaFieldTitle(element) ||
+        formilyFieldMetadata(element).label ||
         ancestorAttributeText(element, "data-nc-label") ||
         ancestorAttributeText(element, "data-field") ||
         nearby ||
@@ -838,8 +1035,27 @@
     });
     const byLabel = (pattern, key, evidence = "分区字段规则") =>
       pattern.test(label) ? map(key, evidence) : undefined;
+    const mokaBlockId = element.closest?.("[data-nav-id]")?.getAttribute("data-nav-id") || "";
+    if (mokaBlockId === "block-basicInfo" && /^证件号码/.test(mokaFieldTitle(element) || label)) {
+      return element.closest?.("label[class*='sd-Select-container-']")
+        ? map("idType", "Moka 证件类型复合字段")
+        : map("idNumber", "Moka 证件号码复合字段");
+    }
     const isEducation = /教育|学历|学业|education|academic/i.test(context);
-    const isExperience = /工作|实习|任职|employment|work/i.test(context) && !/项目|在校/i.test(context);
+    const isMiofficeApplication = /\.mioffice\.cn$/i.test(location.hostname) && /\/resume\/.+\/apply/i.test(location.pathname);
+    const isMiofficeExperienceEntry = (() => {
+      if (!isMiofficeApplication) return false;
+      let current = element.parentElement;
+      for (let depth = 0; current && depth < 9; depth += 1, current = current.parentElement) {
+        const text = normalizeFieldText(current.innerText || current.textContent || "");
+        if (text.length > 2400) break;
+        if (/公司名称/.test(text) && /职位名称/.test(text) && /(?:起止时间|描述)/.test(text)) return true;
+      }
+      return false;
+    })();
+    const isExperience = (
+      /工作|实习|任职|employment|work/i.test(context) && !/项目|在校/i.test(context)
+    ) || isMiofficeExperienceEntry;
     const isProject = /项目|project/i.test(context);
     const isCampus = /在校|校园|学生干部|campus|schools*experience/i.test(context);
     const isAward = /获奖|奖项|奖励|award/i.test(context);
@@ -851,6 +1067,18 @@
     const isPatent = /专利|patent/i.test(context);
     const isPortfolio = /作品集|作品|portfolio/i.test(context);
     const isCompetition = /竞赛|比赛|competition|contest/i.test(context);
+    const pairedDateIndex = () => {
+      const container = element.closest?.(
+        "label,.el-form-item,[class~='form-item'],[class*='formItem'],[class*='field'],[class*='control']"
+      );
+      if (!container) return -1;
+      const controls = Array.from(container.querySelectorAll("input,[role='textbox'],[role='combobox']"))
+        .filter((control) => {
+          if (control instanceof HTMLInputElement && ["hidden", "button", "submit"].includes(control.type)) return false;
+          return control.getClientRects().length > 0;
+        });
+      return controls.length >= 2 ? controls.indexOf(element) : -1;
+    };
     if (/^推荐码$|^邀请码$|^内推码$|referral\s*code/i.test(label)) {
       return map("referralCode", "通用字段规则");
     }
@@ -885,8 +1113,13 @@
       ].filter(Boolean)) return result;
     }
     if (isExperience) {
+      if (/起止时间|起止日期|任职时间|工作时间|实习时间|employment\s*period/i.test(label)) {
+        const dateIndex = pairedDateIndex();
+        if (dateIndex === 0) return map("experienceStartDate", "工作经历成对日期规则");
+        if (dateIndex === 1) return map("experienceEndDate", "工作经历成对日期规则");
+      }
       for (const result of [
-        byLabel(/开始时间|入职时间|start\s*date/i, "experienceStartDate", "工作经历上下文"),
+        byLabel(/开始时间|起始时间|入职时间|start\s*date/i, "experienceStartDate", "工作经历上下文"),
         byLabel(/结束时间|离职时间|end\s*date/i, "experienceEndDate", "工作经历上下文"),
         byLabel(/工作类型|任职类型|employment\s*type/i, "experienceType", "工作经历上下文"),
         byLabel(/公司名称|公司|工作单位|所在公司|雇主|organization|employer|company/i, "experienceOrganization", "工作经历上下文"),
@@ -907,9 +1140,9 @@
         byLabel(/开始时间|项目开始|start\s*date/i, "projectStartDate", "项目经历上下文"),
         byLabel(/结束时间|项目结束|end\s*date/i, "projectEndDate", "项目经历上下文"),
         byLabel(/项目名称|项目名|project\s*name/i, "projectName", "项目经历上下文"),
-        byLabel(/职位|角色|担任角色|项目职位|role|position/i, "projectRole", "项目经历上下文"),
+        byLabel(/^职责$|职位|角色|担任角色|项目职位|role|position/i, "projectRole", "项目经历上下文"),
         byLabel(/项目内容|项目描述|项目介绍|project\s*description|content/i, "projectDescription", "项目经历上下文"),
-        byLabel(/本人职责|个人职责|项目职责|project\s*responsibilit/i, "projectDescription", "项目经历上下文"),
+        byLabel(/本人职责|个人职责|项目(?:中|内)?职责|project\s*responsibilit/i, "projectDescription", "项目经历上下文"),
         byLabel(/项目成果|项目业绩|project\s*achievement|result/i, "projectAchievement", "项目经历上下文"),
         byLabel(/项目链接|项目地址|project\s*link|url/i, "projectLink", "项目经历上下文")
       ].filter(Boolean)) return result;
@@ -933,13 +1166,13 @@
     }
     if (isLanguage) {
       for (const result of [
-        byLabel(/外语语种|语言种类|语种|language/i, "languageName", "外语能力上下文"),
+        byLabel(/外语语种|语言种类|语言类型|语种|language/i, "languageName", "外语能力上下文"),
         byLabel(/证书名称|语言证书|certificate/i, "languageCertificate", "外语能力上下文"),
         byLabel(/英语水平|english\s*level/i, "englishLevel", "外语能力上下文"),
         byLabel(/成绩|分数|语言成绩|score/i, "languageScore", "外语能力上下文"),
         byLabel(/掌握程度|熟练程度|proficiency/i, "languageProficiency", "外语能力上下文"),
-        byLabel(/听说能力|口语能力|listening|speaking/i, "listeningSpeaking", "外语能力上下文"),
-        byLabel(/读写能力|阅读能力|写作能力|reading|writing/i, "readingWriting", "外语能力上下文")
+        byLabel(/^听说$|听说能力|口语能力|listening|speaking/i, "listeningSpeaking", "外语能力上下文"),
+        byLabel(/^读写$|读写能力|阅读能力|写作能力|reading|writing/i, "readingWriting", "外语能力上下文")
       ].filter(Boolean)) return result;
     }
     if (isComputer) {
@@ -1017,6 +1250,31 @@
   };
 
   const fieldSection = (element) => {
+    const mokaSectionNames = {
+      "block-basicInfo": "个人信息",
+      "block-jobIntention": "求职意向",
+      "block-experienceInfo": "工作经历",
+      "block-educationInfo": "教育背景",
+      "block-practiceInfo": "实习经历",
+      "block-projectInfo": "项目经验",
+      "block-languageInfo": "语言能力",
+      "block-selfDescription": "自我描述",
+      "block-awardInfo": "获奖经历"
+    };
+    const mokaNavId = element.closest?.("[data-nav-id]")?.getAttribute("data-nav-id") || "";
+    if (mokaSectionNames[mokaNavId]) return mokaSectionNames[mokaNavId];
+    let formilyModule = element.parentElement;
+    for (let depth = 0; formilyModule && depth < 16; depth += 1, formilyModule = formilyModule.parentElement) {
+      const titleRegion = Array.from(formilyModule.children || []).find((child) =>
+        /applyFormModuleWrapper-left/.test(String(child.className || ""))
+      );
+      const title = normalizeFieldText(
+        titleRegion?.querySelector?.(".applyFormModuleWrapper-text,[class*='applyFormModuleWrapper-text']")?.innerText ||
+        titleRegion?.innerText ||
+        ""
+      );
+      if (title) return title;
+    }
     const sectionPattern = /基本信息|个人信息|教育|学历|学业|工作|实习|任职|项目|在校|校园|获奖|奖项|奖励|外语|语言|英语|计算机|技能|资格证书|证书|家庭|家属|论文|期刊|刊物|专利|作品集|竞赛|比赛|basic|personal|education|academic|employment|work|project|campus|award|language|english|computer|skill|certificate|qualification|family|publication|paper|journal|patent|portfolio|competition|contest/i;
     const candidates = [];
     const addCandidate = (value) => {
@@ -1059,9 +1317,103 @@
     return candidates.find(Boolean);
   };
 
+  const isActuallyVisible = (element) => {
+    if (!element?.isConnected || !element.getClientRects().length) return false;
+    for (let current = element; current && current !== document.documentElement; current = current.parentElement) {
+      const style = window.getComputedStyle(current);
+      if (style.display === "none" || style.visibility === "hidden") return false;
+      if (current.classList?.contains("atsx-select-dropdown-hidden")) return false;
+    }
+    return true;
+  };
+
+  const atsxSelectControl = (element) => {
+    const root = element?.closest?.(".atsx-select");
+    if (!root) return undefined;
+    return root.querySelector(".atsx-select-selection[role='combobox'],[role='combobox']") || undefined;
+  };
+
+  const atsxSelectDropdown = (element, includeHidden = false) => {
+    const control = atsxSelectControl(element) || element;
+    if (!control?.closest?.(".atsx-select")) return undefined;
+    const dataCy = control.getAttribute("data-cy") || "";
+    const controlledId = control.getAttribute("aria-controls") || "";
+    const contents = [
+      dataCy ? document.querySelector(`[data-cy="${CSS.escape(`${dataCy}Dropdown`)}"]`) : undefined,
+      controlledId ? document.getElementById(controlledId) : undefined
+    ].filter(Boolean);
+    const candidates = contents
+      .map((content) => ({ content, popup: content.closest(".atsx-select-dropdown") || content }))
+      .filter(({ popup }) => includeHidden || isActuallyVisible(popup));
+    return candidates[0];
+  };
+
+  const readAtsxSelectValue = (element) => {
+    const control = atsxSelectControl(element) || element;
+    const root = control?.closest?.(".atsx-select");
+    if (!root) return "";
+    const selected = Array.from(root.querySelectorAll("[data-cy='selectedValue'],.atsx-select-selection-selected-value"))
+      .map((item) => clean(item.getAttribute("data-cy-value") || item.innerText || item.textContent || ""))
+      .filter(Boolean);
+    if (selected.length) return selected.join("，");
+    const input = root.querySelector(".atsx-select-search__field,input");
+    return clean(input?.value || "");
+  };
+
+  const antSelectControl = (element) => {
+    const root = element?.closest?.(".ant-select");
+    if (!root) return undefined;
+    return root.querySelector("input[role='combobox'],[role='combobox']") || undefined;
+  };
+
+  const antSelectDropdown = (element, includeHidden = false) => {
+    const control = antSelectControl(element) || element;
+    if (!control?.closest?.(".ant-select")) return undefined;
+    const controlledId = control.getAttribute("aria-controls") || "";
+    const list = controlledId ? document.getElementById(controlledId) : undefined;
+    const popup = list?.closest?.(".ant-select-dropdown");
+    if (list && popup && (includeHidden || isActuallyVisible(popup))) return { content: popup, popup };
+    if (includeHidden) return undefined;
+    const visiblePopup = Array.from(document.querySelectorAll(".ant-select-dropdown"))
+      .filter((candidate) => isActuallyVisible(candidate))
+      .pop();
+    return visiblePopup ? { content: visiblePopup, popup: visiblePopup } : undefined;
+  };
+
+  const readAntSelectValue = (element) => {
+    const control = antSelectControl(element) || element;
+    const root = control?.closest?.(".ant-select");
+    if (!root) return "";
+    const selected = Array.from(root.querySelectorAll(".ant-select-selection-item"))
+      .map((item) => clean(item.getAttribute("title") || item.innerText || item.textContent || ""))
+      .filter(Boolean);
+    if (selected.length) return selected.join("，");
+    return clean(control.value || "");
+  };
+
   const fieldOptions = (element) => {
     if (element instanceof HTMLSelectElement) {
       return Array.from(element.options).map((option) => clean(option.text || option.value)).filter(Boolean).slice(0, 30);
+    }
+    const atsxDropdown = atsxSelectDropdown(element, true);
+    if (atsxDropdown) {
+      return Array.from(atsxDropdown.content.querySelectorAll("[role='option']"))
+        .map((option) => clean(option.getAttribute("data-cy-value") || option.innerText || option.textContent || ""))
+        .filter(Boolean)
+        .filter((value, index, values) => values.indexOf(value) === index)
+        .slice(0, 30);
+    }
+    const antDropdown = antSelectDropdown(element, true);
+    if (antDropdown) {
+      return Array.from(antDropdown.content.querySelectorAll(".ant-select-item-option"))
+        .map((option) => clean(
+          option.getAttribute("title") ||
+          option.querySelector(".ant-select-item-option-content")?.textContent ||
+          option.textContent || ""
+        ))
+        .filter(Boolean)
+        .filter((value, index, values) => values.indexOf(value) === index)
+        .slice(0, 30);
     }
     const container = element.closest("[role='radiogroup'],[role='listbox'],fieldset,[class*='form-item'],[class*='question']") || element.parentElement;
     return Array.from(container?.querySelectorAll("[role='option'],[role='radio'],label") || [])
@@ -1122,41 +1474,218 @@
   };
 
   const repeatEntrySelectors = {
-    education: ".create-education,.education-entry,[data-education-entry]",
-    experience: ".create-empirical,.experience-entry,.work-entry,[data-experience-entry]",
-    project: ".project-entry,[data-project-entry]",
+    education: ".create-education,.education-entry,[data-education-entry],[data-nav-id='block-educationInfo'] > [class*='apply-fields-'][class*='multi-']",
+    experience: ".create-empirical,.experience-entry,.work-entry,[data-experience-entry],[data-nav-id='block-experienceInfo'] > [class*='apply-fields-'][class*='multi-'],[data-nav-id='block-practiceInfo'] > [class*='apply-fields-'][class*='multi-']",
+    project: ".project-entry,[data-project-entry],[data-nav-id='block-projectInfo'] > [class*='apply-fields-'][class*='multi-']",
     campus: ".campus-entry,[data-campus-entry]",
-    award: ".award-entry,[data-award-entry]"
+    award: ".award-entry,[data-award-entry],[data-nav-id='block-awardInfo'] > [class*='apply-fields-'][class*='multi-']"
+  };
+
+  const repeatEntryContext = (element, group) => {
+    const selector = repeatEntrySelectors[group];
+    if (!selector || !formRuntime?.repeatEntryContext) return undefined;
+    return formRuntime.repeatEntryContext(element, group, selector);
   };
 
   const repeatEntryIndex = (element, group) => {
+    const runtimeContext = repeatEntryContext(element, group);
+    if (runtimeContext) return runtimeContext.index;
     const selector = repeatEntrySelectors[group];
     if (!selector) return undefined;
     const entry = element.closest?.(selector);
     if (!entry?.parentElement) return undefined;
-    const entries = Array.from(entry.parentElement.children).filter((candidate) =>
-      candidate.matches?.(selector)
-    );
-    const index = entries.indexOf(entry);
-    return index >= 0 ? index : undefined;
+
+    // ATS pages do not always append repeated cards as direct siblings. Xiaomi,
+    // for example, wraps every work-experience card in its own container. Looking
+    // only at entry.parentElement therefore reports index 0 for every card and
+    // makes all cards reuse the first profile record. Walk up to the nearest
+    // common list container and index the direct children that host an entry.
+    let container = entry.parentElement;
+    for (let depth = 0; container && depth < 6; depth += 1, container = container.parentElement) {
+      const hosts = Array.from(container.children).filter((candidate) =>
+        candidate.matches?.(selector) || candidate.querySelector?.(selector)
+      );
+      if (hosts.length >= 2) {
+        const host = hosts.find((candidate) => candidate === entry || candidate.contains(entry));
+        const index = hosts.indexOf(host);
+        if (index >= 0) return index;
+      }
+      if (container.matches?.("form,body")) break;
+    }
+
+    // A single structural match is not proof that this is the first record.
+    // Let the per-field occurrence counter below assign a stable fallback index.
+    return undefined;
   };
 
   const repeatEntryDomCount = (group) => {
     const selector = repeatEntrySelectors[group];
-    return selector ? document.querySelectorAll(selector).length : 0;
+    if (!selector) return 0;
+    return Array.from(document.querySelectorAll(selector))
+      .filter((entry) => isActuallyVisible(entry))
+      .filter((entry) => !entry.closest("template,[data-template],[data-prototype]"))
+      // Some sites wrap a concrete card in another node whose class also
+      // matches our broad selector. Count the innermost visible card once.
+      .filter((entry) => !entry.querySelector(selector))
+      .length;
+  };
+
+  const ATSX_DATE_RANGE_SEPARATOR = "\u001f";
+  const atsxDateRangeInfo = (element) => {
+    const root = element.closest?.(".atsx-date-picker-period-month[data-cy]");
+    const dataCy = root?.getAttribute("data-cy") || "";
+    const match = dataCy.match(/^(education|internship|project)\[(\d+)]\.periodInput$/i);
+    if (!match) return undefined;
+    const kind = match[1].toLowerCase();
+    const index = Number.parseInt(match[2], 10);
+    const config = kind === "education"
+      ? { group: "education", key: "educationStartDate", endKey: "educationEndDate" }
+      : kind === "internship"
+        ? { group: "experience", key: "experienceStartDate", endKey: "experienceEndDate" }
+        : { group: "project", key: "projectStartDate", endKey: "projectEndDate" };
+    return { ...config, index, root, engine: "atsx", mode: "date-range" };
+  };
+
+  const universeDateRangeInfo = (element) => {
+    const root = element.matches?.(".throne-biz-date-range-picker-wrapper")
+      ? element
+      : element.closest?.(".throne-biz-date-range-picker-wrapper");
+    if (!root) return undefined;
+    const inputs = Array.from(root.querySelectorAll("input.ud__native-input,input"));
+    if (inputs.length < 2) return undefined;
+    const metadata = formilyFieldMetadata(inputs[0]);
+    const section = fieldSection(inputs[0]) || "";
+    const fieldName = metadata.fieldName || "start_end_time";
+    if (!/start.*end.*time|start_end_time|起止时间/i.test(`${fieldName} ${metadata.label}`)) return undefined;
+    const config = /教育|学历|academic|education/i.test(section)
+      ? { group: "education", key: "educationStartDate", endKey: "educationEndDate" }
+      : /项目|project/i.test(section)
+        ? { group: "project", key: "projectStartDate", endKey: "projectEndDate" }
+        : /工作|实习|任职|work|employment|intern/i.test(section)
+          ? { group: "experience", key: "experienceStartDate", endKey: "experienceEndDate" }
+          : undefined;
+    return config
+      ? { ...config, root, inputs, fieldName, engine: "universe", mode: "date-range" }
+      : undefined;
+  };
+
+  const mokaDateInfo = (element) => {
+    const root = element.matches?.(".month-range-select.date_info")
+      ? element
+      : element.closest?.(".month-range-select.date_info");
+    if (!root) return undefined;
+    const blockId = root.closest?.("[data-nav-id]")?.getAttribute("data-nav-id") || "";
+    const configs = {
+      "block-experienceInfo": {
+        group: "experience", key: "experienceStartDate", endKey: "experienceEndDate", mode: "date-range"
+      },
+      "block-practiceInfo": {
+        group: "experience", key: "experienceStartDate", endKey: "experienceEndDate", mode: "date-range"
+      },
+      "block-educationInfo": {
+        group: "education", key: "educationStartDate", endKey: "educationEndDate", mode: "date-range"
+      },
+      "block-projectInfo": {
+        group: "project", key: "projectStartDate", endKey: "projectEndDate", mode: "date-range"
+      },
+      "block-awardInfo": { group: "award", key: "awardDate", mode: "month" }
+    };
+    const config = configs[blockId];
+    if (!config) return undefined;
+    const selects = Array.from(root.querySelectorAll("label[class*='sd-Select-container-']"));
+    const minimum = config.mode === "date-range" ? 4 : 2;
+    if (selects.length < minimum) return undefined;
+    return { ...config, root, selects, engine: "moka" };
+  };
+
+  const compoundDateInfo = (element) =>
+    atsxDateRangeInfo(element) || universeDateRangeInfo(element) || mokaDateInfo(element);
+
+  const readAtsxDateRange = (element) => {
+    const info = atsxDateRangeInfo(element);
+    if (!info) return "";
+    const values = Array.from(info.root.querySelectorAll(".atsx-date-picker-period-month-label")).map((label) => {
+      const year = clean(label.querySelector("[data-cy='year']")?.textContent || "");
+      const month = clean(label.querySelector("[data-cy='month']")?.textContent || "");
+      if (/^\d{4}$/.test(year) && /^\d{1,2}$/.test(month)) return `${year}-${month.padStart(2, "0")}`;
+      return /至今|present|current/i.test(`${year}${month}`) ? "至今" : "";
+    });
+    return values.length >= 2 ? `${values[0]}${ATSX_DATE_RANGE_SEPARATOR}${values[1]}` : "";
+  };
+
+  const readUniverseDateRange = (element) => {
+    const info = universeDateRangeInfo(element);
+    if (!info) return "";
+    const values = info.inputs.slice(0, 2).map((input) => clean(input.value || ""));
+    return values.some(Boolean) ? `${values[0]}${ATSX_DATE_RANGE_SEPARATOR}${values[1]}` : "";
+  };
+
+  const readMokaDate = (element) => {
+    const info = mokaDateInfo(element);
+    if (!info) return "";
+    const values = info.selects.map((select) => clean(
+      select.querySelector("[class*='sd-Input-display-value-']")?.innerText ||
+      select.querySelector("[class*='sd-Input-display-value-']")?.textContent ||
+      select.querySelector("input")?.value || ""
+    ));
+    const month = (offset) => {
+      const year = values[offset]?.match(/\d{4}/)?.[0] || "";
+      const monthValue = values[offset + 1]?.match(/\d{1,2}/)?.[0] || "";
+      return year && monthValue ? `${year}-${monthValue.padStart(2, "0")}` : "";
+    };
+    const start = month(0);
+    if (info.mode === "month") return start;
+    const current = info.root.querySelector("input[type='checkbox']")?.checked === true;
+    const end = current ? "至今" : month(2);
+    return start || end ? `${start}${ATSX_DATE_RANGE_SEPARATOR}${end}` : "";
+  };
+
+  const reactEventProps = (element) => {
+    if (!element) return undefined;
+    const key = Object.keys(element).find((name) =>
+      name.startsWith("__reactEventHandlers$") || name.startsWith("__reactProps$")
+    );
+    return key ? element[key] : undefined;
+  };
+
+  const isMokaManagedDateInput = (element) =>
+    element instanceof HTMLInputElement &&
+    element.readOnly &&
+    Boolean(element.closest?.("label[class*='sd-picker-input-'],[class*='day_info-'],.day_info"));
+
+  const readMokaManagedDate = (element) => {
+    if (!isMokaManagedDateInput(element)) return "";
+    const value = reactEventProps(element)?._get_?.();
+    return typeof value === "string" ? clean(value) : "";
   };
 
   const controlType = (element) => {
+    const compoundDate = compoundDateInfo(element);
+    if (compoundDate) return compoundDate.mode;
     if (element.getAttribute("contenteditable") === "true") return "contenteditable";
     if (element.matches?.(radioGroupSelector)) return "radio-group";
     if (element.matches?.(cascaderSelector)) return "cascader";
     if (element.closest?.(".phoenix-select")) return "custom-select";
     if (element.closest?.(".el-select")) return "custom-select";
+    if (element.closest?.(".atsx-select")) return "custom-select";
+    if (element.closest?.(".ant-select")) return "custom-select";
+    const driven = formControlDrivers?.identify?.(element);
+    if (driven) return driven.type;
     if (element.matches?.(checkboxSelector)) return "checkbox";
     return element.getAttribute("role") || (element.tagName || "field").toLowerCase();
   };
 
   const readControlValue = (element) => {
+    const compoundDate = compoundDateInfo(element);
+    if (compoundDate?.engine === "atsx") return readAtsxDateRange(element);
+    if (compoundDate?.engine === "universe") return readUniverseDateRange(element);
+    if (compoundDate?.engine === "moka") return readMokaDate(element);
+    const mokaManagedDate = readMokaManagedDate(element);
+    if (mokaManagedDate) return mokaManagedDate;
+    if (element.closest?.(".atsx-select")) return readAtsxSelectValue(element);
+    if (element.closest?.(".ant-select")) return readAntSelectValue(element);
+    const drivenValue = formControlDrivers?.selectedText?.(element);
+    if (drivenValue) return clean(drivenValue);
     if (element instanceof HTMLSelectElement) return clean(element.selectedOptions[0]?.text || element.value || "");
     if (element instanceof HTMLInputElement && element.type === "radio") {
       const checked = Array.from(document.querySelectorAll(`input[type="radio"][name="${CSS.escape(element.name)}"]`)).find((item) => item.checked);
@@ -1226,7 +1755,7 @@
     const inputType = element instanceof HTMLInputElement ? (element.type || "text").toLowerCase() : "";
     if (["hidden", "submit", "button", "reset", "image", "file"].includes(inputType)) return false;
     const searchEvidence = `${label} ${element.getAttribute?.("placeholder") || ""} ${element.getAttribute?.("aria-label") || ""}`;
-    if (inputType === "search" || /搜索职位|搜索关键词|搜职位|keyword|search/i.test(searchEvidence)) return false;
+    if (!key && (inputType === "search" || /搜索职位|搜索关键词|搜职位|keyword|search/i.test(searchEvidence))) return false;
     if (!label || /^(搜索|搜职位|关键字|keyword|search)$/i.test(label)) return false;
     if (key) return true;
     if (element.getAttribute("required") !== null || element.getAttribute("aria-required") === "true") return true;
@@ -1248,6 +1777,10 @@
       "input", "textarea", "select", "[contenteditable='true']",
       "[role='textbox']", "[role='combobox']", "[role='radio']", "[role='checkbox']",
       radioGroupSelector, checkboxSelector, cascaderSelector,
+      ".ivu-select", ".ivu-cascader", ".next-select", ".next-cascader",
+      ".semi-select", ".semi-cascader", ".arco-select", ".arco-cascader",
+      ".t-select", ".t-cascader",
+      ".month-range-select.date_info",
       // Tencent uses div-based controls without native roles for degree and
       // combined year/month selectors.
       ".education-select > .select", ".test-border"
@@ -1255,9 +1788,22 @@
     const transientPopupSelector = [
       ".el-select-dropdown", ".el-popper", ".country-select-popper",
       ".phoenix-selectList", ".phoenix-date-picker", ".area-selector-container",
+      ".ivu-select-dropdown", ".next-menu-popup", ".next-overlay-wrapper",
+      ".semi-portal", ".arco-select-popup", ".t-popup", ".t-select__dropdown",
+      "[class*='sd-Dropdown-dropdown-']",
       "[role='listbox']"
     ].join(",");
     const canonicalElement = (element) => {
+      const compoundDate = compoundDateInfo(element);
+      if (["moka", "universe"].includes(compoundDate?.engine)) return compoundDate.root;
+      const atsxControl = atsxSelectControl(element);
+      if (atsxControl) return atsxControl;
+      const antControl = antSelectControl(element);
+      if (antControl) return antControl;
+      const driven = formControlDrivers?.identify?.(element);
+      if (driven) {
+        return driven.root.querySelector?.("[role='combobox'],input:not([type='hidden'])") || driven.root;
+      }
       const elementSelect = element.closest?.(".el-select");
       if (elementSelect) {
         return elementSelect.querySelector(".el-select__input:not([readonly]),.el-input__inner,input") || element;
@@ -1285,7 +1831,19 @@
     elements.forEach((element, index) => {
       const label = fieldLabel(element);
       const section = fieldSection(element);
-      const ruleMatch = matchedProfileField(label, element, adapter, section);
+      const dateInfo = compoundDateInfo(element);
+      const ruleMatch = dateInfo
+        ? {
+            key: dateInfo.key,
+            confidence: 0.99,
+            source: "rules",
+            evidence: [dateInfo.engine === "moka"
+              ? "Moka Sugar Design 年月组合控件"
+              : dateInfo.engine === "universe"
+                ? "飞书招聘 Universe 受控日期区间"
+                : "小米 ATSX 成对日期控件"]
+          }
+        : matchedProfileField(label, element, adapter, section);
       const key = ruleMatch?.key;
       if (!isLikelyFormField(element, label, key)) return;
       const siteFieldId = ancestorAttributeText(element, "data-nc-id");
@@ -1307,14 +1865,38 @@
         if (seenRadioGroups.has(group)) return;
         seenRadioGroups.add(group);
       }
-      const id = `offerflow-field-${Date.now().toString(36)}-${index}-${Math.random().toString(36).slice(2, 7)}`;
-      element.dataset.offerflowFieldId = id;
-      const type = controlType(element);
-      const repeatGroup = repeatableGroupForKey(key);
+      const type = dateInfo?.mode || controlType(element);
+      const semanticRepeatGroup = repeatableGroupForKey(key);
+      const contextualRepeatGroup = /教育|学历|学业/i.test(section || "")
+        ? "education"
+        : /工作|实习|任职/i.test(section || "")
+          ? "experience"
+          : /项目/i.test(section || "")
+            ? "project"
+            : /在校|校园/i.test(section || "")
+              ? "campus"
+              : /获奖|奖项|奖励/i.test(section || "")
+                ? "award"
+                : undefined;
+      const explicitlySingleSection = /^(?:个人信息|基本信息|求职意向|求职偏好|语言能力|自我描述|自我介绍|联系方式)$/i
+        .test(clean(section || ""));
+      const repeatGroup = dateInfo?.group || (
+        contextualRepeatGroup
+          ? (semanticRepeatGroup === contextualRepeatGroup ? semanticRepeatGroup : undefined)
+          : explicitlySingleSection
+            ? undefined
+            : semanticRepeatGroup
+      );
       const repeatCounterKey = repeatGroup ? `${repeatGroup}:${key}` : "";
-      const structuralRepeatIndex = repeatGroup ? repeatEntryIndex(element, repeatGroup) : undefined;
+      const entryContext = repeatGroup ? repeatEntryContext(element, repeatGroup) : undefined;
+      const structuralRepeatIndex = entryContext?.index ?? dateInfo?.index ?? (repeatGroup ? repeatEntryIndex(element, repeatGroup) : undefined);
       const repeatIndex = structuralRepeatIndex ?? (repeatCounterKey ? (repeatCounters.get(repeatCounterKey) || 0) : undefined);
-      if (repeatCounterKey) repeatCounters.set(repeatCounterKey, (repeatIndex || 0) + 1);
+      if (repeatCounterKey) {
+        repeatCounters.set(
+          repeatCounterKey,
+          Math.max(repeatCounters.get(repeatCounterKey) || 0, (repeatIndex || 0) + 1)
+        );
+      }
       const requiredEvidence = [
         fieldLabel(element),
         ...nearbyFieldTexts(element),
@@ -1324,12 +1906,40 @@
         element.getAttribute("aria-required") === "true" ||
         /[＊*]|必填|必选/.test(requiredEvidence) ||
         Boolean(element.closest("[class*='form-item'],[class*='formItem']")?.querySelector(".required,[class*='required']"));
+      const repeatIndexSource = entryContext
+        ? "structural"
+        : Number.isInteger(dateInfo?.index)
+          ? "attribute"
+          : repeatCounterKey
+            ? "occurrence"
+            : undefined;
+      const repeatEntryFingerprint = repeatGroup
+        ? entryContext?.fingerprint || `${repeatGroup}:${repeatIndexSource || "occurrence"}:${repeatIndex ?? 0}`
+        : undefined;
+      const identity = formRuntime?.describeField?.({
+        element,
+        label: displayFieldLabel(element),
+        section,
+        type,
+        repeatGroup,
+        repeatIndex,
+        repeatEntryFingerprint
+      });
+      const id = identity?.id || `offerflow-field-${index}`;
+      const fingerprint = identity?.fingerprint || id;
+      element.dataset.offerflowFieldId = id;
+      element.dataset.offerflowFingerprint = fingerprint;
       matches.push({
         id,
+        fingerprint,
+        domPath: identity?.domPath,
         label: displayFieldLabel(element),
         key,
         repeatGroup,
         repeatIndex,
+        repeatIndexSource,
+        repeatEntryFingerprint,
+        domOrder: index,
         type,
         section,
         required,
@@ -1435,6 +2045,13 @@
       else setTimeout(resolve, Math.max(0, milliseconds));
     });
 
+  // Option lists can be populated by a remote search even when Chrome marks
+  // the recruitment tab as background. A microtask-only delay outruns that
+  // request and reports "option-not-found", so component drivers always use
+  // a real timer while waiting for an owned popup to update.
+  const controlInteractionWait = (milliseconds) =>
+    new Promise((resolve) => setTimeout(resolve, Math.max(0, milliseconds)));
+
   const repeatAddPatterns = {
     education: /(?:添加|新增|增加|继续添加|再添加)\s*(?:教育经历|教育背景|学历经历|学历)|(?:教育经历|教育背景|学历经历|学历)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+education/i,
     experience: /(?:添加|新增|增加|继续添加|再添加)\s*(?:工作经历|工作经验|实习经历|实习经验|工作背景)|(?:工作经历|工作经验|实习经历|实习经验|工作背景)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+(?:work|experience)/i,
@@ -1443,9 +2060,34 @@
     award: /(?:添加|新增|增加|继续添加|再添加)\s*(?:获奖情况|获奖经历|奖励)|(?:获奖情况|获奖经历|奖励)\s*(?:添加|新增|增加)|add(?:\s+another)?\s+award/i
   };
 
-  const repeatAddButton = (group) => {
+  const ancestorDistance = (left, right) => {
+    if (!(left instanceof Element) || !(right instanceof Element)) {
+      return { distance: Number.POSITIVE_INFINITY, common: undefined };
+    }
+    const leftAncestors = new Map();
+    let current = left;
+    for (let depth = 0; current && depth < 18; depth += 1, current = current.parentElement) {
+      leftAncestors.set(current, depth);
+    }
+    current = right;
+    for (let depth = 0; current && depth < 18; depth += 1, current = current.parentElement) {
+      if (leftAncestors.has(current)) {
+        return { distance: leftAncestors.get(current) + depth, common: current };
+      }
+    }
+    return { distance: Number.POSITIVE_INFINITY, common: undefined };
+  };
+
+  const repeatGroupElements = (group, scan) => (scan?.fields || [])
+    .filter((field) => field.repeatGroup === group)
+    .map((field) => formRuntime?.resolveElement?.(field) || document.querySelector(`[data-offerflow-field-id="${field.id}"]`))
+    .filter((element, index, all) => element && all.indexOf(element) === index);
+
+  const repeatAddButton = (group, scan) => {
     const pattern = repeatAddPatterns[group];
     if (!pattern) return undefined;
+    const fieldElements = repeatGroupElements(group, scan);
+    const entrySelector = repeatEntrySelectors[group];
     const selector = [
       "button", "a", "[role='button']", "[onclick]",
       "[class*='add']", "[class*='Add']", "[class*='append']", "[class*='Append']"
@@ -1461,6 +2103,21 @@
         return text && text.length <= 80 && pattern.test(text);
       });
     return candidates.sort((left, right) => {
+      const score = (candidate) => {
+        const nearest = fieldElements
+          .map((fieldElement) => ancestorDistance(candidate, fieldElement))
+          .sort((first, second) => first.distance - second.distance)[0];
+        let value = nearest?.distance ?? 1000;
+        if (!nearest?.common || nearest.common === document.body || nearest.common === document.documentElement) {
+          value += 80;
+        } else if (nearest.common.matches?.("section,fieldset,[class*='section'],[class*='module'],[class*='block']")) {
+          value -= 20;
+        }
+        if (entrySelector && candidate.closest?.(entrySelector)) value += 120;
+        return value;
+      };
+      const scoreDifference = score(left) - score(right);
+      if (scoreDifference) return scoreDifference;
       // Some Vue pages (including Tencent Careers) attach the click handler to
       // the inner text node instead of the surrounding visual container.
       if (left.contains(right)) return 1;
@@ -1472,16 +2129,158 @@
     })[0];
   };
 
-  const ensureRepeatableEntries = async (repeatCounts, initialScan) => {
+  const mokaBlockEntryCount = (blockId) => {
+    const block = document.querySelector(`[data-nav-id="${blockId}"]`);
+    if (!block) return 0;
+    return Array.from(block.children).filter((child) =>
+      child.matches?.("[class*='apply-fields-'][class*='multi-']") && isActuallyVisible(child)
+    ).length;
+  };
+
+  const mokaBlockAddButton = (blockId) => {
+    const block = document.querySelector(`[data-nav-id="${blockId}"]`);
+    if (!block) return undefined;
+    return Array.from(block.querySelectorAll("button,[role='button']"))
+      .filter((button) => isActuallyVisible(button) && !button.disabled && button.getAttribute("aria-disabled") !== "true")
+      .filter((button) => !button.closest("[class*='apply-fields-']"))
+      .find((button) => clean(button.innerText || button.textContent || "") === "添加");
+  };
+
+  const ensureMokaRepeatableEntries = async (repeatCounts, repeatPlan) => {
+    const experiencePlan = repeatPlan?.experience || {};
+    const targets = [
+      ["block-educationInfo", repeatCounts?.education],
+      ["block-experienceInfo", experiencePlan.work],
+      ["block-practiceInfo", experiencePlan.internship ?? repeatCounts?.experience],
+      ["block-projectInfo", repeatCounts?.project],
+      ["block-awardInfo", repeatCounts?.award]
+    ];
+    let changed = false;
+    for (const [blockId, rawDesired] of targets) {
+      const desired = Math.max(0, Math.floor(Number(rawDesired) || 0));
+      if (desired <= 0) continue;
+      let current = mokaBlockEntryCount(blockId);
+      let attempts = 0;
+      while (current < desired && attempts < desired + 2) {
+        const button = mokaBlockAddButton(blockId);
+        if (!button) break;
+        clickControl(button);
+        attempts += 1;
+        let next = current;
+        for (let waitAttempt = 0; waitAttempt < 12 && next <= current; waitAttempt += 1) {
+          await nextFrame();
+          await sleep(60);
+          next = mokaBlockEntryCount(blockId);
+        }
+        if (next <= current) break;
+        changed = true;
+        current = next;
+      }
+    }
+    return changed;
+  };
+
+  const feishuModule = (titlePattern) => {
+    const title = Array.from(document.querySelectorAll(
+      ".applyFormModuleWrapper-text,[class*='applyFormModuleWrapper-text']"
+    )).find((candidate) => titlePattern.test(clean(candidate.innerText || candidate.textContent || "")));
+    if (!title) return undefined;
+    let current = title;
+    for (let depth = 0; current && depth < 8; depth += 1, current = current.parentElement) {
+      const children = Array.from(current.children || []);
+      if (
+        children.some((child) => /applyFormModuleWrapper-left/.test(String(child.className || ""))) &&
+        children.some((child) => /applyFormModuleWrapper-right/.test(String(child.className || "")))
+      ) {
+        return current;
+      }
+    }
+    return undefined;
+  };
+
+  const feishuSectionEntryCount = (scan, group, key, sectionPattern) =>
+    (scan?.fields || []).filter((field) =>
+      field.repeatGroup === group && field.key === key && sectionPattern.test(field.section || "")
+    ).length;
+
+  const feishuModuleAddButton = (module) => Array.from(module?.querySelectorAll("button,[role='button']") || [])
+    .filter((button) => isActuallyVisible(button) && !button.disabled && button.getAttribute("aria-disabled") !== "true")
+    .filter((button) => clean(button.innerText || button.textContent || "") === "添加")
+    .pop();
+
+  const ensureFeishuRepeatableEntries = async (repeatCounts, initialScan, repeatPlan) => {
+    const experiencePlan = repeatPlan?.experience || {};
+    const targets = [
+      { group: "education", key: "school", section: /教育/, title: /^教育经历$/, desired: repeatCounts?.education },
+      { group: "experience", key: "experienceOrganization", section: /工作/, title: /^工作经历$/, desired: experiencePlan.work },
+      { group: "experience", key: "experienceOrganization", section: /实习/, title: /^实习经历$/, desired: experiencePlan.internship ?? repeatCounts?.experience },
+      { group: "project", key: "projectName", section: /项目/, title: /^项目经历$/, desired: repeatCounts?.project },
+      { group: "award", key: "awardName", section: /获奖|奖励/, title: /^获奖|奖励/, desired: repeatCounts?.award }
+    ];
     let scan = initialScan;
     let changed = false;
+    for (const target of targets) {
+      const desired = Math.max(0, Math.floor(Number(target.desired) || 0));
+      if (desired <= 0) continue;
+      const module = feishuModule(target.title);
+      if (!module) continue;
+      if (target.title.test("工作经历")) {
+        const noExperience = Array.from(module.querySelectorAll("label")).find((label) =>
+          /没有工作经历/.test(clean(label.innerText || label.textContent || ""))
+        );
+        const checkbox = noExperience?.querySelector("input[type='checkbox']");
+        if (checkbox?.checked) {
+          clickControl(checkbox);
+          await nextFrame();
+          await sleep(80);
+          scan = scanApplicationForm();
+          changed = true;
+        }
+      }
+      let current = feishuSectionEntryCount(scan, target.group, target.key, target.section);
+      let attempts = 0;
+      while (current < desired && attempts < desired + 2) {
+        const button = feishuModuleAddButton(module);
+        if (!button) break;
+        clickControl(button);
+        attempts += 1;
+        let next = current;
+        for (let waitAttempt = 0; waitAttempt < 16 && next <= current; waitAttempt += 1) {
+          await nextFrame();
+          await sleep(60);
+          scan = scanApplicationForm();
+          next = feishuSectionEntryCount(scan, target.group, target.key, target.section);
+        }
+        if (next <= current) break;
+        changed = true;
+        current = next;
+      }
+    }
+    return { scan, changed };
+  };
+
+  const ensureRepeatableEntries = async (repeatCounts, initialScan, repeatPlan) => {
+    let scan = initialScan;
+    let changed = false;
+    if (scan?.platform?.id === "moka") {
+      const mokaChanged = await ensureMokaRepeatableEntries(repeatCounts, repeatPlan);
+      if (mokaChanged) {
+        scan = scanApplicationForm();
+        changed = true;
+      }
+    }
+    if (scan?.platform?.id === "feishu-career") {
+      const result = await ensureFeishuRepeatableEntries(repeatCounts, scan, repeatPlan);
+      scan = result.scan;
+      changed = changed || result.changed;
+    }
     for (const group of Object.keys(repeatableFieldKeys)) {
       const desired = Math.max(0, Math.floor(Number(repeatCounts?.[group]) || 0));
       if (desired <= 0) continue;
       let current = repeatableFieldCount(scan.fields, group);
       let attempts = 0;
       while (current < desired && attempts < desired + 2) {
-        const button = repeatAddButton(group);
+        const button = repeatAddButton(group, scan);
         if (!button) break;
         const domCountBefore = repeatEntryDomCount(group);
         try {
@@ -1914,8 +2713,384 @@
     return true;
   };
 
+  const fillUniverseDateRange = async (element, value) => {
+    const info = universeDateRangeInfo(element);
+    if (!info) return false;
+    const [startValue, endValue] = String(value || "").split(ATSX_DATE_RANGE_SEPARATOR);
+    const monthValue = (raw) => {
+      const text = clean(raw);
+      if (/至今|present|current/i.test(text)) return "至今";
+      const match = text.match(/^(\d{4})[-/.年](\d{1,2})/);
+      return match ? `${match[1]}-${match[2].padStart(2, "0")}` : "";
+    };
+    const start = monthValue(startValue);
+    const end = monthValue(endValue);
+    if (!start || !end) return false;
+
+    const input = info.inputs[0];
+    const fiberKey = Object.keys(input || {}).find((key) =>
+      key.startsWith("__reactInternalInstance$") || key.startsWith("__reactFiber$")
+    );
+    let fiber = fiberKey ? input[fiberKey] : undefined;
+    let handlers;
+    for (let depth = 0; fiber && depth < 32; depth += 1, fiber = fiber.return) {
+      const props = fiber.memoizedProps || {};
+      const fieldName = props["data-form-field-name"] || props["data-form-field-id"] || "";
+      if (
+        typeof props.onChange === "function" &&
+        Array.isArray(props.value) &&
+        (!fieldName || fieldName === info.fieldName || /start.*end.*time/i.test(fieldName))
+      ) {
+        handlers = props;
+        break;
+      }
+    }
+    if (!handlers) return false;
+    handlers.onChange([start, end]);
+    await nextFrame();
+    await sleep(40);
+    return readUniverseDateRange(element) === `${start}${ATSX_DATE_RANGE_SEPARATOR}${end}`;
+  };
+
+  const fillAtsxDateRange = async (element, value) => {
+    const info = atsxDateRangeInfo(element);
+    if (!info) return false;
+    const [startValue, endValue] = String(value || "").split(ATSX_DATE_RANGE_SEPARATOR);
+    const monthPart = (raw) => {
+      const match = clean(raw).match(/^(\d{4})[-/.年](\d{1,2})/);
+      return match ? { year: match[1], month: match[2].padStart(2, "0") } : undefined;
+    };
+    const start = monthPart(startValue);
+    const end = monthPart(endValue);
+    if (!start || (!end && !/至今|present|current/i.test(clean(endValue)))) return false;
+
+    const fiberKey = Object.keys(element).find((key) =>
+      key.startsWith("__reactInternalInstance$") || key.startsWith("__reactFiber$")
+    );
+    let fiber = fiberKey ? element[fiberKey] : undefined;
+    let handlers;
+    for (let depth = 0; fiber && depth < 12; depth += 1, fiber = fiber.return) {
+      const props = fiber.memoizedProps;
+      if (typeof props?.onChange === "function" && /\.period$/.test(String(props.id || props["data-__field"]?.name || ""))) {
+        handlers = props;
+        break;
+      }
+    }
+    if (!handlers) return false;
+
+    handlers.onChange([start, end || "至今"]);
+    await nextFrame();
+    await sleep(40);
+    return readAtsxDateRange(element) === String(value);
+  };
+
+  const fillMokaDate = async (element, value) => {
+    const info = mokaDateInfo(element);
+    if (!info) return false;
+    const [startValue, endValue] = String(value || "").split(ATSX_DATE_RANGE_SEPARATOR);
+    const monthPart = (raw) => {
+      const match = clean(raw).match(/^(\d{4})[-/.年](\d{1,2})/);
+      return match ? { year: match[1], month: match[2].padStart(2, "0") } : undefined;
+    };
+    const start = monthPart(startValue);
+    const endIsCurrent = /至今|present|current/i.test(clean(endValue));
+    const end = monthPart(endValue);
+    if (!start || (info.mode === "date-range" && !end && !endIsCurrent)) return false;
+
+    const selectPart = async (index, requested) => {
+      const currentInfo = mokaDateInfo(info.root);
+      const select = currentInfo?.selects?.[index];
+      const input = select?.querySelector("input[class*='sd-Input-input-']");
+      if (!input) return false;
+      const selected = clean(
+        select.querySelector("[class*='sd-Input-display-value-']")?.innerText ||
+        select.querySelector("[class*='sd-Input-display-value-']")?.textContent || ""
+      );
+      if (/^\d+$/.test(selected) && /^\d+$/.test(requested) && Number(selected) === Number(requested)) {
+        return true;
+      }
+      const result = await formControlDrivers?.fill?.(input, requested, {
+        click: clickControlInUserOrder,
+        wait: sleep,
+        remoteWait: controlInteractionWait
+      });
+      return result?.handled === true && result.success === true;
+    };
+
+    if (!await selectPart(0, start.year) || !await selectPart(1, start.month)) return false;
+    if (info.mode === "month") return readMokaDate(info.root) === `${start.year}-${start.month}`;
+
+    const checkbox = info.root.querySelector("input[type='checkbox']");
+    if (endIsCurrent) {
+      if (checkbox && !checkbox.checked) clickControlInUserOrder(checkbox);
+    } else {
+      if (checkbox?.checked) clickControlInUserOrder(checkbox);
+      if (!await selectPart(2, end.year) || !await selectPart(3, end.month)) return false;
+    }
+    await nextFrame();
+    await sleep(45);
+    return controlValueMatches(readMokaDate(info.root), value);
+  };
+
+  const fillMokaManagedDate = async (element, value) => {
+    if (!isMokaManagedDateInput(element)) return false;
+    const props = reactEventProps(element);
+    if (typeof props?._set_ !== "function") return false;
+    const matched = clean(value).match(/(\d{4})[-/.年](\d{1,2})[-/.月](\d{1,2})/);
+    const normalized = matched
+      ? `${matched[1]}-${matched[2].padStart(2, "0")}-${matched[3].padStart(2, "0")}`
+      : clean(value);
+    props._set_(normalized);
+    await nextFrame();
+    await sleep(80);
+    return controlValueMatches(readMokaManagedDate(element), normalized);
+  };
+
+  const clickControlInUserOrder = (element) => {
+    if (!element) return;
+    element.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true, view: window }));
+    element.dispatchEvent(new MouseEvent("mouseup", { bubbles: true, cancelable: true, view: window }));
+    element.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+  };
+
+  const sameSelectValue = (left, right) => {
+    const normalizedLeft = clean(left).toLowerCase();
+    const normalizedRight = clean(right).toLowerCase();
+    return Boolean(normalizedLeft && normalizedRight) && (
+      normalizedLeft === normalizedRight ||
+      normalizedLeft.includes(normalizedRight) ||
+      normalizedRight.includes(normalizedLeft)
+    );
+  };
+
+  const dismissAtsxSelect = async (element) => {
+    const control = atsxSelectControl(element) || element;
+    const root = control?.closest?.(".atsx-select");
+    if (!root) return;
+    root.querySelector(".atsx-select-search__field,input")?.blur?.();
+    control.blur?.();
+    if (
+      control.getAttribute("aria-expanded") === "true" ||
+      root.classList.contains("atsx-select-open") ||
+      Boolean(atsxSelectDropdown(control))
+    ) {
+      clickControlInUserOrder(document.body);
+      await nextFrame();
+      await sleep(35);
+    }
+  };
+
+  const dismissAllAtsxSelects = async () => {
+    const open = Array.from(document.querySelectorAll(".atsx-select-open,[role='combobox'][aria-expanded='true']"))
+      .some((element) => Boolean(element.closest?.(".atsx-select")));
+    if (!open) return;
+    clickControlInUserOrder(document.body);
+    await nextFrame();
+    await sleep(35);
+  };
+
+  const findAtsxSelectOption = async (control, value, attempts = 16) => {
+    const normalized = clean(value).toLowerCase();
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const dropdown = atsxSelectDropdown(control);
+      if (dropdown) {
+        const options = Array.from(dropdown.content.querySelectorAll("[role='option']"))
+          .filter((option) => isActuallyVisible(option))
+          .map((option) => ({
+            option,
+            text: clean(
+              option.querySelector("[data-cy-value]")?.getAttribute("data-cy-value") ||
+              option.getAttribute("data-cy-value") ||
+              option.innerText || option.textContent || ""
+            ).toLowerCase()
+          }));
+        const exact = options.find(({ text }) => text === normalized);
+        if (exact) return exact.option;
+        const fuzzy = options.find(({ text }) => text && (text.includes(normalized) || normalized.includes(text)));
+        if (fuzzy) return fuzzy.option;
+      }
+      await nextFrame();
+      await sleep(55);
+    }
+    return undefined;
+  };
+
+  const fillAtsxSelect = async (element, value) => {
+    const control = atsxSelectControl(element) || element;
+    const root = control?.closest?.(".atsx-select");
+    if (!root) return false;
+    const requested = clean(value);
+    if (!requested) return false;
+
+    const renderedSelection = clean(
+      root.querySelector("[data-cy='selectedValue'],.atsx-select-selection-selected-value")?.textContent || ""
+    );
+    const formControl = root.closest(".atsx-form-item-control");
+    const input = root.querySelector(".atsx-select-search__field,input");
+    const confirmedCurrent = renderedSelection || (
+      formControl?.classList.contains("has-success") ? clean(input?.value || "") : ""
+    );
+    if (sameSelectValue(confirmedCurrent, requested)) {
+      await dismissAtsxSelect(control);
+      return sameSelectValue(readAtsxSelectValue(control), requested);
+    }
+
+    control.scrollIntoView?.({ behavior: "auto", block: "center", inline: "nearest" });
+    clickControlInUserOrder(control);
+    await nextFrame();
+    await sleep(80);
+
+    if (input && root.classList.contains("atsx-select-combobox")) {
+      const oldValue = input.value;
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      if (setter) setter.call(input, requested);
+      else input.value = requested;
+      input._valueTracker?.setValue?.(oldValue);
+      const inputEvent = new Event("input", { bubbles: true, cancelable: true });
+      input.dispatchEvent(inputEvent);
+      triggerReactChange(input, inputEvent);
+      input.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+      input.dispatchEvent(new KeyboardEvent("keyup", {
+        key: requested.slice(-1),
+        bubbles: true,
+        cancelable: true
+      }));
+      await nextFrame();
+      await sleep(120);
+    }
+
+    const option = await findAtsxSelectOption(control, requested);
+    if (!option) {
+      await dismissAtsxSelect(control);
+      return false;
+    }
+    clickControlInUserOrder(option);
+    await nextFrame();
+    await sleep(80);
+    await dismissAtsxSelect(control);
+
+    const actual = readAtsxSelectValue(control);
+    return sameSelectValue(actual, requested);
+  };
+
+  const dismissAntSelect = async (element) => {
+    const control = antSelectControl(element) || element;
+    const root = control?.closest?.(".ant-select");
+    if (!root) return;
+    control.blur?.();
+    if (
+      control.getAttribute("aria-expanded") === "true" ||
+      root.classList.contains("ant-select-open") ||
+      Boolean(antSelectDropdown(control))
+    ) {
+      clickControlInUserOrder(document.body);
+      await nextFrame();
+      await sleep(35);
+    }
+  };
+
+  const dismissAllAntSelects = async () => {
+    const open = Array.from(document.querySelectorAll(".ant-select-open,.ant-select input[role='combobox'][aria-expanded='true']"))
+      .some((element) => Boolean(element.closest?.(".ant-select")));
+    if (!open && !Array.from(document.querySelectorAll(".ant-select-dropdown")).some(isActuallyVisible)) return;
+    clickControlInUserOrder(document.body);
+    await nextFrame();
+    await sleep(35);
+  };
+
+  const findAntSelectOption = async (control, value, attempts = 18) => {
+    const normalized = clean(value).toLowerCase();
+    for (let attempt = 0; attempt < attempts; attempt += 1) {
+      const dropdown = antSelectDropdown(control);
+      if (dropdown) {
+        const options = Array.from(dropdown.content.querySelectorAll(
+          ".ant-select-item-option:not(.ant-select-item-option-disabled)"
+        )).filter((option) => isActuallyVisible(option)).map((option) => ({
+          option,
+          text: clean(
+            option.getAttribute("title") ||
+            option.querySelector(".ant-select-item-option-content")?.textContent ||
+            option.textContent || ""
+          ).toLowerCase()
+        }));
+        const exact = options.find(({ text }) => text === normalized);
+        if (exact) return exact.option;
+        const fuzzy = options.find(({ text }) => text && (text.includes(normalized) || normalized.includes(text)));
+        if (fuzzy) return fuzzy.option;
+      }
+      await nextFrame();
+      await sleep(65);
+    }
+    return undefined;
+  };
+
+  const fillAntSelect = async (element, value) => {
+    const control = antSelectControl(element) || element;
+    const root = control?.closest?.(".ant-select");
+    if (!root) return false;
+    const requested = clean(value);
+    if (!requested) return false;
+
+    const current = readAntSelectValue(control);
+    if (sameSelectValue(current, requested)) {
+      await dismissAntSelect(control);
+      return sameSelectValue(readAntSelectValue(control), requested);
+    }
+
+    const selector = root.querySelector(".ant-select-selector") || control;
+    selector.scrollIntoView?.({ behavior: "auto", block: "center", inline: "nearest" });
+    clickControlInUserOrder(selector);
+    await nextFrame();
+    await sleep(90);
+
+    if (root.classList.contains("ant-select-show-search")) {
+      const oldValue = control.value || "";
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+      if (setter) setter.call(control, requested);
+      else control.value = requested;
+      control._valueTracker?.setValue?.(oldValue);
+      const inputEvent = new Event("input", { bubbles: true, cancelable: true });
+      control.dispatchEvent(inputEvent);
+      triggerReactChange(control, inputEvent);
+      control.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+      control.dispatchEvent(new KeyboardEvent("keyup", {
+        key: requested.slice(-1),
+        bubbles: true,
+        cancelable: true
+      }));
+      await nextFrame();
+      await sleep(140);
+    }
+
+    const option = await findAntSelectOption(control, requested);
+    if (!option) {
+      await dismissAntSelect(control);
+      return false;
+    }
+    clickControlInUserOrder(option);
+    await nextFrame();
+    await sleep(90);
+    await dismissAntSelect(control);
+    return sameSelectValue(readAntSelectValue(control), requested);
+  };
+
   const setNativeValue = async (element, value) => {
     prepareControlInteraction(element);
+    const compoundDate = compoundDateInfo(element);
+    if (compoundDate?.engine === "atsx") return fillAtsxDateRange(element, value);
+    if (compoundDate?.engine === "universe") return fillUniverseDateRange(element, value);
+    if (compoundDate?.engine === "moka") return fillMokaDate(element, value);
+    if (isMokaManagedDateInput(element)) return fillMokaManagedDate(element, value);
+    const sharedDriver = formControlDrivers?.identify?.(element);
+    const sharedDriverIds = new Set(["moka", "feishu", "element", "iview", "fusion", "semi", "arco", "tdesign", "generic"]);
+    if (sharedDriver && sharedDriverIds.has(sharedDriver.id)) {
+      const driven = await formControlDrivers.fill(element, value, {
+        click: clickControlInUserOrder,
+        wait: sleep,
+        remoteWait: controlInteractionWait
+      });
+      if (driven.handled) return driven.success;
+    }
     if (element instanceof HTMLSelectElement) {
       const normalized = clean(value).toLowerCase();
       const option = Array.from(element.options).find((item) => {
@@ -1986,6 +3161,10 @@
     } else if (element.closest?.(".ud__select")) {
       const ok = await fillUdSelect(element, value);
       if (!ok) return false;
+    } else if (element.closest?.(".atsx-select")) {
+      return fillAtsxSelect(element, value);
+    } else if (element.closest?.(".ant-select")) {
+      return fillAntSelect(element, value);
     } else if (element.getAttribute("role") === "combobox") {
       const nativeInput = element instanceof HTMLInputElement ? element : element.querySelector("input");
       if (nativeInput) {
@@ -2050,71 +3229,265 @@
     return true;
   };
 
+  const profileDateRangeEndKeys = {
+    educationStartDate: "educationEndDate",
+    experienceStartDate: "experienceEndDate",
+    projectStartDate: "projectEndDate"
+  };
+
+  const normalizedControlValue = (value) => clean(String(value || ""))
+    .replaceAll(ATSX_DATE_RANGE_SEPARATOR, "—")
+    .replace(/\s+/g, "")
+    .toLowerCase();
+
+  const controlValueMatches = (actual, expected) => {
+    const normalizedActual = normalizedControlValue(actual);
+    const normalizedExpected = normalizedControlValue(expected);
+    return Boolean(normalizedActual && normalizedExpected) && (
+      normalizedActual === normalizedExpected ||
+      normalizedActual.includes(normalizedExpected) ||
+      normalizedExpected.includes(normalizedActual)
+    );
+  };
+
+  const fieldTrackingKey = (field) => field.fingerprint || field.id;
+
+  const fieldSemanticKey = (field) => [
+    field.key || "unknown",
+    field.repeatGroup || repeatableGroupForKey(field.key) || "single",
+    Number.isInteger(field.repeatIndex) ? field.repeatIndex : 0,
+    field.type || "field"
+  ].join("|");
+
+  const fieldValueFromSnapshots = (field, snapshots) => {
+    if (!field.key || !Array.isArray(snapshots) || !snapshots.length) return undefined;
+    if (Number.isInteger(field.profileRepeatIndex) && field.profileRepeatIndex < 0) return undefined;
+    const preferredIndex = Number.isInteger(field.profileRepeatIndex) ? field.profileRepeatIndex : field.repeatIndex;
+    const index = Number.isInteger(preferredIndex) && preferredIndex >= 0 ? preferredIndex : 0;
+    const snapshot = snapshots[index] || snapshots[0] || {};
+    const value = snapshot[field.key];
+    const endKey = field.type === "date-range" ? profileDateRangeEndKeys[field.key] : undefined;
+    return endKey ? `${value || ""}${ATSX_DATE_RANGE_SEPARATOR}${snapshot[endKey] || ""}` : value;
+  };
+
+  const resolveFieldElement = (field) => {
+    const runtimeElement = formRuntime?.resolveElement?.(field);
+    if (runtimeElement) return runtimeElement;
+    try {
+      return document.querySelector(`[data-offerflow-field-id="${CSS.escape(field.id)}"]`) || undefined;
+    } catch {
+      return undefined;
+    }
+  };
+
+  const fieldBlueprintFallbackKey = (field) => [
+    normalizeFieldText(field.section || ""),
+    normalizeFieldText(field.label || ""),
+    field.type || "",
+    field.repeatEntryFingerprint || "",
+    Number.isInteger(field.repeatIndex) ? field.repeatIndex : ""
+  ].join("|");
+
   const fillApplicationForm = async (fields, values, options = {}) => {
-    const items = Array.isArray(fields) ? fields : [];
+    const initialItems = Array.isArray(fields) ? fields : [];
     const profileValues = values || {};
     const fieldValues = options.fieldValues && typeof options.fieldValues === "object"
       ? options.fieldValues
       : {};
+    const profileSnapshots = Array.isArray(options.profileSnapshots) ? options.profileSnapshots : [];
+    const fillDynamicFields = options.fillDynamicFields === true;
+    const maxRounds = Math.max(1, Math.min(7, Math.floor(Number(options.maxRounds) || 1)));
     const requestedDelay = Number(options.delayMs);
     const delayMs = Number.isFinite(requestedDelay)
       ? Math.max(0, Math.min(180, requestedDelay))
       : 55;
-    const results = [];
-    const total = items.length;
-    const pauseBetweenFields = async () => {
-      if (delayMs > 0) await sleep(delayMs);
+    const resultsByField = new Map();
+    const attemptsByField = new Map();
+    const filledFields = new Set();
+    const initialSemanticKeys = new Set(initialItems.filter((field) => field.key).map(fieldSemanticKey));
+    const blueprintsByFingerprint = new Map(
+      initialItems.filter((field) => field.fingerprint).map((field) => [field.fingerprint, field])
+    );
+    const blueprintsByFallback = new Map(initialItems.map((field) => [fieldBlueprintFallbackKey(field), field]));
+    let processed = 0;
+    let rounds = 0;
+    let rescanned = false;
+    let finalFields = initialItems;
+
+    const valueForField = (field) => {
+      if (Object.prototype.hasOwnProperty.call(fieldValues, field.id)) return fieldValues[field.id];
+      const blueprint = field.fingerprint ? blueprintsByFingerprint.get(field.fingerprint) : undefined;
+      if (blueprint && Object.prototype.hasOwnProperty.call(fieldValues, blueprint.id)) return fieldValues[blueprint.id];
+      const snapshotValue = fieldValueFromSnapshots(field, profileSnapshots);
+      return snapshotValue !== undefined ? snapshotValue : field.key ? profileValues[field.key] : undefined;
     };
-    const publishField = async (field, index, result) => {
-      results.push(result);
+
+    const hydrateField = (field) => {
+      const blueprint = (field.fingerprint ? blueprintsByFingerprint.get(field.fingerprint) : undefined) ||
+        blueprintsByFallback.get(fieldBlueprintFallbackKey(field));
+      if (!blueprint) return field;
+      return {
+        ...field,
+        key: field.key || blueprint.key,
+        repeatGroup: field.repeatGroup || blueprint.repeatGroup,
+        repeatIndex: Number.isInteger(field.repeatIndex) ? field.repeatIndex : blueprint.repeatIndex,
+        profileRepeatIndex: Number.isInteger(field.profileRepeatIndex)
+          ? field.profileRepeatIndex
+          : blueprint.profileRepeatIndex,
+        source: field.source || blueprint.source,
+        confidence: Math.max(field.confidence || 0, blueprint.confidence || 0)
+      };
+    };
+
+    const publishField = async (field, result, totalHint) => {
+      processed += 1;
+      resultsByField.set(fieldTrackingKey(field), result);
       sendFillProgress({
         stage: "field",
-        current: index + 1,
-        total,
+        current: processed,
+        total: Math.max(initialItems.length, totalHint, processed),
         label: field.label,
         field: { id: field.id, label: field.label, key: field.key },
         result
       });
-      await pauseBetweenFields();
+      if (delayMs > 0) await sleep(delayMs);
     };
-    sendFillProgress({ stage: "started", current: 0, total });
-    for (let index = 0; index < items.length; index += 1) {
-      const field = items[index];
-      const hasFieldValue = Object.prototype.hasOwnProperty.call(fieldValues, field.id);
-      const value = hasFieldValue ? fieldValues[field.id] : field.key ? profileValues[field.key] : undefined;
-      const base = { id: field.id, label: field.label, key: field.key, expectedValue: value ? String(value) : undefined };
-      if (!field.key || !value) {
-        await publishField(field, index, { ...base, status: field.key ? "missing" : "skipped", reason: field.key ? "个人资料未填写" : "未匹配到资料字段" });
-        continue;
-      }
-      const element = document.querySelector(`[data-offerflow-field-id="${CSS.escape(field.id)}"]`);
-      if (!element) {
-        await publishField(field, index, { ...base, status: "failed", reason: "页面控件已变化，请重新识别" });
-        continue;
-      }
-      try {
-        const written = await setNativeValue(element, String(value));
-        // Give the browser one paint opportunity per field. This keeps the
-        // page-following interaction visible while remaining very fast.
-        await nextFrame();
-        const actualValue = readControlValue(element);
-        const normalizedExpected = clean(String(value)).toLowerCase();
-        const normalizedActual = actualValue.toLowerCase();
-        const verified = written && (normalizedActual === normalizedExpected || normalizedActual.includes(normalizedExpected) || normalizedExpected.includes(normalizedActual));
-        await publishField(field, index, { ...base, status: verified ? "filled" : "failed", actualValue, reason: verified ? undefined : "写入后回读值不一致" });
-      } catch (error) {
-        await publishField(field, index, { ...base, status: "failed", reason: error instanceof Error ? error.message : "控件不支持写入" });
-      }
+
+    const isEligibleDynamicField = (field) => {
+      if (!field.key) return false;
+      if (fillDynamicFields) return true;
+      return initialSemanticKeys.has(fieldSemanticKey(field)) ||
+        blueprintsByFallback.has(fieldBlueprintFallbackKey(field)) ||
+        Boolean(field.fingerprint && blueprintsByFingerprint.has(field.fingerprint));
+    };
+
+    if (options.repeatCounts && Object.values(options.repeatCounts).some((count) => Number(count) > 0)) {
+      const ensured = await ensureRepeatableEntries(options.repeatCounts, scanApplicationForm(), options.repeatPlan);
+      finalFields = ensured.scan.fields.map(hydrateField);
     }
+
+    sendFillProgress({ stage: "started", current: 0, total: initialItems.length });
+    let roundItems = initialItems;
+    let previousSignature = roundItems.map(fieldTrackingKey).join("|");
+
+    for (let round = 0; round < maxRounds; round += 1) {
+      rounds = round + 1;
+      let attemptedThisRound = 0;
+      let filledThisRound = 0;
+      const items = roundItems.map(hydrateField);
+      for (const field of items) {
+        const trackingKey = fieldTrackingKey(field);
+        const value = valueForField(field);
+        const attempts = attemptsByField.get(trackingKey) || 0;
+        const base = {
+          id: field.id,
+          fingerprint: field.fingerprint,
+          label: field.label,
+          key: field.key,
+          expectedValue: value ? String(value) : undefined,
+          attempts
+        };
+        if (!field.key || !value) {
+          if (round === 0) {
+            await publishField(field, {
+              ...base,
+              status: field.key ? "missing" : "skipped",
+              reason: field.key ? "个人资料未填写" : "未匹配到资料字段"
+            }, items.length);
+          }
+          continue;
+        }
+        if (attempts >= 2) continue;
+        const element = resolveFieldElement(field);
+        if (filledFields.has(trackingKey) && element && controlValueMatches(readControlValue(element), value)) continue;
+        if (filledFields.has(trackingKey)) filledFields.delete(trackingKey);
+        if (!element) {
+          attemptsByField.set(trackingKey, attempts + 1);
+          await publishField(field, { ...base, attempts: attempts + 1, status: "failed", reason: "页面控件已变化，等待重新识别" }, items.length);
+          attemptedThisRound += 1;
+          continue;
+        }
+        try {
+          attemptedThisRound += 1;
+          attemptsByField.set(trackingKey, attempts + 1);
+          const written = await setNativeValue(element, String(value));
+          const driverResult = formControlDrivers?.lastResult?.(element);
+          await nextFrame();
+          const shouldCommit = field.type === "custom-select" || field.type === "combobox" || field.type === "cascader" ||
+            element.getAttribute?.("role") === "combobox" || Boolean(element.closest?.("[class*='picker'],[class*='cascader']"));
+          let commitResult;
+          if (written && shouldCommit && formRuntime?.commitOpenControl) {
+            commitResult = await formRuntime.commitOpenControl(element, { click: clickControlInUserOrder, wait: controlInteractionWait });
+            await nextFrame();
+          }
+          const actualValue = readControlValue(element);
+          const verified = written && controlValueMatches(actualValue, value);
+          if (verified) {
+            filledFields.add(trackingKey);
+            filledThisRound += 1;
+          }
+          await publishField(field, {
+            ...base,
+            attempts: attempts + 1,
+            status: verified ? "filled" : "failed",
+            actualValue,
+            controlDriver: driverResult?.driver,
+            commitMethod: commitResult?.method && commitResult.method !== "none"
+              ? commitResult.method
+              : driverResult?.commitMethod,
+            reason: verified ? undefined : "写入或确认后回读值不一致"
+          }, items.length);
+        } catch (error) {
+          await publishField(field, {
+            ...base,
+            attempts: attempts + 1,
+            status: "failed",
+            reason: error instanceof Error ? error.message : "控件不支持写入"
+          }, items.length);
+        }
+      }
+
+      await dismissAllAtsxSelects();
+      await dismissAllAntSelects();
+      if (round + 1 >= maxRounds) break;
+      if (formRuntime?.waitForDomSettled) await formRuntime.waitForDomSettled({ quietMs: 140, maxMs: 850 });
+      else await sleep(140);
+      const nextScan = scanApplicationForm();
+      finalFields = nextScan.fields.map(hydrateField);
+      rescanned = true;
+      const nextSignature = finalFields.map(fieldTrackingKey).join("|");
+      roundItems = finalFields.filter((field) => {
+        if (!isEligibleDynamicField(field)) return false;
+        const value = valueForField(field);
+        if (!value) return false;
+        const trackingKey = fieldTrackingKey(field);
+        if ((attemptsByField.get(trackingKey) || 0) >= 2) return false;
+        const element = resolveFieldElement(field);
+        if (element && controlValueMatches(readControlValue(element), value)) {
+          filledFields.add(trackingKey);
+          return false;
+        }
+        return true;
+      });
+      if (!roundItems.length) break;
+      if (nextSignature === previousSignature && attemptedThisRound === 0) break;
+      if (nextSignature === previousSignature && filledThisRound === 0 && round > 0) break;
+      previousSignature = nextSignature;
+    }
+
+    const results = Array.from(resultsByField.values());
     const filled = results.filter((result) => result.status === "filled").length;
-    sendFillProgress({ stage: "done", current: total, total, filled });
+    sendFillProgress({ stage: "done", current: processed, total: Math.max(initialItems.length, processed), filled });
     return {
       filled,
-      results
+      results,
+      rounds,
+      rescanned,
+      finalFields
     };
   };
 
-  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  const handleRuntimeMessage = (message, _sender, sendResponse) => {
     if (!message) return;
     if (message.type === "OFFERFLOW_TOGGLE_OVERLAY") {
       const existing = document.getElementById("offerflow-overlay-host");
@@ -2159,13 +3532,21 @@
       return;
     }
 
-    if (message.type === "OFFERFLOW_SCAN_APPLICATION_FORM") {
+    if (
+      message.type === "OFFERFLOW_SCAN_APPLICATION_FORM" ||
+      message.type === "OFFERFLOW_SCAN_APPLICATION_FORM_V2"
+    ) {
       Promise.resolve(window.OfferFlowFormAdapters?.ready)
         .then(async () => {
           try {
             const initialScan = scanApplicationForm();
-            const ensured = await ensureRepeatableEntries(message.repeatCounts || {}, initialScan);
-            sendResponse({ ok: true, ...ensured.scan, repeatersExpanded: ensured.changed });
+            const ensured = await ensureRepeatableEntries(message.repeatCounts || {}, initialScan, message.repeatPlan || {});
+            sendResponse({
+              ok: true,
+              ...ensured.scan,
+              repeatersExpanded: ensured.changed,
+              runtimeVersion: OFFERFLOW_CONTENT_RUNTIME_VERSION
+            });
           } catch (error) {
             sendResponse({ ok: false, error: error instanceof Error ? error.message : "表单识别失败" });
           }
@@ -2176,12 +3557,20 @@
       return true;
     }
 
-    if (message.type === "OFFERFLOW_FILL_APPLICATION_FORM") {
+    if (
+      message.type === "OFFERFLOW_FILL_APPLICATION_FORM" ||
+      message.type === "OFFERFLOW_FILL_APPLICATION_FORM_V2"
+    ) {
       fillApplicationForm(message.fields || [], message.values || {}, {
         delayMs: message.delayMs,
-        fieldValues: message.fieldValues || {}
+        fieldValues: message.fieldValues || {},
+        profileSnapshots: message.profileSnapshots || [],
+        repeatCounts: message.repeatCounts || {},
+        repeatPlan: message.repeatPlan || {},
+        maxRounds: message.maxRounds,
+        fillDynamicFields: message.fillDynamicFields === true
       })
-        .then((report) => sendResponse({ ok: true, ...report }))
+        .then((report) => sendResponse({ ok: true, ...report, runtimeVersion: OFFERFLOW_CONTENT_RUNTIME_VERSION }))
         .catch((error) => {
           sendResponse({ ok: false, error: error instanceof Error ? error.message : "表单填写失败" });
         });
@@ -2197,13 +3586,15 @@
         error: error instanceof Error ? error.message : "页面解析失败"
       });
     }
-  });
+  };
+  chrome.runtime.onMessage.addListener(handleRuntimeMessage);
 
-  window.addEventListener("message", (event) => {
+  const handleWindowMessage = (event) => {
     if (event.data?.type === "OFFERFLOW_CLOSE_OVERLAY") {
       document.getElementById("offerflow-overlay-host")?.remove();
     }
-  });
+  };
+  window.addEventListener("message", handleWindowMessage);
 
   let lastProgressSignature = "";
   let monitorTimer;
@@ -2268,4 +3659,18 @@
 
   // Initial silent sync after SPA content has had time to render.
   scheduleProgressCheck(2600);
+
+  globalThis.__offerflowContentCleanup = () => {
+    clearTimeout(monitorTimer);
+    observer.disconnect();
+    window.removeEventListener("message", handleWindowMessage);
+    try {
+      chrome.runtime.onMessage.removeListener(handleRuntimeMessage);
+    } catch {
+      // Expected when an unpacked extension was reloaded on an existing tab.
+    }
+    if (globalThis.__offerflowContentRuntimeSession === contentSession) {
+      delete globalThis.__offerflowContentRuntimeSession;
+    }
+  };
 })();

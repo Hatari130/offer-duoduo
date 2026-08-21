@@ -209,7 +209,7 @@ test("opportunity catalogue is public and accepts extension snapshots", async (t
     cities: ["成都"],
     officialUrl: "https://example.com/apply",
     sourceUrl: "https://example.com/notice",
-    sourceName: "飞书表格 · 2026 秋招"
+    sourceName: "Campus Hiring 公开数据"
   };
   const synced = await jsonRequest(app.baseUrl, "/v1/opportunities/sync", {
     method: "POST",
@@ -217,7 +217,7 @@ test("opportunity catalogue is public and accepts extension snapshots", async (t
     body: JSON.stringify({
       opportunities: [opportunity],
       fetchedAt: "2026-08-08T10:00:00.000Z",
-      sourceUrl: "https://feishu.cn/wiki/source"
+      sourceUrl: "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json"
     })
   });
   assert.equal(synced.response.status, 200);

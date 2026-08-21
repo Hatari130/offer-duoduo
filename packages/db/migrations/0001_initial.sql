@@ -78,7 +78,7 @@ CREATE TABLE opportunity_sources (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name text NOT NULL,
   source_type text NOT NULL
-    CHECK (source_type IN ('feishu', 'official_site', 'json', 'manual')),
+    CHECK (source_type IN ('official_site', 'json', 'manual')),
   source_url text,
   enabled boolean NOT NULL DEFAULT true,
   configuration jsonb NOT NULL DEFAULT '{}'::jsonb,

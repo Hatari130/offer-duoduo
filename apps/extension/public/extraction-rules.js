@@ -5,7 +5,7 @@
   const terminalPattern = /不通过|未通过|不合适|淘汰|流程终止|流程结束|已结束|拒绝|未录用|已撤回/i;
   const processOnlyPattern = /^(?:(?:简历|网申|在线|AI|人才|资格|视频|业务|主管|薪酬|录用|Offer)?(?:投递|提交|筛选|初筛|复筛|评估|审核|测评|笔试|面试|一面|二面|三面|HR面|群面|终面|沟通|背调|背景调查|体检|签约|审批|发放|意向书|Offer评估|Offer|录用|入职)(?:简历|申请)?(?:中|完成|通过|不通过|结果|待定)?|等待.{0,10}(?:筛选|评估|审核|面试|笔试|测评|背调|体检|审批|结果)|待(?:筛选|评估|审核|面试|笔试|测评|背调|体检|签约|审批|入职)|未通过|不合适|淘汰|流程终止|已结束|拒绝|未录用|已撤回)$/i;
   const processCombinationPattern = /^(?:AI面试|简历投递|投递简历|提交简历|简历初筛|简历筛选|简历复筛|简历评估|简历审核|资格审核|在线测评|人才测评|Offer评估)(?:中|完成|通过|不通过|结果)?$/i;
-  const nonPositionPattern = /^(?:职位|岗位|职位名称|岗位名称|所属部门|申请日期|申请编号|投递时间|申请时间|工作地点|城市|状态|详情|操作|刷新活跃度|网申投递|专场招聘会投递|我的简历|首页|投递记录|申请记录|我的申请|校园招聘|社会招聘|实习生招聘|招聘门户|招聘首页|编辑|返回|没有更多了|登录|注册|暂存投递)$/i;
+  const nonPositionPattern = /^(?:职位|岗位|职位名称|岗位名称|所属部门|申请日期|申请编号|投递时间|申请时间|工作地点|城市|状态|详情|操作|刷新活跃度|网申投递|专场招聘会投递|我的简历|首页|应聘记录|投递记录|申请记录|我的申请|校园招聘|社会招聘|实习生招聘|招聘门户|招聘首页|编辑|返回|没有更多了|登录|注册|暂存投递)$/i;
   const metadataPattern = /^(?:20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?|\d{8,16}|[A-Z]\d{5,})$/i;
   const campaignPattern = /(?:校园招聘|社会招聘|实习生招聘|招聘官网|招聘平台|招聘门户|招聘首页|招聘计划|实习生计划|管培计划|专项计划|专场招聘|招聘项目|\d{4}届(?:实习生|应届生|校招生)|JD\s*YOUNG)/i;
 
@@ -62,6 +62,33 @@
   ];
 
   const platformAdapters = [
+    {
+      id: "feishu-jobs",
+      hostPattern: /(?:^|\.)jobs\.feishu\.cn$/i,
+      defaultCompany: "",
+      positionSelectors: [
+        '[class*="position-title"]',
+        '[class*="positionTitle"]',
+        '[class*="position-name"]',
+        '[class*="positionName"]',
+        '[class*="job-title"]',
+        '[class*="jobTitle"]',
+        "h1",
+        "h2",
+        "h3",
+        "h4"
+      ],
+      cardSelectors: [
+        '[class*="application-item"]',
+        '[class*="applicationItem"]',
+        '[class*="position-item"]',
+        '[class*="positionItem"]',
+        '[class*="job-card"]',
+        '[class*="jobCard"]'
+      ],
+      sectionCompany: false,
+      numericApplicationIds: false
+    },
     {
       id: "jd",
       hostPattern: /(?:^|\.)jd\.com$/i,

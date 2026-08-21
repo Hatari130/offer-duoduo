@@ -4,4 +4,6 @@ export * from "./api.ts";
 export * from "./autofill.ts";
 export * from "./chat.ts";
 export * from "./common.ts";
+export * from "./interviews.ts";
 export * from "./opportunities.ts";
+export * from "./resumes.ts";

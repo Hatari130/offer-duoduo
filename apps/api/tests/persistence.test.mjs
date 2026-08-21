@@ -41,6 +41,21 @@ test("MemoryStore survives a simulated restart through its data file", () => {
       changes: [sampleChange()]
     });
     assert.equal(uploaded.acceptedChangeIds.length, 1);
+    const interview = first.createInterviewRecord(user.id, "persisted-application", {
+      title: "一面复盘",
+      sourceType: "transcript",
+      transcript: "面试官：为什么选择这个岗位？\n候选人：岗位和我的项目经验匹配。"
+    });
+    first.completeInterviewRecord(user.id, interview.id, interview.transcript, [{
+      id: "persisted-qa",
+      question: "为什么选择这个岗位？",
+      answer: "岗位和我的项目经验匹配。",
+      order: 1
+    }]);
+    const interrupted = first.createInterviewRecord(user.id, "persisted-application", {
+      title: "处理中录音",
+      sourceType: "audio"
+    });
 
     // A new store over the same file behaves like the API after a restart:
     // users, applications, revisions and the sync cursor all come back.
@@ -56,6 +71,12 @@ test("MemoryStore survives a simulated restart through its data file", () => {
     assert.equal(restored[0].application.externalStage, "简历初筛");
     assert.equal(restored[0].application.appliedAt, "2026-08-08 19:03");
     assert.equal(restored[0].revision, 1);
+    const interviewRecords = restarted.listInterviewRecords(user.id, "persisted-application");
+    assert.equal(interviewRecords.length, 2);
+    assert.equal(interviewRecords.find((record) => record.id === interview.id)?.qaPairs.length, 1);
+    const interruptedAfterRestart = interviewRecords.find((record) => record.id === interrupted.id);
+    assert.equal(interruptedAfterRestart?.status, "failed");
+    assert.match(interruptedAfterRestart?.error, /服务重启/);
 
     const pull = restarted.syncApplications(user.id, {
       deviceId: "device-1",

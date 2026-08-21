@@ -16,7 +16,7 @@ The architecture follows four rules:
 ## System boundary
 
 ```text
-Official sites / Feishu / manual admin
+Public JSON / official sites / manual admin
                   |
                   v
               apps/api  <--------> PostgreSQL
@@ -69,7 +69,7 @@ Server-only boundary for:
 - profiles and applications;
 - opportunity catalogue queries;
 - extension synchronization;
-- Feishu/official-site imports;
+- public JSON/official-site imports;
 - platform-owned AI requests;
 - database transactions.
 

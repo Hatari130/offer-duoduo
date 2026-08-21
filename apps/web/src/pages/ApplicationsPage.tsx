@@ -1,26 +1,33 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { ApplicationSyncItem } from "@offerflow/contracts";
 import {
+  inferRecruitmentType,
+  RECRUITMENT_TYPES,
+  RECRUITMENT_TYPE_LABELS,
   STAGES,
   STAGE_LABELS,
   type ApplicationStage,
-  type JobApplication
+  type JobApplication,
+  type RecruitmentType
 } from "@offerflow/domain";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
   CalendarClock,
   Columns3,
+  FileText,
   ListFilter,
   MapPin,
+  MessageCircleQuestion,
   Plus,
-  RefreshCw,
   Search,
   Star,
   Table2,
   X
 } from "lucide-react";
 import { api } from "../app/api";
+import { navigate, startUiTransition } from "../app/router";
+import { InterviewRecordsDialog } from "../features/applications/InterviewRecordsDialog";
 
 type ViewMode = "table" | "board";
 
@@ -30,11 +37,6 @@ function sourceHost(value: string): string {
   } catch {
     return "manual";
   }
-}
-
-function dateLabel(value?: string): string {
-  if (!value) return "未设置";
-  return new Intl.DateTimeFormat("zh-CN", { month: "2-digit", day: "2-digit" }).format(new Date(value));
 }
 
 function appliedAtLabel(value?: string): string {
@@ -56,6 +58,15 @@ function stageTone(stage: ApplicationStage): string {
   return "default";
 }
 
+function applicationRecruitmentType(application: JobApplication): RecruitmentType | undefined {
+  return application.recruitmentType || inferRecruitmentType(
+    application.position,
+    application.jobType,
+    application.summary,
+    application.rawExcerpt
+  );
+}
+
 export function ApplicationsPage() {
   const [items, setItems] = useState<ApplicationSyncItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -65,6 +76,7 @@ export function ApplicationsPage() {
   const [stage, setStage] = useState<"all" | ApplicationStage>("all");
   const [view, setView] = useState<ViewMode>("table");
   const [dialog, setDialog] = useState<{ mode: "create" } | { mode: "edit"; item: ApplicationSyncItem }>();
+  const [interviewDialog, setInterviewDialog] = useState<ApplicationSyncItem>();
 
   const load = useCallback((options: { silent?: boolean } = {}) => {
     if (!options.silent) setLoading(true);
@@ -92,7 +104,8 @@ export function ApplicationsPage() {
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
     return items.filter(({ application }) => {
-      const matchQuery = !normalized || `${application.company} ${application.position} ${application.city || ""}`.toLowerCase().includes(normalized);
+      const recruitmentType = applicationRecruitmentType(application);
+      const matchQuery = !normalized || `${application.company} ${application.position} ${application.city || ""} ${recruitmentType ? RECRUITMENT_TYPE_LABELS[recruitmentType] : ""}`.toLowerCase().includes(normalized);
       return matchQuery && (stage === "all" || application.stage === stage);
     });
   }, [items, query, stage]);
@@ -104,7 +117,6 @@ export function ApplicationsPage() {
         ? current.map((entry) => entry.application.id === item.application.id ? item : entry)
         : [item, ...current];
     });
-    setDialog(undefined);
     setStatus("投递记录已保存");
   };
 
@@ -140,6 +152,23 @@ export function ApplicationsPage() {
     });
   };
 
+  const changeRecruitmentType = (
+    item: ApplicationSyncItem,
+    recruitmentType: RecruitmentType | undefined
+  ) => {
+    if (item.application.recruitmentType === recruitmentType) return;
+    void mutate(item, {
+      ...item.application,
+      recruitmentType,
+      updatedAt: new Date().toISOString()
+    });
+  };
+
+  const selectView = (nextView: ViewMode) => {
+    if (view === nextView) return;
+    startUiTransition(() => setView(nextView), "application-view");
+  };
+
   const activeCount = items.filter((item) => !["closed", "offer"].includes(item.application.stage)).length;
   const interviewCount = items.filter((item) => item.application.stage === "interview").length;
   const offerCount = items.filter((item) => item.application.stage === "offer").length;
@@ -148,9 +177,9 @@ export function ApplicationsPage() {
     <section className="data-page applications-page">
       <header className="page-header application-heading">
         <div>
-          <span className="page-kicker"><BriefcaseBusiness aria-hidden="true" size={14} />APPLICATION DESK</span>
+          <span className="page-kicker"><BriefcaseBusiness aria-hidden="true" size={14} />投递工作台</span>
           <h1 tabIndex={-1}>个人投递管理</h1>
-          <p>把每一次投递变成清晰的下一步，而不是散落在标签页里的记忆。</p>
+          <p>把每次面试沉淀为可回看的问答与复盘，让准备过程持续积累。</p>
         </div>
         <button className="primary-button" type="button" onClick={() => setDialog({ mode: "create" })}>
           <Plus aria-hidden="true" size={17} />添加投递
@@ -163,7 +192,7 @@ export function ApplicationsPage() {
         <div className="metric-featured"><span>收到 Offer</span><strong>{offerCount}</strong><small>阶段成果</small></div>
       </div>
 
-      <div className="data-toolbar application-toolbar">
+      <div className="data-toolbar application-toolbar" data-view={view}>
         <label className="search-control">
           <span className="sr-only">搜索投递记录</span>
           <Search aria-hidden="true" size={17} />
@@ -178,19 +207,20 @@ export function ApplicationsPage() {
           </select>
         </label>
         <div className="view-switch" aria-label="显示方式">
-          <button type="button" aria-pressed={view === "table"} onClick={() => setView("table")}><Table2 aria-hidden="true" size={16} />表格</button>
-          <button type="button" aria-pressed={view === "board"} onClick={() => setView("board")}><Columns3 aria-hidden="true" size={16} />看板</button>
+          <button type="button" aria-pressed={view === "table"} onClick={() => selectView("table")}><Table2 aria-hidden="true" size={16} />表格</button>
+          <button type="button" aria-pressed={view === "board"} onClick={() => selectView("board")}><Columns3 aria-hidden="true" size={16} />看板</button>
         </div>
       </div>
 
       <div className="page-announcer" role={error ? "alert" : "status"}>{error || status}</div>
 
-      {loading ? (
+      <div className="application-view-content" data-view={view}>
+        {loading ? (
         <div className="data-loading" role="status"><span className="loading-orbit" />正在同步投递记录…</div>
       ) : items.length === 0 ? (
         <div className="application-empty">
           <div className="empty-stack" aria-hidden="true"><i /><i /><span><BriefcaseBusiness size={27} /></span></div>
-          <span className="page-kicker">YOUR FIRST APPLICATION</span>
+          <span className="page-kicker">第一条投递</span>
           <h2>从第一条投递开始建立节奏</h2>
           <p>你可以在这里手动添加，也可以在浏览器插件抓取岗位后自动同步。</p>
           <button className="primary-button" type="button" onClick={() => setDialog({ mode: "create" })}><Plus aria-hidden="true" size={17} />添加第一条投递</button>
@@ -201,18 +231,19 @@ export function ApplicationsPage() {
         <div className="application-table-wrap">
           <table className="data-table application-table">
             <caption className="sr-only">个人投递记录</caption>
-            <thead><tr><th>公司与岗位</th><th>当前阶段</th><th>投递时间</th><th>地点</th><th>截止 / 下一步</th><th><span className="sr-only">操作</span></th></tr></thead>
+            <thead><tr><th>公司与岗位</th><th>岗位类型</th><th>当前阶段</th><th>投递时间</th><th>地点</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
             <tbody>
               {filtered.map((item) => {
                 const application = item.application;
                 return (
                   <tr key={application.id}>
-                    <td><button className="application-title" type="button" onClick={() => setDialog({ mode: "edit", item })}><strong>{application.company}</strong><span>{application.position}</span></button></td>
-                    <td><div className="stage-cell"><select className={`stage-select stage-select--${stageTone(application.stage)}`} aria-label={`更新 ${application.company} ${application.position} 的阶段`} value={application.stage} onChange={(event) => changeStage(item, event.target.value as ApplicationStage)}>{STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}</select>{application.externalStage && <small className="external-stage">网站进度：{application.externalStage}</small>}</div></td>
-                    <td><span className="cell-icon"><CalendarClock aria-hidden="true" size={14} />{appliedAtLabel(application.appliedAt)}</span></td>
-                    <td><span className="cell-icon"><MapPin aria-hidden="true" size={14} />{application.city || "未填写"}</span></td>
-                    <td><div className="next-action-cell"><span><CalendarClock aria-hidden="true" size={14} />{dateLabel(application.deadline)}</span><small>{application.nextAction || "补充下一步行动"}</small></div></td>
-                    <td><div className="row-actions"><button type="button" aria-label={application.isFavorite ? "取消收藏" : "收藏投递"} onClick={() => void mutate(item, { ...application, isFavorite: !application.isFavorite, updatedAt: new Date().toISOString() })}><Star aria-hidden="true" size={17} fill={application.isFavorite ? "currentColor" : "none"} /></button>{application.sourceUrl && application.sourceHost !== "manual" && <a href={application.sourceUrl} target="_blank" rel="noreferrer" aria-label={`打开 ${application.position} 来源页面`}><ArrowUpRight aria-hidden="true" size={17} /></a>}</div></td>
+                    <td data-label="公司与岗位"><button className="application-title" type="button" onClick={() => setDialog({ mode: "edit", item })}><strong>{application.company}</strong><span>{application.position}</span>{application.tailoredResumeName && <small>已关联定制简历</small>}</button></td>
+                    <td data-label="岗位类型"><select className="recruitment-type-select" aria-label={`更新 ${application.company} ${application.position} 的岗位类型`} value={applicationRecruitmentType(application) || ""} onChange={(event) => changeRecruitmentType(item, (event.target.value || undefined) as RecruitmentType | undefined)}><option value="">未识别</option>{RECRUITMENT_TYPES.map((value) => <option value={value} key={value}>{RECRUITMENT_TYPE_LABELS[value]}</option>)}</select></td>
+                    <td data-label="当前阶段"><div className="stage-cell"><select className={`stage-select stage-select--${stageTone(application.stage)}`} aria-label={`更新 ${application.company} ${application.position} 的阶段`} value={application.stage} onChange={(event) => changeStage(item, event.target.value as ApplicationStage)}>{STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}</select>{application.externalStage && <small className="external-stage">网站进度：{application.externalStage}</small>}</div></td>
+                    <td data-label="投递时间"><span className="cell-icon"><CalendarClock aria-hidden="true" size={14} />{appliedAtLabel(application.appliedAt)}</span></td>
+                    <td data-label="地点"><span className="cell-icon"><MapPin aria-hidden="true" size={14} />{application.city || "未填写"}</span></td>
+                    <td data-label="面试记录"><button className="interview-record-entry" type="button" onClick={() => setInterviewDialog(item)}><span><MessageCircleQuestion aria-hidden="true" size={15} />面试问答记录</span><small>上传录音或文字稿</small></button></td>
+                    <td data-label="快捷操作"><div className="row-actions"><button type="button" aria-label={application.isFavorite ? "取消收藏" : "收藏投递"} onClick={() => void mutate(item, { ...application, isFavorite: !application.isFavorite, updatedAt: new Date().toISOString() })}><Star aria-hidden="true" size={17} fill={application.isFavorite ? "currentColor" : "none"} /></button>{application.tailorTaskId && <button type="button" aria-label={`打开 ${application.company} 的定制简历`} onClick={() => navigate(`/app/resumes/tailor/${encodeURIComponent(application.tailorTaskId!)}`)}><FileText aria-hidden="true" size={17} /></button>}{application.sourceUrl && application.sourceHost !== "manual" && <a href={application.sourceUrl} target="_blank" rel="noreferrer" aria-label={`打开 ${application.position} 来源页面`}><ArrowUpRight aria-hidden="true" size={17} /></a>}</div></td>
                   </tr>
                 );
               })}
@@ -220,33 +251,53 @@ export function ApplicationsPage() {
           </table>
         </div>
       ) : (
-        <div className="application-board">
-          {STAGES.map((stageKey) => {
+        <>
+          <div className="mobile-stage-tabs" aria-label="按阶段查看看板">
+            <button type="button" aria-pressed={stage === "all"} onClick={() => setStage("all")}>全部</button>
+            {STAGES.map((stageKey) => (
+              <button type="button" key={stageKey} aria-pressed={stage === stageKey} onClick={() => setStage(stageKey)}>
+                {STAGE_LABELS[stageKey]}
+              </button>
+            ))}
+          </div>
+          <div className="application-board">
+          {STAGES.filter((stageKey) => stage === "all" || stageKey === stage).map((stageKey) => {
             const stageItems = filtered.filter((item) => item.application.stage === stageKey);
             return (
               <section className="board-column" key={stageKey}>
                 <header><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></header>
                 <div>
                   {stageItems.map((item) => (
-                    <button className="board-card" type="button" key={item.application.id} onClick={() => setDialog({ mode: "edit", item })}>
-                      <span>{item.application.company}</span><strong>{item.application.position}</strong><small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
-                    </button>
+                    <article className="board-card" key={item.application.id}>
+                      <button className="board-card-main" type="button" onClick={() => setDialog({ mode: "edit", item })}>
+                        <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em><small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
+                      </button>
+                      <button className="board-interview-entry" type="button" onClick={() => setInterviewDialog(item)}><MessageCircleQuestion aria-hidden="true" size={14} /><span>面试问答记录</span></button>
+                    </article>
                   ))}
                   {!stageItems.length && <span className="board-empty">暂无记录</span>}
                 </div>
               </section>
             );
           })}
-        </div>
-      )}
+          </div>
+        </>
+        )}
+      </div>
 
       {dialog && (
         <ApplicationDialog
           item={dialog.mode === "edit" ? dialog.item : undefined}
           onClose={() => setDialog(undefined)}
           onSaved={saveItem}
-          onDeleted={(id) => { setItems((current) => current.filter((item) => item.application.id !== id)); setDialog(undefined); setStatus("投递记录已删除"); }}
+          onDeleted={(id) => { setItems((current) => current.filter((item) => item.application.id !== id)); setStatus("投递记录已删除"); }}
           onError={setError}
+        />
+      )}
+      {interviewDialog && (
+        <InterviewRecordsDialog
+          item={interviewDialog}
+          onClose={() => setInterviewDialog(undefined)}
         />
       )}
     </section>
@@ -270,16 +321,57 @@ function ApplicationDialog({
   const [company, setCompany] = useState(item?.application.company || "");
   const [position, setPosition] = useState(item?.application.position || "");
   const [city, setCity] = useState(item?.application.city || "");
+  const [recruitmentType, setRecruitmentType] = useState<RecruitmentType | "">(
+    item ? applicationRecruitmentType(item.application) || "" : ""
+  );
   const [stage, setStage] = useState<ApplicationStage>(item?.application.stage || "to_apply");
-  const [deadline, setDeadline] = useState(item?.application.deadline?.slice(0, 10) || "");
   const [appliedAt, setAppliedAt] = useState(
     item?.application.appliedAt?.slice(0, 16).replace(" ", "T") || ""
   );
-  const [nextAction, setNextAction] = useState(item?.application.nextAction || "");
   const [sourceUrl, setSourceUrl] = useState(item?.application.sourceHost === "manual" ? "" : item?.application.sourceUrl || "");
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState("");
+  const [dialogPhase, setDialogPhase] = useState<"opening" | "open" | "closing">("opening");
   const companyRef = useRef<HTMLInputElement>(null);
+  const closeTimerRef = useRef<number>();
+  const dialogPhaseRef = useRef(dialogPhase);
+  const closeCompletedRef = useRef(false);
+  const onCloseRef = useRef(onClose);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
+
+  const finishClose = useCallback(() => {
+    if (closeCompletedRef.current) return;
+    closeCompletedRef.current = true;
+    if (closeTimerRef.current !== undefined) window.clearTimeout(closeTimerRef.current);
+    onCloseRef.current();
+  }, []);
+
+  const requestClose = useCallback(() => {
+    if (dialogPhaseRef.current === "closing") return;
+    dialogPhaseRef.current = "closing";
+    if (window.matchMedia?.("(prefers-reduced-motion: reduce)").matches) {
+      finishClose();
+      return;
+    }
+    setDialogPhase("closing");
+    closeTimerRef.current = window.setTimeout(finishClose, 220);
+  }, [finishClose]);
+
+  useEffect(() => {
+    const frame = window.requestAnimationFrame(() => {
+      if (dialogPhaseRef.current !== "opening") return;
+      dialogPhaseRef.current = "open";
+      setDialogPhase("open");
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, []);
+
+  useEffect(() => () => {
+    if (closeTimerRef.current !== undefined) window.clearTimeout(closeTimerRef.current);
+  }, []);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -294,7 +386,7 @@ function ApplicationDialog({
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
         event.preventDefault();
-        onClose();
+        requestClose();
         return;
       }
       if (event.key !== "Tab") return;
@@ -320,9 +412,10 @@ function ApplicationDialog({
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
       document.body.style.overflow = previousOverflow;
-      previouslyFocused?.focus();
+      if (previouslyFocused?.isConnected) previouslyFocused.focus();
+      else document.querySelector<HTMLElement>("#main-content h1")?.focus();
     };
-  }, [onClose]);
+  }, [requestClose]);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -342,10 +435,9 @@ function ApplicationDialog({
           company: company.trim(),
           position: position.trim(),
           city: city.trim() || undefined,
+          recruitmentType: recruitmentType || undefined,
           stage,
           appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
-          deadline: deadline || undefined,
-          nextAction: nextAction.trim() || undefined,
           sourceUrl: url,
           sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
           updatedAt: now,
@@ -359,10 +451,9 @@ function ApplicationDialog({
           company: company.trim(),
           position: position.trim(),
           city: city.trim() || undefined,
+          recruitmentType: recruitmentType || undefined,
           stage,
           appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
-          deadline: deadline || undefined,
-          nextAction: nextAction.trim() || undefined,
           sourceUrl: url,
           sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
           responsibilities: [],
@@ -377,6 +468,7 @@ function ApplicationDialog({
         ? await api.applications.update(application.id, { application, expectedRevision: item.revision })
         : await api.applications.create({ application });
       onSaved(result.item);
+      requestClose();
     } catch (requestError) {
       const message = requestError instanceof Error ? requestError.message : "无法保存投递记录";
       setFormError(message);
@@ -392,6 +484,7 @@ function ApplicationDialog({
     try {
       await api.applications.remove(item.application.id, item.revision);
       onDeleted(item.application.id);
+      requestClose();
     } catch (requestError) {
       const message = requestError instanceof Error ? requestError.message : "无法删除投递记录";
       setFormError(message);
@@ -403,9 +496,9 @@ function ApplicationDialog({
 
   return (
     <div
-      className="application-dialog-backdrop"
+      className={`application-dialog-backdrop is-${dialogPhase}`}
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) requestClose();
       }}
     >
       <div
@@ -415,21 +508,25 @@ function ApplicationDialog({
         aria-modal="true"
         aria-labelledby="application-dialog-title"
         tabIndex={-1}
+        onTransitionEnd={(event) => {
+          if (dialogPhase === "closing" && event.target === event.currentTarget && event.propertyName === "transform") {
+            finishClose();
+          }
+        }}
       >
       <form onSubmit={submit} noValidate>
-        <header><div><span className="page-kicker">{item ? "EDIT APPLICATION" : "NEW APPLICATION"}</span><h2 id="application-dialog-title">{item ? "更新投递信息" : "添加一条投递"}</h2></div><button type="button" aria-label="关闭" onClick={onClose}><X aria-hidden="true" size={19} /></button></header>
+        <header><div><span className="page-kicker">{item ? "编辑投递" : "新建投递"}</span><h2 id="application-dialog-title">{item ? "更新投递信息" : "添加一条投递"}</h2></div><button type="button" aria-label="关闭" onClick={requestClose}><X aria-hidden="true" size={19} /></button></header>
         <div className="dialog-fields">
           <label><span>公司</span><input ref={companyRef} value={company} onChange={(event) => setCompany(event.target.value)} autoComplete="organization" placeholder="例如：字节跳动" /></label>
           <label><span>岗位</span><input value={position} onChange={(event) => setPosition(event.target.value)} placeholder="例如：产品经理" /></label>
+          <label><span>岗位类型</span><select value={recruitmentType} onChange={(event) => setRecruitmentType(event.target.value as RecruitmentType | "")}><option value="">未识别 / 待选择</option>{RECRUITMENT_TYPES.map((value) => <option value={value} key={value}>{RECRUITMENT_TYPE_LABELS[value]}</option>)}</select></label>
           <label><span>城市</span><input value={city} onChange={(event) => setCity(event.target.value)} placeholder="例如：上海" /></label>
           <label><span>当前阶段</span><select value={stage} onChange={(event) => setStage(event.target.value as ApplicationStage)}>{STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}</select>{item?.application.externalStage && <small className="dialog-note">网站进度：{item.application.externalStage}</small>}</label>
           <label><span>投递时间</span><input type="datetime-local" value={appliedAt} onChange={(event) => setAppliedAt(event.target.value)} /></label>
-          <label><span>截止时间</span><input type="date" value={deadline} onChange={(event) => setDeadline(event.target.value)} /></label>
-          <label><span>下一步行动</span><input value={nextAction} onChange={(event) => setNextAction(event.target.value)} placeholder="例如：周三前完成笔试" /></label>
           <label className="field-wide"><span>岗位来源链接</span><input type="url" inputMode="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://careers.example.com/job/123" /></label>
         </div>
         <div className="dialog-error" role={formError ? "alert" : undefined}>{formError}</div>
-        <footer>{item ? <button className="danger-button" type="button" onClick={() => void remove()} disabled={busy}>删除投递</button> : <span />}<div><button className="secondary-button" type="button" onClick={onClose}>取消</button><button className="primary-button" type="submit" disabled={busy}>{busy ? "正在保存…" : "保存投递"}</button></div></footer>
+        <footer>{item ? <button className="danger-button" type="button" onClick={() => void remove()} disabled={busy}>删除投递</button> : <span />}<div><button className="secondary-button" type="button" onClick={requestClose}>取消</button><button className="primary-button" type="submit" disabled={busy}>{busy ? "正在保存…" : "保存投递"}</button></div></footer>
       </form>
       </div>
     </div>
