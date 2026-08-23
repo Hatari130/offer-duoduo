@@ -94,7 +94,7 @@ async function updateProgressFromPage(
   pageData: ExtractedJob
 ): Promise<void> {
   if (isProcessed(tabId, signature)) return;
-  // Never auto-update jobs from the OfferFlow web app itself: its stage
+  // Never auto-update jobs from the JobKoI web app itself: its stage
   // selects contain “已结束” options which would close records in a loop.
   if (isOfferFlowWebOrigin(pageData.sourceUrl)) return;
   const settings = await loadSettings();
@@ -214,7 +214,7 @@ async function syncCloudInBackground(): Promise<void> {
   try {
     await runCloudSync();
   } catch (error) {
-    console.warn("OfferFlow cloud sync failed", error);
+    console.warn("JobKoI cloud sync failed", error);
   }
 }
 
@@ -234,12 +234,11 @@ async function syncOpportunityFeedInBackground(): Promise<void> {
     await writeOpportunityCache(snapshot);
     await publishOpportunityFeed(snapshot);
   } catch (error) {
-    console.warn("OfferFlow opportunity feed sync failed", error);
+    console.warn("JobKoI opportunity feed sync failed", error);
   }
 }
 
 async function initializeBackground(): Promise<void> {
-  await chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: false });
   await chrome.alarms.create(CLOUD_SYNC_ALARM_NAME, {
     delayInMinutes: 1,
     periodInMinutes: CLOUD_SYNC_PERIOD_MINUTES
@@ -266,6 +265,8 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 chrome.action.onClicked.addListener(async (tab) => {
+  // Chrome forbids content-script injection into chrome:// pages, the new-tab
+  // surface and the Web Store. Do nothing there rather than opening a detached window.
   if (!tab.id || !tab.url?.startsWith("http")) return;
 
   const toggle = () =>
@@ -281,7 +282,7 @@ chrome.action.onClicked.addListener(async (tab) => {
       });
       await toggle();
     } catch (error) {
-      console.warn("OfferFlow could not open the page overlay", error);
+      console.warn("JobKoI could not open the page overlay", error);
     }
   }
 });
@@ -309,7 +310,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   enqueueProgressUpdate(sender.tab.id, message.signature, message.data)
     .then(() => sendResponse({ ok: true }))
     .catch((error) => {
-      console.warn("OfferFlow auto monitor failed", error);
+      console.warn("JobKoI auto monitor failed", error);
       sendResponse({
         ok: false,
         error: error instanceof Error ? error.message : "自动同步失败"

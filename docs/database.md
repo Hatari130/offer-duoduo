@@ -1,6 +1,6 @@
 # Database ownership
 
-OfferFlow uses PostgreSQL as the planned cloud source of truth. Browser storage
+JobKoI uses PostgreSQL as the planned cloud source of truth. Browser storage
 is an extension offline cache, not a replacement for authenticated cloud data.
 
 ## Data groups

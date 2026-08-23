@@ -24,7 +24,6 @@ if (manifest.manifest_version !== 3) {
 const requiredFiles = new Set([
   "manifest.json",
   "resume.html",
-  manifest.side_panel?.default_path,
   manifest.background?.service_worker
 ]);
 

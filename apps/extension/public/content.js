@@ -12,7 +12,7 @@
   // Static MV3 content scripts stay alive when an unpacked extension is
   // reloaded. ProfileView therefore injects the current artifact before every
   // form operation and uses versioned messages that stale listeners ignore.
-  const OFFERFLOW_CONTENT_RUNTIME_VERSION = "2026-08-20.autofill-v6";
+  const OFFERFLOW_CONTENT_RUNTIME_VERSION = "2026-08-21.autofill-v8";
   const contentSession = globalThis.__offerflowDesiredContentSession || `manifest:${OFFERFLOW_CONTENT_RUNTIME_VERSION}`;
   if (globalThis.__offerflowContentRuntimeSession === contentSession) return;
   try {
@@ -286,12 +286,19 @@
     return explicit || bare ? applicationDateValue(explicit || bare) : undefined;
   };
 
+  const companyCampaignLabelPattern =
+    /^(?:校园招聘|社会招聘|实习生招聘|应届生招聘|应届生|校招生|人才招聘|招聘官网|招聘平台|招聘门户|招聘首页|秋招|春招|校招|社招|招聘|\d{4}届(?:应届生|校招生|实习生)?)$/i;
+
   const companyFromDocumentTitle = () => {
     const title = clean(document.title);
     const titleCompany = title.match(
       /(?:^|[-–—_|｜]\s*)([^\s｜|_-]{2,30}?)(?:官方)?(?:校招|校园招聘|招聘官网|招聘平台|招聘门户|人才招聘|招聘)(?:\s*[-–—_|｜]|$)/i
     )?.[1];
-    if (titleCompany && !/^(?:应聘记录|投递记录|申请记录|我的申请)$/.test(titleCompany)) {
+    if (
+      titleCompany &&
+      !companyCampaignLabelPattern.test(titleCompany) &&
+      !/^(?:应聘记录|投递记录|申请记录|我的申请)$/.test(titleCompany)
+    ) {
       return titleCompany;
     }
     const tenant = location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
@@ -324,6 +331,34 @@
       return [{ value, score, element }];
     });
     return candidates.sort((left, right) => right.score - left.score)[0];
+  };
+
+  const mokaJobDetail = () => {
+    if (platformAdapter.id !== "mokahr") return undefined;
+
+    const fieldValue = (label) => {
+      const row = Array.from(document.querySelectorAll('[class*="info-row"]')).find((candidate) => {
+        const heading = clean(candidate.querySelector('[class*="body-tertiary"]')?.innerText || "");
+        return heading === label || heading.replace(new RegExp(`^(?:${label})\\s+`), "") === label;
+      });
+      return clean(row?.querySelector('[class*="value-"]')?.innerText || "") || undefined;
+    };
+
+    const companyHeading = Array.from(document.querySelectorAll("div, span"))
+      .find((element) => clean(element.innerText) === "公司信息");
+    const companySection = companyHeading?.parentElement;
+    const company = Array.from(companySection?.querySelectorAll("div") || [])
+      .map((element) => clean(element.innerText))
+      .find((value) => /(?:有限公司|有限责任公司|集团)$/.test(value) && value.length <= 60);
+
+    const panelTitle = clean(
+      document.querySelector('[class*="apply-panel--jobs"] [class*="left-panel"] [class*="title-"]')?.textContent || ""
+    );
+    const position = fieldValue("职位名称") || panelTitle;
+    const city = fieldValue("工作地点");
+
+    if (!position || extractionRules.isHardRejectedPosition(position)) return undefined;
+    return { company, position, city };
   };
 
   const feishuApplicationEvidence = () => {
@@ -698,9 +733,11 @@
   const extract = () => {
     const posting = getPosting();
     const text = visibleText();
+    const mokaDetail = mokaJobDetail();
     const headingTitle = clean(document.querySelector("h1")?.textContent || "");
     const title = clean(
-      headingTitle ||
+      mokaDetail?.position ||
+        headingTitle ||
         (posting && posting.title) ||
         meta("og:title", "twitter:title") ||
         document.title
@@ -718,14 +755,20 @@
     const adapterCompany = platformAdapter.id === "feishu-jobs"
       ? companyFromDocumentTitle()
       : undefined;
+    // A title segment that is only a recruitment campaign label (e.g. 应届生招聘)
+    // is not an employer; fall through to the next candidate instead.
+    const titleCompanyPart = [...titleParts]
+      .reverse()
+      .find((part) => !companyCampaignLabelPattern.test(part));
     const company =
+      mokaDetail?.company ||
       clean(organization && organization.name) ||
       adapterCompany ||
       firstMatch(text, [
         /(?:公司名称|招聘单位|企业名称)[：:\s]+([^\s｜|]{2,30})/i,
         /([^\s｜|]{2,30}(?:有限公司|集团))/
       ]) ||
-      titleParts.at(-1) ||
+      titleCompanyPart ||
       location.hostname.replace(/^www\./, "").split(".")[0];
     const normalizedCompany = company
       .replace(/\s*(?:招聘门户|招聘官网|招聘平台|人才招聘门户|人才招聘官网)$/i, "")
@@ -733,6 +776,7 @@
 
     const postingPosition = clean(posting && posting.title);
     const position =
+      mokaDetail?.position ||
       (postingPosition && !extractionRules.isHardRejectedPosition(postingPosition) ? postingPosition : undefined) ||
       roleFromText(headingTitle) ||
       roleFromText(text) ||
@@ -753,16 +797,12 @@
       undefined;
 
     const city =
+      mokaDetail?.city ||
       clean(address && (address.addressLocality || address.addressRegion)) ||
       firstMatch(text, [
         /(?:工作地点|工作城市|职位地点|办公地点)[：:\s]+([^\s，,；;]{2,20})/i
       ]);
 
-    const deadlineRaw =
-      clean(posting && posting.validThrough) ||
-      firstMatch(text, [
-        /(?:截止日期|截止时间|申请截止|网申截止)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?)/i
-      ]);
     const appliedAtRaw = firstMatch(text, [
       /(?:投递时间|申请时间|提交时间)[：:\s]*(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)/i,
       /(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?(?:\s+\d{1,2}:\d{2})?)\s*(?:投递|申请)(?!截止|开始|时间)/i
@@ -801,13 +841,9 @@
       jobId,
       city,
       recruitmentType,
-      deadline: deadlineRaw
-        ? deadlineRaw.replace(/[年月./]/g, "-").replace(/日$/, "")
-        : undefined,
       appliedAt: appliedAtRaw
         ? appliedAtRaw.replace(/[年月./]/g, "-").replace(/日(?=\s|$)/, "")
         : undefined,
-      nextAction: "确认是否投递",
       summary: (description || responsibilities.slice(0, 2).join(" ")).slice(0, 280),
       responsibilities,
       requirements,
@@ -1531,6 +1567,51 @@
   };
 
   const ATSX_DATE_RANGE_SEPARATOR = "\u001f";
+  const DATE_RANGE_ROOT_SELECTOR = [
+    ".throne-biz-date-range-picker-wrapper",
+    ".atsx-date-picker-period-month",
+    "[class*='date-range-picker-wrapper']",
+    "[class*='dateRangePickerWrapper']"
+  ].join(",");
+
+  const dateRangeInputs = (root) => Array.from(root?.querySelectorAll?.("input") || [])
+    .filter((input) => !["hidden", "checkbox", "radio"].includes((input.type || "text").toLowerCase()));
+
+  const currentDateToggle = (root) => {
+    if (!root) return undefined;
+    const item = root.closest?.(".ud-formily-item,[id^='formily-item-']") || root;
+    const candidates = Array.from(item.querySelectorAll?.("input[type='checkbox'],[role='checkbox']") || []);
+    return candidates.find((candidate) => {
+      const explicitLabel = candidate.id
+        ? item.querySelector?.(`label[for="${CSS.escape(candidate.id)}"]`)?.textContent || ""
+        : "";
+      const text = clean([
+        candidate.getAttribute?.("aria-label"),
+        candidate.getAttribute?.("title"),
+        explicitLabel,
+        candidate.closest?.("label")?.textContent,
+        candidate.parentElement?.textContent
+      ].filter(Boolean).join(" "));
+      return /至今|当前|仍在职|present|current/i.test(text);
+    }) || (candidates.length === 1 && /至今|当前|仍在职|present|current/i.test(item.textContent || "")
+      ? candidates[0]
+      : undefined);
+  };
+
+  const dateToggleChecked = (toggle) => Boolean(toggle) && (
+    (toggle instanceof HTMLInputElement && toggle.checked) ||
+    toggle.getAttribute?.("aria-checked") === "true" ||
+    /checked|selected|active/.test(String(toggle.className || "").toLowerCase())
+  );
+
+  const dateRangeConfig = (kind) => kind === "education"
+    ? { group: "education", key: "educationStartDate", endKey: "educationEndDate" }
+    : kind === "internship" || kind === "experience" || kind === "work"
+      ? { group: "experience", key: "experienceStartDate", endKey: "experienceEndDate" }
+      : kind === "project"
+        ? { group: "project", key: "projectStartDate", endKey: "projectEndDate" }
+        : undefined;
+
   const atsxDateRangeInfo = (element) => {
     const root = element.closest?.(".atsx-date-picker-period-month[data-cy]");
     const dataCy = root?.getAttribute("data-cy") || "";
@@ -1538,34 +1619,58 @@
     if (!match) return undefined;
     const kind = match[1].toLowerCase();
     const index = Number.parseInt(match[2], 10);
-    const config = kind === "education"
-      ? { group: "education", key: "educationStartDate", endKey: "educationEndDate" }
-      : kind === "internship"
-        ? { group: "experience", key: "experienceStartDate", endKey: "experienceEndDate" }
-        : { group: "project", key: "projectStartDate", endKey: "projectEndDate" };
+    const config = dateRangeConfig(kind);
     return { ...config, index, root, engine: "atsx", mode: "date-range" };
   };
 
   const universeDateRangeInfo = (element) => {
-    const root = element.matches?.(".throne-biz-date-range-picker-wrapper")
+    let root = element.matches?.(DATE_RANGE_ROOT_SELECTOR)
       ? element
-      : element.closest?.(".throne-biz-date-range-picker-wrapper");
+      : element.closest?.(DATE_RANGE_ROOT_SELECTOR);
+    // Some Dewu schemas omit the Universe wrapper class and render the two
+    // controlled month inputs directly inside a Formily item. The item is a
+    // safe fallback only when its own metadata identifies a date range.
+    const formilyItem = element.closest?.(".ud-formily-item,[id^='formily-item-']");
+    if (!root && formilyItem && dateRangeInputs(formilyItem).length >= 2) root = formilyItem;
     if (!root) return undefined;
-    const inputs = Array.from(root.querySelectorAll("input.ud__native-input,input"));
+    const inputs = dateRangeInputs(root);
     if (inputs.length < 2) return undefined;
-    const metadata = formilyFieldMetadata(inputs[0]);
-    const section = fieldSection(inputs[0]) || "";
-    const fieldName = metadata.fieldName || "start_end_time";
-    if (!/start.*end.*time|start_end_time|起止时间/i.test(`${fieldName} ${metadata.label}`)) return undefined;
-    const config = /教育|学历|academic|education/i.test(section)
-      ? { group: "education", key: "educationStartDate", endKey: "educationEndDate" }
+    const metadata = formilyFieldMetadata(element);
+    const section = fieldSection(element) || "";
+    const fieldName = normalizeFieldText(
+      root.getAttribute?.("data-form-field-name") ||
+      root.getAttribute?.("data-form-field-id") ||
+      inputs.find((input) => input.getAttribute("data-form-field-name"))?.getAttribute("data-form-field-name") ||
+      inputs.find((input) => input.getAttribute("data-form-field-id"))?.getAttribute("data-form-field-id") ||
+      metadata.fieldName || ""
+    );
+    const rangeEvidence = `${fieldName} ${metadata.label} ${root.getAttribute?.("data-cy") || ""}`;
+    // ATSX tenants use different schema names for the same two-input month
+    // range. Dewu uses `time_period`, whereas older tenants use
+    // `start_end_time`. Restrict this to the Universe range wrapper so a
+    // generic field named period cannot be mistaken for a date range.
+    if (!/start.*end.*time|start_end_time|time[_\s-]*period|periodInput|起止时间/i.test(rangeEvidence)) return undefined;
+    const dataCyMatch = String(root.getAttribute?.("data-cy") || "")
+      .match(/(education|internship|experience|work|project)\[(\d+)]/i);
+    const sectionKind = /教育|学历|academic|education/i.test(section)
+      ? "education"
       : /项目|project/i.test(section)
-        ? { group: "project", key: "projectStartDate", endKey: "projectEndDate" }
+        ? "project"
         : /工作|实习|任职|work|employment|intern/i.test(section)
-          ? { group: "experience", key: "experienceStartDate", endKey: "experienceEndDate" }
-          : undefined;
+          ? "experience"
+          : "";
+    const config = dateRangeConfig(dataCyMatch?.[1]?.toLowerCase() || sectionKind);
     return config
-      ? { ...config, root, inputs, fieldName, engine: "universe", mode: "date-range" }
+      ? {
+          ...config,
+          root,
+          inputs,
+          fieldName: fieldName || "time_period",
+          index: dataCyMatch ? Number.parseInt(dataCyMatch[2], 10) : undefined,
+          currentToggle: currentDateToggle(root),
+          engine: "universe",
+          mode: "date-range"
+        }
       : undefined;
   };
 
@@ -1610,6 +1715,7 @@
       if (/^\d{4}$/.test(year) && /^\d{1,2}$/.test(month)) return `${year}-${month.padStart(2, "0")}`;
       return /至今|present|current/i.test(`${year}${month}`) ? "至今" : "";
     });
+    if (dateToggleChecked(currentDateToggle(info.root)) && values.length >= 2) values[1] = "至今";
     return values.length >= 2 ? `${values[0]}${ATSX_DATE_RANGE_SEPARATOR}${values[1]}` : "";
   };
 
@@ -1617,6 +1723,7 @@
     const info = universeDateRangeInfo(element);
     if (!info) return "";
     const values = info.inputs.slice(0, 2).map((input) => clean(input.value || ""));
+    if (dateToggleChecked(info.currentToggle) && values.length >= 2) values[1] = "至今";
     return values.some(Boolean) ? `${values[0]}${ATSX_DATE_RANGE_SEPARATOR}${values[1]}` : "";
   };
 
@@ -1795,7 +1902,7 @@
     ].join(",");
     const canonicalElement = (element) => {
       const compoundDate = compoundDateInfo(element);
-      if (["moka", "universe"].includes(compoundDate?.engine)) return compoundDate.root;
+      if (compoundDate?.root) return compoundDate.root;
       const atsxControl = atsxSelectControl(element);
       if (atsxControl) return atsxControl;
       const antControl = antSelectControl(element);
@@ -2713,43 +2820,111 @@
     return true;
   };
 
+  const setCurrentDateToggle = async (toggle, checked) => {
+    if (!toggle) return !checked;
+    if (dateToggleChecked(toggle) === checked) return true;
+    clickControlInUserOrder(toggle);
+    await nextFrame();
+    await sleep(40);
+    if (dateToggleChecked(toggle) === checked) return true;
+
+    // A few Formily themes render a visually custom checkbox and swallow the
+    // DOM click. Update the native checked state and emit the same events as a
+    // real user interaction, then require the state to be observable again.
+    if (toggle instanceof HTMLInputElement) {
+      const previous = toggle.checked;
+      const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "checked")?.set;
+      if (setter) setter.call(toggle, checked);
+      else toggle.checked = checked;
+      toggle._valueTracker?.setValue?.(previous);
+      toggle.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+      toggle.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+      await nextFrame();
+      await sleep(40);
+    }
+    return dateToggleChecked(toggle) === checked;
+  };
+
+  const rangeReactHandlers = (info) => {
+    const candidates = [info.root, ...info.inputs, info.root.parentElement].filter(Boolean);
+    const acceptsRange = (props) => {
+      if (typeof props?.onChange !== "function") return false;
+      const fieldName = String(
+        props["data-form-field-name"] || props["data-form-field-id"] || props.id || props.name || ""
+      );
+      return Array.isArray(props.value) ||
+        /start.*end.*time|time[_\s-]*period|periodInput/i.test(fieldName) ||
+        (props.value == null && fieldName === info.fieldName);
+    };
+    for (const candidate of candidates) {
+      const direct = reactEventProps(candidate);
+      if (acceptsRange(direct)) return direct;
+      const fiberKey = Object.keys(candidate).find((key) =>
+        key.startsWith("__reactInternalInstance$") || key.startsWith("__reactFiber$")
+      );
+      let fiber = fiberKey ? candidate[fiberKey] : undefined;
+      for (let depth = 0; fiber && depth < 40; depth += 1, fiber = fiber.return) {
+        const props = fiber.memoizedProps || {};
+        if (acceptsRange(props)) return props;
+      }
+    }
+    return undefined;
+  };
+
+  const setDateInputValue = (input, value) => {
+    const previous = input.value;
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+    if (setter) setter.call(input, value);
+    else input.value = value;
+    input._valueTracker?.setValue?.(previous);
+    input.dispatchEvent(new Event("input", { bubbles: true, cancelable: true }));
+    input.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
+    input.dispatchEvent(new Event("blur", { bubbles: true, cancelable: true }));
+  };
+
   const fillUniverseDateRange = async (element, value) => {
     const info = universeDateRangeInfo(element);
     if (!info) return false;
     const [startValue, endValue] = String(value || "").split(ATSX_DATE_RANGE_SEPARATOR);
     const monthValue = (raw) => {
-      const text = clean(raw);
-      if (/至今|present|current/i.test(text)) return "至今";
-      const match = text.match(/^(\d{4})[-/.年](\d{1,2})/);
+      const match = clean(raw).match(/^(\d{4})[-/.年](\d{1,2})/);
       return match ? `${match[1]}-${match[2].padStart(2, "0")}` : "";
     };
     const start = monthValue(startValue);
+    const endIsCurrent = /至今|present|current/i.test(clean(endValue));
     const end = monthValue(endValue);
-    if (!start || !end) return false;
-
-    const input = info.inputs[0];
-    const fiberKey = Object.keys(input || {}).find((key) =>
-      key.startsWith("__reactInternalInstance$") || key.startsWith("__reactFiber$")
-    );
-    let fiber = fiberKey ? input[fiberKey] : undefined;
-    let handlers;
-    for (let depth = 0; fiber && depth < 32; depth += 1, fiber = fiber.return) {
-      const props = fiber.memoizedProps || {};
-      const fieldName = props["data-form-field-name"] || props["data-form-field-id"] || "";
-      if (
-        typeof props.onChange === "function" &&
-        Array.isArray(props.value) &&
-        (!fieldName || fieldName === info.fieldName || /start.*end.*time/i.test(fieldName))
-      ) {
-        handlers = props;
-        break;
-      }
+    if (!start || (!end && !endIsCurrent)) return false;
+    if (endIsCurrent && !info.currentToggle && info.inputs.some((input) => input.type === "month")) {
+      // Never write "至今" into input[type=month]. Without a separately
+      // addressable current-state control there is no safe way to commit it.
+      return false;
     }
-    if (!handlers) return false;
-    handlers.onChange([start, end]);
+
+    if (!endIsCurrent && !(await setCurrentDateToggle(info.currentToggle, false))) return false;
+    const handlers = rangeReactHandlers(info);
+    if (handlers) {
+      const objectRange = Array.isArray(handlers.value) && handlers.value.some((part) =>
+        part && typeof part === "object" && ("year" in part || "month" in part)
+      );
+      const payloadMonth = (month) => objectRange
+        ? { year: month.slice(0, 4), month: month.slice(5, 7) }
+        : month;
+      const endPayload = endIsCurrent
+        ? (info.currentToggle ? undefined : "至今")
+        : payloadMonth(end);
+      handlers.onChange([payloadMonth(start), endPayload]);
+      await nextFrame();
+      await sleep(50);
+    } else {
+      setDateInputValue(info.inputs[0], start);
+      setDateInputValue(info.inputs[1], endIsCurrent ? "" : end);
+    }
+
+    if (endIsCurrent && !(await setCurrentDateToggle(info.currentToggle, true))) return false;
     await nextFrame();
-    await sleep(40);
-    return readUniverseDateRange(element) === `${start}${ATSX_DATE_RANGE_SEPARATOR}${end}`;
+    await sleep(50);
+    const expectedEnd = endIsCurrent ? "至今" : end;
+    return readUniverseDateRange(element) === `${start}${ATSX_DATE_RANGE_SEPARATOR}${expectedEnd}`;
   };
 
   const fillAtsxDateRange = async (element, value) => {
@@ -2761,24 +2936,38 @@
       return match ? { year: match[1], month: match[2].padStart(2, "0") } : undefined;
     };
     const start = monthPart(startValue);
+    const endIsCurrent = /至今|present|current/i.test(clean(endValue));
     const end = monthPart(endValue);
-    if (!start || (!end && !/至今|present|current/i.test(clean(endValue)))) return false;
+    if (!start || (!end && !endIsCurrent)) return false;
 
-    const fiberKey = Object.keys(element).find((key) =>
-      key.startsWith("__reactInternalInstance$") || key.startsWith("__reactFiber$")
-    );
-    let fiber = fiberKey ? element[fiberKey] : undefined;
     let handlers;
-    for (let depth = 0; fiber && depth < 12; depth += 1, fiber = fiber.return) {
-      const props = fiber.memoizedProps;
-      if (typeof props?.onChange === "function" && /\.period$/.test(String(props.id || props["data-__field"]?.name || ""))) {
-        handlers = props;
+    const candidates = [element, info.root, ...Array.from(info.root.querySelectorAll("input"))]
+      .filter((candidate, index, all) => candidate && all.indexOf(candidate) === index);
+    for (const candidate of candidates) {
+      const direct = reactEventProps(candidate);
+      if (typeof direct?.onChange === "function" && /\.period$/.test(String(direct.id || direct["data-__field"]?.name || ""))) {
+        handlers = direct;
         break;
       }
+      const fiberKey = Object.keys(candidate).find((key) =>
+        key.startsWith("__reactInternalInstance$") || key.startsWith("__reactFiber$")
+      );
+      let fiber = fiberKey ? candidate[fiberKey] : undefined;
+      for (let depth = 0; fiber && depth < 20; depth += 1, fiber = fiber.return) {
+        const props = fiber.memoizedProps;
+        if (typeof props?.onChange === "function" && /\.period$/.test(String(props.id || props["data-__field"]?.name || ""))) {
+          handlers = props;
+          break;
+        }
+      }
+      if (handlers) break;
     }
     if (!handlers) return false;
 
-    handlers.onChange([start, end || "至今"]);
+    const currentToggle = currentDateToggle(info.root);
+    if (!endIsCurrent && !(await setCurrentDateToggle(currentToggle, false))) return false;
+    handlers.onChange([start, end || (currentToggle ? undefined : "至今")]);
+    if (endIsCurrent && !(await setCurrentDateToggle(currentToggle, true))) return false;
     await nextFrame();
     await sleep(40);
     return readAtsxDateRange(element) === String(value);
@@ -3517,7 +3706,7 @@
 
       const frame = document.createElement("iframe");
       frame.src = chrome.runtime.getURL("sidepanel.html?surface=overlay");
-      frame.title = "OfferDuoDuo";
+      frame.title = "JobKoI";
       frame.setAttribute("allow", "clipboard-write");
       Object.assign(frame.style, {
         width: "100%",

@@ -185,7 +185,6 @@ export function sourceLabel(job: JobApplication): string {
 
 export const compactStages: ApplicationStage[] = [
   "interested",
-  "to_apply",
   "applied",
   "assessment",
   "interview",
@@ -211,14 +210,14 @@ export function applicationStageFromProgress(
   if (/初筛|复筛|筛选|简历|资格审核|已投递|投递成功/.test(progress)) {
     return "applied";
   }
-  if (/待投递|网申/.test(progress)) return "to_apply";
+  if (/待投递|网申/.test(progress)) return "interested";
   if (/感兴趣|收藏/.test(progress)) return "interested";
   return undefined;
 }
 
 const CAPTURE_OCCUPATION_PATTERN = /产品经理|项目经理|工程师|设计师|架构师|分析师|研究员|科学家|算法|开发|测试|运营|销售|市场|顾问|管培生|实习生|专员|主管|总监|HRBP|财务|法务|审计|采购|供应链|商务|策划|编辑|翻译|教师|讲师|医生/i;
 const CAPTURE_PROCESS_PATTERN = /^(?:(?:简历|网申|在线|AI|人才|资格|视频|业务|主管|薪酬|录用|Offer)?(?:投递|提交|筛选|初筛|复筛|评估|审核|测评|笔试|面试|一面|二面|三面|HR面|群面|终面|沟通|背调|背景调查|体检|签约|审批|发放|意向书|Offer评估|Offer|录用|入职)(?:简历|申请)?(?:中|完成|通过|不通过|结果|待定)?|等待.{0,10}(?:筛选|评估|审核|面试|笔试|测评|背调|体检|审批|结果)|待(?:筛选|评估|审核|面试|笔试|测评|背调|体检|签约|审批|入职)|未通过|不合适|淘汰|流程终止|已结束|拒绝|未录用|已撤回)$/i;
-const CAPTURE_CAMPAIGN_PATTERN = /(?:校园招聘|社会招聘|实习生招聘|招聘官网|招聘平台|招聘门户|招聘首页|职位列表|职位详情|申请记录|投递记录|我的申请|JD\s*YOUNG.*计划)$/i;
+const CAPTURE_CAMPAIGN_PATTERN = /(?:校园招聘|社会招聘|实习生招聘|应届生招聘|应届生|校招生|人才招聘|招聘官网|招聘平台|招聘门户|招聘首页|秋招|春招|校招|社招|招聘|职位列表|职位详情|申请记录|投递记录|我的申请|JD\s*YOUNG.*计划)$/i;
 const CAPTURE_PAGE_LABEL_PATTERN = /^(?:应聘记录|应聘进度|投递记录|申请记录|我的申请|我的投递)$/i;
 
 export function isCapturePositionRejected(value?: string): boolean {
@@ -250,7 +249,7 @@ const EXTERNAL_STAGE_PREFIX_PATTERN = /^(?:当前进度|当前状态|应聘进�
 /**
  * Canonical labels for the “当前进度” field. The recognized raw text is
  * classified into one of: 已投递 / 简历初筛 / 笔试 / 面试 / Offer (plus the
- * existing 已结束 / 待投递 / 感兴趣 buckets). Order matters: terminal and
+ * existing 已结束 / 感兴趣 buckets). Order matters: terminal and
  * later stages are checked before earlier ones so “简历筛选·初筛进行中”
  * reliably maps to 简历初筛.
  */
@@ -272,9 +271,25 @@ export function normalizeExternalStage(value?: string): string | undefined {
   if (/已投递|投递成功|投递完成|投递简历|简历投递|已提交|申请成功|网申完成/.test(stage)) {
     return "已投递";
   }
-  if (/待投递|网申|暂存/.test(stage)) return "待投递";
+  if (/待投递|网申|暂存/.test(stage)) return "感兴趣";
   if (/感兴趣|收藏/.test(stage)) return "感兴趣";
   return undefined;
+}
+
+const COMPANY_CAMPAIGN_LABEL_PATTERN =
+  /^(?:校园招聘|社会招聘|实习生招聘|应届生招聘|应届生|校招生|人才招聘|招聘官网|招聘平台|招聘门户|招聘首页|招聘计划|招聘项目|秋招|春招|校招|社招|招聘|\d{4}届(?:应届生|校招生|实习生)?)$/i;
+
+export function isRecruitmentCampaignCompany(value?: string): boolean {
+  return COMPANY_CAMPAIGN_LABEL_PATTERN.test((value || "").trim());
+}
+
+function cleanCaptureCompanyValue(value: string): string {
+  const cleaned = value
+    .trim()
+    .replace(/[\s｜|·_-]*(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘|招聘)$/i, "")
+    .trim();
+  if (!cleaned || isRecruitmentCampaignCompany(cleaned)) return "";
+  return cleaned;
 }
 
 function captureCompany(page: ExtractedJob): string {
@@ -285,25 +300,27 @@ function captureCompany(page: ExtractedJob): string {
     [/(?:^|\.)bytedance\.com$/i, "字节跳动"],
     [/(?:^|\.)meituan\.com$/i, "美团"],
     [/(?:^|\.)jd\.com$/i, "京东"],
-    [/(?:^|\.)huawei\.com$/i, "华为"]
+    [/(?:^|\.)huawei\.com$/i, "华为"],
+    [/(?:^|\.)lenovo\.com(?:\.cn)?$/i, "联想"]
   ];
   const knownCompany = knownHosts.find(([pattern]) => pattern.test(page.sourceHost))?.[1];
   if (knownCompany) return knownCompany;
 
-  const source = page.company.trim();
-  const cleaned = source
-    .replace(/[\s｜|·_-]*(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘|招聘)$/i, "")
-    .trim();
+  const cleaned = cleanCaptureCompanyValue(page.company);
   if (cleaned && cleaned.toLowerCase() !== page.sourceHost.trim().toLowerCase()) {
     return cleaned;
   }
 
-  const titleCompany = page.position.match(
-    /^(.{2,30}?)(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘)$/i
-  )?.[1]?.trim();
+  const titleCompany = cleanCaptureCompanyValue(
+    page.position.match(
+      /^(.{2,30}?)(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘)$/i
+    )?.[1] || ""
+  );
   if (titleCompany) return titleCompany;
 
-  return source;
+  // The extracted value is only a recruitment campaign label (e.g. 应届生招聘),
+  // not an employer entity. Leave it blank so the user can fill the real company.
+  return "";
 }
 
 function captureCity(position?: string, context?: string, fallback?: string): string | undefined {
@@ -336,6 +353,7 @@ export function prepareCaptureForReview(page: ExtractedJob): ExtractedJob {
   const rejectedPosition = isCapturePositionRejected(page.position);
   return {
     ...page,
+    company: captureCompany(page),
     position: rejectedPosition ? "" : page.position,
     recruitmentType: page.recruitmentType || inferRecruitmentType(
       page.position,
@@ -343,6 +361,9 @@ export function prepareCaptureForReview(page: ExtractedJob): ExtractedJob {
       page.summary,
       page.rawExcerpt
     ),
+    // These fields are outside the capture workflow. Existing saved values are
+    // preserved during updates, but a newly recognised page never creates them.
+    deadline: undefined,
     nextAction: undefined,
     summary: undefined,
     externalStage,
@@ -376,7 +397,7 @@ export function captureCandidatesFromProgress(page: ExtractedJob): ExtractedJob[
           evidence.city?.trim().replace(/[省市]$/, "") ||
           captureCity(evidence.position, evidence.context, page.city),
         appliedAt:
-          evidence.appliedAt || captureAppliedAt(evidence.context, page.appliedAt),
+          evidence.appliedAt || captureAppliedAt(evidence.context),
         externalStage,
         suggestedStage: applicationStageFromProgress(externalStage),
         progressEvidence: [evidence],

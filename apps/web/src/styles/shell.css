@@ -105,6 +105,7 @@
   flex-direction: column;
   padding: 1.1rem 0.85rem 0.8rem;
   overflow: visible;
+  overflow-anchor: none;
   background: var(--of-sidebar, var(--of-canvas));
   border-inline-end: 1px solid var(--of-line);
 }
@@ -292,6 +293,43 @@
   padding-block-start: 0.8rem;
 }
 
+.extension-entry-button {
+  display: flex;
+  min-height: 2.7rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding-inline: 0.8rem;
+  color: var(--of-brand-700);
+  background: linear-gradient(110deg, var(--of-brand-50), color-mix(in srgb, var(--of-brand-50) 40%, white));
+  border: 1px solid var(--of-brand-100);
+  border-radius: 0.85rem;
+  font-size: 0.77rem;
+  font-weight: 680;
+  text-decoration: none;
+  box-shadow: 0 0.35rem 0.9rem rgb(63 86 184 / 0.08);
+}
+
+.extension-entry-button > span { min-width: 0; }
+
+.extension-entry-button > em {
+  margin-inline-start: auto;
+  padding: 0.18rem 0.4rem;
+  color: var(--of-success);
+  background: color-mix(in srgb, var(--of-success) 11%, white);
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 720;
+}
+
+.extension-entry-button:hover {
+  color: var(--of-brand-800);
+  background: var(--of-brand-100);
+  border-color: var(--of-brand-200);
+  box-shadow: 0 0.55rem 1.2rem rgb(63 86 184 / 0.12);
+}
+
+/* Retained for the account plan upgrade action. */
 .upgrade-pro-button {
   display: flex;
   min-height: 2.7rem;
@@ -299,8 +337,8 @@
   justify-content: center;
   gap: 0.5rem;
   color: var(--of-brand-700);
-  background: var(--of-brand-50);
-  border: 1px solid var(--of-brand-200);
+  background: transparent;
+  border: 1px solid transparent;
   border-radius: 999px;
   font-size: 0.77rem;
   font-weight: 680;
@@ -309,8 +347,8 @@
 
 .upgrade-pro-button:hover {
   color: var(--of-brand-800);
-  background: var(--of-brand-100);
-  border-color: var(--of-brand-300);
+  background: color-mix(in srgb, var(--of-brand-50) 58%, transparent);
+  border-color: var(--of-brand-100);
 }
 
 .sidebar-account-row {
@@ -599,16 +637,14 @@
 
 .workspace-shell {
   min-width: 0;
-  height: calc(100dvh - 1rem);
+  height: 100dvh;
   min-height: 0;
-  margin: 0.5rem 0.5rem 0.5rem 0;
+  margin: 0;
   overflow: hidden;
   background: var(--of-surface);
-  border: 1px solid var(--of-line-structural, var(--of-line));
-  border-radius: 1.75rem;
-  box-shadow:
-    0 0 0 1px rgb(30 39 64 / 0.018),
-    0 1.25rem 3.5rem -2.5rem rgb(40 52 90 / 0.28);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .workspace-main {
@@ -634,6 +670,7 @@
 .sidebar-collapse-toggle:focus-visible,
 .nav-link:focus-visible,
 .thread-link:focus-visible,
+.extension-entry-button:focus-visible,
 .upgrade-pro-button:focus-visible,
 .account-trigger:focus-visible,
 .sidebar-footer-icon:focus-visible,
@@ -647,6 +684,7 @@
 }
 
 .new-chat-button:active,
+.extension-entry-button:active,
 .upgrade-pro-button:active,
 .account-trigger:active,
 .sidebar-footer-icon:active,
@@ -672,6 +710,8 @@
   .app-frame.is-sidebar-collapsed .new-chat-button > span,
   .app-frame.is-sidebar-collapsed .nav-link > span,
   .app-frame.is-sidebar-collapsed .nav-link > em,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > span,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > em,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button > span {
     position: absolute;
     width: 1px;
@@ -685,6 +725,7 @@
 
   .app-frame.is-sidebar-collapsed .new-chat-button,
   .app-frame.is-sidebar-collapsed .nav-link,
+  .app-frame.is-sidebar-collapsed .extension-entry-button,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button,
   .app-frame.is-sidebar-collapsed .account-trigger {
     justify-content: center;
@@ -708,6 +749,12 @@
   .app-frame.is-sidebar-collapsed .upgrade-pro-button {
     width: 2.75rem;
     border-radius: 0.85rem;
+  }
+
+  .app-frame.is-sidebar-collapsed .extension-entry-button {
+    width: 2.75rem;
+    justify-content: center;
+    padding-inline: 0;
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-account-row {
@@ -876,12 +923,6 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .app-frame {
-    transition-property: grid-template-columns;
-    transition-duration: var(--of-duration-base);
-    transition-timing-function: var(--of-ease-out);
-  }
-
   .primary-nav::before,
   .mobile-bottom-nav::before {
     transition-property: transform, opacity;

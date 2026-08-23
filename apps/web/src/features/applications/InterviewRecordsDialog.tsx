@@ -294,7 +294,7 @@ export function InterviewRecordsDialog({
       setAnnouncement(
         isReady(result.record)
           ? "面试问答已经生成"
-          : "记录已提交，OfferFlow 正在解析面试问答"
+          : "记录已提交，JobKoI 正在解析面试问答"
       );
     } catch (requestError) {
       setFormError(requestError instanceof Error ? requestError.message : "无法提交面试记录");

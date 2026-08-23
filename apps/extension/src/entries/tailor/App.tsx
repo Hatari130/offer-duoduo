@@ -324,7 +324,7 @@ export default function TailorApp() {
             characterCount: layout.characterCount
           });
         } catch (metadataError) {
-          console.warn("[OfferFlow] PDF 版式元数据同步失败", metadataError);
+          console.warn("[JobKoI] PDF 版式元数据同步失败", metadataError);
         }
         if (cancelled) return;
         setSourceLayout(layout);
@@ -339,7 +339,7 @@ export default function TailorApp() {
         const message = caught instanceof Error ? caught.message : "未知 PDF 读取错误";
         setSourceLayoutError(message);
         void updateResumeSourceLayoutMetadata(ownerId, { layoutStatus: "failed" });
-        console.error("[OfferFlow] 原 PDF 版式读取失败", caught);
+        console.error("[JobKoI] 原 PDF 版式读取失败", caught);
       });
     return () => {
       cancelled = true;
@@ -389,7 +389,7 @@ export default function TailorApp() {
       };
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "未知坐标预览错误";
-      console.error("[OfferFlow] PDF 坐标复刻失败", caught);
+      console.error("[JobKoI] PDF 坐标复刻失败", caught);
       return { html: "", error: `原 PDF 坐标预览生成失败：${message}`, overrideCount: 0 };
     }
   }, [bundle, currentSourceLayout, sourceResume?.profile]);
@@ -618,7 +618,7 @@ export default function TailorApp() {
       .query({ active: true, currentWindow: true })
       .then(([tab]) => {
         if (tab?.id && tab.url?.startsWith("http")) {
-          setStatus("打开 OfferFlow 浮窗 → 点「为这个岗位定制简历」");
+          setStatus("打开 JobKoI 浮窗 → 点「为这个岗位定制简历」");
         } else {
           setError("请先打开一个招聘网页，再从这里开始定制");
         }
@@ -949,7 +949,7 @@ function EmptyShell({
         <div>
           <h1>先把岗位传进来</h1>
           <p>
-            「对靶审阅」需要一份具体的 JD 才能定制。下面三种方式都能进入下一步：让 OfferFlow 浮窗抓当前页面、从已保存的岗位里挑一个，或当场手填一份。
+            「对靶审阅」需要一份具体的 JD 才能定制。下面三种方式都能进入下一步：让 JobKoI 浮窗抓当前页面、从已保存的岗位里挑一个，或当场手填一份。
           </p>
         </div>
       </div>
@@ -1031,17 +1031,17 @@ function CapturePane({
   return (
     <>
       <h2>从招聘页一键抓取</h2>
-      <p className="pane-lead">先打开任意招聘网页，让 OfferFlow 浮窗识别岗位，然后回到这里。</p>
+      <p className="pane-lead">先打开任意招聘网页，让 JobKoI 浮窗识别岗位，然后回到这里。</p>
       <div className="capture-guide">
         <div className="capture-step">
           <span className="step-mark">1</span>
           <strong>打开招聘网页</strong>
-          <span>把 OfferFlow 扩展固定到工具栏，并在招聘详情页面停留几秒。</span>
+          <span>把 JobKoI 扩展固定到工具栏，并在招聘详情页面停留几秒。</span>
         </div>
         <div className="capture-step">
           <span className="step-mark">2</span>
           <strong>浮窗里点「为这个岗位定制简历」</strong>
-          <span>OfferFlow 会自动抓岗位信息，并把上下文传到这个页面。</span>
+          <span>JobKoI 会自动抓岗位信息，并把上下文传到这个页面。</span>
         </div>
         <div className="capture-step">
           <span className="step-mark">3</span>
@@ -1085,10 +1085,10 @@ function ExistingJobsPane({
   return (
     <>
       <h2>从已有岗位选择</h2>
-      <p className="pane-lead">直接复用 OfferFlow 已经保存的岗位信息。岗位里的 JD 摘要、职责、要求都会被一并带入。</p>
+      <p className="pane-lead">直接复用 JobKoI 已经保存的岗位信息。岗位里的 JD 摘要、职责、要求都会被一并带入。</p>
       {eligible.length === 0 ? (
         <div className="jobs-picker-list">
-          <div className="empty-hint">OfferFlow 目前还没有岗位记录。请先用「从招聘页一键抓取」或「手动填写 JD」。</div>
+          <div className="empty-hint">JobKoI 目前还没有岗位记录。请先用「从招聘页一键抓取」或「手动填写 JD」。</div>
         </div>
       ) : (
         <>

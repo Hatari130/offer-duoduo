@@ -1,6 +1,6 @@
-# OfferFlow Web
+# JobKoI Web
 
-React/Vite companion website for OfferFlow. It provides:
+React/Vite companion website for JobKoI. It provides:
 
 - account login and registration;
 - a streaming career assistant with conversations, retry, stop, attachments and knowledge citations;

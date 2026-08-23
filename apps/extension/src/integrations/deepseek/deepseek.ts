@@ -7,7 +7,7 @@
   PersonalProfile,
   ProfileFieldKey
 } from "@/shared/types";
-import { normalizeExternalStage } from "@/features/workspace/workspaceUtils";
+import { isRecruitmentCampaignCompany, normalizeExternalStage } from "@/features/workspace/workspaceUtils";
 
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MODELS_URL = "https://api.deepseek.com/models";
@@ -21,9 +21,6 @@ type ModelApplication = {
   city?: string;
   job_type?: string;
   stage?: string;
-  applied_at?: string;
-  deadline?: string;
-  next_action?: string;
   summary?: string;
   responsibilities?: string[];
   requirements?: string[];
@@ -204,12 +201,22 @@ function profileFieldAvailability(profile: PersonalProfile): Record<string, bool
     major: education?.major,
     degree: education?.degree,
     gpa: education?.gpa,
+    educationCollege: education?.college,
+    educationDegree: education?.educationDegree,
+    educationForm: education?.educationForm,
+    educationCourses: education?.courses,
+    educationResearchDirection: education?.researchDirection,
+    educationThesis: education?.thesis,
+    educationRank: education?.rank,
+    overseasEducation: education?.overseasEducation,
+    minorMajor: education?.minorMajor,
+    advisorName: education?.advisorName,
     educationStartDate: education?.startDate,
     educationEndDate: education?.endDate,
     experienceOrganization: experience?.organization,
     experienceTitle: experience?.title,
     experienceStartDate: experience?.startDate,
-    experienceEndDate: experience?.endDate,
+    experienceEndDate: experience?.isCurrent ? "至今" : experience?.endDate,
     experienceDescription: experience?.description,
     projectName: project?.name,
     projectRole: project?.role,
@@ -286,7 +293,7 @@ function normalizeStage(value?: string): ApplicationStage | undefined {
   if (/面试|一面|二面|三面|hr面|复试/.test(stage)) return "interview";
   if (/笔试|测评|在线测试/.test(stage)) return "assessment";
   if (/初筛|复筛|筛选|简历评估|简历审核|资格审核|已投递|投递简历|简历处理中/.test(stage)) return "applied";
-  if (/待投递|网申/.test(stage)) return "to_apply";
+  if (/待投递|网申/.test(stage)) return "interested";
   if (/感兴趣|收藏/.test(stage)) return "interested";
   return undefined;
 }
@@ -315,7 +322,7 @@ function compactPageText(page: ExtractedJob): string {
 }
 
 function extractionPrompt(page: ExtractedJob): string {
-  return `你是 OfferDuoDuo 的招聘页面结构化引擎。请判断页面类型，并提取页面中所有明确出现的求职岗位或投递记录。
+  return `你是 JobKoI 的招聘页面结构化引擎。请判断页面类型，并提取页面中所有明确出现的求职岗位或投递记录。
 
 只返回 JSON，不要解释。结构必须是：
 {
@@ -328,10 +335,7 @@ function extractionPrompt(page: ExtractedJob): string {
       "job_id": "",
       "city": "",
       "job_type": "",
-      "stage": "感兴趣/待投递/已投递/笔试测评/面试/Offer/已结束",
-      "applied_at": "实际投递时间，YYYY-MM-DD或YYYY-MM-DDTHH:mm，无则为空字符串",
-      "deadline": "YYYY-MM-DD 或 YYYY-MM-DDTHH:mm，无则为空字符串",
-      "next_action": "",
+      "stage": "感兴趣/已投递/笔试测评/面试/Offer/已结束",
       "summary": "",
       "responsibilities": [],
       "requirements": [],
@@ -344,15 +348,15 @@ function extractionPrompt(page: ExtractedJob): string {
 1. “投递记录、申请记录、我的申请”页面通常是 application_list，必须返回页面中每一条岗位。
 2. 岗位编号可能在岗位名后的括号中，例如“产品经理（J101390）”。
 3. 进度条中当前高亮或最新到达的节点是 stage。
-4. “投递时间、申请时间”必须写入 applied_at，不能把网页抓取时间当成投递时间。
-5. 不要把“校园招聘、招聘官网、职位列表”等网站名称当作岗位名称。
+4. 投递时间由本地规则从页面中明确标注的“投递时间、申请时间、提交时间”读取；不要猜测、补充或改写它。
+5. 不要把“校园招聘、应届生招聘、招聘官网、职位列表”等网站或招聘类型名称当作岗位名称；“应届生招聘、校园招聘、秋招”等是招聘类型词，不是公司名，公司必须是雇主实体（例如“联想”）。
 6. 页面没有明确公司名时，可以从网站域名和页面标题合理判断，但不要臆造。
 7. 不确定的字段返回空字符串，不要编造。
 8. 页面进度证据由 DOM 状态生成，优先级高于纯文本推断；不得把尚未到达的后续节点当作当前阶段。
 
 页面信息：
 标题：${cleanSiteName(page.position)}
-规则初步识别公司：${cleanSiteName(page.company)}
+规则初步识别公司：${promptCompanyHint(page.company)}
 网址：${page.sourceUrl}
 域名：${page.sourceHost}
 
@@ -437,6 +441,18 @@ function cleanSiteName(value: string): string {
   return sanitizeAiPageText(value).replace(SITE_SUFFIX_PATTERN, "");
 }
 
+function promptCompanyHint(value: string): string {
+  const cleaned = cleanSiteName(value);
+  return cleaned && !isRecruitmentCampaignCompany(cleaned) ? cleaned : "";
+}
+
+function sanitizeModeledCompany(value?: string): string {
+  const company = value?.trim() || "";
+  // Recruitment campaign labels such as 应届生招聘 are hiring types, not
+  // employer entities; drop them so capture review falls back to page rules.
+  return company && !isRecruitmentCampaignCompany(company) ? company : "";
+}
+
 export function inferApplicationListFromUrl(sourceUrl?: string): boolean {
   const normalized = (sourceUrl || "").toLowerCase();
   return /(?:personal|account|user)\/(?:delivery|application|apply)(?:[-_]?(?:record|list|history))?|(?:^|\/)(?:delivery|applications?)(?:[-_]?(?:record|list|history)|$|\/)|my[-_]?applications|投递记录|申请记录/.test(
@@ -498,7 +514,9 @@ export async function extractWithDeepSeek(
 
   const returnedApplications = [...(parsed.applications || [])];
   const evidenceCompany =
-    returnedApplications.find((item) => item.company?.trim())?.company?.trim() || page.company;
+    returnedApplications
+      .map((item) => sanitizeModeledCompany(item.company))
+      .find(Boolean) || page.company;
   const reliableEvidence = (page.progressEvidence || [])
     .filter((evidence) => evidence.position && evidence.confidence >= 0.8)
     .sort((left, right) => Number(Boolean(right.jobId)) - Number(Boolean(left.jobId)))
@@ -527,7 +545,7 @@ export async function extractWithDeepSeek(
         });
         return {
           ...matched,
-          company: matched?.company?.trim() || evidenceCompany,
+          company: sanitizeModeledCompany(matched?.company) || evidenceCompany,
           position: matched?.position?.trim() || evidence.position,
           job_id: matched?.job_id?.trim() || evidence.jobId,
           stage: evidence.terminalStatus || evidence.currentStage,
@@ -560,15 +578,15 @@ export async function extractWithDeepSeek(
         inferredPageType === "application_list" || inferredPageType === "application_update";
 
       return {
-        company: item.company?.trim() || page.company,
+        company: sanitizeModeledCompany(item.company) || page.company,
         position: item.position?.trim() || page.position,
         department: item.department?.trim() || undefined,
         jobId: item.job_id?.trim() || undefined,
         city: item.city?.trim() || undefined,
         jobType: item.job_type?.trim() || undefined,
-        deadline: item.deadline?.trim() || undefined,
-        appliedAt: item.applied_at?.trim() || undefined,
-        nextAction: item.next_action?.trim() || "确认当前投递状态",
+        // Use only dates with page-level or same-record DOM evidence. Models are
+        // intentionally not allowed to infer a submission time from other dates.
+        appliedAt: progressEvidence?.appliedAt || page.appliedAt || undefined,
         summary: item.summary?.trim() || undefined,
         responsibilities: Array.isArray(item.responsibilities)
           ? item.responsibilities.filter(Boolean)

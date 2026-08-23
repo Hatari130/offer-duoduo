@@ -1,4 +1,4 @@
-# OfferFlow API
+# JobKoI API
 
 Server boundary shared by the website and browser extension. It owns database
 access, authentication, synchronization, opportunity imports and platform AI

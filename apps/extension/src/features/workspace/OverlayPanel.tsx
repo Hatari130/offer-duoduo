@@ -18,7 +18,6 @@ import {
   LayoutDashboard,
   MapPin,
   Megaphone,
-  MonitorUp,
   Plus,
   RefreshCw,
   Search,
@@ -103,7 +102,6 @@ export function OverlayPanel({
   onToggleFavorite,
   onRefresh,
   onRefreshOpportunities,
-  onOpenDashboard,
   onOpenResumeManager,
   onClose
 }: {
@@ -122,7 +120,6 @@ export function OverlayPanel({
   onToggleFavorite: (job: JobApplication) => void;
   onRefresh: () => void;
   onRefreshOpportunities: () => void;
-  onOpenDashboard: () => void;
   onOpenResumeManager: () => void;
   onClose: () => void;
 }) {
@@ -315,11 +312,9 @@ export function OverlayPanel({
           </button>
         </div>
         <div className="overlay-header-tools">
-          <button aria-label="打开简历中心" title="打开简历中心" onClick={onOpenResumeManager}>
+          <button className="overlay-resume-button" aria-label="打开简历中心" title="打开简历中心" onClick={onOpenResumeManager}>
             <FileText size={17} />
-          </button>
-          <button aria-label="打开网页工作台" title="打开网页工作台" onClick={onOpenDashboard}>
-            <MonitorUp size={17} />
+            <span>简历中心</span>
           </button>
           <button aria-label="刷新" onClick={onRefresh}>
             <RefreshCw size={17} />
@@ -581,7 +576,7 @@ export function OverlayPanel({
           <section className="overlay-page">
             <div className="overlay-page-title">
               <span className="overlay-section-icon"><Settings2 size={18} /></span>
-              <div><h1>连接</h1><p>OfferDuoDuo 的本地服务状态</p></div>
+              <div><h1>连接</h1><p>JobKoI 的本地服务状态</p></div>
             </div>
             <div className="overlay-connection-list">
               <div><Megaphone size={17} /><span><strong>校招机会</strong><small>{settings.opportunityFeedUrl ? `${opportunitySnapshot.opportunities.length} 条机会` : "使用内置数据或配置外部源"}</small></span><i className={opportunitySnapshot.opportunities.length ? "active" : ""} /></div>

@@ -29,6 +29,7 @@ vm.runInNewContext(output, {
 const {
   captureCandidatesFromProgress,
   isCapturePositionRejected,
+  isRecruitmentCampaignCompany,
   normalizeExternalStage,
   prepareCaptureForReview
 } = moduleBox.exports;
@@ -50,7 +51,7 @@ test("capture validation rejects process and campaign labels as positions", () =
   assert.equal(isCapturePositionRejected("AI面试产品经理"), false);
 });
 
-test("capture review preserves a deadline that has page evidence", () => {
+test("capture review excludes deadline data", () => {
   const result = prepareCaptureForReview({
     company: "蔚来",
     position: "提前批-AI产品经理（创新产品）",
@@ -61,7 +62,7 @@ test("capture review preserves a deadline that has page evidence", () => {
     sourceHost: "nio.jobs.feishu.cn",
     confidence: 0.98
   });
-  assert.equal(result.deadline, "2026-08-31");
+  assert.equal(result.deadline, undefined);
 });
 
 test("progress evidence becomes same-card capture candidates", () => {
@@ -139,7 +140,7 @@ test("current progress text is classified into explicit canonical buckets", () =
     ["Offer评估", "Offer"],
     ["录用", "Offer"],
     ["未通过", "已结束"],
-    ["待投递", "待投递"]
+    ["待投递", "感兴趣"]
   ];
   for (const [input, expected] of cases) {
     assert.equal(normalizeExternalStage(input), expected, input);
@@ -184,6 +185,51 @@ test("unsafe page-level fallback is blank and cannot masquerade as a position", 
   });
   assert.equal(result.position, "");
   assert.equal(result.confidence, 0.49);
+});
+
+test("recruitment campaign labels are not companies", () => {
+  for (const value of [
+    "应届生招聘",
+    "应届生",
+    "校招生",
+    "校园招聘",
+    "社会招聘",
+    "实习生招聘",
+    "秋招",
+    "招聘"
+  ]) {
+    assert.equal(isRecruitmentCampaignCompany(value), true, value);
+    assert.equal(isCapturePositionRejected(value), true, value);
+  }
+  assert.equal(isRecruitmentCampaignCompany("联想"), false);
+  assert.equal(isRecruitmentCampaignCompany("合合信息"), false);
+});
+
+test("campaign-label company falls back to the known host company", () => {
+  const result = prepareCaptureForReview({
+    company: "应届生招聘",
+    position: "产品经理-AI方向",
+    responsibilities: [],
+    requirements: [],
+    sourceUrl: "https://talent.lenovo.com.cn/campus/position/123",
+    sourceHost: "talent.lenovo.com.cn",
+    confidence: 0.76
+  });
+  assert.equal(result.company, "联想");
+  assert.equal(result.position, "产品经理-AI方向");
+});
+
+test("campaign-label company on an unknown host is blanked for the user to fill", () => {
+  const result = prepareCaptureForReview({
+    company: "应届生招聘",
+    position: "产品经理",
+    responsibilities: [],
+    requirements: [],
+    sourceUrl: "https://careers.example.com/position/1",
+    sourceHost: "careers.example.com",
+    confidence: 0.76
+  });
+  assert.equal(result.company, "");
 });
 
 test("zhiye delivery records get the cleaned page company and label-less applied time", () => {

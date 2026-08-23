@@ -35,7 +35,7 @@ export function SettingsPage() {
   return (
     <section className="data-page settings-page">
       <header className="page-header">
-        <div><span className="page-kicker"><ShieldCheck aria-hidden="true" size={14} />账号与同步</span><h1 tabIndex={-1}>设置与设备同步</h1><p>管理账号，并把浏览器插件连接到同一个 OfferFlow 工作台。</p></div>
+        <div><span className="page-kicker"><ShieldCheck aria-hidden="true" size={14} />账号与同步</span><h1 tabIndex={-1}>设置与设备同步</h1><p>管理账号，并把浏览器插件连接到同一个 JobKoI 工作台。</p></div>
       </header>
 
       <div className="settings-grid">
@@ -62,7 +62,7 @@ export function SettingsPage() {
 
         <section className="settings-card endpoint-card">
           <div className="settings-card-icon"><ShieldCheck aria-hidden="true" size={21} /></div>
-          <div><span className="settings-label">数据连接</span><h2>OfferFlow API</h2><p><code>{API_BASE_URL}</code></p><small>模型密钥和知识库只保存在服务端，不会进入 Web 或插件包。</small></div>
+          <div><span className="settings-label">数据连接</span><h2>JobKoI API</h2><p><code>{API_BASE_URL}</code></p><small>模型密钥和知识库只保存在服务端，不会进入 Web 或插件包。</small></div>
         </section>
       </div>
       <div className="page-announcer" role={message ? "alert" : "status"}>{message}</div>

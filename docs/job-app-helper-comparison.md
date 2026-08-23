@@ -1,14 +1,14 @@
-# 竞品研究：aurostars/Job-Application-Helper（秋招网申助手）vs OfferFlow
+# 竞品研究：aurostars/Job-Application-Helper（秋招网申助手）vs JobKoI
 
 > 研究日期：2026-08-08
 > 对象仓库：https://github.com/aurostars/Job-Application-Helper （MIT，37★，60 commits）
-> 对比基线：OfferFlow 扩展（`apps/extension`，Chrome MV3）
+> 对比基线：JobKoI 扩展（`apps/extension`，Chrome MV3）
 
 ---
 
 ## 0. 一句话区别
 
-| 维度 | Job-Application-Helper（对方） | OfferFlow（我们） |
+| 维度 | Job-Application-Helper（对方） | JobKoI（我们） |
 |------|-------------------------------|-------------------|
 | 产品定位 | **输入侧**：把已存资料「填进」招聘网站的网申表单 | **管理侧 + 输出侧**：抓 JD → 跟踪投递进度 → 改简历匹配 JD |
 | 核心价值 | 一键自动填写网申表单 + 简历上传 | 投递 pipeline 跟踪 + JD×简历对靶定制 + 导出 |
@@ -21,7 +21,7 @@
 
 ## 1. 架构对比
 
-| 项 | 对方 | OfferFlow |
+| 项 | 对方 | JobKoI |
 |----|------|-----------|
 | 形态 | 单包 Chrome MV3 扩展 | pnpm monorepo（`extension` + `web` + `api` + `packages/*`） |
 | 入口 | popup / options(资料管理) / sidepanel(信息浮窗) / offscreen(截图) / content / background | sidepanel / tailor / resume / dashboard + content + background |
@@ -78,7 +78,7 @@
 
 ---
 
-## 3. OfferFlow 实现逻辑（我们的强项）
+## 3. JobKoI 实现逻辑（我们的强项）
 
 来自对 `apps/extension` 的源码探索：
 
@@ -92,7 +92,7 @@
 
 ## 4. 关键能力对比表
 
-| 能力 | 对方 | OfferFlow |
+| 能力 | 对方 | JobKoI |
 |------|------|-----------|
 | 自动填表（资料→表单） | ✅ 完整引擎（检测/匹配/写入/多行/自定义组件/简历上传） | ✅ 完整引擎（扫描/ATS 适配/多控件写入/重复行展开/回读校验） |
 | 网申站深度适配 | ✅ 字节/牛客系硬编码（ud__select/applyFormModuleWrapper） | ✅ 北森/Beisen·Moka·牛客·腾讯+generic 适配器 |
@@ -116,7 +116,7 @@
 
 ---
 
-## 6. 对 OfferFlow 的启示 / 可借鉴点
+## 6. 对 JobKoI 的启示 / 可借鉴点
 
 1. **补「填表」短板**：若要做「一键把资料/定制简历填进招聘网站」，对方的 `FormDetector`/`FieldMatcher`/`FormFiller` 是高质量参考，尤其 React 受控写入、动态多行、日期范围顺序、简历上传。
 2. **视觉框选补填**：这是差异化「最后一公里」能力，可补齐我们表单填写的空白，且对方已验证 prompt + 截图 + 控件清单的可行性。

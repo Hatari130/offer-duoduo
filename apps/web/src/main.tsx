@@ -12,6 +12,7 @@ import "./styles/data-pages.css";
 import "./styles/company-directory.css";
 import "./styles/membership.css";
 import "./styles/resume-studio.css";
+import "./styles/browser-extension.css";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

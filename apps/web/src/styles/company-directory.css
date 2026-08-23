@@ -1,34 +1,36 @@
 .company-directory-page {
-  width: min(100%, 86rem);
+  width: min(100%, 88rem);
   min-height: 100%;
   margin-inline: auto;
-  padding: clamp(1.5rem, 3.5vw, 3.25rem);
+  padding: clamp(1.5rem, 4vw, 3.5rem);
 }
 
 .company-directory-hero {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 2rem;
+  grid-template-columns: minmax(16rem, 1fr) auto;
+  align-items: start;
+  gap: 1.25rem;
+  margin-block-end: 1.25rem;
 }
 
 .company-directory-hero h1 {
-  margin: 0.7rem 0 0.55rem;
+  margin: 0.28rem 0 0;
   outline: none;
   color: var(--of-text-strong);
-  font-size: clamp(2.15rem, 4vw, 3.2rem);
-  font-weight: 720;
+  font-family: var(--of-font-sans);
+  font-size: clamp(1.8rem, 2.8vw, 2.3rem);
+  font-weight: 760;
   line-height: 1.08;
   letter-spacing: -0.055em;
   text-wrap: balance;
 }
 
 .company-directory-hero > div:first-child > p {
-  max-width: 45rem;
-  margin: 0;
+  max-width: 34rem;
+  margin: 0.45rem 0 0;
   color: var(--of-text-muted);
-  font-size: 0.95rem;
-  line-height: 1.65;
+  font-size: 0.8125rem;
+  line-height: 1.5;
   text-wrap: pretty;
 }
 
@@ -82,7 +84,7 @@
   grid-template-columns: minmax(14rem, 22rem) auto minmax(0, 1fr);
   align-items: center;
   gap: 0.75rem;
-  margin-block: 2.25rem 2.5rem;
+  margin-block: 0 2.5rem;
 }
 
 .company-directory-search {
@@ -273,7 +275,33 @@
   text-align: center;
 }
 
-.company-direct-mark > span {
+.company-direct-mark > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0.22rem;
+  object-fit: contain;
+  opacity: 0;
+}
+
+.company-direct-mark.has-remote-logo {
+  background: var(--of-surface-raised);
+  border-color: var(--of-line);
+}
+
+.company-direct-mark.has-remote-logo > img { opacity: 1; }
+.company-direct-mark.has-remote-logo .company-direct-mark-fallback { visibility: hidden; }
+
+.company-direct-mark-fallback {
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+}
+
+.company-direct-mark-fallback > span {
   max-width: 2.3rem;
   overflow: hidden;
   padding-inline: 0.15rem;
@@ -283,7 +311,7 @@
   white-space: nowrap;
 }
 
-.company-direct-mark > svg {
+.company-direct-mark-fallback > svg {
   width: 1.6rem;
   height: 1.6rem;
   fill: currentcolor;
@@ -355,7 +383,7 @@
 @media (max-width: 48rem) {
   .company-directory-hero { grid-template-columns: 1fr; align-items: start; gap: 1.4rem; }
   .company-directory-summary { justify-content: start; }
-  .company-directory-toolbar { grid-template-columns: 1fr; margin-block: 1.75rem 2rem; }
+  .company-directory-toolbar { grid-template-columns: 1fr; margin-block: 0 2rem; }
   .company-visibility-filter { justify-self: start; }
   .company-directory-updated { grid-column: auto; }
   .company-card-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -365,8 +393,6 @@
   .company-directory-page {
     padding: 1.25rem max(1rem, var(--of-safe-right)) calc(2rem + var(--of-safe-bottom)) max(1rem, var(--of-safe-left));
   }
-  .company-directory-hero h1 { font-size: 2.15rem; }
-  .company-directory-hero > div:first-child > p { font-size: 0.9rem; }
   .company-directory-summary { width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .company-card-grid { grid-template-columns: 1fr; }
   .company-category-list { gap: 2.4rem; }

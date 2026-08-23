@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type DragEvent, type ReactNode } from "react";
 import {
-  ArrowLeft,
   ArrowRight,
   BriefcaseBusiness,
   Check,
@@ -223,6 +222,9 @@ function cloneProfile(profile: StoredResume["profile"]): StoredResume["profile"]
 
 export default function ResumeManagerApp() {
   const inputRef = useRef<HTMLInputElement>(null);
+  const expandLibraryButtonRef = useRef<HTMLButtonElement>(null);
+  const collapseLibraryButtonRef = useRef<HTMLButtonElement>(null);
+  const restoreLibraryToggleFocusRef = useRef(false);
   const [resumes, setResumes] = useState<StoredResume[]>([]);
   const [selectedId, setSelectedId] = useState("");
   const [activeId, setActiveId] = useState("");
@@ -234,6 +236,12 @@ export default function ResumeManagerApp() {
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
   const [libraryCollapsed, setLibraryCollapsed] = useState(false);
   const [libraryPinned, setLibraryPinned] = useState(false);
+
+  useEffect(() => {
+    if (!restoreLibraryToggleFocusRef.current) return;
+    restoreLibraryToggleFocusRef.current = false;
+    (libraryCollapsed ? expandLibraryButtonRef : collapseLibraryButtonRef).current?.focus({ preventScroll: true });
+  }, [libraryCollapsed]);
 
   useEffect(() => {
     let cancelled = false;
@@ -350,6 +358,11 @@ export default function ResumeManagerApp() {
     setLibraryCollapsed(next.collapsed);
     setLibraryPinned(next.pinned);
     await saveResumeLibraryUi(next);
+  };
+
+  const setLibraryVisibility = (collapsed: boolean) => {
+    restoreLibraryToggleFocusRef.current = true;
+    void saveLibraryUi({ collapsed });
   };
 
   const selectLibraryResume = (id: string) => {
@@ -617,34 +630,24 @@ export default function ResumeManagerApp() {
           </div>
         </div>
       )}
-      <header className="resume-manager-header">
-        <div className="resume-manager-brand">
-          <span className="resume-manager-mark"><ArrowRight size={18} strokeWidth={3} /></span>
-          <span>OFFER<strong>FLOW</strong></span>
-          <i />
-          <span className="resume-manager-title">简历中心</span>
-        </div>
-        <div className="resume-manager-actions">
-          <button className="resume-header-link" onClick={openPlugin}><ArrowLeft size={15} />返回插件</button>
-          <button className="resume-upload-button" onClick={() => inputRef.current?.click()} disabled={uploading}>
-            {uploading ? <RefreshCw className="spin" size={15} /> : <Plus size={16} />}
-            {uploading ? "解析中" : "上传新简历"}
-          </button>
-          <input ref={inputRef} hidden type="file" accept=".pdf,.docx,.txt,.md,.html" onChange={handleFileChange} />
-        </div>
-      </header>
+      <input ref={inputRef} hidden type="file" accept=".pdf,.docx,.txt,.md,.html" onChange={handleFileChange} />
 
       <div className={`resume-manager-body ${libraryCollapsed ? "library-collapsed" : ""}`}>
-        <aside className={`resume-library-sidebar ${libraryCollapsed ? "is-collapsed" : ""}`}>
+        <aside id="resume-library-panel" className={`resume-library-sidebar ${libraryCollapsed ? "is-collapsed" : ""}`}>
           <div className="resume-library-collapsed-tools">
             <button
-              onClick={() => void saveLibraryUi({ collapsed: false })}
+              ref={expandLibraryButtonRef}
+              className="resume-library-expand-button"
+              onClick={() => setLibraryVisibility(false)}
               aria-label="展开简历库"
+              aria-controls="resume-library-panel"
+              aria-expanded="false"
               title="展开简历库"
             >
-              <PanelLeftOpen size={18} />
+              <PanelLeftOpen size={19} aria-hidden="true" />
+              <span>展开</span>
             </button>
-            <span>{resumes.length}</span>
+            <span className="resume-library-collapsed-count"><strong>{resumes.length}</strong><small>份</small></span>
             <button
               className={libraryPinned ? "is-pinned" : ""}
               onClick={() => void saveLibraryUi({ pinned: !libraryPinned, collapsed: !libraryPinned ? false : true })}
@@ -658,8 +661,8 @@ export default function ResumeManagerApp() {
             <div><span className="resume-eyebrow">简历档案</span><h1>我的简历</h1></div>
             <div className="resume-library-tools">
               <span className="resume-total">{resumes.length}</span>
-              <button onClick={() => void saveLibraryUi({ collapsed: true })} aria-label="收起简历库" title="收起简历库">
-                <PanelLeftClose size={16} />
+              <button ref={collapseLibraryButtonRef} onClick={() => setLibraryVisibility(true)} aria-label="收起简历库" aria-controls="resume-library-panel" aria-expanded="true" title="收起简历库">
+                <PanelLeftClose size={16} aria-hidden="true" />
               </button>
               <button
                 className={libraryPinned ? "is-pinned" : ""}
@@ -732,23 +735,20 @@ export default function ResumeManagerApp() {
               </div>
             )}
           </div>
-          <div className="resume-local-note"><ShieldCheck size={15} /><span>简历保存在当前浏览器的 OfferDuoDuo 本地资料库。</span></div>
+          <div className="resume-local-note"><ShieldCheck size={15} /><span>简历保存在当前浏览器的 JobKoI 本地资料库。</span></div>
         </aside>
 
         <section className="resume-detail">
           {selected ? (
-            <>
-              <ResumeLifecycleSummary resume={selected} />
-              <ResumeEditor
-                resume={selected}
-                active={selected.id === activeId}
-                onBack={() => setSelectedId(resolveActiveResumeId(resumes, activeId) || resumes[0]?.id || "")}
-                onActivate={() => void activate(selected)}
-                onDelete={() => void removeResume(selected)}
-                onSave={(profile, metadata) => saveEditedResume(selected, profile, metadata)}
-                onOpenPlugin={openPlugin}
-              />
-            </>
+            <ResumeEditor
+              resume={selected}
+              active={selected.id === activeId}
+              onBack={() => setSelectedId(resolveActiveResumeId(resumes, activeId) || resumes[0]?.id || "")}
+              onActivate={() => void activate(selected)}
+              onDelete={() => void removeResume(selected)}
+              onSave={(profile, metadata) => saveEditedResume(selected, profile, metadata)}
+              onOpenPlugin={openPlugin}
+            />
           ) : (
             <EmptyResumeState onUpload={() => inputRef.current?.click()} />
           )}
@@ -757,48 +757,6 @@ export default function ResumeManagerApp() {
 
       {notice && <button className="resume-manager-notice" onClick={() => setNotice("")}><Check size={15} />{notice}<X size={14} /></button>}
     </main>
-  );
-}
-
-function ResumeLifecycleSummary({ resume }: { resume: StoredResume }) {
-  const health = parseHealth(resume);
-  const source = resume.source;
-  const parse = resume.parse;
-  const coverage = Math.round((parse?.coverage || 0) * 100);
-  const sourceMessage = resume.lifecycleStatus === "invalid"
-    ? resume.invalidReason || "版本关系已失效"
-    : resume.kind === "master"
-      ? source?.storageStatus === "stored"
-        ? source.layoutStatus === "ready"
-          ? "原始文件与版式母版均已验证"
-          : "原始文件已保存，版式母版尚待验证"
-        : "原始文件缺失，需要重新导入"
-      : resume.masterResumeId
-        ? "此版本引用原始母版，修改不会覆盖原文件"
-        : "独立结构化版本，尚未关联原始母版";
-
-  return (
-    <section className={`resume-lifecycle-summary ${health.className}`} aria-label="简历版本与解析状态">
-      <div className="resume-lifecycle-main">
-        <span className="resume-lifecycle-kind">{resumeKindLabel(resume.kind)} · v{resume.versionNumber || 1}</span>
-        <strong>{sourceMessage}</strong>
-        <small>
-          {source?.fileName || resume.sourceFileName || "无来源文件"}
-          {source?.sha256 ? ` · SHA-256 ${source.sha256.slice(0, 10)}…` : " · 来源哈希待补全"}
-        </small>
-      </div>
-      <div className="resume-lifecycle-stats">
-        <span><strong>{source?.pageCount || "—"}</strong><small>页数</small></span>
-        <span><strong>{parse?.textLength || source?.characterCount || "—"}</strong><small>字符</small></span>
-        <span><strong>{coverage}%</strong><small>结构覆盖</small></span>
-        <span className={`resume-health-stat ${health.className}`}><strong>{health.label}</strong><small>{health.detail}</small></span>
-      </div>
-      {parse?.warnings.length ? (
-        <div className="resume-lifecycle-warning">
-          <strong>待核对：</strong>{parse.warnings.slice(0, 2).join("；")}{parse.warnings.length > 2 ? ` 等 ${parse.warnings.length} 项` : ""}
-        </div>
-      ) : null}
-    </section>
   );
 }
 
@@ -932,7 +890,7 @@ function ResumeDetail({
         <ResumeInfoCard
           icon={<GraduationCap size={17} />}
           title="教育经历"
-          items={[["学校", education?.school], ["专业", education?.major], ["学历", education?.degree], ["时间", education ? `${education.startDate || ""} — ${education.endDate || ""}` : ""]]}
+          items={[["学校", education?.school], ["学院", education?.college], ["专业", education?.major], ["学历", education?.degree], ["学习形式", education?.educationForm], ["时间", education ? `${education.startDate || ""} — ${education.endDate || ""}` : ""]]}
         />
         <ResumeInfoCard
           icon={<BriefcaseBusiness size={17} />}

@@ -18,7 +18,6 @@ import {
   LayoutDashboard,
   MapPin,
   Megaphone,
-  MonitorUp,
   Plus,
   RefreshCw,
   Search,
@@ -70,8 +69,8 @@ import {
   publishOpportunityFeed
 } from "@/infrastructure/sync/opportunitySync";
 import {
-  STAGES,
   STAGE_LABELS,
+  selectableStage,
   type ApplicationStage,
   type ExtractedJob,
   type JobApplication,
@@ -150,9 +149,10 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       let migrationChanged = false;
       const migratedJobs = storedJobs.map((job) => {
         const appliedAt = inferAppliedAt(job);
-        if (!job.appliedAt && appliedAt) {
+        const stage = selectableStage(job.stage);
+        if ((!job.appliedAt && appliedAt) || stage !== job.stage) {
           migrationChanged = true;
-          return { ...job, appliedAt };
+          return { ...job, appliedAt, stage };
         }
         return job;
       });
@@ -344,8 +344,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           position: "产品经理",
           city: "上海",
           jobId: "DEMO-001",
-          deadline: new Date(Date.now() + 7 * 86400000).toISOString().slice(0, 10),
-          nextAction: "完成网申",
           summary: "负责产品规划、需求分析与跨团队协作。",
           responsibilities: ["负责产品规划", "推进项目落地"],
           requirements: ["具备产品分析能力"],
@@ -356,7 +354,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       } else {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (!tab.id || !tab.url?.startsWith("http")) {
-          throw new Error("请在招聘网页中使用 OfferDuoDuo");
+          throw new Error("请在招聘网页中使用 JobKoI");
         }
         const requestExtraction = () =>
           chrome.tabs.sendMessage(tab.id!, {
@@ -438,12 +436,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     const now = new Date().toISOString();
 
     if (mode === "update" && duplicate) {
-      const nextStage = capture.suggestedStage || duplicate.stage;
+      const nextStage = selectableStage(capture.suggestedStage || duplicate.stage);
       const updated: JobApplication = {
         ...duplicate,
         ...capture,
         id: duplicate.id,
         stage: nextStage,
+        deadline: duplicate.deadline,
+        nextAction: duplicate.nextAction,
         createdAt: duplicate.createdAt,
         updatedAt: now,
         events: [
@@ -463,21 +463,21 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       const created: JobApplication = {
         ...capture,
         id: createId("job"),
-        stage: capture.suggestedStage || "interested",
+        stage: selectableStage(capture.suggestedStage),
         createdAt: now,
         updatedAt: now,
         events: [
           {
             id: createId("evt"),
             type: "created",
-            title: "从招聘网页加入 OfferDuoDuo",
+            title: "从招聘网页加入 JobKoI",
             occurredAt: now,
             sourceUrl: capture.sourceUrl
           }
         ]
       };
       await persistJobs([created, ...jobs]);
-      setNotice("岗位已加入 OfferDuoDuo");
+      setNotice("岗位已加入 JobKoI");
     }
 
     setCapture(null);
@@ -507,7 +507,9 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           ...duplicate,
           ...candidate,
           id: duplicate.id,
-          stage: trustedStage || duplicate.stage,
+          stage: selectableStage(trustedStage || duplicate.stage),
+          deadline: duplicate.deadline,
+          nextAction: duplicate.nextAction,
           externalStage: trustedStage
             ? candidate.externalStage || duplicate.externalStage
             : duplicate.externalStage,
@@ -530,14 +532,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         const created: JobApplication = {
           ...candidate,
           id: createId("job"),
-          stage: candidate.suggestedStage || "applied",
+          stage: selectableStage(candidate.suggestedStage || "applied"),
           createdAt: now,
           updatedAt: now,
           events: [
             {
               id: createId("evt"),
               type: "created",
-              title: "从投递记录页导入 OfferDuoDuo",
+              title: "从投递记录页导入 JobKoI",
               occurredAt: now,
               sourceUrl: candidate.sourceUrl
             }
@@ -565,7 +567,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       }
       const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
       if (!tab.id || !tab.url?.startsWith("http")) {
-        throw new Error("请在招聘网页中使用 OfferDuoDuo");
+        throw new Error("请在招聘网页中使用 JobKoI");
       }
       const requestExtraction = () =>
         chrome.tabs.sendMessage(tab.id!, {
@@ -624,14 +626,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     const now = new Date().toISOString();
     const updated: JobApplication = {
       ...job,
-      stage,
+      stage: selectableStage(stage),
       updatedAt: now,
       events: [
         ...job.events,
         {
           id: createId("evt"),
           type: "stage_changed",
-          title: `阶段更新：${STAGE_LABELS[job.stage]} → ${STAGE_LABELS[stage]}`,
+          title: `阶段更新：${STAGE_LABELS[job.stage]} → ${STAGE_LABELS[selectableStage(stage)]}`,
           occurredAt: now
         }
       ]
@@ -756,18 +758,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
 
   const activeCount = jobs.filter((job) => job.stage !== "closed").length;
   const urgentCount = jobs.filter((job) => dueState(job.deadline) === "soon").length;
-  const openWebDashboard = () => {
-    const url =
-      typeof chrome !== "undefined" && chrome.runtime?.getURL
-        ? chrome.runtime.getURL("resume.html")
-        : new URL("resume.html", window.location.href).href;
-    if (typeof chrome !== "undefined" && chrome.tabs?.create) {
-      void chrome.tabs.create({ url });
-      return;
-    }
-    window.open(url, "_blank", "noopener,noreferrer");
-  };
-
   const openResumeManager = () => {
     const url =
       typeof chrome !== "undefined" && chrome.runtime?.getURL
@@ -879,7 +869,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               void refreshOpportunities().catch(() => undefined);
             }}
             onRefreshOpportunities={() => void refreshOpportunities().catch(() => undefined)}
-            onOpenDashboard={openWebDashboard}
             onOpenResumeManager={openResumeManager}
             onClose={closeOverlay}
           />
@@ -917,14 +906,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           >
             <FileText size={16} />
             简历中心
-          </button>
-          <button
-            className="workspace-button"
-            onClick={openWebDashboard}
-            title="打开网页工作台"
-          >
-            <MonitorUp size={16} />
-            网页工作台
           </button>
           <button
             className="capture-button"
@@ -1004,7 +985,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div>
                 <span className="eyebrow">数据与连接</span>
                 <h1>把记录留在你手里</h1>
-                <p>OfferDuoDuo 保存主数据，Obsidian 接收可阅读、可继续补充的 Markdown。</p>
+                <p>JobKoI 保存主数据，Obsidian 接收可阅读、可继续补充的 Markdown。</p>
               </div>
             </div>
 
@@ -1053,7 +1034,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div className="setting-copy">
                 <h3>Obsidian Markdown</h3>
                 <p>
-                  选择 Vault 中的岗位目录。同步只更新 OfferDuoDuo 管理区域，不覆盖你的准备笔记。
+                  选择 Vault 中的岗位目录。同步只更新 JobKoI 管理区域，不覆盖你的准备笔记。
                 </p>
                 <div className="connection-state">
                   <span className={settings.obsidianFolderName ? "connected-dot" : "empty-dot"} />

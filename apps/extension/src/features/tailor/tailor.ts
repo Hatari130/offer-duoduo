@@ -27,7 +27,7 @@ import { validatePdfTailoringPatches } from "./pdfTailoringPatches";
 const API_URL = "https://api.deepseek.com/chat/completions";
 const MAX_OUTPUT_TOKENS = 8192;
 
-const SYSTEM_PROMPT = `你是 OfferDuoDuo 的简历定制助手。基于候选人已上传的真实资料 + 招聘JD的事实陈述，输出一份针对该JD量身定制的中文简历结构化 JSON。
+const SYSTEM_PROMPT = `你是 JobKoI 的简历定制助手。基于候选人已上传的真实资料 + 招聘JD的事实陈述，输出一份针对该JD量身定制的中文简历结构化 JSON。
 严格要求：
 1. 不得编造公司、奖项、数字、客户、模型、专利、行业、团队规模等任何事实。
 2. 不得删除既有内容来"凑"JD 关键词；只能改写措辞、调整顺序。

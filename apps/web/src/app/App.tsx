@@ -13,6 +13,7 @@ import { ExtensionConnectPage } from "../pages/ExtensionConnectPage";
 import { MembershipPage } from "../pages/MembershipPage";
 import { ResumeStudioPage } from "../pages/ResumeStudioPage";
 import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
+import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
 import { Logo } from "../components/Logo";
 
 const titles: Array<[RegExp, string]> = [
@@ -23,22 +24,24 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/resumes\/tailor/, "岗位定制简历"],
   [/^\/app\/resumes/, "简历中心"],
   [/^\/app\/upgrade/, "升级至 Pro"],
-  [/^\/app\/settings/, "设置与设备同步"]
+  [/^\/app\/settings/, "设置与设备同步"],
+  [/^\/browser-extension/, "浏览器插件"]
 ];
 
 export function App() {
   const pathname = usePathname();
   const { status } = useAuth();
   const extensionConnect = pathname.startsWith("/extension/connect");
+  const extensionLanding = pathname.startsWith("/browser-extension");
 
   useEffect(() => {
-    if (status === "anonymous" && pathname !== "/login" && !extensionConnect) navigate("/login", { replace: true });
-    if (status === "authenticated" && !pathname.startsWith("/app") && !extensionConnect) navigate("/app/chat", { replace: true });
-  }, [extensionConnect, pathname, status]);
+    if (status === "anonymous" && pathname !== "/login" && !extensionConnect && !extensionLanding) navigate("/login", { replace: true });
+    if (status === "authenticated" && !pathname.startsWith("/app") && !extensionConnect && !extensionLanding) navigate("/app/chat", { replace: true });
+  }, [extensionConnect, extensionLanding, pathname, status]);
 
   useEffect(() => {
     const section = titles.find(([pattern]) => pattern.test(pathname))?.[1];
-    document.title = section ? `${section} · OfferFlow` : "OfferFlow · 求职工作台";
+    document.title = section ? `${section} · JobKoI` : "JobKoI · 求职工作台";
     if (status === "authenticated") {
       window.requestAnimationFrame(() => document.querySelector<HTMLElement>("#main-content h1")?.focus());
     }
@@ -54,6 +57,8 @@ export function App() {
     window.addEventListener("keydown", shortcut);
     return () => window.removeEventListener("keydown", shortcut);
   }, []);
+
+  if (extensionLanding) return <BrowserExtensionPage />;
 
   if (status === "loading") {
     return (

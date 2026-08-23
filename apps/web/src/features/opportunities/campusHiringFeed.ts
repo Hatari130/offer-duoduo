@@ -47,17 +47,22 @@ function normalizeItem(value: unknown): CampusHiringOpportunity | undefined {
   if (!value || typeof value !== "object") return undefined;
   const item = value as Record<string, unknown>;
   const company = text(item.company);
-  const applyUrl = text(item.applyUrl);
-  const announcementUrl = text(item.announcementUrl);
-  const officialUrl = validHttpUrl(applyUrl)
-    ? applyUrl
-    : validHttpUrl(announcementUrl)
-      ? announcementUrl
-      : "";
+  const applyUrlValue = text(item.applyUrl);
+  const announcementUrlValue = text(item.announcementUrl);
+  const cityValue = text(item.city);
+  const applyUrl = validHttpUrl(applyUrlValue) ? applyUrlValue : "";
+  const announcementUrl = validHttpUrl(announcementUrlValue) ? announcementUrlValue : "";
+  const cityUrl = validHttpUrl(cityValue) ? cityValue : "";
+  const positions = list(item.positions);
+  const usesShiftedFields = Boolean(cityUrl)
+    || (!cityValue && applyUrlValue === "待投递" && Boolean(announcementUrl));
+  const officialUrl = applyUrl || announcementUrl || cityUrl;
   if (!company || !officialUrl) return undefined;
 
   const deadlineLabel = text(item.deadline) || undefined;
   const deadline = normalizedDeadline(item.deadline);
+  const sourceUpdatedAt = text(item.updatedAt) || undefined;
+  const openAt = normalizedDeadline(sourceUpdatedAt);
   const targetCohort = text(item.targetCohort);
   const industry = text(item.industry);
   const companyType = text(item.companyType);
@@ -66,15 +71,16 @@ function normalizeItem(value: unknown): CampusHiringOpportunity | undefined {
     company,
     title: targetCohort || "校园招聘",
     batch: text(item.type) || undefined,
+    openAt,
     deadline,
     deadlineLabel,
     graduationYears: list(targetCohort),
-    roleTags: list(item.positions),
-    cities: list(item.city),
+    roleTags: usesShiftedFields ? [] : positions,
+    cities: usesShiftedFields ? positions : list(cityValue),
     officialUrl,
-    sourceUrl: validHttpUrl(announcementUrl) ? announcementUrl : undefined,
+    sourceUrl: cityUrl || announcementUrl || undefined,
     sourceName: "Campus Hiring 公开数据",
-    updatedAt: text(item.updatedAt) || undefined,
+    updatedAt: sourceUpdatedAt,
     industry: industry || undefined,
     companyType: companyType || undefined
   };

@@ -63,7 +63,7 @@ export function LoginPage() {
 
   return (
     <main className="auth-page">
-      <section className="auth-visual" aria-label="OfferFlow 品牌插画">
+      <section className="auth-visual" aria-label="JobKoI 品牌插画">
         <img src={loginJourney} alt="" />
         <div className="auth-brand"><Logo /></div>
         <div className="auth-visual-copy">
@@ -78,7 +78,7 @@ export function LoginPage() {
         <div className="auth-card">
           <div className="auth-card-orbit" aria-hidden="true"><i /><i /><i /></div>
           <header>
-            <span className="auth-eyebrow">欢迎来到 OfferFlow</span>
+            <span className="auth-eyebrow">欢迎来到 JobKoI</span>
             <h2>{mode === "login" ? "继续你的求职航程" : "建立你的求职工作台"}</h2>
             <p>{mode === "login" ? "登录后同步对话、机会与投递记录。" : "创建账号，在 Web 与浏览器插件之间同步进度。"}</p>
           </header>
@@ -154,7 +154,7 @@ export function LoginPage() {
           <button className="auth-demo" type="button" onClick={useDemo} disabled={busy}>
             进入体验账号
           </button>
-          <footer><ShieldCheck aria-hidden="true" size={14} />登录信息只用于 OfferFlow 数据同步</footer>
+          <footer><ShieldCheck aria-hidden="true" size={14} />登录信息只用于 JobKoI 数据同步</footer>
         </div>
       </section>
     </main>

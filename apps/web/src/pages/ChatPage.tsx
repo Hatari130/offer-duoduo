@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ChatAttachment, ChatConversation, ChatMessage } from "@offerflow/domain";
 import { CAREER_CHAT_SUGGESTIONS } from "@offerflow/domain";
-import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, Waypoints } from "lucide-react";
+import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
@@ -219,7 +219,6 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     <section className={`chat-page${isEmpty ? " chat-page--empty" : ""}`}>
       {isEmpty ? (
         <div className="chat-welcome">
-          <div className="welcome-kicker"><Waypoints aria-hidden="true" size={15} />OfferFlow 求职助手</div>
           <h1 tabIndex={-1}>今天想先解决哪一步？</h1>
           <p>聊岗位、改经历、做规划。回答会优先检索你的求职知识库，并标出参考来源。</p>
           <ChatComposer
@@ -232,13 +231,11 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
-          <section className="recommendation-section" aria-labelledby="recommendation-title">
+          <section className="recommendation-section" aria-label="为你推荐">
             <header>
               <div>
                 <span className="recommendation-label"><Compass aria-hidden="true" size={14} />为你推荐</span>
-                <h2 id="recommendation-title">从一个具体问题开始</h2>
               </div>
-              <p>基于常见求职场景整理，选择后可继续补充你的情况。</p>
             </header>
             <div className="recommendation-grid">
               {recommendationCards.map((card) => {

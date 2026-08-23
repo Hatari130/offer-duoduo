@@ -18,13 +18,13 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
-  Rocket,
+  Puzzle,
   Settings,
   X
 } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
-import { navigate } from "../app/router";
+import { navigate, startUiTransition } from "../app/router";
 import { Logo } from "../components/Logo";
 
 interface AppLinkProps extends PropsWithChildren {
@@ -122,13 +122,13 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
   };
   const toggleSidebar = () => {
-    setSidebarCollapsed((current) => {
-      const next = !current;
+    const next = !sidebarCollapsed;
+    startUiTransition(() => {
       window.localStorage.setItem("offerflow:sidebar-collapsed", String(next));
       setAccountOpen(false);
       setContactOpen(false);
-      return next;
-    });
+      setSidebarCollapsed(next);
+    }, "sidebar");
   };
 
   return (
@@ -229,10 +229,18 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </section>
 
         <div className="sidebar-footer">
-          <AppLink href="/app/upgrade" className="upgrade-pro-button" title={sidebarCollapsed ? "升级至 Pro" : undefined} onNavigate={closeMobile}>
-            <Rocket aria-hidden="true" size={16} />
-            <span>升级至 Pro</span>
-          </AppLink>
+          <a
+            href="/browser-extension"
+            className="extension-entry-button"
+            title={sidebarCollapsed ? "获取浏览器插件" : undefined}
+            target="_blank"
+            rel="noreferrer"
+            onClick={closeMobile}
+          >
+            <Puzzle aria-hidden="true" size={16} />
+            <span>获取浏览器插件</span>
+            <em>免费</em>
+          </a>
 
           <div className="sidebar-account-row">
             <div
@@ -252,14 +260,14 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                 onClick={() => setAccountOpen((current) => !current)}
               >
                 <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
-                <span><strong>{user?.displayName || "OfferFlow 用户"}</strong><small>Free</small></span>
+                <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>Free</small></span>
                 <ChevronDown aria-hidden="true" size={15} />
               </button>
 
               <div className="account-popover" id="account-popover" aria-label="账户菜单">
                 <header className="account-profile">
                   <span className="account-avatar account-avatar--large">{user?.displayName.slice(0, 1) || "O"}</span>
-                  <span><strong>{user?.displayName || "OfferFlow 用户"}</strong><small>{user?.email}</small></span>
+                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>{user?.email}</small></span>
                 </header>
 
                 <section className="account-plan-card" aria-label="当前会员方案">
@@ -326,9 +334,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                   <MessageCircleMore size={28} />
                   <i /><i /><i />
                 </div>
-                <p>遇到问题或有产品建议？欢迎加入 OfferFlow 求职交流 QQ 群。</p>
+                <p>遇到问题或有产品建议？欢迎加入 JobKoI 求职交流 QQ 群。</p>
                 <div className="qq-group-placeholder">
-                  <span>OfferFlow 求职交流群</span>
+                  <span>JobKoI 求职交流群</span>
                   <strong>QQ群号待接入</strong>
                 </div>
                 <button className="contact-primary" type="button" disabled>QQ群即将开放</button>

@@ -227,7 +227,9 @@
     {
       id: "feishu-career",
       name: "飞书招聘 ATSX",
-      hosts: [/^campus\.duxiaoman\.com$/i],
+      // ATSX uses a tenant-owned career domain. Keep known tenants here so
+      // their Formily/Universe controls never depend on generic detection.
+      hosts: [/^campus\.duxiaoman\.com$/i, /^campus\.dewu\.com$/i],
       markers: [".ud-formily-item", ".ud__select", ".throne-biz-date-range-picker-wrapper"],
       mappings: [
         ["fullName", "姓名|name"],

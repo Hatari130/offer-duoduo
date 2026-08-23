@@ -202,15 +202,13 @@ img {
 }
 
 .brand-wordmark {
-  font-family: var(--of-font-serif);
-  font-size: 1.14rem;
+  color: var(--of-accent);
+  font-family: var(--of-font-sans);
+  font-size: 1.28rem;
   font-weight: var(--of-font-weight-bold);
-  letter-spacing: var(--of-letter-spacing-tight);
+  letter-spacing: -0.035em;
   line-height: 1;
-}
-
-.brand-wordmark span {
-  color: var(--of-accent-hover);
+  white-space: nowrap;
 }
 
 .primary-button,
@@ -303,6 +301,15 @@ img {
   to { opacity: 1; transform: translateY(0); }
 }
 
+@keyframes of-sidebar-exit {
+  to { opacity: 0; }
+}
+
+@keyframes of-sidebar-enter {
+  from { opacity: 0.82; }
+  to { opacity: 1; }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
@@ -342,6 +349,14 @@ img {
     view-transition-name: offerflow-local;
   }
 
+  html[data-offerflow-transition="sidebar"] .app-sidebar {
+    view-transition-name: offerflow-sidebar;
+  }
+
+  html[data-offerflow-transition="sidebar"] .workspace-shell {
+    view-transition-name: offerflow-workspace;
+  }
+
   ::view-transition-group(offerflow-route) {
     animation-duration: var(--of-duration-base);
     animation-timing-function: var(--of-ease-out);
@@ -372,12 +387,40 @@ img {
     animation-timing-function: var(--of-ease-out);
   }
 
+  ::view-transition-group(offerflow-sidebar),
+  ::view-transition-group(offerflow-workspace) {
+    animation-duration: var(--of-duration-base);
+    animation-timing-function: var(--of-ease-out);
+  }
+
   ::view-transition-old(offerflow-local) {
     animation: of-local-exit 100ms ease-out both;
   }
 
   ::view-transition-new(offerflow-local) {
     animation: of-local-enter var(--of-duration-fast) var(--of-ease-out) both;
+  }
+
+  ::view-transition-image-pair(offerflow-sidebar),
+  ::view-transition-image-pair(offerflow-workspace) {
+    isolation: isolate;
+  }
+
+  ::view-transition-old(offerflow-sidebar),
+  ::view-transition-old(offerflow-workspace),
+  ::view-transition-new(offerflow-sidebar),
+  ::view-transition-new(offerflow-workspace) {
+    mix-blend-mode: normal;
+  }
+
+  ::view-transition-old(offerflow-sidebar),
+  ::view-transition-old(offerflow-workspace) {
+    animation: of-sidebar-exit 100ms ease-out both;
+  }
+
+  ::view-transition-new(offerflow-sidebar),
+  ::view-transition-new(offerflow-workspace) {
+    animation: of-sidebar-enter var(--of-duration-base) var(--of-ease-out) both;
   }
 
   html[data-offerflow-transition-fallback="route"] :is(
@@ -392,6 +435,10 @@ img {
   html[data-offerflow-transition-fallback="application-view"] .application-view-content,
   html[data-offerflow-transition-fallback="resume-tab"] .resume-studio-workspace {
     animation: of-local-enter var(--of-duration-fast) var(--of-ease-out) both;
+  }
+
+  html[data-offerflow-transition-fallback="sidebar"] :is(.app-sidebar, .workspace-shell) {
+    animation: of-sidebar-enter var(--of-duration-fast) var(--of-ease-out) both;
   }
 }
 

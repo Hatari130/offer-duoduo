@@ -1,23 +1,37 @@
 import { useEffect, useMemo, useState } from "react";
 import type { OpportunityStatus } from "@offerflow/domain";
 import {
+  AlarmClock,
   ArrowRight,
   ArrowUpRight,
+  BriefcaseBusiness,
   CalendarClock,
-  Filter,
+  CircleAlert,
+  CircleCheck,
+  ChevronLeft,
+  ChevronRight,
+  House,
   MapPin,
   RefreshCw,
-  Route,
-  Search
+  Search,
+  Sparkles,
+  X
 } from "lucide-react";
 import {
   CAMPUS_HIRING_FEED_URL,
   fetchCampusHiringFeed,
   type CampusHiringOpportunity
 } from "../features/opportunities/campusHiringFeed";
+import { navigate } from "../app/router";
 
-const PAGE_SIZE = 80;
+const PAGE_SIZE = 20;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
+const FEATURED_CITIES = [
+  "北京", "上海", "深圳", "广州", "杭州", "南京", "成都", "武汉", "西安", "苏州",
+  "天津", "重庆", "长沙", "合肥", "郑州", "青岛", "厦门", "福州", "济南", "宁波",
+  "无锡", "东莞", "佛山", "珠海", "大连", "沈阳", "长春", "哈尔滨", "昆明", "贵阳",
+  "南宁", "海口", "石家庄", "太原", "兰州", "乌鲁木齐", "呼和浩特"
+] as const;
 
 const statusLabels: Record<OpportunityStatus, string> = {
   upcoming: "即将开始",
@@ -33,6 +47,26 @@ interface DeadlineCopy {
   tone: "default" | "urgent" | "closed";
 }
 
+type PaginationItem = number | "start-ellipsis" | "end-ellipsis";
+type OpportunityQuickFilter = "all" | "latest" | "open" | "closing" | "ongoing";
+
+function paginationItems(currentPage: number, totalPages: number): PaginationItem[] {
+  if (totalPages <= 7) {
+    return Array.from({ length: totalPages }, (_, index) => index + 1);
+  }
+
+  const firstVisiblePage = Math.max(2, currentPage - 1);
+  const lastVisiblePage = Math.min(totalPages - 1, currentPage + 1);
+  const items: PaginationItem[] = [1];
+
+  if (firstVisiblePage > 2) items.push("start-ellipsis");
+  for (let page = firstVisiblePage; page <= lastVisiblePage; page += 1) items.push(page);
+  if (lastVisiblePage < totalPages - 1) items.push("end-ellipsis");
+  items.push(totalPages);
+
+  return items;
+}
+
 function dateLabel(value?: string): string {
   if (!value) return "待公布";
   const date = new Date(`${value}T00:00:00`);
@@ -40,14 +74,30 @@ function dateLabel(value?: string): string {
   return new Intl.DateTimeFormat("zh-CN", { month: "short", day: "numeric" }).format(date);
 }
 
-function updatedLabel(value?: string): string {
-  if (!value) return "更新时间未知";
+function feedTimestampLabel(value?: string): string {
+  if (!value) return "等待同步";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return value;
   return new Intl.DateTimeFormat("zh-CN", {
-    month: "short",
+    month: "long",
     day: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
-  }).format(new Date(value));
+    minute: "2-digit",
+    hour12: false
+  }).format(date);
+}
+
+function qccSearchUrl(company: string): string {
+  return `https://www.qcc.com/web/search?key=${encodeURIComponent(company.trim())}`;
+}
+
+function uniqueOptions(values: Array<string | undefined>): string[] {
+  return Array.from(new Set(values.map((value) => value?.trim()).filter((value): value is string => Boolean(value))))
+    .sort((left, right) => left.localeCompare(right, "zh-CN"));
+}
+
+function isOpenOpportunity(status?: OpportunityStatus): boolean {
+  return status === "open" || status === "ongoing" || status === "closing";
 }
 
 function deadlineCopy(opportunity: CampusHiringOpportunity): DeadlineCopy {
@@ -85,7 +135,7 @@ function OpportunityTags({ company, tags }: { company: string; tags: string[] })
   if (tags.length === 0) return null;
   return (
     <ul className="tag-row" aria-label={`${company} 的岗位方向`}>
-      {tags.slice(0, 3).map((tag, index) => <li key={`${tag}-${index}`} title={tag}>{tag}</li>)}
+      {tags.slice(0, 2).map((tag, index) => <li key={`${tag}-${index}`} title={tag}>{tag}</li>)}
     </ul>
   );
 }
@@ -107,10 +157,15 @@ export function OpportunitiesPage() {
   const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [sourceUpdatedAt, setSourceUpdatedAt] = useState<string>();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | OpportunityStatus>("all");
-  const [updatedAt, setUpdatedAt] = useState<string>();
-  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const [city, setCity] = useState("all");
+  const [industry, setIndustry] = useState("all");
+  const [cohort, setCohort] = useState("all");
+  const [batch, setBatch] = useState("all");
+  const [quickFilter, setQuickFilter] = useState<OpportunityQuickFilter>("all");
+  const [page, setPage] = useState(1);
 
   const load = (signal?: AbortSignal) => {
     setLoading(true);
@@ -118,14 +173,16 @@ export function OpportunitiesPage() {
     fetchCampusHiringFeed(signal)
       .then((result) => {
         setOpportunities(result.opportunities);
-        setUpdatedAt(result.sourceUpdatedAt || result.fetchedAt);
-        setVisibleCount(PAGE_SIZE);
+        setSourceUpdatedAt(result.sourceUpdatedAt || result.fetchedAt);
+        setPage(1);
       })
       .catch((requestError) => {
         if (requestError instanceof DOMException && requestError.name === "AbortError") return;
         setError(requestError instanceof Error ? requestError.message : "无法载入校招信息");
       })
-      .finally(() => setLoading(false));
+      .finally(() => {
+        if (!signal?.aborted) setLoading(false);
+      });
   };
 
   useEffect(() => {
@@ -137,6 +194,31 @@ export function OpportunitiesPage() {
       window.clearInterval(timer);
     };
   }, []);
+
+  const dashboard = useMemo(() => {
+    const latestOpenAt = opportunities.reduce<string | undefined>((latest, opportunity) => {
+      if (!opportunity.openAt) return latest;
+      return !latest || opportunity.openAt > latest ? opportunity.openAt : latest;
+    }, undefined);
+    return {
+      latestOpenAt,
+      latestCount: latestOpenAt ? opportunities.filter((opportunity) => opportunity.openAt === latestOpenAt).length : 0,
+      openCount: opportunities.filter((opportunity) => isOpenOpportunity(opportunity.status)).length,
+      closingCount: opportunities.filter((opportunity) => opportunity.status === "closing").length,
+      ongoingCount: opportunities.filter((opportunity) => opportunity.status === "ongoing").length
+    };
+  }, [opportunities]);
+
+  const filterOptions = useMemo(() => ({
+    cities: FEATURED_CITIES.filter((featuredCity) => opportunities.some((opportunity) =>
+      opportunity.cities.some((location) => location.includes(featuredCity))
+    )),
+    industries: uniqueOptions(opportunities.flatMap((opportunity) =>
+      (opportunity.industry || "").split(/[,，/]+/)
+    )),
+    cohorts: uniqueOptions(opportunities.flatMap((opportunity) => opportunity.graduationYears)),
+    batches: uniqueOptions(opportunities.map((opportunity) => opportunity.batch))
+  }), [opportunities]);
 
   const filtered = useMemo(() => {
     const normalized = query.trim().toLowerCase();
@@ -152,64 +234,226 @@ export function OpportunitiesPage() {
       ].filter(Boolean).join(" ").toLowerCase();
       const matchesQuery = !normalized || searchable.includes(normalized);
       const matchesStatus = status === "all" || opportunity.status === status;
-      return matchesQuery && matchesStatus;
+      const matchesCity = city === "all" || opportunity.cities.some((location) => location.includes(city));
+      const matchesIndustry = industry === "all" || opportunity.industry?.includes(industry);
+      const matchesCohort = cohort === "all" || opportunity.graduationYears.includes(cohort);
+      const matchesBatch = batch === "all" || opportunity.batch === batch;
+      const matchesQuickFilter = quickFilter === "all"
+        || (quickFilter === "latest" && opportunity.openAt === dashboard.latestOpenAt)
+        || (quickFilter === "open" && isOpenOpportunity(opportunity.status))
+        || (quickFilter === "closing" && opportunity.status === "closing")
+        || (quickFilter === "ongoing" && opportunity.status === "ongoing");
+      return matchesQuery
+        && matchesStatus
+        && matchesCity
+        && matchesIndustry
+        && matchesCohort
+        && matchesBatch
+        && matchesQuickFilter;
     });
-  }, [opportunities, query, status]);
+  }, [batch, city, cohort, dashboard.latestOpenAt, industry, opportunities, query, quickFilter, status]);
 
-  const visible = filtered.slice(0, visibleCount);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
+  const currentPage = Math.min(page, totalPages);
+  const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
+  const pageItems = paginationItems(currentPage, totalPages);
   const initialLoading = loading && opportunities.length === 0;
+  const sourceState = initialLoading ? "loading" : error && opportunities.length === 0 ? "error" : "connected";
+  const sourceStatusLabel = sourceState === "loading"
+    ? "公开 JSON 连接中"
+    : sourceState === "error"
+      ? "公开 JSON 连接失败"
+      : "公开 JSON 已直连";
   const resultsAnnouncement = loading
     ? "正在刷新校招信息"
-    : `找到 ${filtered.length.toLocaleString("zh-CN")} 条校招机会`;
+    : `找到 ${filtered.length.toLocaleString("zh-CN")} 条校招机会，当前第 ${currentPage} 页，共 ${totalPages} 页`;
+  const activeFilterCount = [
+    Boolean(query.trim()),
+    status !== "all",
+    city !== "all",
+    industry !== "all",
+    cohort !== "all",
+    batch !== "all",
+    quickFilter !== "all"
+  ].filter(Boolean).length;
+
+  const clearFilters = () => {
+    setQuery("");
+    setStatus("all");
+    setCity("all");
+    setIndustry("all");
+    setCohort("all");
+    setBatch("all");
+    setQuickFilter("all");
+    setPage(1);
+  };
+
+  const selectQuickFilter = (value: OpportunityQuickFilter) => {
+    setQuickFilter(value);
+    setStatus("all");
+    setPage(1);
+  };
+
+  const goToPage = (nextPage: number) => {
+    setPage(Math.max(1, Math.min(nextPage, totalPages)));
+  };
 
   return (
     <section className="data-page opportunities-page" aria-labelledby="opportunities-title">
       <header className="page-header opportunity-page-header">
         <div className="opportunity-page-heading">
-          <span className="page-kicker"><Route aria-hidden="true" size={16} strokeWidth={2} />校招机会</span>
+          <nav className="application-breadcrumb" aria-label="页面位置">
+            <a
+              href="/app/chat"
+              onClick={(event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                navigate("/app/chat");
+              }}
+            ><House aria-hidden="true" size={13} />主页</a>
+            <ChevronRight aria-hidden="true" size={13} />
+            <span aria-current="page">校招机会</span>
+          </nav>
           <h1 id="opportunities-title" tabIndex={-1}>校招信息速递</h1>
-          <p>直连公开校招数据，每次刷新都能拿到最新批次、岗位与投递入口。</p>
+          <p>聚合公开校招信息、投递窗口与截止提醒，帮助你快速筛选值得关注的机会。</p>
         </div>
-        <div className="page-header-meta" aria-live="polite">
-          <span><i className="status-dot" aria-hidden="true" />公开 JSON 已直连</span>
-          <small>{opportunities.length ? `${opportunities.length.toLocaleString("zh-CN")} 条 · 更新于 ${updatedLabel(updatedAt)}` : "正在连接数据源"}</small>
+
+        <div className="opportunity-header-aside">
+          <div className={`opportunity-source-status opportunity-source-status--${sourceState}`} role="status" aria-live="polite">
+            <a
+              className="opportunity-source-badge"
+              href={CAMPUS_HIRING_FEED_URL}
+              target="_blank"
+              rel="noreferrer"
+              aria-label={`${sourceStatusLabel}，查看公开 JSON 数据源`}
+            >
+              {sourceState === "loading"
+                ? <RefreshCw className="spin" aria-hidden="true" size={16} strokeWidth={2} />
+                : sourceState === "error"
+                  ? <CircleAlert aria-hidden="true" size={16} strokeWidth={2} />
+                  : <CircleCheck aria-hidden="true" size={16} strokeWidth={2} />}
+              <span>{sourceStatusLabel}</span>
+              <i aria-hidden="true" />
+            </a>
+            <small>
+              {sourceState === "loading"
+                ? "正在读取最新数据"
+                : sourceState === "error"
+                  ? "暂时无法读取数据源"
+                  : `${opportunities.length.toLocaleString("zh-CN")} 条 · 更新于 ${feedTimestampLabel(sourceUpdatedAt)}`}
+            </small>
+          </div>
+
+          <div className="opportunity-metrics" aria-label="校招数据概览">
+            <article className="opportunity-metric opportunity-metric--latest">
+              <span className="opportunity-metric__icon"><Sparkles aria-hidden="true" size={21} strokeWidth={1.8} /></span>
+              <span><small>最新发布</small><strong>{dashboard.latestCount.toLocaleString("zh-CN")}</strong><em>{dashboard.latestOpenAt ? `${dateLabel(dashboard.latestOpenAt)} 开放` : "等待更新"}</em></span>
+            </article>
+            <article className="opportunity-metric opportunity-metric--open">
+              <span className="opportunity-metric__icon"><BriefcaseBusiness aria-hidden="true" size={21} strokeWidth={1.8} /></span>
+              <span><small>开放投递</small><strong>{dashboard.openCount.toLocaleString("zh-CN")}</strong><em>可继续投递</em></span>
+            </article>
+            <article className="opportunity-metric opportunity-metric--closing">
+              <span className="opportunity-metric__icon"><AlarmClock aria-hidden="true" size={21} strokeWidth={1.8} /></span>
+              <span><small>即将截止</small><strong>{dashboard.closingCount.toLocaleString("zh-CN")}</strong><em>3 天内截止</em></span>
+            </article>
+          </div>
         </div>
       </header>
 
-      <div className="data-toolbar opportunity-toolbar" role="search" aria-label="筛选校招机会">
-        <label className="search-control">
-          <span className="sr-only">搜索校招信息</span>
-          <Search aria-hidden="true" size={19} strokeWidth={1.7} />
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="搜索公司、类型、行业、岗位或城市"
-            aria-controls="opportunity-results"
-          />
-        </label>
-        <label className="select-control">
-          <Filter aria-hidden="true" size={18} strokeWidth={1.7} />
-          <span className="sr-only">按状态筛选</span>
-          <select
-            value={status}
-            onChange={(event) => setStatus(event.target.value as typeof status)}
-            aria-controls="opportunity-results"
-          >
-            <option value="all">全部状态</option>
-            {Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
-          </select>
-        </label>
-        <button
-          className="secondary-button opportunity-refresh-button"
-          type="button"
-          onClick={() => load()}
-          disabled={loading}
-          aria-label="刷新校招信息"
-        >
-          <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" size={18} strokeWidth={1.8} />刷新
-        </button>
+      <div className="opportunity-filter-panel">
+        <div className="data-toolbar opportunity-toolbar" role="search" aria-label="筛选校招机会">
+          <label className="search-control">
+            <span className="sr-only">搜索校招信息</span>
+            <Search aria-hidden="true" size={19} strokeWidth={1.7} />
+            <input
+              type="search"
+              value={query}
+              onChange={(event) => {
+                setQuery(event.target.value);
+                setPage(1);
+              }}
+              placeholder="搜索公司、岗位、行业或城市"
+              aria-controls="opportunity-results"
+            />
+          </label>
+          <label className="select-control">
+            <span className="sr-only">按城市筛选</span>
+            <select value={city} onChange={(event) => { setCity(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+              <option value="all">全部城市</option>
+              {filterOptions.cities.map((value) => <option value={value} key={value}>{value}</option>)}
+            </select>
+          </label>
+          <label className="select-control">
+            <span className="sr-only">按行业筛选</span>
+            <select value={industry} onChange={(event) => { setIndustry(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+              <option value="all">全部行业</option>
+              {filterOptions.industries.map((value) => <option value={value} key={value}>{value}</option>)}
+            </select>
+          </label>
+          <label className="select-control">
+            <span className="sr-only">按届别筛选</span>
+            <select value={cohort} onChange={(event) => { setCohort(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+              <option value="all">全部届别</option>
+              {filterOptions.cohorts.map((value) => <option value={value} key={value}>{value}</option>)}
+            </select>
+          </label>
+          <label className="select-control">
+            <span className="sr-only">按招聘类型筛选</span>
+            <select value={batch} onChange={(event) => { setBatch(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+              <option value="all">全部类型</option>
+              {filterOptions.batches.map((value) => <option value={value} key={value}>{value}</option>)}
+            </select>
+          </label>
+          <label className="select-control">
+            <span className="sr-only">按投递状态筛选</span>
+            <select
+              value={status}
+              onChange={(event) => {
+                setStatus(event.target.value as typeof status);
+                setQuickFilter("all");
+                setPage(1);
+              }}
+              aria-controls="opportunity-results"
+            >
+              <option value="all">投递状态</option>
+              {Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+            </select>
+          </label>
+          <div className="opportunity-filter-actions">
+            <button className="opportunity-clear-button" type="button" onClick={clearFilters} disabled={activeFilterCount === 0}>
+              <X aria-hidden="true" size={16} strokeWidth={1.9} />清空{activeFilterCount > 0 ? ` ${activeFilterCount}` : ""}
+            </button>
+            <button
+              className="opportunity-refresh-button"
+              type="button"
+              onClick={() => load()}
+              disabled={loading}
+              aria-label="刷新校招信息"
+            >
+              <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" size={17} strokeWidth={1.9} />刷新
+            </button>
+          </div>
+        </div>
       </div>
+
+      <nav className="opportunity-quick-tabs" aria-label="按发布状态快速筛选">
+        <button type="button" aria-pressed={quickFilter === "all"} onClick={() => selectQuickFilter("all")}>
+          全部机会 <span>{opportunities.length.toLocaleString("zh-CN")}</span>
+        </button>
+        <button type="button" aria-pressed={quickFilter === "latest"} onClick={() => selectQuickFilter("latest")}>
+          最新发布 <span>{dashboard.latestCount.toLocaleString("zh-CN")}</span>
+        </button>
+        <button type="button" aria-pressed={quickFilter === "open"} onClick={() => selectQuickFilter("open")}>
+          开放投递 <span>{dashboard.openCount.toLocaleString("zh-CN")}</span>
+        </button>
+        <button type="button" aria-pressed={quickFilter === "closing"} onClick={() => selectQuickFilter("closing")}>
+          即将截止 <span>{dashboard.closingCount.toLocaleString("zh-CN")}</span>
+        </button>
+        <button type="button" aria-pressed={quickFilter === "ongoing"} onClick={() => selectQuickFilter("ongoing")}>
+          持续招聘 <span>{dashboard.ongoingCount.toLocaleString("zh-CN")}</span>
+        </button>
+      </nav>
 
       <p className="sr-only" role="status">{resultsAnnouncement}</p>
       {error && <div className="inline-alert" role="alert">{error}</div>}
@@ -228,8 +472,8 @@ export function OpportunitiesPage() {
           <div className="filter-empty">
             <Search aria-hidden="true" size={22} />
             <h2>没有匹配的校招信息</h2>
-            <p>调整关键词或清除状态筛选。</p>
-            <button type="button" onClick={() => { setQuery(""); setStatus("all"); }}>清除筛选</button>
+            <p>调整搜索词或筛选条件后再试。</p>
+            <button type="button" onClick={clearFilters}>清除全部筛选</button>
           </div>
         ) : (
           <div className="opportunity-table-wrap">
@@ -241,8 +485,10 @@ export function OpportunitiesPage() {
                 <col className="opportunity-col-industry" />
                 <col className="opportunity-col-status" />
                 <col className="opportunity-col-city" />
+                <col className="opportunity-col-open-at" />
                 <col className="opportunity-col-deadline" />
-                <col className="opportunity-col-action" />
+                <col className="opportunity-col-qcc" />
+                <col className="opportunity-col-apply" />
               </colgroup>
               <thead>
                 <tr>
@@ -251,8 +497,10 @@ export function OpportunitiesPage() {
                   <th scope="col">行业</th>
                   <th scope="col">状态</th>
                   <th scope="col">城市</th>
+                  <th scope="col">开放投递</th>
                   <th scope="col">截止时间</th>
-                  <th scope="col">操作</th>
+                  <th scope="col">企查查</th>
+                  <th scope="col">一键投递</th>
                 </tr>
               </thead>
               <tbody>
@@ -266,18 +514,31 @@ export function OpportunitiesPage() {
                         <OpportunityTags company={opportunity.company} tags={opportunity.roleTags} />
                       </td>
                       <td><span className="opportunity-type-badge" title={opportunity.batch || "未分类"}>{opportunity.batch || "未分类"}</span></td>
-                      <td><span className="industry-cell" title={opportunity.industry || "其他"}>{opportunity.industry || "其他"}</span></td>
+                      <td><span className="industry-cell" title={opportunity.industry || "未提供"}>{opportunity.industry || "未提供"}</span></td>
                       <td><span className={`status-badge status-badge--${opportunityStatus}`}>{statusLabels[opportunityStatus]}</span></td>
                       <td><span className="cell-icon"><MapPin aria-hidden="true" size={17} strokeWidth={1.7} /><span>{opportunity.cities.slice(0, 2).join("、") || "不限"}</span></span></td>
+                      <td><span className="opportunity-open-at">{dateLabel(opportunity.openAt)}</span></td>
                       <td><OpportunityDeadline opportunity={opportunity} /></td>
+                      <td className="opportunity-qcc-cell">
+                        <a
+                          className="opportunity-qcc-action"
+                          href={qccSearchUrl(opportunity.company)}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`在企查查搜索 ${opportunity.company}（新标签页打开）`}
+                        >
+                          <span>查企业</span>
+                        </a>
+                      </td>
                       <td>
                         <a
                           className="table-action opportunity-table-action"
                           href={opportunity.officialUrl}
                           target="_blank"
                           rel="noreferrer"
-                          aria-label={`查看 ${opportunity.company} 官方招聘页（新标签页打开）`}
+                          aria-label={`打开 ${opportunity.company} 的投递入口（新标签页打开）`}
                         >
+                          <span>投递</span>
                           <ArrowRight className="icon-directional" aria-hidden="true" size={19} strokeWidth={1.8} />
                         </a>
                       </td>
@@ -308,38 +569,86 @@ export function OpportunitiesPage() {
                         </div>
                         <div>
                           <dt>行业</dt>
-                          <dd>{opportunity.industry || "其他"}</dd>
+                          <dd>{opportunity.industry || "未提供"}</dd>
                         </div>
                         <div>
                           <dt>城市</dt>
                           <dd><span className="cell-icon"><MapPin aria-hidden="true" size={17} strokeWidth={1.7} /><span>{opportunity.cities.slice(0, 2).join("、") || "不限"}</span></span></dd>
+                        </div>
+                        <div>
+                          <dt>开放投递</dt>
+                          <dd>{dateLabel(opportunity.openAt)}</dd>
                         </div>
                         <div className="opportunity-card-deadline">
                           <dt>截止时间</dt>
                           <dd><OpportunityDeadline opportunity={opportunity} /></dd>
                         </div>
                       </dl>
-                      <a
-                        className="opportunity-card-action"
-                        href={opportunity.officialUrl}
-                        target="_blank"
-                        rel="noreferrer"
-                        aria-label={`查看 ${opportunity.company} 官方招聘页（新标签页打开）`}
-                      >
-                        查看官方招聘
-                        <ArrowRight className="icon-directional" aria-hidden="true" size={18} strokeWidth={1.8} />
-                      </a>
+                      <div className="opportunity-card-actions">
+                        <a
+                          className="opportunity-card-qcc-action"
+                          href={qccSearchUrl(opportunity.company)}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`在企查查搜索 ${opportunity.company}（新标签页打开）`}
+                        >
+                          查企业
+                        </a>
+                        <a
+                          className="opportunity-card-action"
+                          href={opportunity.officialUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          aria-label={`查看 ${opportunity.company} 官方招聘页（新标签页打开）`}
+                        >
+                          前往投递
+                          <ArrowRight className="icon-directional" aria-hidden="true" size={18} strokeWidth={1.8} />
+                        </a>
+                      </div>
                     </article>
                   </li>
                 );
               })}
             </ul>
 
-            {visible.length < filtered.length && (
-              <div className="opportunity-load-more">
-                <span>已显示 {visible.length.toLocaleString("zh-CN")} / {filtered.length.toLocaleString("zh-CN")} 条</span>
-                <button type="button" onClick={() => setVisibleCount((count) => count + PAGE_SIZE)}>继续加载</button>
-              </div>
+            {filtered.length > PAGE_SIZE && (
+              <nav className="opportunity-pagination" aria-label="校招列表分页">
+                <p className="opportunity-pagination__summary">
+                  显示第 {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} 条，共 {filtered.length.toLocaleString("zh-CN")} 条
+                </p>
+                <div className="opportunity-pagination__controls">
+                  <button
+                    className="opportunity-pagination__direction"
+                    type="button"
+                    onClick={() => goToPage(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    <ChevronLeft aria-hidden="true" size={17} strokeWidth={2} />上一页
+                  </button>
+                  {pageItems.map((item) => item === "start-ellipsis" || item === "end-ellipsis" ? (
+                    <span className="opportunity-pagination__ellipsis" aria-hidden="true" key={item}>…</span>
+                  ) : (
+                    <button
+                      className="opportunity-pagination__page"
+                      type="button"
+                      key={item}
+                      onClick={() => goToPage(item)}
+                      aria-current={item === currentPage ? "page" : undefined}
+                      aria-label={`第 ${item} 页`}
+                    >
+                      {item}
+                    </button>
+                  ))}
+                  <button
+                    className="opportunity-pagination__direction"
+                    type="button"
+                    onClick={() => goToPage(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                  >
+                    下一页<ChevronRight aria-hidden="true" size={17} strokeWidth={2} />
+                  </button>
+                </div>
+              </nav>
             )}
           </div>
         )}

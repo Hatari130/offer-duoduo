@@ -13,6 +13,6 @@ export function createOfferFlowServer(options: OfferFlowAppOptions = {}) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const { server, config } = createOfferFlowServer();
   server.listen(config.port, config.host, () => {
-    console.log(`OfferFlow API listening on http://${config.host}:${config.port}`);
+    console.log(`JobKoI API listening on http://${config.host}:${config.port}`);
   });
 }

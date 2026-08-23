@@ -2,12 +2,12 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <title>编辑简历 - 度小满2027校园招聘</title>
+    <title>编辑简历 - 得物2027校园招聘</title>
     <style>
       body { margin: 0; padding: 28px; font: 16px/1.5 Arial, sans-serif; }
       .applyFormModuleWrapper__fixture { display: grid; grid-template-columns: 150px 1fr; gap: 20px; margin-bottom: 24px; }
       .applyFormModuleWrapper-right { display: grid; gap: 14px; }
-      .education-card { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; border: 1px solid #ddd; }
+      .education-card, .experience-card, .project-card { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 16px; border: 1px solid #ddd; }
       .ud-formily-item { display: grid; gap: 6px; }
       .ud__native-input, .ud__select__selector { box-sizing: border-box; width: 100%; min-height: 40px; border: 1px solid #bbb; background: white; }
       .ud__select__selector { padding: 9px 12px; }
@@ -61,6 +61,66 @@
       </div>
     </section>
 
+    <section id="experience-module" class="applyFormModuleWrapper-windows applyFormModuleWrapper__fixture">
+      <div class="applyFormModuleWrapper-left">
+        <p class="applyFormModuleWrapper-text">实习经历</p>
+      </div>
+      <div class="applyFormModuleWrapper-right">
+        <article class="apply-form-array-card__fixture experience-card">
+          <div class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">公司名称</span></div>
+            <input class="ud__native-input" data-form-field-id="company_name" data-form-field-name="company_name" />
+          </div>
+          <div class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">职位名称</span></div>
+            <input class="ud__native-input" data-form-field-id="job_title" data-form-field-name="job_title" />
+          </div>
+          <div id="formily-item-internship-time-period" class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">起止时间</span></div>
+            <div class="throne-biz-date-range-picker-wrapper" data-form-field-name="time_period">
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
+              <label><input type="checkbox" data-current-date /> 至今</label>
+            </div>
+          </div>
+          <div class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">工作描述</span></div>
+            <textarea class="ud__native-input" data-form-field-id="work_description" data-form-field-name="work_description"></textarea>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section id="project-module" class="applyFormModuleWrapper-windows applyFormModuleWrapper__fixture">
+      <div class="applyFormModuleWrapper-left">
+        <p class="applyFormModuleWrapper-text">项目经历</p>
+      </div>
+      <div class="applyFormModuleWrapper-right">
+        <article class="apply-form-array-card__fixture project-card">
+          <div class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">项目名称</span></div>
+            <input class="ud__native-input" data-form-field-id="project_name" data-form-field-name="project_name" />
+          </div>
+          <div class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">项目角色</span></div>
+            <input class="ud__native-input" data-form-field-id="project_role" data-form-field-name="project_role" />
+          </div>
+          <div id="formily-item-project-time-period" class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">起止时间</span></div>
+            <div class="throne-biz-date-range-picker-wrapper" data-form-field-name="time_period">
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
+              <label><input type="checkbox" data-current-date /> 至今</label>
+            </div>
+          </div>
+          <div class="ud-formily-item">
+            <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">项目描述</span></div>
+            <textarea class="ud__native-input" data-form-field-id="project_description" data-form-field-name="project_description"></textarea>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <div id="select-popups"></div>
 
     <script>
@@ -75,9 +135,14 @@
       };
 
       const selectOptions = {
-        gender: ["男", "女", "保密"],
+        gender: [
+          { text: "男", value: "1" },
+          { text: "女", value: "2" },
+          { text: "保密", value: "0" }
+        ],
         city: ["北京", "上海", "南京"],
-        degree: ["本科", "硕士", "博士"]
+        degree: ["本科", "硕士", "博士"],
+        school: ["南京大学", "北京林业大学", "南京林业大学"]
       };
       const bindSelect = (root) => {
         if (root.dataset.bound === "true") return;
@@ -88,30 +153,73 @@
         const popup = document.createElement("div");
         popup.className = "ud__select__dropdown";
         popup.style.display = "none";
-        popup.innerHTML = `<div class="ud__select__list">${selectOptions[kind].map((option) =>
-          `<div class="ud__select__list__item"><span>${option}</span></div>`
-        ).join("")}</div>`;
+        popup.innerHTML = `<div class="ud__select__list"></div>`;
         document.getElementById("select-popups").appendChild(popup);
+        const renderOptions = (options) => {
+          const list = popup.querySelector(".ud__select__list");
+          list.innerHTML = options.map((option) => {
+            const text = typeof option === "string" ? option : option.text;
+            const dataValue = typeof option === "string" ? option : option.value;
+            return `<div class="ud__select__list__item" data-value="${dataValue}"><span>${text}</span></div>`;
+          }).join("");
+          list.querySelectorAll(".ud__select__list__item").forEach((option) => {
+            option.addEventListener("click", () => {
+              root.querySelector(".ud__select__selector__placeholder")?.remove();
+              let selected = root.querySelector(".ud__select__selector__selectItem");
+              if (!selected) {
+                selected = document.createElement("div");
+                selected.className = "ud__select__selector__selectItem";
+                selector.querySelector(".ud__select__selector__content").prepend(selected);
+              }
+              selected.textContent = option.textContent.trim();
+              input.value = "";
+              selector.classList.remove("ud__select__selector-open");
+              selector.classList.add("ud__select__selector-not-empty");
+              popup.style.display = "none";
+            });
+          });
+        };
+        if (root.dataset.remote !== "true") renderOptions(selectOptions[kind]);
         selector.addEventListener("click", () => {
           document.querySelectorAll(".ud__select__dropdown").forEach((item) => { item.style.display = "none"; });
           selector.classList.add("ud__select__selector-open");
           popup.style.display = "block";
         });
-        popup.querySelectorAll(".ud__select__list__item").forEach((option) => {
-          option.addEventListener("click", () => {
-            root.querySelector(".ud__select__selector__placeholder")?.remove();
-            let selected = root.querySelector(".ud__select__selector__selectItem");
-            if (!selected) {
-              selected = document.createElement("div");
-              selected.className = "ud__select__selector__selectItem";
-              selector.querySelector(".ud__select__selector__content").prepend(selected);
-            }
-            selected.textContent = option.textContent.trim();
-            input.value = "";
-            selector.classList.remove("ud__select__selector-open");
-            selector.classList.add("ud__select__selector-not-empty");
-            popup.style.display = "none";
-          });
+        let searchTimer;
+        input.addEventListener("input", () => {
+          if (root.dataset.remote !== "true") return;
+          clearTimeout(searchTimer);
+          searchTimer = setTimeout(() => {
+            const keyword = input.value.trim();
+            renderOptions(selectOptions[kind].filter((option) => option.includes(keyword)));
+          }, 180);
+        });
+      };
+
+      let dateRangeSequence = 0;
+      const bindDateRange = (root) => {
+        const dateInputs = root.querySelectorAll("input:not([type='checkbox'])");
+        const current = root.querySelector("[data-current-date]");
+        const props = {
+          "data-form-field-id": "time_period",
+          "data-form-field-name": "time_period",
+          value: [undefined, undefined],
+          onChange: (range) => {
+            props.value = range;
+            dateInputs[0].value = typeof range[0] === "object"
+              ? `${range[0].year}-${range[0].month}`
+              : range[0] || "";
+            dateInputs[1].value = typeof range[1] === "object"
+              ? `${range[1].year}-${range[1].month}`
+              : range[1] || "";
+          }
+        };
+        dateInputs[0][`__reactInternalInstance$fixtureDate${dateRangeSequence++}`] = {
+          memoizedProps: {},
+          return: { memoizedProps: {}, return: { memoizedProps: props, return: null } }
+        };
+        current?.addEventListener("change", () => {
+          if (current.checked) dateInputs[1].value = "";
         });
       };
 
@@ -124,7 +232,14 @@
         card.innerHTML = `
           <div id="formily-item-school-${index}" class="ud-formily-item">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">学校名称</span></div>
-            <input class="ud__native-input" data-form-field-id="school" data-form-field-name="school" data-form-field-i18n-name="学校名称" />
+            <div class="ud__select" data-select="school" data-remote="true">
+              <div class="ud__select__selector">
+                <div class="ud__select__selector__content">
+                  <div class="ud__select__selector__placeholder">请输入学校名称</div>
+                  <input class="ud__select__selector__search__input ud__native-input" role="combobox" type="search" data-form-field-id="school" data-form-field-name="school" data-form-field-i18n-name="学校名称" />
+                </div>
+              </div>
+            </div>
           </div>
           <div id="formily-item-degree-${index}" class="ud-formily-item">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">学历</span></div>
@@ -143,30 +258,18 @@
           </div>
           <div id="formily-item-start_end_time-${index}" class="ud-formily-item">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">起止时间</span></div>
-            <div class="throne-biz-date-range-picker-wrapper">
-              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" /></div>
-              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" /></div>
+            <div class="throne-biz-date-range-picker-wrapper" data-form-field-name="time_period">
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
+              <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
             </div>
           </div>`;
         educationCards.appendChild(card);
         card.querySelectorAll(".ud__select").forEach(bindSelect);
-        const dateInputs = card.querySelectorAll(".throne-biz-date-range-picker-wrapper input");
-        const props = {
-          "data-form-field-id": "start_end_time",
-          "data-form-field-name": "start_end_time",
-          value: [undefined, undefined],
-          onChange: (range) => {
-            props.value = range;
-            dateInputs[0].value = range[0] || "";
-            dateInputs[1].value = range[1] || "";
-          }
-        };
-        dateInputs[0][`__reactInternalInstance$fixture${index}`] = {
-          memoizedProps: {},
-          return: { memoizedProps: {}, return: { memoizedProps: props, return: null } }
-        };
+        bindDateRange(card.querySelector(".throne-biz-date-range-picker-wrapper"));
       };
       addEducationCard();
+      bindDateRange(document.querySelector("#experience-module .throne-biz-date-range-picker-wrapper"));
+      bindDateRange(document.querySelector("#project-module .throne-biz-date-range-picker-wrapper"));
       document.querySelectorAll(".ud__select").forEach(bindSelect);
       document.getElementById("add-education").addEventListener("click", () => {
         educationAdds += 1;
@@ -188,17 +291,28 @@
             {
               fullName: "林知夏", gender: "女", currentCity: "南京",
               school: "南京大学", degree: "硕士", major: "城乡规划",
-              educationStartDate: "2024-09", educationEndDate: "2027-06"
+              educationStartDate: "2024-09", educationEndDate: "2027-06",
+              experienceOrganization: "携程集团", experienceTitle: "AI产品经理",
+              experienceStartDate: "2026-04", experienceEndDate: "至今",
+              experienceDescription: "负责 AI 产品对话体验与增长闭环",
+              projectName: "Agents APP", projectRole: "产品负责人",
+              projectStartDate: "2025-09", projectEndDate: "至今",
+              projectDescription: "搭建智能体工作流并优化多轮引导策略"
             },
             {
               school: "北京林业大学", degree: "本科", major: "城乡规划",
               educationStartDate: "2018-09", educationEndDate: "2023-06"
             }
           ];
+          const rangeEndKeys = {
+            educationStartDate: "educationEndDate",
+            experienceStartDate: "experienceEndDate",
+            projectStartDate: "projectEndDate"
+          };
           const fieldValues = Object.fromEntries(scan.fields.map((field) => [
             field.id,
             field.type === "date-range"
-              ? `${snapshots[0].educationStartDate}\u001f${snapshots[0].educationEndDate}`
+              ? `${snapshots[0][field.key]}\u001f${snapshots[0][rangeEndKeys[field.key]]}`
               : snapshots[0][field.key] || ""
           ]));
           listener(
@@ -207,7 +321,7 @@
               fields: scan.fields,
               fieldValues,
               profileSnapshots: snapshots,
-              repeatCounts: { education: 2 },
+              repeatCounts: { education: 2, experience: 1, project: 1 },
               repeatPlan: {},
               fillDynamicFields: true,
               maxRounds: 5,
@@ -215,12 +329,28 @@
             },
             {},
             (fill) => {
-              const education = Array.from(document.querySelectorAll(".education-card")).map((card) => ({
-                school: card.querySelector("[data-form-field-name='school']").value,
-                degree: card.querySelector(".ud__select__selector__selectItem")?.textContent.trim() || "",
+              const education = Array.from(document.querySelectorAll("#education-cards .education-card")).map((card) => ({
+                school: card.querySelector("[data-select='school'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                degree: card.querySelector("[data-select='degree'] .ud__select__selector__selectItem")?.textContent.trim() || "",
                 major: card.querySelector("[data-form-field-name='field_of_study']").value,
                 dates: Array.from(card.querySelectorAll(".throne-biz-date-range-picker-wrapper input")).map((input) => input.value)
               }));
+              const experienceCard = document.querySelector(".experience-card");
+              const experience = {
+                company: experienceCard.querySelector("[data-form-field-name='company_name']").value,
+                title: experienceCard.querySelector("[data-form-field-name='job_title']").value,
+                dates: Array.from(experienceCard.querySelectorAll(".throne-biz-date-range-picker-wrapper input:not([type='checkbox'])")).map((input) => input.value),
+                current: experienceCard.querySelector("[data-current-date]").checked,
+                description: experienceCard.querySelector("[data-form-field-name='work_description']").value
+              };
+              const projectCard = document.querySelector(".project-card");
+              const project = {
+                name: projectCard.querySelector("[data-form-field-name='project_name']").value,
+                role: projectCard.querySelector("[data-form-field-name='project_role']").value,
+                dates: Array.from(projectCard.querySelectorAll(".throne-biz-date-range-picker-wrapper input:not([type='checkbox'])")).map((input) => input.value),
+                current: projectCard.querySelector("[data-current-date]").checked,
+                description: projectCard.querySelector("[data-form-field-name='project_description']").value
+              };
               document.body.dataset.ready = "true";
               document.body.dataset.result = encodeURIComponent(JSON.stringify({
                 ok: true,
@@ -232,6 +362,9 @@
                   gender: document.querySelector("[data-select='gender'] .ud__select__selector__selectItem")?.textContent.trim() || "",
                   city: document.querySelector("[data-select='city'] .ud__select__selector__selectItem")?.textContent.trim() || "",
                   education,
+                  experience,
+                  project,
+                  dewuAdapter: window.OfferFlowFormAdapters.resolve({ hostname: "campus.dewu.com", pathname: "/578078/resume/example/apply" }).id,
                   openDropdowns: Array.from(document.querySelectorAll(".ud__select__dropdown")).filter((item) => getComputedStyle(item).display !== "none").length
                 }
               }));

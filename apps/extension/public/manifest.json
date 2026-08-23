@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "OfferDuoDuo",
+  "name": "JobKoI",
   "description": "从招聘网页抓取岗位，并持续管理求职投递进度。",
   "version": "0.1.0",
   "permissions": [
@@ -9,8 +9,7 @@
     "identity",
     "storage",
     "unlimitedStorage",
-    "scripting",
-    "sidePanel"
+    "scripting"
   ],
   "host_permissions": [
     "http://*/*",
@@ -22,17 +21,11 @@
     "type": "module"
   },
   "action": {
-    "default_title": "打开 OfferDuoDuo"
+    "default_title": "打开 JobKoI"
   },
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "exclude_matches": [
-        "http://127.0.0.1:5173/*",
-        "http://localhost:5173/*",
-        "http://127.0.0.1:8787/*",
-        "http://localhost:8787/*"
-      ],
       "js": ["extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"],
       "run_at": "document_idle"
     }
@@ -42,8 +35,5 @@
       "resources": ["dashboard.html", "sidepanel.html", "tailor.html", "resume.html", "assets/*"],
       "matches": ["http://*/*", "https://*/*"]
     }
-  ],
-  "side_panel": {
-    "default_path": "sidepanel.html"
-  }
+  ]
 }

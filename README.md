@@ -1,6 +1,6 @@
-# OfferFlow
+# JobKoI
 
-OfferFlow is a pnpm monorepo for a companion website, a Chrome/Edge Manifest V3
+JobKoI is a pnpm monorepo for a companion website, a Chrome/Edge Manifest V3
 extension, a shared API boundary and a PostgreSQL data model.
 
 ## Current status

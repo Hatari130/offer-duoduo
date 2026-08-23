@@ -68,7 +68,7 @@ async function loadConnectionWithFreshToken(): Promise<CloudConnection | undefin
 
 function syncErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof OfferFlowApiError && error.status === 401) {
-    return "登录已过期：请在插件设置中重新登录 OfferFlow 并同步";
+    return "登录已过期：请在插件设置中重新登录 JobKoI 并同步";
   }
   return error instanceof Error ? error.message : fallback;
 }
@@ -88,7 +88,7 @@ function normalizeApiBaseUrl(value: string): string {
 
 function defaultDeviceName(): string {
   const platform = globalThis.navigator?.platform || "Browser";
-  return `OfferDuoDuo · ${platform}`;
+  return `JobKoI · ${platform}`;
 }
 
 export async function getCloudSyncOverview(): Promise<CloudSyncOverview> {

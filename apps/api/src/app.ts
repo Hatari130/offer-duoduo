@@ -836,7 +836,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         failure(response, error.status, error.code, error.message, error.details);
         return;
       }
-      console.error("OfferFlow API request failed", error);
+      console.error("JobKoI API request failed", error);
       failure(response, 500, "INTERNAL_ERROR", "服务暂时不可用，请稍后重试");
     }
   }

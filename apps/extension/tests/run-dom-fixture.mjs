@@ -33,6 +33,9 @@ const feishuFixturePath = fileURLToPath(
 const zhiyeDetailEndedPath = fileURLToPath(
   new URL("./fixtures/zhiye-detail-ended.html", import.meta.url)
 );
+const mokahrJobDetailPath = fileURLToPath(
+  new URL("./fixtures/mokahr-job-detail.html", import.meta.url)
+);
 const webAppPath = fileURLToPath(
   new URL("./fixtures/web-app-applications.html", import.meta.url)
 );
@@ -191,6 +194,24 @@ try {
   );
   console.log("DOM extraction fixture passed: ended job details never produce terminal evidence.");
 
+  const mokahrJob = runFixture(mokahrJobDetailPath);
+  assert.deepEqual(
+    {
+      company: mokahrJob.company,
+      position: mokahrJob.position,
+      city: mokahrJob.city,
+      appliedAt: mokahrJob.appliedAt
+    },
+    {
+      company: "作业帮教育科技（北京）有限公司",
+      position: "平台产品经理（企业）-27秋招",
+      city: "北京市",
+      appliedAt: undefined
+    },
+    "Moka job details must use labeled job and company sections, never footer text or publication dates"
+  );
+  console.log("DOM extraction fixture passed: Moka job details use labeled company, role and location fields.");
+
   const webApp = runFixture(webAppPath);
   assert.equal(
     webApp.skipped,
@@ -343,12 +364,13 @@ try {
 
   const duxiaomanForm = runFixture(duxiaomanFormPath, 15000);
   assert.equal(duxiaomanForm.scan.platform.id, "feishu-career", "Formily and Universe markers must resolve the Feishu Career adapter");
+  assert.equal(duxiaomanForm.dewuAdapter, "feishu-career", "campus.dewu.com must resolve directly to the ATSX adapter without Formily marker detection");
   assert.deepEqual(
     duxiaomanForm.scan.fields.filter((field) => ["gender", "currentCity", "degree"].includes(field.key)).map((field) => field.key),
     ["gender", "currentCity", "degree"],
     "Universe search-backed selects must be kept as form fields instead of being discarded as search boxes"
   );
-  assert.equal(duxiaomanForm.scan.fields.filter((field) => field.type === "date-range").length, 1);
+  assert.equal(duxiaomanForm.scan.fields.filter((field) => field.type === "date-range").length, 3, "ATSX time_period fields must be recognized once in education, internship and project sections");
   assert.equal(duxiaomanForm.educationAdds, 1, "the Feishu Career module-level add action must create the second education record");
   assert.equal(duxiaomanForm.name, "林知夏");
   assert.equal(duxiaomanForm.gender, "女");
@@ -357,6 +379,20 @@ try {
     { school: "南京大学", degree: "硕士", major: "城乡规划", dates: ["2024-09", "2027-06"] },
     { school: "北京林业大学", degree: "本科", major: "城乡规划", dates: ["2018-09", "2023-06"] }
   ]);
+  assert.deepEqual(duxiaomanForm.experience, {
+    company: "携程集团",
+    title: "AI产品经理",
+    dates: ["2026-04", ""],
+    current: true,
+    description: "负责 AI 产品对话体验与增长闭环"
+  }, "Dewu internship ranges must commit through React while current is stored as a separate toggle");
+  assert.deepEqual(duxiaomanForm.project, {
+    name: "Agents APP",
+    role: "产品负责人",
+    dates: ["2025-09", ""],
+    current: true,
+    description: "搭建智能体工作流并优化多轮引导策略"
+  }, "Dewu project time_period fields must use the same React range driver and separate current toggle");
   assert.equal(duxiaomanForm.openDropdowns, 0, "Universe dropdowns must be closed after each committed option");
   assert.equal(duxiaomanForm.fill.results.every((result) => result.status === "filled"), true);
   console.log("DOM form fixture passed: Duxiaoman Formily labels, Universe selects, date ranges and repeated education fill correctly.");
@@ -364,7 +400,7 @@ try {
   const reinjectionForm = runFixture(reinjectionFormPath, 4000);
   assert.equal(reinjectionForm.listenerCount, 1, "reinjecting a new extension session must replace the stale listener");
   assert.equal(reinjectionForm.contentSession, "test-session-b");
-  assert.equal(reinjectionForm.runtimeVersion, "2026-08-20.autofill-v6");
+  assert.equal(reinjectionForm.runtimeVersion, "2026-08-21.autofill-v8");
   assert.equal(reinjectionForm.fieldCount, 1, "the replacement listener must still scan the application form");
   console.log("DOM form fixture passed: extension reload replaces stale autofill listeners without duplicates.");
 } finally {

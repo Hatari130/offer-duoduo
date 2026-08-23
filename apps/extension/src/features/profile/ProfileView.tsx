@@ -3,7 +3,6 @@ import {
   Check,
   ChevronDown,
   FileCheck2,
-  FolderOpen,
   Plus,
   ScanLine,
   ShieldCheck,
@@ -41,18 +40,21 @@ import type {
 } from "@/shared/types";
 
 const newId = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
-
-const openResumeManager = () => {
-  const url =
-    typeof chrome !== "undefined" && chrome.runtime?.getURL
-      ? chrome.runtime.getURL("resume.html")
-      : new URL("resume.html", window.location.href).href;
-  if (typeof chrome !== "undefined" && chrome.tabs?.create) {
-    void chrome.tabs.create({ url });
-    return;
-  }
-  window.open(url, "_blank", "noopener,noreferrer");
+const monthInputValue = (value?: string) => {
+  const match = String(value || "").match(/^(\d{4})[-/.](\d{1,2})/);
+  return match ? `${match[1]}-${match[2].padStart(2, "0")}` : "";
 };
+
+const EDUCATION_FORM_OPTIONS = [
+  "全国普通高等院校全日制",
+  "全国普通高等院校非全日制",
+  "成人高等教育",
+  "高等教育自学考试",
+  "网络教育",
+  "开放教育",
+  "境外院校",
+  "其他"
+] as const;
 
 const FIELD_NAMES: Record<string, string> = {
   fullName: "姓名",
@@ -284,7 +286,7 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
     experienceOrganization: experience?.organization || "",
     experienceTitle: experience?.title || "",
     experienceStartDate: experience?.startDate || "",
-    experienceEndDate: experience?.endDate || "",
+    experienceEndDate: experience?.isCurrent ? "至今" : experience?.endDate || "",
     experienceDescription: experience?.description || "",
     experienceType: experience?.type || "",
     experienceDepartment: experience?.department || "",
@@ -393,7 +395,7 @@ function profileFormSnapshots(profile: PersonalProfile): Record<string, string>[
 }
 
 const PROFILE_DATE_RANGE_SEPARATOR = "\u001f";
-const FORM_CONTENT_RUNTIME_VERSION = "2026-08-20.autofill-v6";
+const FORM_CONTENT_RUNTIME_VERSION = "2026-08-21.autofill-v8";
 const FORM_CONTENT_SESSION_ID = `${FORM_CONTENT_RUNTIME_VERSION}:${
   globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 }`;
@@ -808,7 +810,7 @@ export default function ProfileView({
     setOpenSections((current) => ({ ...current, [id]: true }));
   const addEducation = () => {
     const id = newId("edu");
-    set("education", [...draft.education, { id, school: "", major: "", degree: "", startDate: "", endDate: "", gpa: "" }]);
+    set("education", [...draft.education, { id, school: "", college: "", major: "", degree: "", educationForm: "", startDate: "", endDate: "", gpa: "" }]);
     revealSection("education");
     setPendingEntryId(id);
   };
@@ -890,7 +892,6 @@ export default function ProfileView({
           <span className={`profile-sync-state ${hasPendingChanges ? "pending" : "synced"}`}>
             {hasPendingChanges ? "待保存" : "已同步"}
           </span>
-          <button className="profile-manager-link" onClick={openResumeManager}><FolderOpen size={14} />管理简历</button>
         </div>
       )}
 
@@ -913,7 +914,7 @@ export default function ProfileView({
           <Field label="手机号"><input type="tel" value={draft.phone} onChange={(e) => set("phone", e.target.value)} /></Field>
           <Field label="邮箱"><input type="email" value={draft.email} onChange={(e) => set("email", e.target.value)} /></Field>
           <Field label="出生日期"><input type="date" value={draft.birthDate} onChange={(e) => set("birthDate", e.target.value)} /></Field>
-          <Field label="毕业时间"><input type="month" value={draft.graduationDate} onChange={(e) => set("graduationDate", e.target.value)} /></Field>
+          <Field label="毕业时间"><input type="month" value={monthInputValue(draft.graduationDate)} onChange={(e) => set("graduationDate", e.target.value)} /></Field>
           <Field label="现居城市"><input value={draft.currentCity} onChange={(e) => set("currentCity", e.target.value)} /></Field>
           <Field label="籍贯"><input value={draft.nativePlace} onChange={(e) => set("nativePlace", e.target.value)} /></Field>
           <Field label="身高（厘米）"><input inputMode="numeric" value={draft.height} onChange={(e) => set("height", e.target.value)} /></Field>
@@ -963,7 +964,7 @@ export default function ProfileView({
           {retryCount > 0 && (
             <button className="profile-fill-button" disabled={busy} onClick={fill}><Check size={15} />重试未成功项 {retryCount} 项</button>
           )}
-          <p>已自动填写可用资料；请在网页中检查，OfferDuoDuo 不会点击提交按钮。</p>
+          <p>已自动填写可用资料；请在网页中检查，JobKoI 不会点击提交按钮。</p>
         </div>
       )}
 
@@ -996,11 +997,19 @@ export default function ProfileView({
           <EntryCard entryId={item.id} key={item.id} title={item.school || "新教育经历"} onRemove={() => set("education", draft.education.filter((entry) => entry.id !== item.id))}>
             <div className="profile-grid">
               <Field label="学校"><input value={item.school} onChange={(e) => updateEducation(item.id, { school: e.target.value })} /></Field>
+              <Field label="学院"><input value={item.college || ""} onChange={(e) => updateEducation(item.id, { college: e.target.value })} placeholder="例如：计算机学院" /></Field>
               <Field label="专业"><input value={item.major} onChange={(e) => updateEducation(item.id, { major: e.target.value })} /></Field>
               <Field label="学历"><input value={item.degree} onChange={(e) => updateEducation(item.id, { degree: e.target.value })} /></Field>
+              <Field label="学习形式">
+                <select value={item.educationForm || ""} onChange={(e) => updateEducation(item.id, { educationForm: e.target.value })}>
+                  <option value="">请选择</option>
+                  {item.educationForm && !EDUCATION_FORM_OPTIONS.includes(item.educationForm as typeof EDUCATION_FORM_OPTIONS[number]) && <option value={item.educationForm}>{item.educationForm}</option>}
+                  {EDUCATION_FORM_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </Field>
               <Field label="GPA"><input value={item.gpa} onChange={(e) => updateEducation(item.id, { gpa: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateEducation(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateEducation(item.id, { endDate: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(e) => updateEducation(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(e) => updateEducation(item.id, { endDate: e.target.value })} /></Field>
             </div>
           </EntryCard>
         ))}
@@ -1022,8 +1031,8 @@ export default function ProfileView({
             <div className="profile-grid">
               <Field label="公司 / 组织"><input value={item.organization} onChange={(e) => updateExperience(item.id, { organization: e.target.value })} /></Field>
               <Field label="岗位"><input value={item.title} onChange={(e) => updateExperience(item.id, { title: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateExperience(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateExperience(item.id, { endDate: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(e) => updateExperience(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(e) => updateExperience(item.id, { endDate: e.target.value })} /></Field>
               <Field label="经历描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateExperience(item.id, { description: e.target.value })} /></Field>
             </div>
           </EntryCard>
@@ -1046,8 +1055,8 @@ export default function ProfileView({
             <div className="profile-grid">
               <Field label="项目名称"><input value={item.name} onChange={(e) => updateProject(item.id, { name: e.target.value })} /></Field>
               <Field label="担任角色"><input value={item.role} onChange={(e) => updateProject(item.id, { role: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateProject(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateProject(item.id, { endDate: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(e) => updateProject(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(e) => updateProject(item.id, { endDate: e.target.value })} /></Field>
               <Field label="项目描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateProject(item.id, { description: e.target.value })} /></Field>
             </div>
           </EntryCard>
@@ -1075,8 +1084,8 @@ export default function ProfileView({
             <div className="profile-grid">
               <Field label="经历类型"><input value={item.type} onChange={(e) => updateCampusExperience(item.id, { type: e.target.value })} placeholder="例如：学生会、志愿服务" /></Field>
               <Field label="担任角色"><input value={item.role} onChange={(e) => updateCampusExperience(item.id, { role: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={item.startDate} onChange={(e) => updateCampusExperience(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={item.endDate} onChange={(e) => updateCampusExperience(item.id, { endDate: e.target.value })} /></Field>
+              <Field label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(e) => updateCampusExperience(item.id, { startDate: e.target.value })} /></Field>
+              <Field label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(e) => updateCampusExperience(item.id, { endDate: e.target.value })} /></Field>
               <Field label="经历描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateCampusExperience(item.id, { description: e.target.value })} /></Field>
             </div>
           </EntryCard>
@@ -1102,7 +1111,7 @@ export default function ProfileView({
             onRemove={() => set("awards", draft.awards.filter((entry) => entry.id !== item.id))}
           >
             <div className="profile-grid">
-              <Field label="获奖时间"><input type="month" value={item.date} onChange={(e) => updateAward(item.id, { date: e.target.value })} /></Field>
+              <Field label="获奖时间"><input type="month" value={monthInputValue(item.date)} onChange={(e) => updateAward(item.id, { date: e.target.value })} /></Field>
               <Field label="奖项名称"><input value={item.name} onChange={(e) => updateAward(item.id, { name: e.target.value })} /></Field>
               <Field label="奖励等级"><input value={item.level} onChange={(e) => updateAward(item.id, { level: e.target.value })} placeholder="例如：国家级 / 一等奖" /></Field>
               <Field label="奖励描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateAward(item.id, { description: e.target.value })} /></Field>

@@ -46,7 +46,7 @@ export async function openWebTailorWorkspace(
     const connected = await loginAndSync();
     connection = connected.connection;
   }
-  if (!connection) throw new Error("请先连接 OfferFlow 官网账号后再定制简历");
+  if (!connection) throw new Error("请先连接 JobKoI 官网账号后再定制简历");
 
   const client = createApiClient({
     baseUrl: connection.apiBaseUrl,

@@ -92,7 +92,6 @@ export function ChatComposer({
           >
             <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />
           </button>
-          <span className="composer-hint">Enter 发送 · Shift + Enter 换行</span>
         </div>
         {streaming ? (
           <button className="composer-send is-stop" type="button" onClick={onStop} aria-label="停止生成">

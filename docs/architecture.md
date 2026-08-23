@@ -1,8 +1,8 @@
-# OfferFlow architecture
+# JobKoI architecture
 
 ## Goals
 
-OfferFlow delivers two user-facing products: a website and a browser extension.
+JobKoI delivers two user-facing products: a website and a browser extension.
 They share business language and server contracts, but they remain independently
 buildable and deployable.
 

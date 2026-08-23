@@ -156,7 +156,7 @@ export default function CloudSyncSettings() {
         <Cloud size={24} aria-hidden="true" />
       </div>
       <div className="setting-copy cloud-sync-copy">
-        <h3 id="cloud-sync-title">OfferFlow Web 工作台</h3>
+        <h3 id="cloud-sync-title">JobKoI Web 工作台</h3>
         <p>本地优先保存，联网后只同步发生变化的投递记录；版本冲突会保留本地内容并提示处理。</p>
 
         {connection ? (
@@ -181,7 +181,7 @@ export default function CloudSyncSettings() {
           <>
           <button className="button button--primary cloud-login-button" type="button" onClick={() => void loginAndSync()} disabled={busy}>
             {busy ? <RefreshCw className="spin" size={16} /> : <Cloud size={16} />}
-            登录 OfferFlow 并同步投递
+            登录 JobKoI 并同步投递
           </button>
           <details className="cloud-advanced-pairing">
             <summary>开发者配对方式</summary>

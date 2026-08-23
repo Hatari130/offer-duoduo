@@ -1395,7 +1395,7 @@
 
 /* The library can be tucked away while keeping the editor in focus. */
 .resume-manager-body {
-  transition: grid-template-columns 220ms ease;
+  transition: none;
 }
 
 .resume-manager-body.library-collapsed {
@@ -2970,5 +2970,569 @@
     border-color: var(--of-line-structural, var(--of-line));
     box-shadow: var(--of-shadow-card);
     backdrop-filter: none;
+  }
+}
+
+/* Resume center follows the compact overlay workbench: calm canvas, clear work
+   surface and one dark primary action.  This final layer also supersedes the
+   legacy orange refinement rules above. */
+.resume-manager-shell {
+  --acid: var(--of-rust);
+  --blue: var(--of-rust);
+  color: var(--of-text);
+  background: var(--of-canvas);
+}
+
+.resume-manager-shell .resume-manager-header {
+  height: 64px;
+  padding-inline: clamp(20px, 3vw, 40px);
+  background: var(--of-surface);
+  border-color: var(--of-line);
+  backdrop-filter: none;
+}
+
+.resume-manager-shell .resume-manager-mark {
+  color: var(--of-text-inverse);
+  background: var(--of-ink);
+  border-radius: 10px;
+}
+
+.resume-manager-shell .resume-manager-body {
+  grid-template-columns: 280px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.resume-manager-shell .resume-library-sidebar {
+  padding: 28px 18px 20px 28px;
+  background: var(--of-sidebar, var(--of-canvas));
+  border-color: var(--of-line);
+}
+
+.resume-manager-shell .resume-library-heading h1,
+.resume-manager-shell .resume-editor-title-row h1,
+.resume-manager-shell .resume-detail-file h2,
+.resume-manager-shell .resume-empty-state h2,
+.resume-manager-shell .resume-editor-summary > div strong,
+.resume-manager-shell .resume-avatar,
+.resume-manager-shell .resume-banner-stat strong {
+  color: var(--of-text-strong);
+  font-family: var(--of-font-sans);
+}
+
+.resume-manager-shell,
+.resume-manager-shell button,
+.resume-manager-shell input,
+.resume-manager-shell select,
+.resume-manager-shell textarea {
+  font-family: var(--of-font-sans);
+}
+
+.resume-manager-shell .resume-library-subtitle,
+.resume-manager-shell .resume-local-note,
+.resume-manager-shell .resume-header-link,
+.resume-manager-shell .resume-editor-back,
+.resume-manager-shell .resume-editor-secondary {
+  color: var(--of-text-muted);
+}
+
+.resume-manager-shell .resume-new-card,
+.resume-manager-shell .resume-folder-head {
+  color: var(--of-text);
+  background: var(--of-surface);
+  border-color: var(--of-line);
+}
+
+.resume-manager-shell .resume-new-card {
+  border-style: solid;
+  box-shadow: var(--of-shadow-card);
+}
+
+.resume-manager-shell .resume-new-card:hover,
+.resume-manager-shell .resume-folder-head:hover {
+  background: var(--of-surface-raised);
+  border-color: var(--of-brand-300);
+  box-shadow: none;
+}
+
+.resume-manager-shell .resume-total,
+.resume-manager-shell .resume-new-card > span,
+.resume-manager-shell .resume-list-file,
+.resume-manager-shell .resume-editor-file-mark,
+.resume-manager-shell .resume-editor-section-icon,
+.resume-manager-shell .resume-current-badge {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-200);
+}
+
+.resume-manager-shell .resume-folder-icon {
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+}
+
+.resume-manager-shell .resume-upload-button,
+.resume-manager-shell .resume-activate-button,
+.resume-manager-shell .resume-open-plugin,
+.resume-manager-shell .resume-editor-activate,
+.resume-manager-shell .resume-editor-save {
+  color: var(--of-action-primary-text);
+  background: var(--of-action-primary);
+  border-color: var(--of-action-primary);
+  box-shadow: none;
+}
+
+.resume-manager-shell .resume-upload-button:hover:not(:disabled),
+.resume-manager-shell .resume-activate-button:hover:not(:disabled),
+.resume-manager-shell .resume-open-plugin:hover:not(:disabled),
+.resume-manager-shell .resume-editor-activate:hover:not(:disabled),
+.resume-manager-shell .resume-editor-save:hover:not(:disabled) {
+  color: var(--of-action-primary-text);
+  background: var(--of-action-primary-hover);
+  border-color: var(--of-action-primary-hover);
+}
+
+.resume-manager-shell .resume-upload-button:active,
+.resume-manager-shell .resume-activate-button:active,
+.resume-manager-shell .resume-open-plugin:active,
+.resume-manager-shell .resume-editor-activate:active,
+.resume-manager-shell .resume-editor-save:active {
+  transform: scale(0.96);
+}
+
+.resume-manager-shell .resume-detail {
+  padding: 34px clamp(24px, 5vw, 72px) 64px;
+}
+
+.resume-manager-shell .resume-editor {
+  max-width: 1040px;
+}
+
+.resume-manager-shell .resume-editor-content {
+  container-type: inline-size;
+}
+
+/* Application-form hierarchy: the editable form owns the leading column while
+   a compact, sticky section index sits in its own trailing gutter. */
+.resume-manager-shell .resume-editor-layout {
+  grid-template-columns: minmax(0, 1fr) 126px;
+  gap: 40px;
+}
+
+.resume-manager-shell .resume-editor-content {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+/* Clamp the actual document viewport as well as the component. This prevents
+   historical wide-grid rules from making html/body scroll horizontally. */
+html,
+body,
+#root {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+.resume-manager-shell,
+.resume-manager-shell .resume-manager-body,
+.resume-manager-shell .resume-detail {
+  width: 100%;
+  max-width: 100%;
+}
+
+.resume-manager-shell .resume-detail {
+  padding-inline: clamp(20px, 2vw, 32px);
+}
+
+.resume-manager-shell .resume-editor {
+  margin-inline-start: 0;
+  margin-inline-end: auto;
+}
+
+.resume-manager-shell .resume-editor-index {
+  grid-column: 2;
+  grid-row: 1;
+  top: 28px;
+  margin-top: 0;
+  padding: 4px 0 4px 16px;
+  border-inline-start: 1px solid var(--of-line-subtle);
+}
+
+.resume-manager-shell .resume-editor-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 24px;
+}
+
+.resume-manager-shell .resume-editor-field {
+  gap: 7px;
+  padding: 10px 0 16px;
+}
+
+.resume-manager-shell .resume-editor-field > span {
+  color: var(--of-text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.resume-manager-shell .resume-editor-field > span em {
+  margin-inline-end: 3px;
+  color: var(--of-danger);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.resume-manager-shell .resume-editor-archive-fields {
+  max-width: none;
+  gap: 20px;
+}
+
+.resume-manager-shell .resume-editor-archive-fields span {
+  color: var(--of-text-muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.resume-manager-shell .resume-editor-archive-fields input,
+.resume-manager-shell .resume-editor-field input,
+.resume-manager-shell .resume-editor-field select,
+.resume-manager-shell .resume-editor-field textarea,
+.resume-manager-shell .resume-editor-extra-row input,
+.resume-manager-shell .resume-editor-extra-row textarea {
+  min-height: 44px;
+  padding: 9px 12px;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+.resume-manager-shell .resume-editor-index {
+  margin-top: 0;
+}
+
+.resume-manager-shell .resume-editor-index-title,
+.resume-manager-shell .resume-editor-index button {
+  color: var(--of-text-muted);
+}
+
+.resume-manager-shell .resume-editor-index button:hover,
+.resume-manager-shell .resume-editor-index button:focus-visible,
+.resume-manager-shell .resume-editor-index button.active {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-color: var(--of-rust);
+}
+
+.resume-manager-shell .resume-editor-title-row {
+  margin-top: 8px;
+}
+
+.resume-manager-shell .resume-editor-title-row h1 {
+  font-size: clamp(28px, 3vw, 36px);
+}
+
+.resume-manager-shell .resume-editor-archive-fields input,
+.resume-manager-shell .resume-editor-field input,
+.resume-manager-shell .resume-editor-field select,
+.resume-manager-shell .resume-editor-field textarea,
+.resume-manager-shell .resume-editor-extra-row input,
+.resume-manager-shell .resume-editor-extra-row textarea {
+  color: var(--of-text);
+  background: var(--of-surface);
+  border-color: var(--of-line-control, var(--of-line-strong));
+}
+
+.resume-manager-shell .resume-editor-archive-fields input:focus,
+.resume-manager-shell .resume-editor-field input:focus,
+.resume-manager-shell .resume-editor-field select:focus,
+.resume-manager-shell .resume-editor-field textarea:focus,
+.resume-manager-shell .resume-editor-extra-row input:focus,
+.resume-manager-shell .resume-editor-extra-row textarea:focus {
+  background: var(--of-surface-raised);
+  border-color: var(--of-focus);
+  box-shadow: 0 0 0 3px var(--of-brand-100);
+}
+
+.resume-manager-shell .resume-editor-summary {
+  background: var(--of-surface-muted);
+  border-color: var(--of-line);
+}
+
+.resume-manager-shell .resume-editor-summary > div strong {
+  color: var(--of-text-strong);
+}
+
+.resume-manager-shell .resume-editor-summary > div span,
+.resume-manager-shell .resume-editor-summary-note {
+  color: var(--of-text-muted);
+}
+
+.resume-manager-shell .resume-editor-summary > i {
+  background: var(--of-line);
+}
+
+.resume-manager-shell .resume-editor-summary > i b {
+  background: var(--of-rust);
+}
+
+.resume-manager-shell .resume-editor-section,
+.resume-manager-shell .resume-editor-section.open {
+  background: var(--of-surface);
+  border-color: var(--of-line);
+}
+
+.resume-manager-shell .resume-editor-section-head > button:first-child strong {
+  color: var(--of-text-strong);
+  border-inline-start-color: var(--of-rust);
+}
+
+.resume-manager-shell .resume-editor-section-action,
+.resume-manager-shell .resume-editor-add-row,
+.resume-manager-shell .resume-editor-empty-entry {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-200);
+}
+
+/* The form responds to the actual editor width, including when the library is
+   open or collapsed, so browser zoom never pushes a second field column out of
+   view. */
+@container (max-width: 620px) {
+  .resume-editor-archive-fields,
+  .resume-editor-grid,
+  .resume-editor-long-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-editor-field.wide,
+  .resume-editor-long-fields .resume-editor-field:last-child {
+    grid-column: auto;
+  }
+
+  .resume-editor-extra-row {
+    grid-template-columns: minmax(0, 1fr) 32px;
+  }
+
+  .resume-editor-extra-row textarea {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 900px) {
+  .resume-manager-shell .resume-manager-body {
+    grid-template-columns: 1fr;
+  }
+
+  .resume-manager-shell .resume-library-sidebar {
+    padding: 20px;
+    border-right: 0;
+    border-bottom: 1px solid var(--of-line);
+  }
+
+  .resume-manager-shell .resume-editor-index {
+    background: var(--of-surface-raised);
+    border-color: var(--of-line);
+    box-shadow: var(--of-shadow-card);
+  }
+
+  .resume-manager-shell .resume-editor-layout {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .resume-manager-shell .resume-editor-content,
+  .resume-manager-shell .resume-editor-index {
+    grid-column: 1;
+  }
+
+  .resume-manager-shell .resume-editor-index {
+    grid-row: 1;
+    margin-bottom: 12px;
+    padding: 9px 12px;
+    border-inline-start: 0;
+  }
+
+  .resume-manager-shell .resume-editor-content {
+    grid-row: 2;
+  }
+}
+
+/* Final resume-page geometry. Keep the editor aligned with the library instead
+   of centering a narrow strip, and explicitly zero the min-content sizing chain
+   so legacy grid rules cannot widen the document past the viewport. */
+.resume-manager-shell {
+  overflow-x: clip;
+}
+
+.resume-manager-shell .resume-manager-body,
+.resume-manager-shell .resume-detail,
+.resume-manager-shell .resume-editor,
+.resume-manager-shell .resume-editor-layout,
+.resume-manager-shell .resume-editor-content,
+.resume-manager-shell .resume-editor-section-list,
+.resume-manager-shell .resume-editor-section,
+.resume-manager-shell .resume-editor-section-body,
+.resume-manager-shell .resume-editor-grid,
+.resume-manager-shell .resume-editor-field {
+  min-width: 0;
+}
+
+.resume-manager-shell .resume-detail {
+  padding-inline: clamp(20px, 3vw, 52px);
+}
+
+.resume-manager-shell .resume-editor {
+  width: min(100%, 1040px);
+  max-width: 1040px;
+  margin-inline: 0 auto;
+}
+
+.resume-manager-shell .resume-editor-layout {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
+}
+
+.resume-manager-shell .resume-editor-index {
+  display: none;
+}
+
+.resume-manager-shell .resume-editor-content {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.resume-manager-shell .resume-editor-section-list {
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.resume-manager-shell .resume-editor-section,
+.resume-manager-shell .resume-editor-section-body,
+.resume-manager-shell .resume-editor-grid {
+  width: 100%;
+  max-width: 100%;
+}
+
+.resume-manager-shell .resume-editor-field input,
+.resume-manager-shell .resume-editor-field select,
+.resume-manager-shell .resume-editor-field textarea,
+.resume-manager-shell .resume-editor-extra-row input,
+.resume-manager-shell .resume-editor-extra-row textarea {
+  max-width: 100%;
+}
+
+@container (max-width: 720px) {
+  .resume-manager-shell .resume-editor-archive-fields,
+  .resume-manager-shell .resume-editor-grid,
+  .resume-manager-shell .resume-editor-long-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .resume-manager-shell .resume-editor-field.wide,
+  .resume-manager-shell .resume-editor-long-fields .resume-editor-field:last-child {
+    grid-column: auto;
+  }
+}
+
+/* The collapsed library is a real compact rail, not a 280px empty sidebar.
+   Keep the restore action visible and large enough to understand at a glance. */
+.resume-manager-shell .resume-manager-body.library-collapsed {
+  grid-template-columns: 76px minmax(0, 1fr);
+}
+
+.resume-manager-shell .resume-library-sidebar.is-collapsed {
+  width: 76px;
+  padding: 20px 8px;
+}
+
+.resume-manager-shell .resume-library-sidebar.is-collapsed .resume-library-collapsed-tools {
+  width: 100%;
+  align-content: start;
+  gap: 12px;
+}
+
+.resume-manager-shell .resume-library-collapsed-tools > button {
+  width: 40px;
+  height: 40px;
+  color: var(--of-text-muted);
+  border: 1px solid transparent;
+  border-radius: 10px;
+}
+
+.resume-manager-shell .resume-library-collapsed-tools > .resume-library-expand-button {
+  width: 58px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 3px;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border-color: var(--of-line);
+  box-shadow: var(--of-shadow-card);
+}
+
+.resume-manager-shell .resume-library-expand-button > span {
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.resume-manager-shell .resume-library-collapsed-tools > button:hover,
+.resume-manager-shell .resume-library-collapsed-tools > button:focus-visible {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-200);
+}
+
+.resume-manager-shell .resume-library-collapsed-tools > button:active {
+  transform: scale(0.96);
+}
+
+.resume-manager-shell .resume-library-collapsed-tools > button:focus-visible {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
+.resume-manager-shell .resume-library-collapsed-count {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 2px;
+  color: var(--of-brand-700);
+}
+
+.resume-manager-shell .resume-library-collapsed-count strong {
+  font-size: 14px;
+}
+
+.resume-manager-shell .resume-library-collapsed-count small {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+@media (max-width: 650px) {
+  .resume-manager-shell .resume-library-sidebar.is-collapsed {
+    width: 100%;
+    min-height: 64px;
+    padding: 8px 16px;
+  }
+
+  .resume-manager-shell .resume-library-sidebar.is-collapsed .resume-library-collapsed-tools {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+  }
+
+  .resume-manager-shell .resume-library-collapsed-tools > .resume-library-expand-button {
+    width: auto;
+    height: 44px;
+    flex-direction: row;
+    padding-inline: 12px;
+  }
+
+  .resume-manager-shell .resume-library-collapsed-tools > button:last-child {
+    margin-inline-start: auto;
   }
 }

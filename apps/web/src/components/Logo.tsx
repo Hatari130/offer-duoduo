@@ -14,10 +14,10 @@ export function Logo({ compact = false }: { compact?: boolean }) {
       </span>
       {!compact && (
         <span className="brand-wordmark" aria-hidden="true">
-          Offer<span>Flow</span>
+          JobKoI
         </span>
       )}
-      <span className="sr-only">OfferFlow</span>
+      <span className="sr-only">JobKoI</span>
     </span>
   );
 }

@@ -40,6 +40,22 @@ type ResumeEditorProps = {
 
 type ExtraRow = { id: string; key: string; value: string };
 
+const monthInputValue = (value?: string) => {
+  const match = String(value || "").match(/^(\d{4})[-/.](\d{1,2})/);
+  return match ? `${match[1]}-${match[2].padStart(2, "0")}` : "";
+};
+
+const EDUCATION_FORM_OPTIONS = [
+  "全国普通高等院校全日制",
+  "全国普通高等院校非全日制",
+  "成人高等教育",
+  "高等教育自学考试",
+  "网络教育",
+  "开放教育",
+  "境外院校",
+  "其他"
+] as const;
+
 type EditorSectionKey =
   | "basic"
   | "preference"
@@ -149,7 +165,7 @@ export default function ResumeEditor({
   }, [resume.id, resume.profile]);
 
   const completion = useMemo(() => {
-    const expected = 18 + draft.education.length * 6 + draft.experiences.length * 5 + draft.projects.length * 5;
+    const expected = 18 + draft.education.length * 8 + draft.experiences.length * 5 + draft.projects.length * 5;
     return Math.min(100, Math.round((countProfileFields(draft) / Math.max(expected, 1)) * 100));
   }, [draft]);
 
@@ -288,12 +304,12 @@ export default function ResumeEditor({
       <div className="resume-editor-section-list">
         <EditorSection keyName="basic" title="基本信息" description="姓名、联系方式、个人基础资料" icon={<UserRound size={17} />} open={openSections.has("basic")} onToggle={toggle}>
           <div className="resume-editor-grid">
-            <EditorField label="姓名"><input value={draft.fullName} onChange={(event) => set("fullName", event.target.value)} /></EditorField>
+            <EditorField label="姓名" required><input value={draft.fullName} onChange={(event) => set("fullName", event.target.value)} /></EditorField>
             <EditorField label="性别"><select value={draft.gender} onChange={(event) => set("gender", event.target.value)}><option value="">请选择</option><option>男</option><option>女</option><option>不便透露</option></select></EditorField>
-            <EditorField label="手机号"><input type="tel" value={draft.phone} onChange={(event) => set("phone", event.target.value)} /></EditorField>
-            <EditorField label="邮箱"><input type="email" value={draft.email} onChange={(event) => set("email", event.target.value)} /></EditorField>
+            <EditorField label="手机号" required><input type="tel" value={draft.phone} onChange={(event) => set("phone", event.target.value)} /></EditorField>
+            <EditorField label="邮箱" required><input type="email" value={draft.email} onChange={(event) => set("email", event.target.value)} /></EditorField>
             <EditorField label="出生日期"><input type="date" value={draft.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></EditorField>
-            <EditorField label="毕业时间"><input type="month" value={draft.graduationDate} onChange={(event) => set("graduationDate", event.target.value)} /></EditorField>
+            <EditorField label="毕业时间"><input type="month" value={monthInputValue(draft.graduationDate)} onChange={(event) => set("graduationDate", event.target.value)} /></EditorField>
             <EditorField label="现居城市"><input value={draft.currentCity} onChange={(event) => set("currentCity", event.target.value)} /></EditorField>
             <EditorField label="籍贯"><input value={draft.nativePlace} onChange={(event) => set("nativePlace", event.target.value)} /></EditorField>
             <EditorField label="身高（厘米）"><input inputMode="numeric" value={draft.height} onChange={(event) => set("height", event.target.value)} /></EditorField>
@@ -314,18 +330,26 @@ export default function ResumeEditor({
           </div>
         </EditorSection>
 
-        <EditorSection keyName="education" title="教育经历" description={`${draft.education.length} 段经历 · 支持手动添加多段`} icon={<GraduationCap size={17} />} open={openSections.has("education")} onToggle={toggle} action="添加教育经历" onAction={() => set("education", [...draft.education, { id: newId("edu"), school: "", major: "", degree: "", startDate: "", endDate: "", gpa: "" }])}>
+        <EditorSection keyName="education" title="教育经历" description={`${draft.education.length} 段经历 · 支持手动添加多段`} icon={<GraduationCap size={17} />} open={openSections.has("education")} onToggle={toggle} action="添加教育经历" onAction={() => set("education", [...draft.education, { id: newId("edu"), school: "", college: "", major: "", degree: "", educationForm: "", startDate: "", endDate: "", gpa: "" }])}>
           {draft.education.map((item) => <EditorEntry key={item.id} title={item.school || "新教育经历"} onRemove={() => set("education", draft.education.filter((entry) => entry.id !== item.id))}>
             <div className="resume-editor-grid">
               <EditorField label="学校"><input value={item.school} onChange={(event) => updateEducation(item.id, { school: event.target.value })} /></EditorField>
+              <EditorField label="学院"><input value={item.college || ""} onChange={(event) => updateEducation(item.id, { college: event.target.value })} placeholder="例如：计算机学院" /></EditorField>
               <EditorField label="专业"><input value={item.major} onChange={(event) => updateEducation(item.id, { major: event.target.value })} /></EditorField>
               <EditorField label="学历"><input value={item.degree} onChange={(event) => updateEducation(item.id, { degree: event.target.value })} /></EditorField>
+              <EditorField label="学习形式">
+                <select value={item.educationForm || ""} onChange={(event) => updateEducation(item.id, { educationForm: event.target.value })}>
+                  <option value="">请选择</option>
+                  {item.educationForm && !EDUCATION_FORM_OPTIONS.includes(item.educationForm as typeof EDUCATION_FORM_OPTIONS[number]) && <option value={item.educationForm}>{item.educationForm}</option>}
+                  {EDUCATION_FORM_OPTIONS.map((option) => <option key={option} value={option}>{option}</option>)}
+                </select>
+              </EditorField>
               <EditorField label="GPA / 排名"><input value={item.gpa} onChange={(event) => updateEducation(item.id, { gpa: event.target.value })} /></EditorField>
-              <EditorField label="开始时间"><input type="month" value={item.startDate} onChange={(event) => updateEducation(item.id, { startDate: event.target.value })} /></EditorField>
-              <EditorField label="结束时间"><input type="month" value={item.endDate} onChange={(event) => updateEducation(item.id, { endDate: event.target.value })} /></EditorField>
+              <EditorField label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(event) => updateEducation(item.id, { startDate: event.target.value })} /></EditorField>
+              <EditorField label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(event) => updateEducation(item.id, { endDate: event.target.value })} /></EditorField>
             </div>
           </EditorEntry>)}
-          {draft.education.length === 0 && <EmptyEditorEntry text="还没有教育经历，点击添加" onClick={() => set("education", [{ id: newId("edu"), school: "", major: "", degree: "", startDate: "", endDate: "", gpa: "" }])} />}
+          {draft.education.length === 0 && <EmptyEditorEntry text="还没有教育经历，点击添加" onClick={() => set("education", [{ id: newId("edu"), school: "", college: "", major: "", degree: "", educationForm: "", startDate: "", endDate: "", gpa: "" }])} />}
         </EditorSection>
 
         <EditorSection keyName="experience" title="实习 / 工作经历" description={`${draft.experiences.length} 段经历 · 支持手动添加多段`} icon={<BriefcaseBusiness size={17} />} open={openSections.has("experience")} onToggle={toggle} action="添加工作经历" onAction={() => set("experiences", [...draft.experiences, { id: newId("exp"), organization: "", title: "", startDate: "", endDate: "", description: "" }])}>
@@ -333,8 +357,8 @@ export default function ResumeEditor({
             <div className="resume-editor-grid">
               <EditorField label="公司 / 组织"><input value={item.organization} onChange={(event) => updateExperience(item.id, { organization: event.target.value })} /></EditorField>
               <EditorField label="岗位"><input value={item.title} onChange={(event) => updateExperience(item.id, { title: event.target.value })} /></EditorField>
-              <EditorField label="开始时间"><input type="month" value={item.startDate} onChange={(event) => updateExperience(item.id, { startDate: event.target.value })} /></EditorField>
-              <EditorField label="结束时间"><input type="month" value={item.endDate} onChange={(event) => updateExperience(item.id, { endDate: event.target.value })} /></EditorField>
+              <EditorField label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(event) => updateExperience(item.id, { startDate: event.target.value })} /></EditorField>
+              <EditorField label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(event) => updateExperience(item.id, { endDate: event.target.value })} /></EditorField>
               <EditorField label="经历描述" wide><textarea rows={5} value={item.description} onChange={(event) => updateExperience(item.id, { description: event.target.value })} placeholder="写清楚负责内容、方法和结果" /></EditorField>
             </div>
           </EditorEntry>)}
@@ -346,8 +370,8 @@ export default function ResumeEditor({
             <div className="resume-editor-grid">
               <EditorField label="项目名称"><input value={item.name} onChange={(event) => updateProject(item.id, { name: event.target.value })} /></EditorField>
               <EditorField label="担任角色"><input value={item.role} onChange={(event) => updateProject(item.id, { role: event.target.value })} /></EditorField>
-              <EditorField label="开始时间"><input type="month" value={item.startDate} onChange={(event) => updateProject(item.id, { startDate: event.target.value })} /></EditorField>
-              <EditorField label="结束时间"><input type="month" value={item.endDate} onChange={(event) => updateProject(item.id, { endDate: event.target.value })} /></EditorField>
+              <EditorField label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(event) => updateProject(item.id, { startDate: event.target.value })} /></EditorField>
+              <EditorField label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(event) => updateProject(item.id, { endDate: event.target.value })} /></EditorField>
               <EditorField label="项目描述" wide><textarea rows={5} value={item.description} onChange={(event) => updateProject(item.id, { description: event.target.value })} placeholder="写清楚项目背景、你的动作和可量化结果" /></EditorField>
             </div>
           </EditorEntry>)}
@@ -359,8 +383,8 @@ export default function ResumeEditor({
             <div className="resume-editor-grid">
               <EditorField label="经历类型"><input value={item.type} onChange={(event) => updateCampus(item.id, { type: event.target.value })} placeholder="例如：学生会、志愿服务" /></EditorField>
               <EditorField label="担任角色"><input value={item.role} onChange={(event) => updateCampus(item.id, { role: event.target.value })} /></EditorField>
-              <EditorField label="开始时间"><input type="month" value={item.startDate} onChange={(event) => updateCampus(item.id, { startDate: event.target.value })} /></EditorField>
-              <EditorField label="结束时间"><input type="month" value={item.endDate} onChange={(event) => updateCampus(item.id, { endDate: event.target.value })} /></EditorField>
+              <EditorField label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(event) => updateCampus(item.id, { startDate: event.target.value })} /></EditorField>
+              <EditorField label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(event) => updateCampus(item.id, { endDate: event.target.value })} /></EditorField>
               <EditorField label="经历描述" wide><textarea rows={4} value={item.description} onChange={(event) => updateCampus(item.id, { description: event.target.value })} /></EditorField>
             </div>
           </EditorEntry>)}
@@ -370,7 +394,7 @@ export default function ResumeEditor({
         <EditorSection keyName="awards" title="获奖与证书" description={`${draft.awards.length} 项奖励 · 可补充名称、等级与详情`} icon={<Trophy size={17} />} open={openSections.has("awards")} onToggle={toggle} action="添加获奖情况" onAction={() => set("awards", [...draft.awards, { id: newId("award"), date: "", name: "", level: "", description: "" }])}>
           {draft.awards.map((item) => <EditorEntry key={item.id} title={item.name || "新获奖记录"} onRemove={() => set("awards", draft.awards.filter((entry) => entry.id !== item.id))}>
             <div className="resume-editor-grid">
-              <EditorField label="获奖时间"><input type="month" value={item.date} onChange={(event) => updateAward(item.id, { date: event.target.value })} /></EditorField>
+              <EditorField label="获奖时间"><input type="month" value={monthInputValue(item.date)} onChange={(event) => updateAward(item.id, { date: event.target.value })} /></EditorField>
               <EditorField label="奖项名称"><input value={item.name} onChange={(event) => updateAward(item.id, { name: event.target.value })} /></EditorField>
               <EditorField label="奖励等级"><input value={item.level} onChange={(event) => updateAward(item.id, { level: event.target.value })} placeholder="例如：国家级 / 一等奖" /></EditorField>
               <EditorField label="奖励描述" wide><textarea rows={4} value={item.description} onChange={(event) => updateAward(item.id, { description: event.target.value })} /></EditorField>
@@ -425,8 +449,8 @@ function EditorSection({ keyName, title, description, icon: _icon, open, onToggl
   </section>;
 }
 
-function EditorField({ label, wide, children }: { label: string; wide?: boolean; children: ReactNode }) {
-  return <label className={`resume-editor-field ${wide ? "wide" : ""}`}><span>{label}</span>{children}</label>;
+function EditorField({ label, wide, required, children }: { label: string; wide?: boolean; required?: boolean; children: ReactNode }) {
+  return <label className={`resume-editor-field ${wide ? "wide" : ""}`}><span>{required && <em aria-hidden="true">*</em>}{label}</span>{children}</label>;
 }
 
 function EditorEntry({ title, onRemove, children }: { title: string; onRemove: () => void; children: ReactNode }) {

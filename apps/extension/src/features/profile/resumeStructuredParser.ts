@@ -650,6 +650,8 @@ function parseEducationSection(section: WorkingSection): ParsedEntries<ProfileEd
     const dates = firstDateRange(source);
     const gpa = firstLabeledValue(source, ["GPA", "平均绩点", "绩点"]);
     const college = firstLabeledValue(source, ["学院", "院系"]);
+    const educationForm = firstLabeledValue(source, ["学习形式", "培养方式", "教育形式"]);
+    const educationFormValue = educationForm.value || sourceText.match(/全国普通高等院校非全日制|全国普通高等院校全日制|高等教育自学考试|成人高等教育|网络教育|开放教育|非全日制|全日制/)?.[0] || "";
     const courses = firstLabeledValue(source, ["核心课程", "主修课程", "课程"]);
     const researchDirection = firstLabeledValue(source, ["研究方向"]);
     const thesis = firstLabeledValue(source, ["论文", "毕业论文"]);
@@ -674,11 +676,12 @@ function parseEducationSection(section: WorkingSection): ParsedEntries<ProfileEd
       college: college.value,
       major,
       degree,
+      educationForm: educationFormValue,
       startDate: dates.range.startDate,
       endDate: dates.range.endDate,
       gpa: gpa.value
     });
-    [schoolLabeled.line, schoolLine, majorLabeled.line, degreeLabeled.line, dates.line, gpa.line, college.line, courses.line, researchDirection.line, thesis.line, rank.line]
+    [schoolLabeled.line, schoolLine, majorLabeled.line, degreeLabeled.line, dates.line, gpa.line, college.line, educationForm.line, courses.line, researchDirection.line, thesis.line, rank.line]
       .filter((line): line is SourceLine => Boolean(line))
       .forEach((line) => consumed.add(line.index));
     if (courses.value) entries[entries.length - 1]!.courses = courses.value;

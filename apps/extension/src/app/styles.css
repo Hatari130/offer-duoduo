@@ -145,6 +145,27 @@ button {
   background: var(--overlay-soft);
 }
 
+.overlay-header-tools .overlay-resume-button {
+  width: auto;
+  min-width: 5.9rem;
+  display: inline-flex;
+  gap: 0.38rem;
+  padding-inline: 0.6rem;
+  color: var(--overlay-text);
+  background: var(--overlay-soft);
+  border: 1px solid var(--overlay-line);
+  border-radius: 0.62rem;
+  font-size: 0.75rem;
+  font-weight: 720;
+  white-space: nowrap;
+}
+
+.overlay-header-tools .overlay-resume-button:hover {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-200);
+}
+
 .overlay-scroll {
   height: 100vh;
   overflow-y: auto;
@@ -2294,6 +2315,11 @@ button {
   height: 36px;
 }
 
+.overlay-shell .overlay-header-tools .overlay-resume-button {
+  width: auto;
+  height: 36px;
+}
+
 .overlay-shell .overlay-scroll {
   padding: 88px 22px 82px;
 }
@@ -2788,6 +2814,7 @@ button {
 }
 
 .overlay-shell .form-grid input,
+.overlay-shell .form-grid select,
 .overlay-shell .summary-field textarea,
 .overlay-shell .drawer-body input,
 .overlay-shell .drawer-body select,
@@ -2802,6 +2829,7 @@ button {
 }
 
 .overlay-shell .form-grid input:focus,
+.overlay-shell .form-grid select:focus,
 .overlay-shell .summary-field textarea:focus,
 .overlay-shell .drawer-body input:focus,
 .overlay-shell .drawer-body select:focus,
@@ -3062,39 +3090,17 @@ button {
   align-items: center;
 }
 
-.profile-resume-switcher .profile-manager-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 7px 9px;
-  color: var(--overlay-text);
-  background: var(--of-surface);
-  border: 1px solid var(--overlay-line);
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  transition: background-color 120ms ease, border-color 120ms ease, color 120ms ease, transform 120ms ease;
-}
-
-.profile-resume-switcher .profile-manager-link:hover {
-  color: var(--overlay-text);
-  background: var(--overlay-soft);
-  border-color: #cfd4d0;
-}
-
-.profile-resume-switcher .profile-manager-link:active {
-  transform: scale(0.96);
-}
-
 .profile-resume-switcher {
   display: grid;
-  grid-template-columns: minmax(94px, 1fr) minmax(118px, 176px) auto auto;
+  grid-template-columns: minmax(94px, 1fr) minmax(118px, 176px) auto;
   gap: 8px;
   align-items: center;
-  margin-top: 24px;
-  padding: 18px 0 14px;
-  background: transparent;
-  border-top: 1px solid var(--overlay-line);
+  margin-top: 14px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--overlay-line);
+  border-radius: 14px;
+  box-shadow: 0 4px 14px rgba(28, 34, 30, 0.025);
 }
 
 .profile-resume-switcher-copy,
@@ -3146,6 +3152,7 @@ button {
 .profile-resume-switcher select {
   width: 100%;
   min-width: 0;
+  min-height: 36px;
   padding: 8px 9px;
   color: var(--overlay-text);
   background: var(--of-surface);
@@ -6257,6 +6264,7 @@ button:disabled {
 
 .search,
 .form-grid input,
+.form-grid select,
 .summary-field textarea,
 .drawer-body input,
 .drawer-body select,
@@ -6272,6 +6280,7 @@ button:disabled {
 }
 
 .form-grid input:focus,
+.form-grid select:focus,
 .summary-field textarea:focus,
 .drawer-body input:focus,
 .drawer-body select:focus,

@@ -143,8 +143,19 @@ export function extractResumeBasics(profile: PersonalProfile): ResumeBasics {
   return Object.fromEntries(RESUME_BASICS_KEYS.map((key) => [key, profile[key]])) as ResumeBasics;
 }
 
+/**
+ * A parsed resume is the strongest source for its own identity fields. The
+ * candidate-level profile only fills gaps caused by a sparse or imperfect
+ * extraction; it must never overwrite evidence from a newly uploaded file.
+ */
 export function applyResumeBasics(profile: PersonalProfile, basics: ResumeBasics): PersonalProfile {
-  return { ...profile, ...basics };
+  const resolved = Object.fromEntries(
+    RESUME_BASICS_KEYS.map((key) => [
+      key,
+      String(profile[key] || "").trim() ? profile[key] : basics[key]
+    ])
+  ) as ResumeBasics;
+  return { ...profile, ...resolved };
 }
 
 export function hasResumeBasics(basics: ResumeBasics): boolean {

@@ -10,6 +10,20 @@ export const STAGES = [
 
 export type ApplicationStage = (typeof STAGES)[number];
 
+/** Stages users can actively choose. `to_apply` is kept only to read legacy data. */
+export const SELECTABLE_STAGES = [
+  "interested",
+  "applied",
+  "assessment",
+  "interview",
+  "offer",
+  "closed"
+] as const satisfies readonly ApplicationStage[];
+
+export function selectableStage(stage?: ApplicationStage): (typeof SELECTABLE_STAGES)[number] {
+  return stage === "to_apply" ? "interested" : stage || "interested";
+}
+
 export const STAGE_LABELS: Record<ApplicationStage, string> = {
   interested: "感兴趣",
   to_apply: "待投递",
@@ -18,6 +32,44 @@ export const STAGE_LABELS: Record<ApplicationStage, string> = {
   interview: "面试",
   offer: "Offer",
   closed: "已结束"
+};
+
+export const CLOSED_STAGE_REASONS = [
+  "resume_rejected",
+  "assessment_rejected",
+  "interview_1_rejected",
+  "interview_2_rejected",
+  "interview_3_rejected",
+  "hr_rejected"
+] as const;
+
+export type ClosedStageReason = (typeof CLOSED_STAGE_REASONS)[number];
+
+export const CLOSED_STAGE_REASON_LABELS: Record<ClosedStageReason, string> = {
+  resume_rejected: "简历挂",
+  assessment_rejected: "测评挂",
+  interview_1_rejected: "一面挂",
+  interview_2_rejected: "二面挂",
+  interview_3_rejected: "三面挂",
+  hr_rejected: "HR挂"
+};
+
+export const INTERVIEW_ROUNDS = [
+  "phone_screen",
+  "interview_1",
+  "interview_2",
+  "interview_3",
+  "hr_interview"
+] as const;
+
+export type InterviewRound = (typeof INTERVIEW_ROUNDS)[number];
+
+export const INTERVIEW_ROUND_LABELS: Record<InterviewRound, string> = {
+  phone_screen: "电话面",
+  interview_1: "一面",
+  interview_2: "二面",
+  interview_3: "三面",
+  hr_interview: "HR面"
 };
 
 export const RECRUITMENT_TYPES = [
@@ -94,6 +146,8 @@ export interface JobApplication {
   jobType?: string;
   recruitmentType?: RecruitmentType;
   stage: ApplicationStage;
+  closedReason?: ClosedStageReason;
+  interviewRound?: InterviewRound;
   externalStage?: string;
   appliedAt?: string;
   deadline?: string;

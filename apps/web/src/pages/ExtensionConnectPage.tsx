@@ -55,7 +55,7 @@ export function ExtensionConnectPage() {
               <CheckCircle2 aria-hidden="true" size={26} />
             </div>
             <h1>正在连接浏览器插件</h1>
-            <p>登录已确认，马上把你的投递记录同步到 OfferFlow 插件。</p>
+            <p>登录已确认，马上把你的投递记录同步到 JobKoI 插件。</p>
             <div className="extension-connect-progress" role="status">
               <LoaderCircle className="spin" aria-hidden="true" size={16} />正在安全交接登录状态
             </div>

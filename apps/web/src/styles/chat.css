@@ -17,6 +17,7 @@
   place-items: start center;
   overflow-x: hidden;
   overflow-y: auto;
+  background: #fcfdff;
 }
 
 .chat-page--empty::before {
@@ -25,16 +26,18 @@
   z-index: -1;
   content: "";
   pointer-events: none;
-  background: linear-gradient(180deg, #ffffff 0%, #fbfcff 100%);
+  background:
+    radial-gradient(ellipse 72% 42% at 50% 48%, rgb(232 237 249 / 0.24) 0%, rgb(243 246 252 / 0.12) 48%, transparent 72%),
+    linear-gradient(180deg, #ffffff 0%, #ffffff 26%, #fdfeff 48%, #fafcff 78%, #fcfdff 100%);
   opacity: 1;
 }
 
 .chat-welcome {
   position: relative;
   width: 100%;
-  max-width: 72rem;
+  max-width: 108rem;
   min-width: 0;
-  padding: clamp(2.5rem, 8vh, 5.5rem) clamp(1.1rem, 4vw, 3rem)
+  padding: clamp(3rem, 8vh, 7rem) clamp(1.1rem, 4vw, 3rem)
     calc(2.5rem + env(safe-area-inset-bottom));
   text-align: center;
 }
@@ -67,24 +70,24 @@
   color: var(--of-text-strong, #171714);
   outline: none;
   font-family: var(--of-font-sans);
-  font-size: clamp(2.35rem, 4vw, 2.75rem);
-  font-weight: 650;
+  font-size: clamp(2.5rem, 3.25vw, 3.65rem);
+  font-weight: 720;
   line-height: 1.08;
-  letter-spacing: -0.045em;
+  letter-spacing: -0.055em;
   text-wrap: balance;
 }
 
 .chat-welcome > p {
-  max-width: 41rem;
+  max-width: 64rem;
   margin: 0 auto 2.1rem;
   color: var(--of-text-muted);
-  font-size: 1rem;
+  font-size: clamp(1rem, 1.15vw, 1.18rem);
   line-height: 1.7;
   text-wrap: pretty;
 }
 
 .chat-welcome > .composer-shell {
-  width: min(100%, 48rem);
+  width: min(100%, clamp(48rem, 62vw, 74rem));
   margin-inline: auto;
 }
 
@@ -267,7 +270,7 @@
 .recommendation-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.75rem;
+  gap: 1rem;
   scrollbar-width: none;
 }
 
@@ -281,8 +284,8 @@
   gap: 0.45rem;
   padding: 0.75rem;
   color: var(--of-text);
-  background: var(--of-surface, #fffdfb);
-  border: 1px solid var(--of-line, #d2c9bc);
+  background: #ffffff;
+  border: 1px solid color-mix(in srgb, var(--of-line, #d2c9bc) 72%, #e7ebf3);
   border-radius: 1rem;
   text-align: start;
   transition: border-color 160ms ease-out, background-color 160ms ease-out;

@@ -94,6 +94,22 @@ test("parses multiple education, work, project, campus and award entries without
   assert.ok(diagnostics.sections.some((section) => section.kind === "unknown" && section.heading === "其他信息"));
 });
 
+test("parses education college and study form", () => {
+  const result = parseResumeStructuredText(`
+教育背景
+学校：南京大学
+学院：建筑与城市规划学院
+专业：城乡规划
+学历：硕士
+学习形式：全国普通高等院校全日制
+2024-09 至 2027-06
+`, "教育信息.pdf");
+
+  assert.equal(result.profile.education.length, 1);
+  assert.equal(result.profile.education[0].college, "建筑与城市规划学院");
+  assert.equal(result.profile.education[0].educationForm, "全国普通高等院校全日制");
+});
+
 test("normalizes Wingdings/private-use bullets and supports common date variants", () => {
   const normalized = normalizeResumeStructuredText("\uf0b7 第一条\n\uf06e 第二条");
   assert.equal(normalized, "• 第一条\n• 第二条");

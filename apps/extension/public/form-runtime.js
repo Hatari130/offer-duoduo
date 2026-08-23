@@ -1,5 +1,5 @@
 (() => {
-  const RUNTIME_VERSION = "2026-08-20.autofill-v6";
+  const RUNTIME_VERSION = "2026-08-21.autofill-v8";
   const runtimeSession = `${RUNTIME_VERSION}:${globalThis.__offerflowDesiredContentSession || "manifest"}`;
   if (globalThis.__offerflowFormRuntimeVersion === runtimeSession) return;
   globalThis.__offerflowFormRuntimeVersion = runtimeSession;

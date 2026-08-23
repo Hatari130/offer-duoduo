@@ -5,7 +5,7 @@ const NAVIGATION_EVENT = "offerflow:navigate";
 const TRANSITION_ATTRIBUTE = "offerflowTransition";
 const FALLBACK_ATTRIBUTE = "offerflowTransitionFallback";
 
-export type UiTransitionScope = "route" | "application-view" | "resume-tab";
+export type UiTransitionScope = "route" | "application-view" | "resume-tab" | "sidebar";
 
 interface ViewTransitionHandle {
   finished: Promise<unknown>;

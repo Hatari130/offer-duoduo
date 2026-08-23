@@ -7,7 +7,7 @@
   const processCombinationPattern = /^(?:AI面试|简历投递|投递简历|提交简历|简历初筛|简历筛选|简历复筛|简历评估|简历审核|资格审核|在线测评|人才测评|Offer评估)(?:中|完成|通过|不通过|结果)?$/i;
   const nonPositionPattern = /^(?:职位|岗位|职位名称|岗位名称|所属部门|申请日期|申请编号|投递时间|申请时间|工作地点|城市|状态|详情|操作|刷新活跃度|网申投递|专场招聘会投递|我的简历|首页|应聘记录|投递记录|申请记录|我的申请|校园招聘|社会招聘|实习生招聘|招聘门户|招聘首页|编辑|返回|没有更多了|登录|注册|暂存投递)$/i;
   const metadataPattern = /^(?:20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?|\d{8,16}|[A-Z]\d{5,})$/i;
-  const campaignPattern = /(?:校园招聘|社会招聘|实习生招聘|招聘官网|招聘平台|招聘门户|招聘首页|招聘计划|实习生计划|管培计划|专项计划|专场招聘|招聘项目|\d{4}届(?:实习生|应届生|校招生)|JD\s*YOUNG)/i;
+  const campaignPattern = /(?:校园招聘|社会招聘|实习生招聘|应届生招聘|应届生|校招生|招聘官网|招聘平台|招聘门户|招聘首页|招聘计划|实习生计划|管培计划|专项计划|专场招聘|招聘项目|\d{4}届(?:实习生|应届生|校招生)|JD\s*YOUNG)/i;
 
   const strongOccupationPatterns = [
     /产品经理/i,
@@ -171,6 +171,18 @@
         '[class*="apply-item"]',
         '[class*="application"]'
       ],
+      sectionCompany: false,
+      numericApplicationIds: false
+    },
+    {
+      id: "mokahr",
+      hostPattern: /(?:^|\.)mokahr\.com$/i,
+      defaultCompany: "",
+      positionSelectors: [
+        '[class*="apply-panel--jobs"] [class*="left-panel"] [class*="title-"]',
+        '[class*="info-row"] [class*="value-"]'
+      ],
+      cardSelectors: [],
       sectionCompany: false,
       numericApplicationIds: false
     }

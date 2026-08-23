@@ -1,5 +1,5 @@
 (() => {
-  const DRIVER_VERSION = "2026-08-20.autofill-v6";
+  const DRIVER_VERSION = "2026-08-21.autofill-v8";
   const driverSession = `${DRIVER_VERSION}:${globalThis.__offerflowDesiredContentSession || "manifest"}`;
   if (globalThis.__offerflowControlDriverVersion === driverSession) return;
   globalThis.__offerflowControlDriverVersion = driverSession;
@@ -162,11 +162,11 @@
   };
 
   const optionText = (option) => clean(
-    option.getAttribute("data-value") ||
-    option.getAttribute("data-cy-value") ||
-    option.getAttribute("title") ||
+    option.innerText || option.textContent ||
     option.getAttribute("aria-label") ||
-    option.innerText || option.textContent || ""
+    option.getAttribute("title") ||
+    option.getAttribute("data-cy-value") ||
+    option.getAttribute("data-value") || ""
   );
 
   const optionCandidates = (popup, driver) => {
@@ -334,11 +334,12 @@
           if (search instanceof HTMLInputElement && !search.readOnly && search.type !== "hidden") {
             const beforeSignature = optionCandidates(popup, driver).map(({ text }) => text).join("|");
             nativeInputValue(search, part);
-            // Moka's remote school/major lookup commonly spends 1.5-2.5s in
-            // the loading state.  Keep the generic controls snappy, but give
-            // Sugar Design enough time to replace the pre-search menu.
-            const searchAttempts = id === "moka" ? 42 : 20;
-            const searchDelay = id === "moka" ? 80 : 70;
+            // Remote school/major lookups on Moka and ATSX commonly spend
+            // 1.5-2.5s in the loading state. Keep generic controls snappy,
+            // but let the site-specific drivers wait for the result menu.
+            const isRemoteRecruitingSelect = ["moka", "atsx", "feishu"].includes(id);
+            const searchAttempts = isRemoteRecruitingSelect ? 44 : 20;
+            const searchDelay = isRemoteRecruitingSelect ? 80 : 70;
             for (let attempt = 0; attempt < searchAttempts; attempt += 1) {
               await remoteWait(searchDelay);
               popup = runtime.resolvePopup(element, {

@@ -89,7 +89,7 @@ export function MembershipPage() {
 
       <section className="membership-content" aria-labelledby="membership-title">
         <div className="membership-hero">
-          <span><Route aria-hidden="true" size={15} />OfferFlow Pro</span>
+          <span><Route aria-hidden="true" size={15} />JobKoI Pro</span>
           <h1 id="membership-title" tabIndex={-1}>升级，给求职每一步更多确定性</h1>
           <p>从岗位分析、简历优化到投递管理，让你的准备更连贯、更有依据。</p>
         </div>

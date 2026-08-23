@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ResumeVersionRecord } from "@offerflow/contracts";
-import { Clock3, FileCheck2, FileText, FolderOpen, LoaderCircle, PencilLine } from "lucide-react";
+import { ChevronRight, Clock3, FileCheck2, FileText, House, LoaderCircle, PencilLine } from "lucide-react";
 import { api } from "../app/api";
 import { navigate } from "../app/router";
 
@@ -36,7 +36,22 @@ export function ResumeLibraryPage() {
   return (
     <section className="data-page resume-library-page">
       <header className="page-header resume-library-heading">
-        <div><span className="page-kicker"><FolderOpen aria-hidden="true" size={14} />简历档案</span><h1 tabIndex={-1}>简历中心</h1><p>母版保持稳定，每个岗位拥有独立、可追溯的定制版本。</p></div>
+        <div>
+          <nav className="application-breadcrumb" aria-label="页面位置">
+            <a
+              href="/app/chat"
+              onClick={(event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                navigate("/app/chat");
+              }}
+            ><House aria-hidden="true" size={13} />主页</a>
+            <ChevronRight aria-hidden="true" size={13} />
+            <span aria-current="page">简历档案</span>
+          </nav>
+          <h1 tabIndex={-1}>简历中心</h1>
+          <p>母版保持稳定，每个岗位拥有独立、可追溯的定制版本。</p>
+        </div>
         <div className="resume-library-metrics"><span><strong>{groups.length}</strong> 个母版来源</span><span><strong>{versions.length}</strong> 个岗位版本</span></div>
       </header>
 

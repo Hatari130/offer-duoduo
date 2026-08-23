@@ -79,6 +79,10 @@
   --of-success-soft: #e8ede5;
   --of-warning: #8b631d;
   --of-warning-soft: #f7ebd3;
+  --of-stage-interested: #58636e;
+  --of-stage-interested-soft: #edf0f3;
+  --of-stage-interview: #684c86;
+  --of-stage-interview-soft: #eee8f4;
 
   /* Local-first Chinese typography; no network font dependency. */
   --of-font-sans:

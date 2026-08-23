@@ -176,7 +176,7 @@ export function CompactSidebar({
       <header className="compact-header">
         <button className="compact-brand" onClick={() => onViewChange("dashboard")}>
           <span>OF</span>
-          <strong>OfferDuoDuo</strong>
+          <strong>JobKoI</strong>
         </button>
         <div className="compact-header-actions">
           <button title="打开完整工作台" onClick={() => onOpenWorkspace(view)}>

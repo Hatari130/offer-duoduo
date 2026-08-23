@@ -3,13 +3,14 @@ import type { OpportunityStatus } from "@offerflow/domain";
 import {
   ArrowUpRight,
   BriefcaseBusiness,
-  Building2,
   CarFront,
   CheckCircle2,
+  ChevronRight,
   Cpu,
   Gamepad2,
   Globe2,
   HeartPulse,
+  House,
   Landmark,
   RefreshCw,
   Search,
@@ -26,6 +27,7 @@ import {
   fetchCampusHiringFeed,
   type CampusHiringOpportunity
 } from "../features/opportunities/campusHiringFeed";
+import { navigate } from "../app/router";
 
 type VisibilityFilter = "all" | "open" | "inactive";
 
@@ -57,24 +59,82 @@ const statusLabels: Record<OpportunityStatus, string> = {
   ongoing: "持续招聘"
 };
 
+// Keep the same lookup strategy as the transferred company-map page: known
+// official domains first, then a logo service with the recruitment site's domain.
+const logoDomainOverrides: Record<string, string> = {
+  "字节跳动": "bytedance.com",
+  "腾讯": "qq.com",
+  "阿里巴巴": "alibaba.com",
+  "美团": "meituan.com",
+  "百度": "baidu.com",
+  "京东": "jd.com",
+  "快手": "kuaishou.com",
+  "小红书": "xiaohongshu.com",
+  "网易": "163.com",
+  "拼多多": "pddglobal.com",
+  "滴滴": "didiglobal.com",
+  "蚂蚁集团": "antgroup.com",
+  "大疆创新": "dji.com",
+  "中国工商银行": "icbc.com.cn",
+  "中国建设银行": "ccb.com",
+  "中国银行": "bankofchina.com",
+  "中国农业银行": "abchina.com",
+  "招商银行": "cmbchina.com",
+  "中国平安": "pingan.com",
+  "特斯拉": "tesla.com",
+  "小鹏汽车": "xiaopeng.com",
+  "理想汽车": "lixiang.com",
+  "蔚来": "nio.com",
+  "苹果": "apple.com",
+  "英伟达": "nvidia.com"
+};
+
 function normalizedCompanyName(value: string): string {
   return value.toLocaleLowerCase("zh-CN").replace(/[^\p{L}\p{N}]/gu, "");
+}
+
+function companyLogoUrl(company: CompanyDirectoryEntry): string | undefined {
+  const domain = logoDomainOverrides[company.name] || (() => {
+    try {
+      return new URL(company.careerUrl).hostname.replace(/^www\./, "");
+    } catch {
+      return undefined;
+    }
+  })();
+  return domain ? `https://logos.hunter.io/${domain}` : undefined;
 }
 
 function CompanyMark({ company }: { company: CompanyDirectoryEntry }) {
   const brand = resolveCompanyBrandMark(company.name);
   const markText = brand?.wordmark || company.shortName;
   const style = brand ? { "--company-brand": `#${brand.color}` } as React.CSSProperties : undefined;
+  const [logoLoaded, setLogoLoaded] = useState(false);
+  const [logoUnavailable, setLogoUnavailable] = useState(false);
+  const logoUrl = companyLogoUrl(company);
 
   return (
-    <span className={`company-direct-mark${brand?.icon ? " has-brand-icon" : " has-wordmark"}`} style={style} aria-hidden="true">
-      {brand?.icon ? (
-        <svg viewBox="0 0 24 24" focusable="false">
-          <path d={brand.icon.path} />
-        </svg>
-      ) : (
-        <span>{markText}</span>
+    <span className={`company-direct-mark${logoLoaded ? " has-remote-logo" : ""}`} style={style} aria-hidden="true">
+      {logoUrl && !logoUnavailable && (
+        <img
+          src={logoUrl}
+          alt=""
+          width="128"
+          height="128"
+          decoding="async"
+          referrerPolicy="no-referrer"
+          onLoad={() => setLogoLoaded(true)}
+          onError={() => setLogoUnavailable(true)}
+        />
       )}
+      <span className="company-direct-mark-fallback">
+        {brand?.icon ? (
+          <svg viewBox="0 0 24 24" focusable="false">
+            <path d={brand.icon.path} />
+          </svg>
+        ) : (
+          <span>{markText}</span>
+        )}
+      </span>
     </span>
   );
 }
@@ -171,7 +231,18 @@ export function CompanyDirectoryPage() {
     <section className="company-directory-page" aria-labelledby="company-directory-title">
       <header className="company-directory-hero">
         <div>
-          <span className="page-kicker"><Building2 aria-hidden="true" size={16} strokeWidth={2} />公司直达</span>
+          <nav className="application-breadcrumb" aria-label="页面位置">
+            <a
+              href="/app/chat"
+              onClick={(event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                navigate("/app/chat");
+              }}
+            ><House aria-hidden="true" size={13} />主页</a>
+            <ChevronRight aria-hidden="true" size={13} />
+            <span aria-current="page">公司直达</span>
+          </nav>
           <h1 id="company-directory-title" tabIndex={-1}>公司投递一键直达</h1>
           <p>按行业找到目标公司，招聘中的入口已点亮；暂未开放的公司保持灰度，开放状态来自校招实时数据。</p>
         </div>

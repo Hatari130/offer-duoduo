@@ -63,8 +63,9 @@ import {
 import {
   RECRUITMENT_TYPES,
   RECRUITMENT_TYPE_LABELS,
-  STAGES,
+  SELECTABLE_STAGES,
   STAGE_LABELS,
+  selectableStage,
   type ApplicationStage,
   type ExtractedJob,
   type JobApplication,
@@ -102,13 +103,9 @@ export function JobCard({
         {job.company}
         {job.city ? ` · ${job.city}` : ""}
       </p>
-      <div className="next-action">
-        <span>下一步</span>
-        <strong>{job.nextAction || "待确定"}</strong>
-      </div>
       <div className="card-footer">
         <select
-          value={job.stage}
+          value={selectableStage(job.stage)}
           onClick={(event) => event.stopPropagation()}
           onChange={(event) => {
             event.stopPropagation();
@@ -116,7 +113,7 @@ export function JobCard({
           }}
           aria-label="修改投递阶段"
         >
-          {STAGES.map((stage) => (
+          {SELECTABLE_STAGES.map((stage) => (
             <option key={stage} value={stage}>
               {STAGE_LABELS[stage]}
             </option>
@@ -205,6 +202,17 @@ export function CaptureForm({
           </select>
         </label>
         <label>
+          <span>当前阶段</span>
+          <select
+            value={value.suggestedStage === "to_apply" ? "interested" : value.suggestedStage || "interested"}
+            onChange={(event) => update("suggestedStage", event.target.value as ApplicationStage)}
+          >
+            {SELECTABLE_STAGES.map((stage) => (
+              <option key={stage} value={stage}>{STAGE_LABELS[stage]}</option>
+            ))}
+          </select>
+        </label>
+        <label>
           <span>城市</span>
           <input
             value={value.city || ""}
@@ -221,26 +229,11 @@ export function CaptureForm({
           />
         </label>
         <label>
-          <span>截止时间</span>
-          <input
-            type="date"
-            value={value.deadline?.slice(0, 10) || ""}
-            onChange={(e) => update("deadline", e.target.value)}
-          />
-        </label>
-        <label>
           <span>投递时间</span>
           <input
             type="date"
             value={value.appliedAt?.slice(0, 10) || ""}
             onChange={(e) => update("appliedAt", e.target.value)}
-          />
-        </label>
-        <label>
-          <span>下一步行动</span>
-          <input
-            value={value.nextAction || ""}
-            onChange={(e) => update("nextAction", e.target.value)}
           />
         </label>
       </div>
@@ -264,7 +257,7 @@ export function CaptureForm({
           </button>
         )}
         <button className="button button--primary" onClick={() => onSave("create")}>
-          <Plus size={16} /> {duplicate ? "仍然新建" : "加入 OfferDuoDuo"}
+          <Plus size={16} /> {duplicate ? "仍然新建" : "加入 JobKoI"}
         </button>
       </div>
     </section>
@@ -374,7 +367,7 @@ export function EditDrawer({
   onSync: (job: JobApplication) => void;
   onDelete: (job: JobApplication) => void;
 }) {
-  const [draft, setDraft] = useState(job);
+  const [draft, setDraft] = useState(() => ({ ...job, stage: selectableStage(job.stage) }));
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const set = <K extends keyof JobApplication>(key: K, value: JobApplication[K]) =>
@@ -395,6 +388,14 @@ export function EditDrawer({
         </div>
 
         <div className="drawer-body">
+          <label>
+            <span>公司</span>
+            <input value={draft.company} onChange={(event) => set("company", event.target.value)} />
+          </label>
+          <label>
+            <span>岗位</span>
+            <input value={draft.position} onChange={(event) => set("position", event.target.value)} />
+          </label>
           <label>
             <span>岗位类型</span>
             <select
@@ -418,7 +419,7 @@ export function EditDrawer({
                 set("stage", event.target.value as ApplicationStage)
               }
             >
-              {STAGES.map((stage) => (
+              {SELECTABLE_STAGES.map((stage) => (
                 <option key={stage} value={stage}>
                   {STAGE_LABELS[stage]}
                 </option>
@@ -426,26 +427,11 @@ export function EditDrawer({
             </select>
           </label>
           <label>
-            <span>下一步行动</span>
-            <input
-              value={draft.nextAction || ""}
-              onChange={(event) => set("nextAction", event.target.value)}
-            />
-          </label>
-          <label>
             <span>投递时间</span>
             <input
               type="datetime-local"
               value={draft.appliedAt?.slice(0, 16) || ""}
               onChange={(event) => set("appliedAt", event.target.value)}
-            />
-          </label>
-          <label>
-            <span>截止时间</span>
-            <input
-              type="datetime-local"
-              value={draft.deadline?.slice(0, 16) || ""}
-              onChange={(event) => set("deadline", event.target.value)}
             />
           </label>
           <label>

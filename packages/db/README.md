@@ -1,4 +1,4 @@
-# OfferFlow database
+# JobKoI database
 
 PostgreSQL schema and forward-only migrations for public recruitment data and
 private user application data.

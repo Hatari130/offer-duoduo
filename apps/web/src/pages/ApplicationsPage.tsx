@@ -1,28 +1,41 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { ApplicationSyncItem } from "@offerflow/contracts";
 import {
+  CLOSED_STAGE_REASONS,
+  CLOSED_STAGE_REASON_LABELS,
   inferRecruitmentType,
+  INTERVIEW_ROUNDS,
+  INTERVIEW_ROUND_LABELS,
   RECRUITMENT_TYPES,
   RECRUITMENT_TYPE_LABELS,
-  STAGES,
+  SELECTABLE_STAGES,
+  selectableStage,
   STAGE_LABELS,
   type ApplicationStage,
+  type ClosedStageReason,
+  type InterviewRound,
   type JobApplication,
   type RecruitmentType
 } from "@offerflow/domain";
 import {
+  ArrowUpDown,
   ArrowUpRight,
+  BadgeCheck,
   BriefcaseBusiness,
   CalendarClock,
+  ChevronRight,
   Columns3,
   FileText,
+  House,
   ListFilter,
   MapPin,
   MessageCircleQuestion,
   Plus,
   Search,
+  Send,
   Star,
   Table2,
+  UsersRound,
   X
 } from "lucide-react";
 import { api } from "../app/api";
@@ -30,6 +43,8 @@ import { navigate, startUiTransition } from "../app/router";
 import { InterviewRecordsDialog } from "../features/applications/InterviewRecordsDialog";
 
 type ViewMode = "table" | "board";
+type SortKey = "recruitmentType" | "stage" | "appliedAt";
+type SortDirection = "asc" | "desc";
 
 function sourceHost(value: string): string {
   try {
@@ -54,8 +69,24 @@ function appliedAtLabel(value?: string): string {
 function stageTone(stage: ApplicationStage): string {
   if (stage === "offer") return "success";
   if (stage === "closed") return "muted";
-  if (stage === "interview" || stage === "assessment") return "active";
-  return "default";
+  if (stage === "interview") return "interview";
+  if (stage === "assessment") return "assessment";
+  if (stage === "applied") return "applied";
+  return "interested";
+}
+
+function selectedStageLabel(
+  stage: ApplicationStage,
+  closedReason?: ClosedStageReason,
+  interviewRound?: InterviewRound
+): string {
+  if (stage === "closed" && closedReason) return `${STAGE_LABELS.closed}-${CLOSED_STAGE_REASON_LABELS[closedReason]}`;
+  if (stage === "interview" && interviewRound) return `${STAGE_LABELS.interview}-${INTERVIEW_ROUND_LABELS[interviewRound]}`;
+  return STAGE_LABELS[stage];
+}
+
+function applicationStageLabel(application: JobApplication): string {
+  return selectedStageLabel(selectableStage(application.stage), application.closedReason, application.interviewRound);
 }
 
 function applicationRecruitmentType(application: JobApplication): RecruitmentType | undefined {
@@ -74,9 +105,17 @@ export function ApplicationsPage() {
   const [status, setStatus] = useState("");
   const [query, setQuery] = useState("");
   const [stage, setStage] = useState<"all" | ApplicationStage>("all");
+  const [sort, setSort] = useState<{ key: SortKey; direction: SortDirection }>();
   const [view, setView] = useState<ViewMode>("table");
+  const [expandedEmptyStages, setExpandedEmptyStages] = useState<Set<ApplicationStage>>(() => new Set());
   const [dialog, setDialog] = useState<{ mode: "create" } | { mode: "edit"; item: ApplicationSyncItem }>();
   const [interviewDialog, setInterviewDialog] = useState<ApplicationSyncItem>();
+
+  useEffect(() => {
+    if (!status) return;
+    const timer = window.setTimeout(() => setStatus(""), 2500);
+    return () => window.clearTimeout(timer);
+  }, [status]);
 
   const load = useCallback((options: { silent?: boolean } = {}) => {
     if (!options.silent) setLoading(true);
@@ -106,9 +145,39 @@ export function ApplicationsPage() {
     return items.filter(({ application }) => {
       const recruitmentType = applicationRecruitmentType(application);
       const matchQuery = !normalized || `${application.company} ${application.position} ${application.city || ""} ${recruitmentType ? RECRUITMENT_TYPE_LABELS[recruitmentType] : ""}`.toLowerCase().includes(normalized);
-      return matchQuery && (stage === "all" || application.stage === stage);
+      return matchQuery && (stage === "all" || selectableStage(application.stage) === stage);
+    }).sort((left, right) => {
+      const closedDifference = Number(selectableStage(left.application.stage) === "closed") - Number(selectableStage(right.application.stage) === "closed");
+      if (closedDifference) return closedDifference;
+
+      if (sort) {
+        const leftApplication = left.application;
+        const rightApplication = right.application;
+        let comparison = 0;
+        if (sort.key === "recruitmentType") {
+          comparison = (applicationRecruitmentType(leftApplication) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(leftApplication)!] : "未识别")
+            .localeCompare(applicationRecruitmentType(rightApplication) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(rightApplication)!] : "未识别", "zh-CN");
+        } else if (sort.key === "stage") {
+          comparison = SELECTABLE_STAGES.indexOf(selectableStage(leftApplication.stage)) - SELECTABLE_STAGES.indexOf(selectableStage(rightApplication.stage));
+        } else {
+          const leftTime = leftApplication.appliedAt ? Date.parse(leftApplication.appliedAt) : Number.NaN;
+          const rightTime = rightApplication.appliedAt ? Date.parse(rightApplication.appliedAt) : Number.NaN;
+          if (Number.isNaN(leftTime) && !Number.isNaN(rightTime)) return 1;
+          if (!Number.isNaN(leftTime) && Number.isNaN(rightTime)) return -1;
+          comparison = leftTime - rightTime;
+        }
+        if (comparison) return sort.direction === "asc" ? comparison : -comparison;
+      }
+
+      return right.application.updatedAt.localeCompare(left.application.updatedAt);
     });
-  }, [items, query, stage]);
+  }, [items, query, sort, stage]);
+
+  const toggleSort = (key: SortKey) => {
+    setSort((current) => current?.key === key
+      ? { key, direction: current.direction === "asc" ? "desc" : "asc" }
+      : { key, direction: key === "appliedAt" ? "desc" : "asc" });
+  };
 
   const saveItem = (item: ApplicationSyncItem) => {
     setItems((current) => {
@@ -134,28 +203,70 @@ export function ApplicationsPage() {
   };
 
   const changeStage = (item: ApplicationSyncItem, nextStage: ApplicationStage) => {
-    if (item.application.stage === nextStage) return;
+    const currentStage = selectableStage(item.application.stage);
+    if (currentStage === nextStage) return;
     const now = new Date().toISOString();
     void mutate(item, {
       ...item.application,
       stage: nextStage,
+      closedReason: nextStage === "closed" ? item.application.closedReason : undefined,
+      interviewRound: nextStage === "interview" ? item.application.interviewRound : undefined,
       updatedAt: now,
       events: [
         ...item.application.events,
         {
           id: crypto.randomUUID(),
           type: "stage_changed",
-          title: `${STAGE_LABELS[item.application.stage]} → ${STAGE_LABELS[nextStage]}`,
+          title: `${applicationStageLabel(item.application)} → ${selectedStageLabel(nextStage, item.application.closedReason, item.application.interviewRound)}`,
           occurredAt: now
         }
       ]
     });
   };
 
-  const changeRecruitmentType = (
-    item: ApplicationSyncItem,
-    recruitmentType: RecruitmentType | undefined
-  ) => {
+  const changeClosedReason = (item: ApplicationSyncItem, closedReason: ClosedStageReason | undefined) => {
+    if (item.application.closedReason === closedReason && selectableStage(item.application.stage) === "closed") return;
+    const now = new Date().toISOString();
+    void mutate(item, {
+      ...item.application,
+      stage: "closed",
+      closedReason,
+      interviewRound: undefined,
+      updatedAt: now,
+      events: [
+        ...item.application.events,
+        {
+          id: crypto.randomUUID(),
+          type: "stage_changed",
+          title: `结束原因更新为：${closedReason ? CLOSED_STAGE_REASON_LABELS[closedReason] : "未标注"}`,
+          occurredAt: now
+        }
+      ]
+    });
+  };
+
+  const changeInterviewRound = (item: ApplicationSyncItem, interviewRound: InterviewRound | undefined) => {
+    if (item.application.interviewRound === interviewRound && selectableStage(item.application.stage) === "interview") return;
+    const now = new Date().toISOString();
+    void mutate(item, {
+      ...item.application,
+      stage: "interview",
+      closedReason: undefined,
+      interviewRound,
+      updatedAt: now,
+      events: [
+        ...item.application.events,
+        {
+          id: crypto.randomUUID(),
+          type: "stage_changed",
+          title: `面试轮次更新为：${interviewRound ? INTERVIEW_ROUND_LABELS[interviewRound] : "未标注"}`,
+          occurredAt: now
+        }
+      ]
+    });
+  };
+
+  const changeRecruitmentType = (item: ApplicationSyncItem, recruitmentType: RecruitmentType | undefined) => {
     if (item.application.recruitmentType === recruitmentType) return;
     void mutate(item, {
       ...item.application,
@@ -169,6 +280,15 @@ export function ApplicationsPage() {
     startUiTransition(() => setView(nextView), "application-view");
   };
 
+  const toggleEmptyStage = (stageKey: ApplicationStage) => {
+    setExpandedEmptyStages((current) => {
+      const next = new Set(current);
+      if (next.has(stageKey)) next.delete(stageKey);
+      else next.add(stageKey);
+      return next;
+    });
+  };
+
   const activeCount = items.filter((item) => !["closed", "offer"].includes(item.application.stage)).length;
   const interviewCount = items.filter((item) => item.application.stage === "interview").length;
   const offerCount = items.filter((item) => item.application.stage === "offer").length;
@@ -176,21 +296,30 @@ export function ApplicationsPage() {
   return (
     <section className="data-page applications-page">
       <header className="page-header application-heading">
-        <div>
-          <span className="page-kicker"><BriefcaseBusiness aria-hidden="true" size={14} />投递工作台</span>
+        <div className="application-heading-copy">
+          <nav className="application-breadcrumb" aria-label="页面位置">
+            <a
+              href="/app/chat"
+              onClick={(event) => {
+                if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+                event.preventDefault();
+                navigate("/app/chat");
+              }}
+            ><House aria-hidden="true" size={13} />主页</a>
+            <ChevronRight aria-hidden="true" size={13} />
+            <span aria-current="page">投递工作台</span>
+          </nav>
           <h1 tabIndex={-1}>个人投递管理</h1>
-          <p>把每次面试沉淀为可回看的问答与复盘，让准备过程持续积累。</p>
+        </div>
+        <div className="application-metrics" aria-label="投递概览">
+          <div className="metric-card metric-card--active"><span className="metric-icon"><Send aria-hidden="true" size={22} /></span><span><small>推进中</small><strong>{activeCount}</strong></span></div>
+          <div className="metric-card metric-card--interview"><span className="metric-icon"><UsersRound aria-hidden="true" size={22} /></span><span><small>面试阶段</small><strong>{interviewCount}</strong></span></div>
+          <div className="metric-card metric-card--offer"><span className="metric-icon"><BadgeCheck aria-hidden="true" size={22} /></span><span><small>收到 Offer</small><strong>{offerCount}</strong></span></div>
         </div>
         <button className="primary-button" type="button" onClick={() => setDialog({ mode: "create" })}>
           <Plus aria-hidden="true" size={17} />添加投递
         </button>
       </header>
-
-      <div className="application-metrics" aria-label="投递概览">
-        <div><span>推进中</span><strong>{activeCount}</strong><small>持续跟进的流程</small></div>
-        <div><span>面试阶段</span><strong>{interviewCount}</strong><small>需要准备与复盘</small></div>
-        <div className="metric-featured"><span>收到 Offer</span><strong>{offerCount}</strong><small>阶段成果</small></div>
-      </div>
 
       <div className="data-toolbar application-toolbar" data-view={view}>
         <label className="search-control">
@@ -203,7 +332,7 @@ export function ApplicationsPage() {
           <span className="sr-only">按投递阶段筛选</span>
           <select value={stage} onChange={(event) => setStage(event.target.value as typeof stage)}>
             <option value="all">全部阶段</option>
-            {STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}
+            {SELECTABLE_STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}
           </select>
         </label>
         <div className="view-switch" aria-label="显示方式">
@@ -231,18 +360,18 @@ export function ApplicationsPage() {
         <div className="application-table-wrap">
           <table className="data-table application-table">
             <caption className="sr-only">个人投递记录</caption>
-            <thead><tr><th>公司与岗位</th><th>岗位类型</th><th>当前阶段</th><th>投递时间</th><th>地点</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
+            <thead><tr><th>公司与岗位</th><th aria-sort={sort?.key === "recruitmentType" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("recruitmentType")}>岗位类型<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "stage" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("stage")}>当前阶段<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "appliedAt" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("appliedAt")}>投递时间<ArrowUpDown aria-hidden="true" size={13} /></button></th><th>地点</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
             <tbody>
               {filtered.map((item) => {
                 const application = item.application;
                 return (
-                  <tr key={application.id}>
-                    <td data-label="公司与岗位"><button className="application-title" type="button" onClick={() => setDialog({ mode: "edit", item })}><strong>{application.company}</strong><span>{application.position}</span>{application.tailoredResumeName && <small>已关联定制简历</small>}</button></td>
-                    <td data-label="岗位类型"><select className="recruitment-type-select" aria-label={`更新 ${application.company} ${application.position} 的岗位类型`} value={applicationRecruitmentType(application) || ""} onChange={(event) => changeRecruitmentType(item, (event.target.value || undefined) as RecruitmentType | undefined)}><option value="">未识别</option>{RECRUITMENT_TYPES.map((value) => <option value={value} key={value}>{RECRUITMENT_TYPE_LABELS[value]}</option>)}</select></td>
-                    <td data-label="当前阶段"><div className="stage-cell"><select className={`stage-select stage-select--${stageTone(application.stage)}`} aria-label={`更新 ${application.company} ${application.position} 的阶段`} value={application.stage} onChange={(event) => changeStage(item, event.target.value as ApplicationStage)}>{STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}</select>{application.externalStage && <small className="external-stage">网站进度：{application.externalStage}</small>}</div></td>
+                  <tr key={application.id} className={selectableStage(application.stage) === "closed" ? "application-row--closed" : undefined}>
+                    <td data-label="公司与岗位"><div className="application-identity"><button className="application-title" type="button" onClick={() => setDialog({ mode: "edit", item })}><strong>{application.company}</strong><span>{application.position}</span>{application.tailoredResumeName && <small>已关联定制简历</small>}</button></div></td>
+                    <td data-label="岗位类型"><select className="application-tag application-tag--recruitment application-tag--select" aria-label={`更新 ${application.company} ${application.position} 的岗位类型`} value={applicationRecruitmentType(application) || ""} onChange={(event) => changeRecruitmentType(item, (event.target.value || undefined) as RecruitmentType | undefined)}><option value="">未识别</option>{RECRUITMENT_TYPES.map((value) => <option value={value} key={value}>{RECRUITMENT_TYPE_LABELS[value]}</option>)}</select></td>
+                    <td data-label="当前阶段"><div className="stage-cell"><select className={`application-tag application-tag--stage application-tag--select application-tag--${stageTone(selectableStage(application.stage))}`} aria-label={`更新 ${application.company} ${application.position} 的阶段`} value={selectableStage(application.stage)} onChange={(event) => changeStage(item, event.target.value as ApplicationStage)}>{SELECTABLE_STAGES.map((value) => <option value={value} key={value}>{value === "closed" ? selectedStageLabel(value, application.closedReason) : value === "interview" ? selectedStageLabel(value, undefined, application.interviewRound) : STAGE_LABELS[value]}</option>)}</select>{selectableStage(application.stage) === "interview" && !application.interviewRound && <select className="application-tag application-tag--select application-tag--secondary" aria-label={`更新 ${application.company} ${application.position} 的面试轮次`} value="" onChange={(event) => changeInterviewRound(item, event.target.value as InterviewRound)}><option value="">选择面试轮次</option>{INTERVIEW_ROUNDS.map((round) => <option value={round} key={round}>{INTERVIEW_ROUND_LABELS[round]}</option>)}</select>}{selectableStage(application.stage) === "closed" && !application.closedReason && <select className="application-tag application-tag--select application-tag--secondary" aria-label={`更新 ${application.company} ${application.position} 的结束原因`} value="" onChange={(event) => changeClosedReason(item, event.target.value as ClosedStageReason)}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select>}</div></td>
                     <td data-label="投递时间"><span className="cell-icon"><CalendarClock aria-hidden="true" size={14} />{appliedAtLabel(application.appliedAt)}</span></td>
                     <td data-label="地点"><span className="cell-icon"><MapPin aria-hidden="true" size={14} />{application.city || "未填写"}</span></td>
-                    <td data-label="面试记录"><button className="interview-record-entry" type="button" onClick={() => setInterviewDialog(item)}><span><MessageCircleQuestion aria-hidden="true" size={15} />面试问答记录</span><small>上传录音或文字稿</small></button></td>
+                    <td data-label="面试记录"><button className="interview-record-entry" type="button" aria-label={`为 ${application.company} ${application.position} 添加面试问答记录`} onClick={() => setInterviewDialog(item)}><Plus aria-hidden="true" size={15} /><span>添加</span></button></td>
                     <td data-label="快捷操作"><div className="row-actions"><button type="button" aria-label={application.isFavorite ? "取消收藏" : "收藏投递"} onClick={() => void mutate(item, { ...application, isFavorite: !application.isFavorite, updatedAt: new Date().toISOString() })}><Star aria-hidden="true" size={17} fill={application.isFavorite ? "currentColor" : "none"} /></button>{application.tailorTaskId && <button type="button" aria-label={`打开 ${application.company} 的定制简历`} onClick={() => navigate(`/app/resumes/tailor/${encodeURIComponent(application.tailorTaskId!)}`)}><FileText aria-hidden="true" size={17} /></button>}{application.sourceUrl && application.sourceHost !== "manual" && <a href={application.sourceUrl} target="_blank" rel="noreferrer" aria-label={`打开 ${application.position} 来源页面`}><ArrowUpRight aria-hidden="true" size={17} /></a>}</div></td>
                   </tr>
                 );
@@ -254,23 +383,25 @@ export function ApplicationsPage() {
         <>
           <div className="mobile-stage-tabs" aria-label="按阶段查看看板">
             <button type="button" aria-pressed={stage === "all"} onClick={() => setStage("all")}>全部</button>
-            {STAGES.map((stageKey) => (
+            {SELECTABLE_STAGES.map((stageKey) => (
               <button type="button" key={stageKey} aria-pressed={stage === stageKey} onClick={() => setStage(stageKey)}>
                 {STAGE_LABELS[stageKey]}
               </button>
             ))}
           </div>
           <div className="application-board">
-          {STAGES.filter((stageKey) => stage === "all" || stageKey === stage).map((stageKey) => {
-            const stageItems = filtered.filter((item) => item.application.stage === stageKey);
+          {SELECTABLE_STAGES.filter((stageKey) => stage === "all" || stageKey === stage).map((stageKey) => {
+            const stageItems = filtered.filter((item) => selectableStage(item.application.stage) === stageKey);
+            const isEmptyStage = stageItems.length === 0;
+            const isCollapsed = isEmptyStage && !expandedEmptyStages.has(stageKey);
             return (
-              <section className="board-column" key={stageKey}>
-                <header><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></header>
+              <section className={`board-column ${isCollapsed ? "board-column--collapsed" : ""}`} data-stage={stageKey} key={stageKey}>
+                {isEmptyStage ? <button className="board-column-header board-column-header--toggle" type="button" aria-expanded={!isCollapsed} aria-label={`${isCollapsed ? "展开" : "收起"}${STAGE_LABELS[stageKey]}阶段`} onClick={() => toggleEmptyStage(stageKey)}><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></button> : <header><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></header>}
                 <div>
                   {stageItems.map((item) => (
-                    <article className="board-card" key={item.application.id}>
+                    <article className={`board-card ${selectableStage(item.application.stage) === "closed" ? "board-card--closed" : ""}`} key={item.application.id}>
                       <button className="board-card-main" type="button" onClick={() => setDialog({ mode: "edit", item })}>
-                        <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em><small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
+                        <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em>{["closed", "interview"].includes(selectableStage(item.application.stage)) && <b className="board-stage-label">{applicationStageLabel(item.application)}</b>}<small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
                       </button>
                       <button className="board-interview-entry" type="button" onClick={() => setInterviewDialog(item)}><MessageCircleQuestion aria-hidden="true" size={14} /><span>面试问答记录</span></button>
                     </article>
@@ -324,7 +455,9 @@ function ApplicationDialog({
   const [recruitmentType, setRecruitmentType] = useState<RecruitmentType | "">(
     item ? applicationRecruitmentType(item.application) || "" : ""
   );
-  const [stage, setStage] = useState<ApplicationStage>(item?.application.stage || "to_apply");
+  const [stage, setStage] = useState<ApplicationStage>(selectableStage(item?.application.stage));
+  const [closedReason, setClosedReason] = useState<ClosedStageReason | "">(item?.application.closedReason || "");
+  const [interviewRound, setInterviewRound] = useState<InterviewRound | "">(item?.application.interviewRound || "");
   const [appliedAt, setAppliedAt] = useState(
     item?.application.appliedAt?.slice(0, 16).replace(" ", "T") || ""
   );
@@ -437,6 +570,8 @@ function ApplicationDialog({
           city: city.trim() || undefined,
           recruitmentType: recruitmentType || undefined,
           stage,
+          closedReason: stage === "closed" ? closedReason || undefined : undefined,
+          interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
           appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
           sourceUrl: url,
           sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
@@ -453,6 +588,8 @@ function ApplicationDialog({
           city: city.trim() || undefined,
           recruitmentType: recruitmentType || undefined,
           stage,
+          closedReason: stage === "closed" ? closedReason || undefined : undefined,
+          interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
           appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
           sourceUrl: url,
           sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
@@ -521,7 +658,9 @@ function ApplicationDialog({
           <label><span>岗位</span><input value={position} onChange={(event) => setPosition(event.target.value)} placeholder="例如：产品经理" /></label>
           <label><span>岗位类型</span><select value={recruitmentType} onChange={(event) => setRecruitmentType(event.target.value as RecruitmentType | "")}><option value="">未识别 / 待选择</option>{RECRUITMENT_TYPES.map((value) => <option value={value} key={value}>{RECRUITMENT_TYPE_LABELS[value]}</option>)}</select></label>
           <label><span>城市</span><input value={city} onChange={(event) => setCity(event.target.value)} placeholder="例如：上海" /></label>
-          <label><span>当前阶段</span><select value={stage} onChange={(event) => setStage(event.target.value as ApplicationStage)}>{STAGES.map((value) => <option value={value} key={value}>{STAGE_LABELS[value]}</option>)}</select>{item?.application.externalStage && <small className="dialog-note">网站进度：{item.application.externalStage}</small>}</label>
+          <label><span>当前阶段</span><select value={stage} onChange={(event) => { const nextStage = event.target.value as ApplicationStage; setStage(nextStage); if (nextStage !== "closed") setClosedReason(""); if (nextStage !== "interview") setInterviewRound(""); }}>{SELECTABLE_STAGES.map((value) => <option value={value} key={value}>{value === "closed" ? selectedStageLabel(value, closedReason || undefined) : value === "interview" ? selectedStageLabel(value, undefined, interviewRound || undefined) : STAGE_LABELS[value]}</option>)}</select>{item?.application.externalStage && <small className="dialog-note">网站进度：{item.application.externalStage}</small>}</label>
+          {stage === "interview" && <label><span>面试轮次</span><select value={interviewRound} onChange={(event) => setInterviewRound(event.target.value as InterviewRound | "")}><option value="">选择面试轮次</option>{INTERVIEW_ROUNDS.map((round) => <option value={round} key={round}>{INTERVIEW_ROUND_LABELS[round]}</option>)}</select></label>}
+          {stage === "closed" && <label><span>结束原因</span><select value={closedReason} onChange={(event) => setClosedReason(event.target.value as ClosedStageReason | "")}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select></label>}
           <label><span>投递时间</span><input type="datetime-local" value={appliedAt} onChange={(event) => setAppliedAt(event.target.value)} /></label>
           <label className="field-wide"><span>岗位来源链接</span><input type="url" inputMode="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://careers.example.com/job/123" /></label>
         </div>
