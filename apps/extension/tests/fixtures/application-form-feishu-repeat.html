@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>投递简历 - 飞书新版重复区块测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      .createFormSection-container { margin-bottom: 20px; }
+      .createFormSection__fixture { display: grid; grid-template-columns: 140px 1fr; gap: 18px; }
+      .createFormSection-right, .createFormSection-formList { display: grid; gap: 12px; }
+      .resumeEditForm-item { display: grid; gap: 8px; padding: 12px; border: 1px solid #ddd; }
+      .atsx-form-item { display: grid; grid-template-columns: 120px 1fr; gap: 8px; }
+      input { min-height: 34px; }
+      .createFormSection-addBtn, .formOperate-addBtn { color: #3370ff; cursor: pointer; }
+      .atsx-date-picker-period-month { display: grid; grid-template-columns: 1fr 1px 1fr; min-height: 38px; border: 1px solid #bbb; }
+      .atsx-date-picker-period-month-label { padding: 8px 10px; cursor: pointer; }
+      .atsx-date-picker-period-hidden-input { width: 0; min-height: 0; border: 0; padding: 0; }
+      .atsx-date-picker-dropdown { position: fixed; z-index: 40; left: 400px; top: 100px; background: white; border: 1px solid #bbb; }
+      .atsx-date-picker-period-month-panel { display: grid; grid-template-columns: 80px 80px; height: 320px; }
+      .atsx-date-picker-period-month-panel-list { overflow: auto; }
+      .atsx-date-picker-period-month-panel-list-item { padding: 8px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <form class="atsx-form atsx-form-horizontal">
+      <div class="createFormSection-container">
+        <div id="education-module" class="resumeEditForm-education createFormSection-mutiple createFormSection-repeatable createFormSection__fixture">
+          <div class="createFormSection-left">
+            <div class="createFormSection-title"><p class="createFormSection-text">教育经历</p></div>
+          </div>
+          <div class="createFormSection-right"><div class="createFormSection-formList createFormSection-formList-mutiple"></div></div>
+        </div>
+      </div>
+      <div class="createFormSection-container createFormSection-container-empty">
+        <div id="internship-module" class="resumeEditForm-internship createFormSection-mutiple createFormSection-empty createFormSection-repeatable createFormSection__fixture">
+          <div class="createFormSection-left">
+            <div class="createFormSection-title"><p class="createFormSection-text">实习经历</p></div>
+          </div>
+          <div class="createFormSection-right">
+            <div class="createFormSection-addBtn addMore__fixture"><span class="addMore-add">添加</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="createFormSection-container createFormSection-container-empty">
+        <div id="project-module" class="resumeEditForm-project createFormSection-mutiple createFormSection-empty createFormSection-repeatable createFormSection__fixture">
+          <div class="createFormSection-left">
+            <div class="createFormSection-title"><p class="createFormSection-text">项目经历</p></div>
+          </div>
+          <div class="createFormSection-right">
+            <div class="createFormSection-addBtn addMore__fixture"><span class="addMore-add">添加</span></div>
+          </div>
+        </div>
+      </div>
+    </form>
+
+    <script>
+      const addClicks = { education: 0, internship: 0, project: 0 };
+      const definitions = {
+        education: { moduleId: "education-module", entryClass: "resumeEditForm-education", label: "学校名称", field: "school" },
+        internship: { moduleId: "internship-module", entryClass: "resumeEditForm-internship", label: "公司名称", field: "company" },
+        project: { moduleId: "project-module", entryClass: "resumeEditForm-project", label: "项目名称", field: "name" }
+      };
+
+      const appendEntry = (group) => {
+        const definition = definitions[group];
+        const module = document.getElementById(definition.moduleId);
+        const right = module.querySelector(".createFormSection-right");
+        let list = right.querySelector(".createFormSection-formList");
+        if (!list) {
+          right.innerHTML = '<div class="createFormSection-formList createFormSection-formList-mutiple"></div>';
+          list = right.firstElementChild;
+          module.classList.remove("createFormSection-empty");
+          module.parentElement.classList.remove("createFormSection-container-empty");
+        }
+        const index = list.querySelectorAll(`.resumeEditForm-item.${definition.entryClass}`).length;
+        const entry = document.createElement("div");
+        entry.className = `resumeEditForm-item ${definition.entryClass}`;
+        const fieldId = `${group}[${index}].${definition.field}`;
+        const periodId = `${group}[${index}].period`;
+        const periodInputId = `${periodId}Input`;
+        const internshipTitle = group === "internship" ? `
+          <div data-cy="internship[${index}].title" class="atsx-row atsx-form-item customResumeForm-fieldName-with-desc-item">
+            <div class="atsx-col atsx-form-item-label"><label for="internship[${index}].title"><div class="customResumeForm-fieldName">职位名称</div></label></div>
+            <div class="atsx-col atsx-form-item-control-wrapper"><input id="internship[${index}].title" class="atsx-input atsx-input-lg" /></div>
+          </div>` : "";
+        const internshipDescription = group === "internship" ? `
+          <div data-cy="internship[${index}].desc" class="atsx-row atsx-form-item customResumeForm-fieldName-with-desc-item">
+            <div class="atsx-col atsx-form-item-label"><label for="internship[${index}].desc"><div class="customResumeForm-fieldName">描述</div></label></div>
+            <div class="atsx-col atsx-form-item-control-wrapper"><textarea id="internship[${index}].desc" class="atsx-input"></textarea></div>
+          </div>` : "";
+        entry.innerHTML = `
+          <div data-cy="${fieldId}" class="atsx-row atsx-form-item customResumeForm-fieldName-with-desc-item">
+            <div class="atsx-col atsx-form-item-label">
+              <label for="${fieldId}"><div class="customResumeForm-fieldName">${definition.label}</div></label>
+            </div>
+            <div class="atsx-col atsx-form-item-control-wrapper"><input id="${fieldId}" class="atsx-input atsx-input-lg" /></div>
+          </div>
+          ${internshipTitle}
+          <div data-cy="${periodId}" class="atsx-row atsx-form-item customResumeForm-fieldName-with-desc-item">
+            <div class="atsx-col atsx-form-item-label"><label for="${periodId}"><div class="customResumeForm-fieldName">起止时间</div></label></div>
+            <div class="atsx-col atsx-form-item-control-wrapper">
+              <div class="atsx-date-picker atsx-date-picker-period-month" data-cy="${periodInputId}">
+                <div class="atsx-date-picker-period-month-label" data-cy="${periodInputId}Begin">
+                  <span class="atsx-date-picker-period-month-label-year" data-cy="year">YYYY</span>-<span class="atsx-date-picker-period-month-label-month" data-cy="month">MM</span>
+                </div>
+                <div class="atsx-date-picker-period-line"></div>
+                <div class="atsx-date-picker-period-month-label" data-cy="${periodInputId}End">
+                  <span class="atsx-date-picker-period-month-label-year" data-cy="year">YYYY</span>-<span class="atsx-date-picker-period-month-label-month" data-cy="month">MM</span>
+                </div>
+                <input class="atsx-date-picker-period-hidden-input" />
+              </div>
+            </div>
+          </div>
+          ${internshipDescription}
+          <div class="formOperate"><div class="formOperate-addBtn addMore__fixture"><span class="addMore-add">添加</span></div></div>`;
+        list.appendChild(entry);
+      };
+
+      appendEntry("education");
+      document.querySelector("form").addEventListener("click", (event) => {
+        const add = event.target.closest(".createFormSection-addBtn,.formOperate-addBtn");
+        if (!add) return;
+        const module = add.closest("#education-module,#internship-module,#project-module");
+        const group = module.id.replace("-module", "");
+        addClicks[group] += 1;
+        appendEntry(group);
+      });
+
+      const closeDatePanel = () => document.querySelector(".atsx-date-picker-dropdown")?.remove();
+      document.addEventListener("click", (event) => {
+        const label = event.target.closest(".atsx-date-picker-period-month-label[data-cy]");
+        if (label) {
+          const labelCy = label.getAttribute("data-cy");
+          const openDropdown = document.querySelector(".atsx-date-picker-dropdown");
+          if (openDropdown?.dataset.labelCy === labelCy) {
+            closeDatePanel();
+            return;
+          }
+          closeDatePanel();
+          if (label.dataset.pendingCurrent === "true") {
+            label.innerHTML = '<span class="atsx-date-picker-period-month-label-value atsx-date-picker-period-month-label-toToday">至今</span>';
+            delete label.dataset.pendingCurrent;
+          }
+          const isEnd = labelCy.endsWith("End");
+          const dropdown = document.createElement("div");
+          dropdown.className = "atsx-date-picker-dropdown";
+          dropdown.innerHTML = `
+            <div class="atsx-date-picker-period-month-panel" data-cy="${labelCy}Dropdown">
+              <div class="atsx-date-picker-period-month-panel-list" data-kind="year">
+                ${Array.from({ length: 131 }, (_, offset) => 2030 - offset)
+                  .map((year) => `<div class="atsx-date-picker-period-month-panel-list-item" data-cy="${year}">${year}</div>`)
+                  .join("")}
+                ${isEnd ? '<div class="atsx-date-picker-period-month-panel-list-item" data-cy="-">至今</div>' : ""}
+              </div>
+              <div class="atsx-date-picker-period-month-panel-list" data-kind="month">
+                ${Array.from({ length: 12 }, (_, offset) => String(offset + 1).padStart(2, "0"))
+                  .map((month) => `<div class="atsx-date-picker-period-month-panel-list-item" data-cy="${month}">${month}</div>`)
+                  .join("")}
+              </div>
+            </div>`;
+          dropdown.dataset.labelCy = labelCy;
+          if (labelCy.startsWith("internship[1]")) {
+            // A newly created ATSX repeat row mounts its portal after the row
+            // itself is visible. Keep this asynchronous to guard the real race.
+            setTimeout(() => document.body.appendChild(dropdown), 20);
+          } else {
+            document.body.appendChild(dropdown);
+          }
+          return;
+        }
+
+        const option = event.target.closest(".atsx-date-picker-period-month-panel-list-item[data-cy]");
+        if (!option) return;
+        const dropdown = option.closest(".atsx-date-picker-dropdown");
+        const targetLabel = document.querySelector(`[data-cy="${dropdown.dataset.labelCy}"]`);
+        const kind = option.closest("[data-kind]").dataset.kind;
+        if (kind === "year") {
+          if (option.dataset.cy === "-") {
+            // Mirror ATSX's initially-empty “至今” quirk: the panel state is
+            // selected first and the owning label repaints on its next focus.
+            targetLabel.dataset.pendingCurrent = "true";
+            closeDatePanel();
+          } else {
+            dropdown.dataset.year = option.dataset.cy;
+          }
+          return;
+        }
+        if (!dropdown.dataset.year) return;
+        targetLabel.querySelector("[data-cy='year']").textContent = dropdown.dataset.year;
+        targetLabel.querySelector("[data-cy='month']").textContent = option.dataset.cy;
+        closeDatePanel();
+      });
+
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { education: 2, experience: 2, project: 2 };
+      const repeatPlan = { experience: { work: 0, internship: 2, workIndexes: [], internshipIndexes: [0, 1] } };
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", expandRepeaters: true, repeatCounts, repeatPlan },
+        {},
+        (scan) => {
+          const profileSnapshots = [
+            {
+              school: "南京大学", educationStartDate: "2024-09", educationEndDate: "2027-06",
+              experienceOrganization: "携程集团", experienceTitle: "AI产品经理", experienceStartDate: "2026-04", experienceEndDate: "2026-08",
+              experienceDescription: "携程集团：负责酒店业务 AI 产品体验",
+              projectName: "TripYoYo", projectStartDate: "2026-03", projectEndDate: "至今"
+            },
+            {
+              school: "北京林业大学", educationStartDate: "2018-09", educationEndDate: "2023-06",
+              experienceOrganization: "南京开为网络科技有限公司", experienceTitle: "产品部门 AI产品经理", experienceStartDate: "2025-11", experienceEndDate: "2026-03",
+              experienceDescription: "南京开为：负责 Agnes APP 对话与留存增长",
+              projectName: "OfferFlow", projectStartDate: "2025-01", projectEndDate: "2025-12"
+            }
+          ];
+          listener(
+            {
+              type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+              fields: scan.fields,
+              values: {},
+              fieldValues: {},
+              profileSnapshots,
+              repeatCounts,
+              repeatPlan,
+              fillDynamicFields: true,
+              maxRounds: 3,
+              delayMs: 0
+            },
+            {},
+            (fill) => {
+              const values = (selector) => Array.from(document.querySelectorAll(selector)).map((entry) => entry.querySelector("input").value);
+              const dates = (selector) => Array.from(document.querySelectorAll(selector)).map((entry) =>
+                Array.from(entry.querySelectorAll(".atsx-date-picker-period-month-label")).flatMap((label) => {
+                  if (label.querySelector(".atsx-date-picker-period-month-label-toToday")) return ["至今", ""];
+                  return [
+                    label.querySelector("[data-cy='year']").textContent,
+                    label.querySelector("[data-cy='month']").textContent
+                  ];
+                })
+              );
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: {
+                  scan,
+                  fill,
+                  addClicks,
+                  education: values(".resumeEditForm-item.resumeEditForm-education"),
+                  internships: values(".resumeEditForm-item.resumeEditForm-internship"),
+                  internshipDetails: Array.from(document.querySelectorAll(".resumeEditForm-item.resumeEditForm-internship")).map((entry) => ({
+                    company: entry.querySelector("[id$='.company']")?.value || "",
+                    title: entry.querySelector("[id$='.title']")?.value || "",
+                    description: entry.querySelector("[id$='.desc']")?.value || ""
+                  })),
+                  projects: values(".resumeEditForm-item.resumeEditForm-project"),
+                  educationDates: dates(".resumeEditForm-item.resumeEditForm-education"),
+                  internshipDates: dates(".resumeEditForm-item.resumeEditForm-internship"),
+                  projectDates: dates(".resumeEditForm-item.resumeEditForm-project")
+                }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

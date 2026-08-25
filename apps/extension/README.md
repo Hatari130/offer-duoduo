@@ -10,8 +10,42 @@ Chrome/Edge Manifest V3 application built with React, TypeScript and Vite.
 - `src/entries/background/index.ts`: service worker
 - `src/infrastructure/sync`: offline outbox, revision metadata and cloud synchronization
 - `public/content.js`: page content script
+- `public/adapter-registry.js`: shared three-layer site/ATS routing registry
 - `public/form-adapters.js`: ATS field mappings
 - `public/manifest.json`: extension manifest
+
+## Three-layer form rules
+
+Job application pages are resolved once by `OfferFlowAdapterRegistry`; job
+extraction and form filling consume the same route. Rules are merged in this
+order, with the first matching field mapping winning:
+
+1. archived company overlay (for example `duxiaoman`)
+2. platform adapter (for example `feishu`, `beisen`, `moka`, `nowcoder`)
+3. generic fallback
+
+An unseen tenant on a known ATS inherits the platform adapter immediately. An
+unknown site remains on the generic adapter. A company exception can be archived
+without editing the scanner:
+
+```js
+await OfferFlowAdapterRegistry.saveOverrides({
+  companies: {
+    "example-campus": {
+      hosts: ["^campus\\.example\\.com$"],
+      basePlatformId: "feishu",
+      formAdapterId: "feishu-career",
+      mappings: [{ key: "referralCode", pattern: "内部候选码" }]
+    }
+  }
+});
+```
+
+The structured overrides are stored under
+`offerflow.adapterRegistryOverrides`. The previous
+`offerflow.formMappingOverrides` platform mapping shape is still loaded for
+backward compatibility. Final application submission is intentionally outside
+the autofill rule system and is never clicked by these adapters.
 
 ## Commands
 

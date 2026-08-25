@@ -1,5 +1,6 @@
 import {
   inferRecruitmentType,
+  resolveProfileExperienceKind,
   type JobApplication,
   type OfferFlowSettings,
   type PersonalProfile,
@@ -16,7 +17,6 @@ import {
 
 export const JOBS_KEY = "offerflow.jobs";
 export const SETTINGS_KEY = "offerflow.settings";
-export const AUTO_SYNC_NOTICE_KEY = "offerflow.autoSyncNotice";
 export const PROFILE_KEY = "offerflow.profile";
 export const TAILORED_RESUMES_KEY = "offerflow.tailoredResumes";
 export const TAILORED_PDF_KEY = "offerflow.tailoredPdf";
@@ -258,9 +258,19 @@ export async function loadSettings(): Promise<OfferFlowSettings> {
 }
 
 function normalizeSettings(settings: OfferFlowSettings): OfferFlowSettings {
-  return settings.deepseekModel === "deepseek-v4-flash"
-    ? { ...settings, deepseekModel: "deepseek-chat" }
-    : settings;
+  const normalized: OfferFlowSettings = {};
+  if (typeof settings.deepseekApiKey === "string") {
+    normalized.deepseekApiKey = settings.deepseekApiKey;
+  }
+  if (typeof settings.deepseekModel === "string") {
+    normalized.deepseekModel = settings.deepseekModel === "deepseek-v4-flash"
+      ? "deepseek-chat"
+      : settings.deepseekModel;
+  }
+  if (typeof settings.opportunityFeedUrl === "string") {
+    normalized.opportunityFeedUrl = settings.opportunityFeedUrl;
+  }
+  return normalized;
 }
 
 export async function saveSettings(settings: OfferFlowSettings): Promise<void> {
@@ -341,6 +351,9 @@ function tailoredResumeProfile(
       id: item.id || `tailored_experience_${index + 1}`,
       organization: item.company,
       title: item.title,
+      kind: resolveProfileExperienceKind(
+        sourceProfile.experiences.find((experience) => experience.id === item.id) || { type: "" }
+      ),
       startDate: item.start,
       endDate: item.end === "至今" ? "" : item.end,
       description: item.bullets.join("\n"),

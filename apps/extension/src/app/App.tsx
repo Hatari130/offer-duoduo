@@ -10,14 +10,11 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  CircleDot,
   Download,
   ExternalLink,
   FileText,
-  FolderOpen,
   LayoutDashboard,
   MapPin,
-  Megaphone,
   Plus,
   RefreshCw,
   Search,
@@ -35,15 +32,9 @@ import {
   extractWithDeepSeek,
   testDeepSeekConnection
 } from "@/integrations/deepseek/deepseek";
-import {
-  chooseObsidianDirectory,
-  downloadBackup,
-  getStoredDirectory,
-  syncJobToObsidian
-} from "@/integrations/obsidian/obsidian";
+import { downloadBackup } from "@/features/settings/downloadBackup";
 import {
   ACTIVE_RESUME_KEY,
-  AUTO_SYNC_NOTICE_KEY,
   EMPTY_PROFILE,
   findDuplicate,
   JOBS_KEY,
@@ -65,7 +56,6 @@ import {
   refreshOpportunityFeed
 } from "@/features/opportunities/opportunities";
 import {
-  OPPORTUNITY_PUBLISH_STATUS_KEY,
   publishOpportunityFeed
 } from "@/infrastructure/sync/opportunitySync";
 import {
@@ -131,12 +121,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   const [notice, setNotice] = useState("");
   const [busy, setBusy] = useState(false);
   const [testingAi, setTestingAi] = useState(false);
-  const [publishState, setPublishState] = useState<{
-    syncedAt?: string;
-    count?: number;
-    error?: string;
-  }>({});
-
   useEffect(() => {
     Promise.all([
       loadJobs(),
@@ -214,32 +198,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           changes[OPPORTUNITY_CACHE_KEY].newValue as OpportunityFeedSnapshot
         );
       }
-      if (changes[OPPORTUNITY_PUBLISH_STATUS_KEY]?.newValue) {
-        setPublishState(
-          changes[OPPORTUNITY_PUBLISH_STATUS_KEY].newValue as {
-            syncedAt?: string;
-            count?: number;
-            error?: string;
-          }
-        );
-      }
-      if (changes[AUTO_SYNC_NOTICE_KEY]?.newValue) {
-        const autoNotice = changes[AUTO_SYNC_NOTICE_KEY].newValue as {
-          message?: string;
-        };
-        if (autoNotice.message) setNotice(autoNotice.message);
-      }
     };
-
-    chrome.storage.local
-      .get(OPPORTUNITY_PUBLISH_STATUS_KEY)
-      .then((result) => {
-        const stored = result[OPPORTUNITY_PUBLISH_STATUS_KEY] as
-          | { syncedAt?: string; count?: number; error?: string }
-          | undefined;
-        if (stored) setPublishState(stored);
-      })
-      .catch(() => undefined);
 
     chrome.storage.onChanged.addListener(handleStorageChange);
     chrome.tabs
@@ -289,15 +248,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   };
 
   const publishSnapshot = (snapshot: OpportunityFeedSnapshot) => {
-    publishOpportunityFeed(snapshot)
-      .then((count) =>
-        setPublishState({ syncedAt: new Date().toISOString(), count })
-      )
-      .catch((error) =>
-        setPublishState({
-          error: error instanceof Error ? error.message : "Web 端同步失败"
-        })
-      );
+    void publishOpportunityFeed(snapshot).catch(() => undefined);
   };
 
   const openOpportunity = async (opportunity: RecruitmentOpportunity) => {
@@ -372,7 +323,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
 
           await chrome.scripting.executeScript({
             target: { tabId: tab.id },
-            files: ["extraction-rules.js", "form-adapters.js", "content.js"]
+            files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "content.js"]
           });
           response = await requestExtraction();
         }
@@ -578,7 +529,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       if (!response.ok) {
         await chrome.scripting.executeScript({
           target: { tabId: tab.id },
-          files: ["extraction-rules.js", "form-adapters.js", "content.js"]
+          files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "content.js"]
         });
         response = await requestExtraction();
       }
@@ -673,67 +624,10 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     setNotice(`已删除：${job.position}`);
   };
 
-  const chooseFolder = async () => {
-    try {
-      const directory = await chooseObsidianDirectory();
-      const next = { ...settings, obsidianFolderName: directory.name };
-      setSettings(next);
-      await saveSettings(next);
-      setNotice(`已连接目录：${directory.name}`);
-    } catch (error) {
-      if ((error as DOMException).name !== "AbortError") {
-        setNotice(error instanceof Error ? error.message : "目录连接失败");
-      }
-    }
-  };
-
-  const syncOne = async (job: JobApplication) => {
-    setBusy(true);
-    try {
-      const filename = await syncJobToObsidian(job);
-      const updated = {
-        ...job,
-        obsidianPath: filename,
-        updatedAt: new Date().toISOString()
-      };
-      await persistJobs(jobs.map((item) => (item.id === job.id ? updated : item)));
-      setEditing(updated);
-      setNotice(`已同步：${filename}`);
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "同步失败");
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const syncAll = async () => {
-    setBusy(true);
-    try {
-      const directory = await getStoredDirectory();
-      if (!directory) throw new Error("请先选择 Obsidian 中的岗位目录");
-      const synced: JobApplication[] = [];
-      for (const job of jobs) {
-        const filename = await syncJobToObsidian(job, directory);
-        synced.push({ ...job, obsidianPath: filename });
-      }
-      const timestamp = new Date().toISOString();
-      await persistJobs(synced.map((job) => ({ ...job, updatedAt: timestamp })));
-      const next = { ...settings, lastExportAt: timestamp };
-      setSettings(next);
-      await saveSettings(next);
-      setNotice(`已同步 ${jobs.length} 个岗位`);
-    } catch (error) {
-      setNotice(error instanceof Error ? error.message : "同步失败");
-    } finally {
-      setBusy(false);
-    }
-  };
-
   const saveDeepSeekSettings = async () => {
     const next = {
       ...settings,
-      deepseekModel: settings.deepseekModel || DEFAULT_DEEPSEEK_MODEL,
-      autoMonitorEnabled: settings.autoMonitorEnabled ?? true
+      deepseekModel: settings.deepseekModel || DEFAULT_DEEPSEEK_MODEL
     };
     setSettings(next);
     await saveSettings(next);
@@ -868,7 +762,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               void loadJobs().then(setJobs);
               void refreshOpportunities().catch(() => undefined);
             }}
-            onRefreshOpportunities={() => void refreshOpportunities().catch(() => undefined)}
             onOpenResumeManager={openResumeManager}
             onClose={closeOverlay}
           />
@@ -879,7 +772,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             job={editing}
             onClose={() => setEditing(null)}
             onSave={saveEditedJob}
-            onSync={syncOne}
             onDelete={(job) => void deleteJob(job)}
           />
         )}
@@ -983,71 +875,13 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           <section className="settings-view">
             <div className="page-heading">
               <div>
-                <span className="eyebrow">数据与连接</span>
-                <h1>把记录留在你手里</h1>
-                <p>JobKoI 保存主数据，Obsidian 接收可阅读、可继续补充的 Markdown。</p>
+                <span className="eyebrow">数据与服务</span>
+                <h1>管理本地数据与服务</h1>
+                <p>岗位和简历优先保存在本机，可按需启用云端同步与页面理解。</p>
               </div>
             </div>
 
             <CloudSyncSettings />
-
-            <div className="settings-card opportunity-source-card">
-              <div className="setting-icon opportunity-source-icon">
-                <Megaphone size={24} />
-              </div>
-              <div className="setting-copy">
-                <h3>校招机会数据源</h3>
-                <p>直连公开 JSON 数据源，自动更新招聘批次并直达官方申请页。</p>
-                <div className="opportunity-source-field">
-                  <span>当前数据源</span>
-                  <code>{DEFAULT_OPPORTUNITY_FEED_URL}</code>
-                </div>
-                <div className="connection-state">
-                  <span className={opportunitySnapshot.opportunities.length ? "connected-dot" : "empty-dot"} />
-                  {opportunitySnapshot.opportunities.length
-                    ? `已载入 ${opportunitySnapshot.opportunities.length} 条机会`
-                    : "当前没有机会数据"}
-                </div>
-                <div className="connection-state">
-                  <span className={publishState?.error ? "empty-dot" : publishState?.count ? "connected-dot" : "empty-dot"} />
-                  {publishState?.error
-                    ? `Web 端同步失败：${publishState.error}`
-                    : publishState?.count
-                      ? `Web 端已同步 ${publishState.count} 条 · ${new Date(publishState.syncedAt || "").toLocaleTimeString("zh-CN", { hour12: false })}`
-                      : "Web 端等待同步：打开本地 API 后自动推送"}
-                </div>
-              </div>
-              <button
-                className="button button--secondary"
-                onClick={() => void refreshOpportunities(DEFAULT_OPPORTUNITY_FEED_URL)}
-                disabled={opportunityLoading}
-              >
-                <RefreshCw className={opportunityLoading ? "spin" : ""} size={16} />
-                立即同步
-              </button>
-            </div>
-
-            <div className="settings-card obsidian-card">
-              <div className="setting-icon">
-                <FileText size={24} />
-              </div>
-              <div className="setting-copy">
-                <h3>Obsidian Markdown</h3>
-                <p>
-                  选择 Vault 中的岗位目录。同步只更新 JobKoI 管理区域，不覆盖你的准备笔记。
-                </p>
-                <div className="connection-state">
-                  <span className={settings.obsidianFolderName ? "connected-dot" : "empty-dot"} />
-                  {settings.obsidianFolderName
-                    ? `已连接：${settings.obsidianFolderName}`
-                    : "尚未连接目录"}
-                </div>
-              </div>
-              <button className="button button--secondary" onClick={chooseFolder}>
-                <FolderOpen size={16} />
-                {settings.obsidianFolderName ? "更换目录" : "选择目录"}
-              </button>
-            </div>
 
             <div className="settings-card ai-card">
               <div className="setting-icon deepseek-icon">
@@ -1091,25 +925,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
                     />
                   </label>
                 </div>
-                <label className="monitor-toggle">
-                  <input
-                    type="checkbox"
-                    checked={settings.autoMonitorEnabled ?? true}
-                    onChange={(event) =>
-                      setSettings({
-                        ...settings,
-                        autoMonitorEnabled: event.target.checked
-                      })
-                    }
-                  />
-                  <span className="toggle-track">
-                    <span />
-                  </span>
-                  <span className="toggle-copy">
-                    <strong>实时监听投递进度页</strong>
-                    <small>页面保持打开时，发现阶段变化后自动更新匹配岗位</small>
-                  </span>
-                </label>
               </div>
               <div className="ai-actions">
                 <button className="button button--ghost" onClick={saveDeepSeekSettings}>
@@ -1130,23 +945,11 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div className="settings-card compact">
                 <Download size={20} />
                 <h3>完整备份</h3>
-                <p>导出所有岗位、事件与同步信息。</p>
+                <p>导出所有岗位与事件信息。</p>
                 <div className="button-row">
                   <button onClick={() => downloadBackup(jobs, "json")}>JSON</button>
                   <button onClick={() => downloadBackup(jobs, "csv")}>CSV</button>
                 </div>
-              </div>
-              <div className="settings-card compact">
-                <RefreshCw size={20} />
-                <h3>同步全部</h3>
-                <p>
-                  {settings.lastExportAt
-                    ? `上次同步：${new Date(settings.lastExportAt).toLocaleString("zh-CN")}`
-                    : "尚未执行过全量同步"}
-                </p>
-                <button className="text-button" onClick={syncAll} disabled={busy}>
-                  立即同步 <ArrowRight size={15} />
-                </button>
               </div>
             </div>
           </section>
@@ -1182,10 +985,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
                   placeholder="搜索公司、岗位或城市"
                 />
               </label>
-              <button className="sync-button" onClick={syncAll} disabled={busy || !jobs.length}>
-                <RefreshCw size={15} className={busy ? "spin" : ""} />
-                同步 Obsidian
-              </button>
             </div>
 
             {jobs.length === 0 ? (
@@ -1235,7 +1034,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           job={editing}
           onClose={() => setEditing(null)}
           onSave={saveEditedJob}
-          onSync={syncOne}
           onDelete={(job) => void deleteJob(job)}
         />
       )}

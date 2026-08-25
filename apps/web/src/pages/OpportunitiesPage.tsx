@@ -74,6 +74,10 @@ function dateLabel(value?: string): string {
   return new Intl.DateTimeFormat("zh-CN", { month: "short", day: "numeric" }).format(date);
 }
 
+function openAtLabel(value?: string): string {
+  return value ? dateLabel(value) : "/";
+}
+
 function feedTimestampLabel(value?: string): string {
   if (!value) return "等待同步";
   const date = new Date(value);
@@ -250,6 +254,11 @@ export function OpportunitiesPage() {
         && matchesCohort
         && matchesBatch
         && matchesQuickFilter;
+    }).sort((left, right) => {
+      if (left.openAt === right.openAt) return 0;
+      if (!left.openAt) return 1;
+      if (!right.openAt) return -1;
+      return right.openAt.localeCompare(left.openAt);
     });
   }, [batch, city, cohort, dashboard.latestOpenAt, industry, opportunities, query, quickFilter, status]);
 
@@ -483,6 +492,7 @@ export function OpportunitiesPage() {
                 <col className="opportunity-col-company" />
                 <col className="opportunity-col-type" />
                 <col className="opportunity-col-industry" />
+                <col className="opportunity-col-company-type" />
                 <col className="opportunity-col-status" />
                 <col className="opportunity-col-city" />
                 <col className="opportunity-col-open-at" />
@@ -495,6 +505,7 @@ export function OpportunitiesPage() {
                   <th scope="col">公司与岗位</th>
                   <th scope="col">招聘类型</th>
                   <th scope="col">行业</th>
+                  <th scope="col">企业性质</th>
                   <th scope="col">状态</th>
                   <th scope="col">城市</th>
                   <th scope="col">开放投递</th>
@@ -515,9 +526,10 @@ export function OpportunitiesPage() {
                       </td>
                       <td><span className="opportunity-type-badge" title={opportunity.batch || "未分类"}>{opportunity.batch || "未分类"}</span></td>
                       <td><span className="industry-cell" title={opportunity.industry || "未提供"}>{opportunity.industry || "未提供"}</span></td>
+                      <td><span className="company-type-cell" title={opportunity.companyType || "未注明"}>{opportunity.companyType || "未注明"}</span></td>
                       <td><span className={`status-badge status-badge--${opportunityStatus}`}>{statusLabels[opportunityStatus]}</span></td>
                       <td><span className="cell-icon"><MapPin aria-hidden="true" size={17} strokeWidth={1.7} /><span>{opportunity.cities.slice(0, 2).join("、") || "不限"}</span></span></td>
-                      <td><span className="opportunity-open-at">{dateLabel(opportunity.openAt)}</span></td>
+                      <td><span className="opportunity-open-at">{openAtLabel(opportunity.openAt)}</span></td>
                       <td><OpportunityDeadline opportunity={opportunity} /></td>
                       <td className="opportunity-qcc-cell">
                         <a
@@ -572,12 +584,16 @@ export function OpportunitiesPage() {
                           <dd>{opportunity.industry || "未提供"}</dd>
                         </div>
                         <div>
+                          <dt>企业性质</dt>
+                          <dd><span className="company-type-cell">{opportunity.companyType || "未注明"}</span></dd>
+                        </div>
+                        <div>
                           <dt>城市</dt>
                           <dd><span className="cell-icon"><MapPin aria-hidden="true" size={17} strokeWidth={1.7} /><span>{opportunity.cities.slice(0, 2).join("、") || "不限"}</span></span></dd>
                         </div>
                         <div>
                           <dt>开放投递</dt>
-                          <dd>{dateLabel(opportunity.openAt)}</dd>
+                          <dd>{openAtLabel(opportunity.openAt)}</dd>
                         </div>
                         <div className="opportunity-card-deadline">
                           <dt>截止时间</dt>

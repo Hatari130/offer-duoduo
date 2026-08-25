@@ -44,7 +44,7 @@ Owns all Chrome/Edge runtime behavior:
 - `src/app`: extension shell and global extension styling;
 - `src/features`: profile, opportunities and workspace user flows;
 - `src/infrastructure`: Chrome storage and future message/API adapters;
-- `src/integrations`: DeepSeek BYOK and Obsidian integration;
+- `src/integrations`: DeepSeek BYOK and external service integrations;
 - `public`: manifest, content scripts and offline/static assets.
 
 The extension is built independently into `apps/extension/dist`.

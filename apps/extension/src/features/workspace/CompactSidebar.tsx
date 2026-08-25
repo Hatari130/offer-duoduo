@@ -10,10 +10,8 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  CircleDot,
   Download,
   ExternalLink,
-  FileText,
   FolderOpen,
   LayoutDashboard,
   MapPin,
@@ -36,13 +34,6 @@ import {
   testDeepSeekConnection
 } from "@/integrations/deepseek/deepseek";
 import {
-  chooseObsidianDirectory,
-  downloadBackup,
-  getStoredDirectory,
-  syncJobToObsidian
-} from "@/integrations/obsidian/obsidian";
-import {
-  AUTO_SYNC_NOTICE_KEY,
   EMPTY_PROFILE,
   findDuplicate,
   JOBS_KEY,
@@ -347,16 +338,6 @@ export function CompactSidebar({
                 <Sparkles size={16} />
                 <span><strong>DeepSeek</strong><small>{settings.deepseekApiKey ? "已连接" : "未配置"}</small></span>
                 <i className={settings.deepseekApiKey ? "status-ok" : ""} />
-              </div>
-              <div>
-                <CircleDot size={16} />
-                <span><strong>实时监听</strong><small>{(settings.autoMonitorEnabled ?? true) ? "已开启" : "已关闭"}</small></span>
-                <i className={(settings.autoMonitorEnabled ?? true) ? "status-ok" : ""} />
-              </div>
-              <div>
-                <FileText size={16} />
-                <span><strong>Obsidian</strong><small>{settings.obsidianFolderName || "未连接目录"}</small></span>
-                <i className={settings.obsidianFolderName ? "status-ok" : ""} />
               </div>
             </div>
             <button

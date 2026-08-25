@@ -13,7 +13,6 @@ import {
   CircleDot,
   Download,
   ExternalLink,
-  FileText,
   FolderOpen,
   LayoutDashboard,
   MapPin,
@@ -36,13 +35,6 @@ import {
   testDeepSeekConnection
 } from "@/integrations/deepseek/deepseek";
 import {
-  chooseObsidianDirectory,
-  downloadBackup,
-  getStoredDirectory,
-  syncJobToObsidian
-} from "@/integrations/obsidian/obsidian";
-import {
-  AUTO_SYNC_NOTICE_KEY,
   EMPTY_PROFILE,
   findDuplicate,
   JOBS_KEY,
@@ -119,13 +111,6 @@ export function JobCard({
             </option>
           ))}
         </select>
-        {job.obsidianPath ? (
-          <span className="sync-state" title="已同步到 Obsidian">
-            <Check size={13} /> MD
-          </span>
-        ) : (
-          <span className="sync-state sync-state--muted">未同步</span>
-        )}
       </div>
     </article>
   );
@@ -358,13 +343,11 @@ export function EditDrawer({
   job,
   onClose,
   onSave,
-  onSync,
   onDelete
 }: {
   job: JobApplication;
   onClose: () => void;
   onSave: (job: JobApplication) => void;
-  onSync: (job: JobApplication) => void;
   onDelete: (job: JobApplication) => void;
 }) {
   const [draft, setDraft] = useState(() => ({ ...job, stage: selectableStage(job.stage) }));
@@ -482,9 +465,6 @@ export function EditDrawer({
             aria-expanded={confirmingDelete}
           >
             <Trash2 size={16} /> 删除
-          </button>
-          <button className="button button--secondary" onClick={() => onSync(draft)}>
-            <FileText size={16} /> 同步 Markdown
           </button>
           <button className="button button--primary" onClick={() => onSave(draft)}>
             <Check size={16} /> 保存修改

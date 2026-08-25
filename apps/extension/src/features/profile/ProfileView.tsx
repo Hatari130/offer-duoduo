@@ -26,7 +26,9 @@ import {
   setActiveResumeId,
   type StoredResume
 } from "@/infrastructure/storage/storage";
+import { resolveProfileExperienceKind } from "@/shared/types";
 import type {
+  ProfileExperienceKind,
   FormFieldMatch,
   FormFillResponse,
   FormScanResponse,
@@ -194,7 +196,8 @@ type ProfileSectionId =
   | "basic"
   | "preference"
   | "education"
-  | "experience"
+  | "internships"
+  | "work"
   | "projects"
   | "campus"
   | "awards"
@@ -206,7 +209,8 @@ const DEFAULT_OPEN_SECTIONS: ProfileSectionState = {
   basic: true,
   preference: true,
   education: true,
-  experience: true,
+  internships: true,
+  work: true,
   projects: true,
   campus: true,
   awards: true,
@@ -217,12 +221,21 @@ const COLLAPSED_SECTIONS: ProfileSectionState = {
   basic: false,
   preference: false,
   education: false,
-  experience: false,
+  internships: false,
+  work: false,
   projects: false,
   campus: false,
   awards: false,
   answers: false
 };
+
+function inferredEducationDegree(level?: string) {
+  const normalized = String(level || "").trim();
+  if (/博士/.test(normalized)) return "博士";
+  if (/硕士|研究生/.test(normalized)) return "硕士";
+  if (/本科|学士/.test(normalized)) return "学士";
+  return "";
+}
 
 function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string, string> {
   const index = Number.isInteger(repeatIndex) && repeatIndex >= 0 ? repeatIndex : 0;
@@ -271,7 +284,7 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
     educationCollege: education?.college || "",
     major: education?.major || "",
     degree: education?.degree || "",
-    educationDegree: education?.educationDegree || "",
+    educationDegree: education?.educationDegree || inferredEducationDegree(education?.degree),
     educationForm: education?.educationForm || "",
     educationCourses: education?.courses || "",
     educationResearchDirection: education?.researchDirection || "",
@@ -332,40 +345,66 @@ function profileRepeatCounts(profile: PersonalProfile) {
   };
 }
 
-function mokaExperienceIndexes(profile: PersonalProfile) {
+function experienceIndexesByKind(profile: PersonalProfile) {
   const work: number[] = [];
   const internship: number[] = [];
   profile.experiences.forEach((experience, index) => {
-    const type = String(experience.type || "").trim();
-    if (/工作|全职|兼职|work|employment/i.test(type) && !/实习|intern/i.test(type)) work.push(index);
+    if (resolveProfileExperienceKind(experience) === "work") work.push(index);
     else internship.push(index);
   });
   return { work, internship };
 }
 
 function profileRepeatPlan(profile: PersonalProfile) {
-  const experience = mokaExperienceIndexes(profile);
+  const experience = experienceIndexesByKind(profile);
   return {
     experience: {
       work: experience.work.length,
-      internship: experience.internship.length
+      internship: experience.internship.length,
+      workIndexes: experience.work,
+      internshipIndexes: experience.internship
     }
   };
 }
 
+function experienceSectionKind(field: FormFieldMatch): "internship" | "work" | "" {
+  if (field.repeatEntryKind === "internship") return "internship";
+  if (field.repeatEntryKind === "work") return "work";
+  return /实习|practice|intern/i.test(field.section || "")
+    ? "internship"
+    : /工作|work|employment/i.test(field.section || "")
+      ? "work"
+      : "";
+}
+
+const INTERNSHIP_FIELD_NAMES: Partial<Record<NonNullable<FormFieldMatch["key"]>, string>> = {
+  experienceOrganization: "实习单位",
+  experienceTitle: "实习岗位",
+  experienceStartDate: "实习开始时间",
+  experienceEndDate: "实习结束时间",
+  experienceDescription: "实习内容",
+  experienceDepartment: "实习部门",
+  experienceAchievements: "实习成果"
+};
+
+function profileFieldName(field: FormFieldMatch): string {
+  if (!field.key) return field.label;
+  if (experienceSectionKind(field) === "internship" && INTERNSHIP_FIELD_NAMES[field.key]) {
+    return INTERNSHIP_FIELD_NAMES[field.key] || field.label;
+  }
+  return FIELD_NAMES[field.key] || field.label;
+}
+
 function assignPlatformProfileIndexes(fields: FormFieldMatch[], profile: PersonalProfile): FormFieldMatch[] {
-  const buckets = mokaExperienceIndexes(profile);
+  const buckets = experienceIndexesByKind(profile);
   const entryIndexes = new Map<string, number>();
   const sectionCounts = new Map<string, number>();
 
   for (const field of fields) {
-    if (!["moka", "feishu-career"].includes(field.adapterId || "") || field.repeatGroup !== "experience") continue;
-    const sectionKind: "internship" | "work" | "" = /实习|practice|intern/i.test(field.section || "")
-      ? "internship"
-      : /工作|work|employment/i.test(field.section || "")
-        ? "work"
-        : "";
+    if (field.repeatGroup !== "experience") continue;
+    const sectionKind = experienceSectionKind(field);
     if (!sectionKind) continue;
+    if (Number.isInteger(field.repeatLocalIndex) && Number(field.repeatLocalIndex) >= 0) continue;
     const entryKey = `${sectionKind}:${field.repeatEntryFingerprint || field.repeatIndex || 0}`;
     if (!entryIndexes.has(entryKey)) {
       const localIndex = sectionCounts.get(sectionKind) || 0;
@@ -375,15 +414,13 @@ function assignPlatformProfileIndexes(fields: FormFieldMatch[], profile: Persona
   }
 
   return fields.map((field) => {
-    if (!["moka", "feishu-career"].includes(field.adapterId || "") || field.repeatGroup !== "experience") return field;
-    const sectionKind: "internship" | "work" | "" = /实习|practice|intern/i.test(field.section || "")
-      ? "internship"
-      : /工作|work|employment/i.test(field.section || "")
-        ? "work"
-        : "";
+    if (field.repeatGroup !== "experience") return field;
+    const sectionKind = experienceSectionKind(field);
     if (!sectionKind) return field;
     const entryKey = `${sectionKind}:${field.repeatEntryFingerprint || field.repeatIndex || 0}`;
-    const localIndex = entryIndexes.get(entryKey) || 0;
+    const localIndex = Number.isInteger(field.repeatLocalIndex) && Number(field.repeatLocalIndex) >= 0
+      ? Number(field.repeatLocalIndex)
+      : entryIndexes.get(entryKey) ?? 0;
     return { ...field, profileRepeatIndex: buckets[sectionKind][localIndex] ?? -1 };
   });
 }
@@ -395,7 +432,7 @@ function profileFormSnapshots(profile: PersonalProfile): Record<string, string>[
 }
 
 const PROFILE_DATE_RANGE_SEPARATOR = "\u001f";
-const FORM_CONTENT_RUNTIME_VERSION = "2026-08-21.autofill-v8";
+const FORM_CONTENT_RUNTIME_VERSION = "2026-08-25.autofill-v28";
 const FORM_CONTENT_SESSION_ID = `${FORM_CONTENT_RUNTIME_VERSION}:${
   globalThis.crypto?.randomUUID?.() || `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`
 }`;
@@ -454,7 +491,7 @@ async function activeTabMessage(message: unknown) {
     });
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
-      files: ["extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"]
+      files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"]
     });
     const response = await chrome.tabs.sendMessage(tab.id, payload);
     if (
@@ -681,6 +718,7 @@ export default function ProfileView({
       await persistDraft();
       const response = (await activeTabMessage({
         type: "OFFERFLOW_SCAN_APPLICATION_FORM",
+        expandRepeaters: false,
         repeatCounts: profileRepeatCounts(draft),
         repeatPlan: profileRepeatPlan(draft)
       })) as FormScanResponse;
@@ -816,10 +854,10 @@ export default function ProfileView({
   };
   const updateEducation = (id: string, patch: Partial<ProfileEducation>) =>
     set("education", draft.education.map((item) => (item.id === id ? { ...item, ...patch } : item)));
-  const addExperience = () => {
-    const id = newId("exp");
-    set("experiences", [...draft.experiences, { id, organization: "", title: "", startDate: "", endDate: "", description: "" }]);
-    revealSection("experience");
+  const addExperience = (kind: ProfileExperienceKind) => {
+    const id = newId(kind === "internship" ? "internship" : "work");
+    set("experiences", [...draft.experiences, { id, kind, organization: "", title: "", startDate: "", endDate: "", description: "" }]);
+    revealSection(kind === "internship" ? "internships" : "work");
     setPendingEntryId(id);
   };
   const updateExperience = (id: string, patch: Partial<ProfileExperience>) =>
@@ -860,6 +898,35 @@ export default function ProfileView({
   const retryCount = fields.filter(
     (field) => selectedFields.has(field.id) && resultMap[field.id]?.status !== "filled"
   ).length;
+  const internshipExperiences = draft.experiences.filter(
+    (experience) => resolveProfileExperienceKind(experience) === "internship"
+  );
+  const workExperiences = draft.experiences.filter(
+    (experience) => resolveProfileExperienceKind(experience) === "work"
+  );
+
+  const experienceCards = (items: ProfileExperience[], kind: ProfileExperienceKind) => items.map((item) => (
+    <EntryCard
+      entryId={item.id}
+      key={item.id}
+      title={item.organization || (kind === "internship" ? "新实习经历" : "新工作经历")}
+      onRemove={() => set("experiences", draft.experiences.filter((entry) => entry.id !== item.id))}
+    >
+      <div className="profile-grid">
+        <Field label="经历类别">
+          <select value={resolveProfileExperienceKind(item)} onChange={(e) => updateExperience(item.id, { kind: e.target.value as ProfileExperienceKind })}>
+            <option value="internship">实习经历</option>
+            <option value="work">工作经历</option>
+          </select>
+        </Field>
+        <Field label={kind === "internship" ? "实习单位 / 组织" : "公司 / 组织"}><input value={item.organization} onChange={(e) => updateExperience(item.id, { organization: e.target.value })} /></Field>
+        <Field label={kind === "internship" ? "实习岗位" : "工作岗位"}><input value={item.title} onChange={(e) => updateExperience(item.id, { title: e.target.value })} /></Field>
+        <Field label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(e) => updateExperience(item.id, { startDate: e.target.value })} /></Field>
+        <Field label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(e) => updateExperience(item.id, { endDate: e.target.value })} /></Field>
+        <Field label={kind === "internship" ? "实习内容" : "工作职责"} wide><textarea rows={4} value={item.description} onChange={(e) => updateExperience(item.id, { description: e.target.value })} /></Field>
+      </div>
+    </EntryCard>
+  ));
 
   const toggleSection = (id: ProfileSectionId) =>
     setOpenSections((current) => ({ ...current, [id]: !current[id] }));
@@ -955,7 +1022,7 @@ export default function ProfileView({
                 <label className={`${!available ? "missing" : ""} ${result?.status || ""}`} key={field.id}>
                   <input type="checkbox" checked={selectedFields.has(field.id)} disabled={!available} onChange={() => toggleField(field.id)} />
                   <span className="profile-match-check">{selectedFields.has(field.id) && <Check size={12} />}</span>
-                  <span><strong>{field.key ? FIELD_NAMES[field.key] || field.label : "待识别字段"}</strong><small>{field.section ? `${field.section} · ` : ""}{field.label}</small></span>
+                  <span><strong>{field.key ? profileFieldName(field) : "待识别字段"}</strong><small>{field.section ? `${field.section} · ` : ""}{field.label}</small></span>
                   <em>{available ? displayProfileFieldValue(value) : result?.reason || "资料未填写"}<small>{resultLabel}</small></em>
                 </label>
               );
@@ -1018,27 +1085,31 @@ export default function ProfileView({
       </ProfileSection>
 
       <ProfileSection
-        sectionKey="experience"
-        open={openSections.experience}
+        sectionKey="internships"
+        open={openSections.internships}
         onToggle={toggleSection}
-        title="实习 / 工作"
-        description={draft.experiences.length ? `${draft.experiences.length} 段经历 · 支持添加多段` : "支持添加多段经历"}
-        action="添加工作经历"
-        onAction={addExperience}
+        title="实习经历"
+        description={internshipExperiences.length ? `${internshipExperiences.length} 段实习 · 只匹配网申的实习区块` : "只匹配网申的实习经历区块"}
+        action="添加实习经历"
+        onAction={() => addExperience("internship")}
       >
-        {draft.experiences.map((item) => (
-          <EntryCard entryId={item.id} key={item.id} title={item.organization || "新经历"} onRemove={() => set("experiences", draft.experiences.filter((entry) => entry.id !== item.id))}>
-            <div className="profile-grid">
-              <Field label="公司 / 组织"><input value={item.organization} onChange={(e) => updateExperience(item.id, { organization: e.target.value })} /></Field>
-              <Field label="岗位"><input value={item.title} onChange={(e) => updateExperience(item.id, { title: e.target.value })} /></Field>
-              <Field label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(e) => updateExperience(item.id, { startDate: e.target.value })} /></Field>
-              <Field label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(e) => updateExperience(item.id, { endDate: e.target.value })} /></Field>
-              <Field label="经历描述" wide><textarea rows={4} value={item.description} onChange={(e) => updateExperience(item.id, { description: e.target.value })} /></Field>
-            </div>
-          </EntryCard>
-        ))}
-        {draft.experiences.length > 0 && <AddEntryButton onClick={addExperience} text="添加工作经历" />}
-        {!draft.experiences.length && <EmptyEntry onClick={addExperience} text="添加工作经历" />}
+        {experienceCards(internshipExperiences, "internship")}
+        {internshipExperiences.length > 0 && <AddEntryButton onClick={() => addExperience("internship")} text="添加实习经历" />}
+        {!internshipExperiences.length && <EmptyEntry onClick={() => addExperience("internship")} text="添加实习经历" />}
+      </ProfileSection>
+
+      <ProfileSection
+        sectionKey="work"
+        open={openSections.work}
+        onToggle={toggleSection}
+        title="工作经历"
+        description={workExperiences.length ? `${workExperiences.length} 段工作 · 只匹配网申的工作区块` : "只匹配网申的工作经历区块"}
+        action="添加工作经历"
+        onAction={() => addExperience("work")}
+      >
+        {experienceCards(workExperiences, "work")}
+        {workExperiences.length > 0 && <AddEntryButton onClick={() => addExperience("work")} text="添加工作经历" />}
+        {!workExperiences.length && <EmptyEntry onClick={() => addExperience("work")} text="添加工作经历" />}
       </ProfileSection>
 
       <ProfileSection

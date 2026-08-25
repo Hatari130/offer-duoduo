@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>转转招聘 - 北森教育经历测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      #education-section { width: 880px; }
+      .education-list { display: grid; gap: 16px; }
+      .ux-standard-form { padding: 14px; border: 1px solid #ddd; }
+      .form-part-body { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+      .form-item { display: grid; grid-template-columns: 100px 1fr; gap: 8px; min-height: 42px; }
+      .phoenix-input__input, .phoenix-select__input { width: 260px; min-height: 34px; }
+      [id$="_addButton"] { margin-top: 12px; color: #1769e0; cursor: pointer; }
+      .phoenix-date-picker, .phoenix-selectList { position: fixed; z-index: 20; left: 480px; top: 80px; padding: 12px; background: white; border: 1px solid #aaa; }
+      .phoenix-calendar-year-panel, .phoenix-calendar-month-panel { display: grid; grid-template-columns: repeat(4, 64px); gap: 5px; }
+      .phoenix-calendar-year-panel-year, .phoenix-calendar-month-panel-month, .phoenix-selectList__listItem { padding: 5px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <section id="education-section">
+      <h2>教育经历</h2>
+      <div class="education-list"></div>
+      <div id="beisen_education_form_addButton"><span>添加教育经历</span></div>
+    </section>
+
+    <script>
+      const formId = "beisen_education_form";
+      let addClicks = 0;
+
+      const inputField = (label, key) => `
+        <div class="form-item form-item--phoenix">
+          <div class="form-item__title"><label class="form-item__text">${label}</label></div>
+          <div class="form-item__control"><div class="phoenix-input"><input data-key="${key}" class="phoenix-input__input phoenix-input__input--sizeLarge" /></div></div>
+        </div>`;
+
+      const selectField = (label, key, date = false) => `
+        <div class="form-item form-item--phoenix">
+          <div class="form-item__title"><label class="form-item__text">${label}</label></div>
+          <div class="form-item__control">
+            <div class="phoenix-select phoenix-select--editable phoenix-select--large" data-key="${key}" ${date ? 'data-date="true"' : ''}>
+              <span class="phoenix-select__calcEle"></span>
+              <ul class="phoenix-select__content"><li><input class="phoenix-select__input phoenix-select__input--large" /></li></ul>
+              ${date ? '<svg><use xlink:href="#prefix__a_field_date_time_picker"></use></svg>' : ''}
+            </div>
+          </div>
+        </div>`;
+
+      const appendEducation = () => {
+        const index = document.querySelectorAll(".education-list > .ux-standard-form").length;
+        const wrapper = document.createElement("div");
+        wrapper.className = "ux-standard-form";
+        wrapper.innerHTML = `
+          <div id="${formId}" class="form twoLineFormStyleLong formStyleLeftAndRight" data-entry-index="${index}">
+            <div class="form-part"><div class="form-part-body clearfix">
+              ${inputField("学校名称", "school")}
+              ${selectField("开始时间", "start", true)}
+              ${selectField("结束时间", "end", true)}
+              ${inputField("专业名称", "major")}
+              ${selectField("学历", "degree")}
+            </div></div>
+          </div>`;
+        document.querySelector(".education-list").appendChild(wrapper);
+      };
+
+      const closePopups = () => document.querySelectorAll(".phoenix-date-picker,.phoenix-selectList").forEach((popup) => popup.remove());
+      const openDatePicker = (root) => {
+        closePopups();
+        const picker = document.createElement("div");
+        picker.className = "phoenix-date-picker";
+        picker.dataset.entryIndex = root.closest(".form").dataset.entryIndex;
+        picker.dataset.key = root.dataset.key;
+        picker.innerHTML = `
+          <div class="phoenix-calendar phoenix-calendar-month-calendar">
+            <a class="phoenix-calendar-year-select" role="button">2026年</a>
+            <a class="phoenix-calendar-month-select" role="button">8月</a>
+            <div class="phoenix-calendar-year-panel">
+              ${Array.from({ length: 31 }, (_, offset) => 2000 + offset).map((year) => `<a class="phoenix-calendar-year-panel-year">${year}</a>`).join("")}
+              <a class="phoenix-calendar-year-panel-decade-select">2000-2030</a>
+              <a class="phoenix-calendar-year-panel-prev-decade-btn"></a>
+              <a class="phoenix-calendar-year-panel-next-decade-btn"></a>
+            </div>
+            <div class="phoenix-calendar-month-panel">
+              ${Array.from({ length: 12 }, (_, offset) => `<a class="phoenix-calendar-month-panel-month">${offset + 1}月</a>`).join("")}
+            </div>
+          </div>`;
+        document.body.appendChild(picker);
+      };
+
+      const openSelectList = (root) => {
+        closePopups();
+        const popup = document.createElement("div");
+        popup.className = "phoenix-selectList";
+        popup.dataset.entryIndex = root.closest(".form").dataset.entryIndex;
+        popup.dataset.key = root.dataset.key;
+        popup.innerHTML = ["博士研究生", "硕士研究生", "本科", "大专"]
+          .map((value) => `<div class="phoenix-selectList__listItem">${value}</div>`)
+          .join("");
+        document.body.appendChild(popup);
+      };
+
+      document.addEventListener("click", (event) => {
+        if (event.target.closest("#beisen_education_form_addButton")) {
+          addClicks += 1;
+          appendEducation();
+          return;
+        }
+        const root = event.target.closest(".phoenix-select");
+        if (root) {
+          if (root.dataset.date === "true") openDatePicker(root);
+          else openSelectList(root);
+          return;
+        }
+        const year = event.target.closest(".phoenix-calendar-year-panel-year");
+        if (year) {
+          year.closest(".phoenix-date-picker").dataset.year = year.textContent.trim();
+          return;
+        }
+        const month = event.target.closest(".phoenix-calendar-month-panel-month");
+        if (month) {
+          const picker = month.closest(".phoenix-date-picker");
+          const entry = document.querySelectorAll(".education-list > .ux-standard-form")[Number(picker.dataset.entryIndex)];
+          const root = entry.querySelector(`.phoenix-select[data-key="${picker.dataset.key}"]`);
+          const value = `${picker.dataset.year}-${month.textContent.replace("月", "").padStart(2, "0")}`;
+          root.querySelector("input").value = value;
+          root.querySelector(".phoenix-select__calcEle").textContent = value;
+          picker.remove();
+          return;
+        }
+        const option = event.target.closest(".phoenix-selectList__listItem");
+        if (option) {
+          const popup = option.closest(".phoenix-selectList");
+          const entry = document.querySelectorAll(".education-list > .ux-standard-form")[Number(popup.dataset.entryIndex)];
+          const root = entry.querySelector(`.phoenix-select[data-key="${popup.dataset.key}"]`);
+          root.querySelector("input").value = option.textContent.trim();
+          root.querySelector(".phoenix-select__calcEle").textContent = option.textContent.trim();
+          popup.remove();
+        }
+      });
+
+      appendEducation();
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { education: 2 };
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", expandRepeaters: true, repeatCounts },
+        {},
+        (scan) => {
+          const profileSnapshots = [
+            { school: "南京大学", major: "城乡规划", degree: "硕士研究生", educationStartDate: "2024-09", educationEndDate: "2027-06" },
+            { school: "北京林业大学", major: "城乡规划", degree: "本科", educationStartDate: "2018-09", educationEndDate: "2023-06" }
+          ];
+          listener(
+            {
+              type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+              fields: scan.fields,
+              values: {},
+              fieldValues: {},
+              profileSnapshots,
+              repeatCounts,
+              fillDynamicFields: true,
+              maxRounds: 4,
+              delayMs: 0
+            },
+            {},
+            (fill) => {
+              const entries = Array.from(document.querySelectorAll(".education-list > .ux-standard-form")).map((entry) => ({
+                school: entry.querySelector("[data-key='school']")?.value || "",
+                start: entry.querySelector("[data-key='start'] input")?.value || "",
+                end: entry.querySelector("[data-key='end'] input")?.value || "",
+                major: entry.querySelector("[data-key='major']")?.value || "",
+                degree: entry.querySelector("[data-key='degree'] input")?.value || ""
+              }));
+              document.body.dataset.ready = "true";
+              document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                ok: true,
+                data: {
+                  scan,
+                  fill,
+                  addClicks,
+                  entries,
+                  openPopups: document.querySelectorAll(".phoenix-date-picker,.phoenix-selectList").length
+                }
+              }));
+            }
+          );
+        }
+      );
+    </script>
+  </body>
+</html>

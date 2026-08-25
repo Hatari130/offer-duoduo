@@ -63,6 +63,24 @@ const reinjectionFormPath = fileURLToPath(
 const duxiaomanFormPath = fileURLToPath(
   new URL("./fixtures/application-form-duxiaoman.html", import.meta.url)
 );
+const feishuRepeatFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-feishu-repeat.html", import.meta.url)
+);
+const feishuEducationFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-feishu-education-form.html", import.meta.url)
+);
+const beisenRepeatFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-beisen-repeat.html", import.meta.url)
+);
+const beisenExperienceKindsPath = fileURLToPath(
+  new URL("./fixtures/application-form-beisen-experience-kinds.html", import.meta.url)
+);
+const hotjobFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-hotjob.html", import.meta.url)
+);
+const pupumallFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-pupumall.html", import.meta.url)
+);
 const profileDirectory = mkdtempSync(join(tmpdir(), "offerflow-dom-test-"));
 
 const runFixture = (fixture, virtualTimeBudget = 2500) => {
@@ -304,12 +322,15 @@ try {
   assert.equal(controlDriverForm.city, "江苏省/南京市", "a cascader must select each hierarchy level before confirmation");
   assert.equal(controlDriverForm.cityConfirmClicks, 1, "the cascader popup confirm button must be clicked exactly once");
   assert.equal(controlDriverForm.workYears, "Less than 1 year", "a component without a confirm button must commit through Enter");
+  assert.equal(controlDriverForm.school, "南京大学", "the live Universe school input must type before choosing its remote option");
   assert.equal(controlDriverForm.yearsEnterConfirmations, 1, "the Enter fallback must run exactly once");
+  assert.equal(controlDriverForm.schoolSearches >= 1, true, "the Universe driver must type into a data-form-field-name school input without a combobox role");
   assert.equal(controlDriverForm.decoyConfirmClicks, 0, "a simultaneously visible unrelated popup must never be confirmed");
   assert.equal(controlDriverForm.cityPopupOpen, false, "the cascader popup must close after confirmation");
   assert.equal(controlDriverForm.finalSubmitClicks, 0, "component confirmation must never click the application's final submit button");
-  assert.equal(controlDriverForm.fill.filled, 3, "all registered component drivers must pass value verification");
+  assert.equal(controlDriverForm.fill.filled, 4, "all registered component drivers must pass value verification");
   assert.equal(controlDriverForm.fill.results.some((result) => result.controlDriver === "iview"), true);
+  assert.equal(controlDriverForm.fill.results.some((result) => result.controlDriver === "feishu"), true);
   assert.equal(
     controlDriverForm.fill.results.some((result) => result.controlDriver === "semi" && result.commitMethod === "button"),
     true,
@@ -364,6 +385,8 @@ try {
 
   const duxiaomanForm = runFixture(duxiaomanFormPath, 15000);
   assert.equal(duxiaomanForm.scan.platform.id, "feishu-career", "Formily and Universe markers must resolve the Feishu Career adapter");
+  assert.equal(duxiaomanForm.scan.repeatersExpanded, false, "a product scan must be read-only and leave repeat expansion to the fill transaction");
+  assert.deepEqual(duxiaomanForm.addsAfterScan, { education: 0, experience: 0 }, "read-only scanning must never click a Formily add action");
   assert.equal(duxiaomanForm.dewuAdapter, "feishu-career", "campus.dewu.com must resolve directly to the ATSX adapter without Formily marker detection");
   assert.deepEqual(
     duxiaomanForm.scan.fields.filter((field) => ["gender", "currentCity", "degree"].includes(field.key)).map((field) => field.key),
@@ -371,21 +394,52 @@ try {
     "Universe search-backed selects must be kept as form fields instead of being discarded as search boxes"
   );
   assert.equal(duxiaomanForm.scan.fields.filter((field) => field.type === "date-range").length, 3, "ATSX time_period fields must be recognized once in education, internship and project sections");
-  assert.equal(duxiaomanForm.educationAdds, 1, "the Feishu Career module-level add action must create the second education record");
+  assert.equal(duxiaomanForm.educationAdds, 2, "the Feishu Career module-level add action must create all missing education records");
+  assert.equal(duxiaomanForm.experienceAdds, 1, "the Feishu Career module-level add action must create the second internship record");
+  assert.deepEqual(duxiaomanForm.addsAfterFirstFill, { education: 2, experience: 1 });
+  assert.deepEqual(
+    { education: duxiaomanForm.educationAdds, experience: duxiaomanForm.experienceAdds },
+    duxiaomanForm.addsAfterFirstFill,
+    "a second fill transaction must count existing Formily cards and remain idempotent"
+  );
   assert.equal(duxiaomanForm.name, "林知夏");
   assert.equal(duxiaomanForm.gender, "女");
   assert.equal(duxiaomanForm.city, "南京");
   assert.deepEqual(duxiaomanForm.education, [
     { school: "南京大学", degree: "硕士", major: "城乡规划", dates: ["2024-09", "2027-06"] },
-    { school: "北京林业大学", degree: "本科", major: "城乡规划", dates: ["2018-09", "2023-06"] }
+    { school: "北京林业大学", degree: "本科", major: "城乡规划", dates: ["2018-09", "2023-06"] },
+    { school: "同济大学", degree: "本科", major: "城市规划", dates: ["2014-09", "2018-06"] }
   ]);
-  assert.deepEqual(duxiaomanForm.experience, {
-    company: "携程集团",
-    title: "AI产品经理",
-    dates: ["2026-04", ""],
-    current: true,
-    description: "负责 AI 产品对话体验与增长闭环"
-  }, "Dewu internship ranges must commit through React while current is stored as a separate toggle");
+  const duxiaomanDateFields = duxiaomanForm.fill.finalFields.filter((field) => field.type === "date-range");
+  assert.equal(duxiaomanDateFields.length, 6, "every deep Formily education, internship and project card must expose one date range");
+  assert.equal(new Set(duxiaomanDateFields.map((field) => field.id)).size, 6, "deep Formily date ranges must keep collision-free identities after repeat expansion");
+  assert.equal(duxiaomanForm.fill.finalFields.some((field) => field.identityCollision), false, "live Formily cards with reused inner ids must still receive unique OfferFlow identities");
+  assert.deepEqual(
+    duxiaomanForm.fill.finalFields.filter((field) => field.key === "school").map((field) => field.repeatIndex),
+    [0, 1, 2],
+    "three Formily education cards must keep independent structural indexes"
+  );
+  assert.deepEqual(
+    duxiaomanForm.fill.finalFields.filter((field) => field.key === "experienceOrganization").map((field) => field.repeatIndex),
+    [0, 1],
+    "two Formily internship cards must keep independent structural indexes"
+  );
+  assert.deepEqual(duxiaomanForm.experience, [
+    {
+      company: "携程集团",
+      title: "AI产品经理",
+      dates: ["2026-04", ""],
+      current: true,
+      description: "负责 AI 产品对话体验与增长闭环"
+    },
+    {
+      company: "南京开为网络科技有限公司",
+      title: "产品部门 AI产品经理",
+      dates: ["2025-11", "2026-03"],
+      current: false,
+      description: "负责 Agnes APP 对话体验与留存增长"
+    }
+  ], "Dewu internship ranges and descriptions must stay bound to their own Formily cards");
   assert.deepEqual(duxiaomanForm.project, {
     name: "Agents APP",
     role: "产品负责人",
@@ -397,10 +451,148 @@ try {
   assert.equal(duxiaomanForm.fill.results.every((result) => result.status === "filled"), true);
   console.log("DOM form fixture passed: Duxiaoman Formily labels, Universe selects, date ranges and repeated education fill correctly.");
 
+  const feishuRepeatForm = runFixture(feishuRepeatFormPath, 8000);
+  assert.equal(feishuRepeatForm.scan.platform.id, "feishu-career", "Feishu's createFormSection/ATSX DOM must resolve to the Feishu Career adapter");
+  assert.equal(feishuRepeatForm.scan.repeatersExpanded, true);
+  assert.deepEqual(feishuRepeatForm.addClicks, { education: 1, internship: 2, project: 2 });
+  assert.deepEqual(feishuRepeatForm.education, ["南京大学", "北京林业大学"]);
+  assert.deepEqual(feishuRepeatForm.internships, ["携程集团", "南京开为网络科技有限公司"]);
+  assert.deepEqual(feishuRepeatForm.internshipDetails, [
+    { company: "携程集团", title: "AI产品经理", description: "携程集团：负责酒店业务 AI 产品体验" },
+    { company: "南京开为网络科技有限公司", title: "产品部门 AI产品经理", description: "南京开为：负责 Agnes APP 对话与留存增长" }
+  ], "every field in one Feishu internship card must stay bound to the same profile record across fill rounds");
+  assert.deepEqual(feishuRepeatForm.projects, ["TripYoYo", "OfferFlow"]);
+  assert.deepEqual(feishuRepeatForm.educationDates, [["2024", "09", "2027", "06"], ["2018", "09", "2023", "06"]]);
+  assert.deepEqual(feishuRepeatForm.internshipDates, [["2026", "04", "2026", "08"], ["2025", "11", "2026", "03"]]);
+  assert.deepEqual(feishuRepeatForm.projectDates, [["2026", "03", "至今", ""], ["2025", "01", "2025", "12"]]);
+  assert.deepEqual(
+    feishuRepeatForm.scan.fields.filter((field) => field.key === "experienceOrganization").map((field) => field.repeatIndex),
+    [0, 1],
+    "newly added internship cards must retain independent repeat indexes"
+  );
+  assert.deepEqual(
+    feishuRepeatForm.scan.fields.filter((field) => field.key === "projectName").map((field) => field.repeatIndex),
+    [0, 1],
+    "newly added project cards must retain independent repeat indexes"
+  );
+  console.log("DOM form fixture passed: Feishu createFormSection div actions expand and fill initially empty internship/project sections.");
+
+  const feishuEducationForm = runFixture(feishuEducationFormPath, 12000);
+  assert.equal(feishuEducationForm.scan.platform.id, "feishu-career");
+  assert.equal(
+    feishuEducationForm.scan.fields.every((field) => field.key === "educationForm"),
+    true,
+    "学历类型 must map to educationForm before the broader 学历/degree rule"
+  );
+  assert.deepEqual(feishuEducationForm.selected, ["统招全日制", "统招非全日制", "自考", "海外及港澳台", "其他"]);
+  assert.equal(feishuEducationForm.fill.results.every((result) => result.status === "filled"), true);
+  assert.equal(feishuEducationForm.openDropdowns, 0);
+  console.log("DOM form fixture passed: Feishu education-form aliases resolve to the tenant's shorter education-type enum.");
+
+  const beisenRepeatForm = runFixture(beisenRepeatFormPath, 10000);
+  assert.equal(beisenRepeatForm.scan.platform.id, "beisen", "zhiye/Phoenix controls must resolve the Beisen platform adapter");
+  assert.equal(beisenRepeatForm.scan.repeatersExpanded, true);
+  assert.equal(beisenRepeatForm.addClicks, 1, "Beisen's generated div addButton must create the second education record");
+  assert.deepEqual(beisenRepeatForm.entries, [
+    { school: "南京大学", start: "2024-09", end: "2027-06", major: "城乡规划", degree: "硕士研究生" },
+    { school: "北京林业大学", start: "2018-09", end: "2023-06", major: "城乡规划", degree: "本科" }
+  ]);
+  assert.equal(beisenRepeatForm.openPopups, 0, "Phoenix date/select portals must be closed after every committed value");
+  assert.equal(beisenRepeatForm.fill.results.every((result) => result.status === "filled"), true);
+  console.log("DOM form fixture passed: Beisen generated education cards, Phoenix month pickers and selects fill independently.");
+
+  const beisenExperienceKinds = runFixture(beisenExperienceKindsPath, 15000);
+  assert.equal(beisenExperienceKinds.scan.platform.id, "beisen");
+  assert.deepEqual(beisenExperienceKinds.addClicks, { internship: 1, work: 1 }, "Beisen must expand internship and work sections from their own plans");
+  assert.deepEqual(beisenExperienceKinds.internship, [
+    { organization: "携程集团", title: "AI产品经理实习生", start: "2026-04", end: "2026-08", description: "携程实习内容" },
+    { organization: "南京开为网络科技有限公司", title: "AI产品经理实习生", start: "2025-11", end: "2026-03", description: "开为实习内容" }
+  ]);
+  assert.deepEqual(beisenExperienceKinds.work, [
+    { organization: "云圣智能", title: "产品经理", start: "2024-01", end: "2025-06", description: "云圣工作职责" },
+    { organization: "另一家正式公司", title: "高级产品经理", start: "2022-01", end: "2023-12", description: "正式工作职责" }
+  ]);
+  assert.equal(
+    beisenExperienceKinds.scan.fields.filter((field) => field.repeatEntryKind === "internship").length,
+    10,
+    "each Beisen internship field must retain internship identity"
+  );
+  assert.equal(
+    beisenExperienceKinds.scan.fields.filter((field) => field.repeatEntryKind === "work").length,
+    10,
+    "each Beisen work field must retain work identity"
+  );
+  assert.equal(beisenExperienceKinds.fill.results.every((result) => result.status === "filled"), true);
+  console.log("DOM form fixture passed: Beisen internship/work sections expand, bind and fill from independent profile buckets.");
+
+  const hotjobForm = runFixture(hotjobFormPath, 60000);
+  assert.equal(hotjobForm.scan.platform.id, "hotjob", "hotjob.cn structure must resolve the Hotjob / Wecruit platform adapter");
+  assert.equal(hotjobForm.scan.repeatersExpanded, true);
+  assert.deepEqual(hotjobForm.addClicks, { education: 3, experience: 4, project: 4 });
+  assert.equal(hotjobForm.gender, "男", "anonymous Ant v3 radios must remain scoped to their own group");
+  assert.deepEqual(hotjobForm.location, ["江苏省", "南京"], "Hotjob's two-level location control must select province before city");
+  assert.deepEqual(hotjobForm.basicEducationSummary, {
+    values: ["南京大学", "2027-06-30", "城乡规划"],
+    selects: ["硕士研究生", "硕士"]
+  }, "education-summary fields in personal basic information must use the primary profile record without joining the education repeater");
+  assert.equal(
+    hotjobForm.scan.fields
+      .filter((field) => field.section === "个人基本信息" && ["school", "major", "degree", "educationDegree"].includes(field.key))
+      .every((field) => field.repeatGroup === undefined && field.repeatIndex === undefined),
+    true,
+    "personal basic information must not consume education repeat indexes"
+  );
+  assert.deepEqual(hotjobForm.education, [
+    { values: ["2024-09-01", "2027-06-30", "南京大学", "建筑与城市规划学院", "城乡规划", "3.8"], selects: ["硕士研究生", "硕士", "全日制"] },
+    { values: ["2018-09-01", "2023-06-30", "北京林业大学", "园林学院", "城乡规划", "3.6"], selects: ["本科", "学士", "全日制"] },
+    { values: ["2014-09-01", "2018-06-30", "同济大学", "建筑与城市规划学院", "城市规划", "3.7"], selects: ["本科", "学士", "全日制"] },
+    { values: ["2010-09-01", "2014-06-30", "东南大学", "建筑学院", "城乡规划", "3.5"], selects: ["本科", "学士", "全日制"] }
+  ], "school modals, full-day calendars and Ant v3 selects must stay bound to each education record");
+  assert.deepEqual(hotjobForm.experience, [
+    { values: ["2026-04-01", "2026-08-31", "携程集团", "AI产品经理", "负责酒店业务 AI 产品体验"], selects: [] },
+    { values: ["2025-11-01", "2026-03-31", "南京开为网络科技有限公司", "AI产品经理", "负责 Agnes APP 对话体验"], selects: [] },
+    { values: ["2024-07-01", "2024-10-31", "第三段实践企业", "产品实习生", "负责第三段实践的用户研究"], selects: [] },
+    { values: ["2023-03-01", "2023-08-31", "第四段实践企业", "产品助理", "负责第四段实践的需求分析"], selects: [] }
+  ], "Hotjob's combined work/practice section must preserve the original profile experience order");
+  assert.deepEqual(hotjobForm.project, [
+    { values: ["2026-03-01", "2026-08-31", "TripYoYo", "企业级通用桌面智能体"], selects: [] },
+    { values: ["2025-01-01", "2025-12-31", "OfferFlow", "招聘自动化平台"], selects: [] },
+    { values: ["2024-02-01", "2024-07-31", "Project Three", "第三段项目描述"], selects: [] },
+    { values: ["2023-01-01", "2023-06-30", "Project Four", "第四段项目描述"], selects: [] }
+  ]);
+  assert.deepEqual(
+    hotjobForm.scan.fields.filter((field) => field.key === "experienceOrganization").map((field) => field.repeatIndex),
+    [0, 1, 2, 3],
+    "all Hotjob work/practice cards must retain their native entry indexes"
+  );
+  assert.equal(hotjobForm.openPortals, 0, "Hotjob popups must close after every committed value");
+  assert.equal(hotjobForm.fill.results.every((result) => result.status === "filled"), true);
+  console.log("DOM form fixture passed: Hotjob repeat cards, school modal, Ant v3 calendar/select/radio and location cascade fill correctly.");
+
+  const pupumallForm = runFixture(pupumallFormPath, 12000);
+  assert.equal(pupumallForm.scan.platform.id, "pupumall");
+  assert.equal(pupumallForm.scan.platform.layer, "company");
+  assert.equal(pupumallForm.scan.repeatersExpanded, false, "Pupumall scan must only open editor UI and leave record creation to fill");
+  assert.equal(pupumallForm.name, "林知夏");
+  assert.deepEqual(pupumallForm.state.adds, { education: 3, experience: 2 });
+  assert.deepEqual(pupumallForm.state.saves, { education: 3, experience: 2 });
+  assert.equal(pupumallForm.currentCity, "江苏省 / 南京市");
+  assert.deepEqual(pupumallForm.education, [
+    { value: "南京大学", dates: ["2024-09", "2027-06"] },
+    { value: "北京林业大学", dates: ["2018-09", "2023-06"] },
+    { value: "同济大学", dates: ["2014-09", "2018-06"] }
+  ]);
+  assert.deepEqual(pupumallForm.experience, [
+    { value: "携程集团", dates: ["2026-04", "2026-08"] },
+    { value: "南京开为网络科技有限公司", dates: ["2025-11", "2026-03"] }
+  ]);
+  assert.equal(pupumallForm.fill.results.every((result) => result.status === "filled"), true);
+  console.log("DOM form fixture passed: Pupumall summary editors open, save and advance through repeated records exactly once.");
+
   const reinjectionForm = runFixture(reinjectionFormPath, 4000);
   assert.equal(reinjectionForm.listenerCount, 1, "reinjecting a new extension session must replace the stale listener");
   assert.equal(reinjectionForm.contentSession, "test-session-b");
-  assert.equal(reinjectionForm.runtimeVersion, "2026-08-21.autofill-v8");
+  assert.equal(reinjectionForm.runtimeVersion, "2026-08-25.autofill-v28");
   assert.equal(reinjectionForm.fieldCount, 1, "the replacement listener must still scan the application form");
   console.log("DOM form fixture passed: extension reload replaces stale autofill listeners without duplicates.");
 } finally {

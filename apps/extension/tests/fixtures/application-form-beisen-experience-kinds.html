@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>北森实习与工作经历分流测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      section { width: 900px; margin-bottom: 28px; }
+      .entry-list { display: grid; gap: 12px; }
+      .ux-standard-form { padding: 12px; border: 1px solid #ddd; }
+      .form-part-body { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+      .form-item { display: grid; grid-template-columns: 100px 1fr; gap: 8px; min-height: 40px; }
+      input, textarea { width: 280px; min-height: 32px; }
+      textarea { min-height: 72px; }
+      [id$="_addButton"] { margin-top: 10px; color: #1769e0; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <section id="internship-section">
+      <h2>实习经历</h2>
+      <div class="entry-list" data-kind="internship"></div>
+      <div id="beisen_internship_form_addButton"><span>添加实习经历</span></div>
+    </section>
+    <section id="work-section">
+      <h2>工作经历</h2>
+      <div class="entry-list" data-kind="work"></div>
+      <div id="beisen_work_form_addButton"><span>添加工作经历</span></div>
+    </section>
+
+    <script>
+      const addClicks = { internship: 0, work: 0 };
+      const formIds = {
+        internship: "beisen_internship_form",
+        work: "beisen_work_form"
+      };
+      const labels = {
+        internship: { organization: "单位名称", description: "实习内容" },
+        work: { organization: "公司名称", description: "工作职责" }
+      };
+
+      const field = (label, key, textarea = false) => `
+        <div class="form-item form-item--phoenix" data-nc-label="${label}">
+          <div class="form-item__title"><label class="form-item__text">${label}</label></div>
+          <div class="form-item__control">${textarea
+            ? `<textarea data-key="${key}"></textarea>`
+            : `<div class="phoenix-input"><input data-key="${key}" class="phoenix-input__input" /></div>`}
+          </div>
+        </div>`;
+
+      const appendEntry = (kind) => {
+        const list = document.querySelector(`.entry-list[data-kind="${kind}"]`);
+        const index = list.children.length;
+        const wrapper = document.createElement("div");
+        wrapper.className = "ux-standard-form";
+        wrapper.innerHTML = `
+          <div id="${formIds[kind]}" class="form twoLineFormStyleLong" data-entry-index="${index}">
+            <div class="form-part"><div class="form-part-body">
+              ${field(labels[kind].organization, "organization")}
+              ${field("职位名称", "title")}
+              ${field("开始时间", "start")}
+              ${field("结束时间", "end")}
+              ${field(labels[kind].description, "description", true)}
+            </div></div>
+          </div>`;
+        list.appendChild(wrapper);
+      };
+
+      document.addEventListener("click", (event) => {
+        const addButton = event.target.closest("[id$='_addButton']");
+        if (!addButton) return;
+        const kind = addButton.id.includes("internship") ? "internship" : "work";
+        addClicks[kind] += 1;
+        appendEntry(kind);
+      });
+
+      appendEntry("internship");
+      appendEntry("work");
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { experience: 4 };
+      const repeatPlan = {
+        experience: {
+          internship: 2,
+          work: 2,
+          internshipIndexes: [0, 2],
+          workIndexes: [1, 3]
+        }
+      };
+      const profileSnapshots = [
+        { experienceOrganization: "携程集团", experienceTitle: "AI产品经理实习生", experienceStartDate: "2026-04", experienceEndDate: "2026-08", experienceDescription: "携程实习内容" },
+        { experienceOrganization: "云圣智能", experienceTitle: "产品经理", experienceStartDate: "2024-01", experienceEndDate: "2025-06", experienceDescription: "云圣工作职责" },
+        { experienceOrganization: "南京开为网络科技有限公司", experienceTitle: "AI产品经理实习生", experienceStartDate: "2025-11", experienceEndDate: "2026-03", experienceDescription: "开为实习内容" },
+        { experienceOrganization: "另一家正式公司", experienceTitle: "高级产品经理", experienceStartDate: "2022-01", experienceEndDate: "2023-12", experienceDescription: "正式工作职责" }
+      ];
+
+      listener(
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", expandRepeaters: true, repeatCounts, repeatPlan },
+        {},
+        (scan) => listener(
+          {
+            type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+            fields: scan.fields,
+            values: {},
+            fieldValues: {},
+            profileSnapshots,
+            repeatCounts,
+            repeatPlan,
+            fillDynamicFields: true,
+            maxRounds: 4,
+            delayMs: 0
+          },
+          {},
+          (fill) => {
+            const entries = (kind) => Array.from(document.querySelectorAll(`.entry-list[data-kind="${kind}"] > .ux-standard-form`)).map((entry) => ({
+              organization: entry.querySelector("[data-key='organization']")?.value || "",
+              title: entry.querySelector("[data-key='title']")?.value || "",
+              start: entry.querySelector("[data-key='start']")?.value || "",
+              end: entry.querySelector("[data-key='end']")?.value || "",
+              description: entry.querySelector("[data-key='description']")?.value || ""
+            }));
+            document.body.dataset.result = encodeURIComponent(JSON.stringify({
+              ok: true,
+              data: {
+                scan,
+                fill,
+                addClicks,
+                internship: entries("internship"),
+                work: entries("work")
+              }
+            }));
+          }
+        )
+      );
+    </script>
+  </body>
+</html>

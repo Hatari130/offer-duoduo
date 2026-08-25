@@ -882,7 +882,9 @@ button {
 
 .opportunity-title {
   grid-template-columns: 30px minmax(0, 1fr) auto;
-  align-items: start;
+  align-items: center;
+  margin-top: 0;
+  margin-bottom: 14px;
 }
 
 .opportunity-refresh {
@@ -903,6 +905,10 @@ button {
   background: var(--overlay-soft);
 }
 
+.opportunity-refresh:disabled {
+  cursor: wait;
+}
+
 .opportunity-refresh.loading svg {
   animation: spin 0.8s linear infinite;
 }
@@ -918,6 +924,15 @@ button {
   border-radius: 11px;
 }
 
+.opportunity-discovery-controls {
+  position: sticky;
+  z-index: 20;
+  top: 64px;
+  margin: -18px -18px 0;
+  padding: 8px 18px 10px;
+  background: var(--of-canvas);
+}
+
 .opportunity-search svg {
   flex: 0 0 auto;
   color: #8b908c;
@@ -930,46 +945,6 @@ button {
   background: transparent;
   border: 0;
   outline: none;
-  font-size: 12px;
-}
-
-.opportunity-filters {
-  display: flex;
-  gap: 6px;
-  margin: 10px -18px 3px;
-  padding: 0 18px 8px;
-  overflow-x: auto;
-  scrollbar-width: none;
-}
-
-.opportunity-filters::-webkit-scrollbar {
-  display: none;
-}
-
-.opportunity-filters button {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  gap: 5px;
-  min-height: 28px;
-  padding: 0 10px;
-  color: #656b67;
-  background: #fff;
-  border: 1px solid var(--overlay-line);
-  border-radius: 999px;
-  font-size: 12px;
-  cursor: pointer;
-}
-
-.opportunity-filters button.active {
-  color: #fff;
-  background: var(--overlay-text);
-  border-color: var(--overlay-text);
-}
-
-.opportunity-filters small {
-  color: inherit;
-  opacity: 0.72;
   font-size: 12px;
 }
 
@@ -1044,21 +1019,9 @@ button {
 
 .opportunity-card-topline {
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  gap: 9px;
-}
-
-.opportunity-company-mark {
-  width: 34px;
-  height: 34px;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  background: #222624;
-  border-radius: 9px;
-  font-size: 12px;
-  font-weight: 750;
+  gap: 8px;
 }
 
 .opportunity-card-topline strong,
@@ -1095,10 +1058,16 @@ button {
 }
 
 .opportunity-card h2 {
-  margin: 12px 0 0;
-  font-size: 13px;
-  line-height: 1.35;
-  letter-spacing: -0.015em;
+  display: -webkit-box;
+  margin: 9px 0 0;
+  overflow: hidden;
+  color: #4e5651;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.45;
+  letter-spacing: -0.005em;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .opportunity-tags {
@@ -2093,80 +2062,6 @@ button {
   background: #3d9664;
 }
 
-.opportunity-feed-settings {
-  margin: 18px 0 0 39px;
-  padding: 13px;
-  background: #fafbf9;
-  border: 1px solid var(--overlay-line);
-  border-radius: 12px;
-}
-
-.opportunity-feed-settings label {
-  display: block;
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.opportunity-feed-settings input {
-  width: 100%;
-  margin-top: 8px;
-  padding: 9px 10px;
-  background: #fff;
-  border: 1px solid #dfe2de;
-  border-radius: 8px;
-  outline: none;
-  font-size: 12px;
-}
-
-.opportunity-feed-settings input:focus {
-  border-color: #9ca39e;
-  box-shadow: 0 0 0 3px rgba(32, 35, 33, 0.05);
-}
-
-.opportunity-feed-settings p {
-  margin: 8px 0 0;
-  color: var(--overlay-muted);
-  font-size: 12px;
-  line-height: 1.55;
-}
-
-.opportunity-feed-settings code,
-.opportunity-source-field code {
-  display: block;
-  margin-top: 8px;
-  padding: 9px 10px;
-  overflow: hidden;
-  color: var(--of-text-muted, #5f6762);
-  background: var(--of-surface-muted, #efeee7);
-  border: 1px solid var(--of-line, #dfe2de);
-  border-radius: 8px;
-  font-family: "Cascadia Code", Consolas, monospace;
-  font-size: 11px;
-  line-height: 1.5;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.opportunity-feed-settings > button {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 11px;
-  padding: 8px 10px;
-  color: #fff;
-  background: var(--overlay-text);
-  border: 0;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.opportunity-feed-settings > button:disabled {
-  opacity: 0.6;
-  cursor: wait;
-}
-
 .overlay-toolbar {
   position: fixed;
   z-index: 45;
@@ -2293,11 +2188,12 @@ button {
 
 /* The overlay is a compact work surface, not a scaled-down dashboard. */
 .overlay-shell {
+  --overlay-header-height: 70px;
   font-size: 14px;
 }
 
 .overlay-shell .overlay-header {
-  height: 70px;
+  height: var(--overlay-header-height);
   padding: 0 22px;
 }
 
@@ -2322,6 +2218,10 @@ button {
 
 .overlay-shell .overlay-scroll {
   padding: 88px 22px 82px;
+}
+
+.overlay-shell .overlay-scroll--opportunities {
+  padding-top: 144px;
 }
 
 .overlay-shell .overlay-capture-card {
@@ -2360,6 +2260,17 @@ button {
 
 .overlay-shell .overlay-intro {
   margin-left: 48px;
+}
+
+.overlay-shell .opportunity-title {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  margin-top: 0;
+  margin-bottom: 14px;
+}
+
+.overlay-shell .opportunity-refresh {
+  width: 36px;
+  height: 36px;
 }
 
 .overlay-shell .overlay-section-icon {
@@ -2619,19 +2530,6 @@ button {
   font-size: 12px;
 }
 
-.overlay-shell .opportunity-feed-settings {
-  margin-left: 48px;
-}
-
-.overlay-shell .opportunity-title {
-  grid-template-columns: 36px minmax(0, 1fr) auto;
-}
-
-.overlay-shell .opportunity-refresh {
-  width: 36px;
-  height: 36px;
-}
-
 .overlay-shell .opportunity-search {
   height: 46px;
   padding: 0 14px;
@@ -2641,25 +2539,22 @@ button {
   font-size: 12px;
 }
 
-.overlay-shell .opportunity-filters {
-  margin-right: -22px;
-  margin-left: -22px;
-  padding-right: 22px;
-  padding-left: 22px;
+.overlay-shell .opportunity-discovery-controls {
+  position: fixed;
+  z-index: 39;
+  top: var(--overlay-header-height);
+  right: 0;
+  left: 0;
+  margin: 0;
+  padding: 7px 22px 8px;
+  background: var(--of-canvas);
+  border-bottom: 1px solid var(--overlay-line);
 }
 
-.overlay-shell .opportunity-filters button {
-  min-height: 32px;
-  padding: 0 12px;
-  font-size: 12px;
-}
-
-.overlay-shell .opportunity-filters small,
 .overlay-shell .opportunity-card-topline small,
 .overlay-shell .opportunity-tags span,
 .overlay-shell .opportunity-card-meta small,
-.overlay-shell .opportunity-footnote,
-.overlay-shell .opportunity-feed-settings p {
+.overlay-shell .opportunity-footnote {
   font-size: 12px;
 }
 
@@ -2668,14 +2563,8 @@ button {
 }
 
 .overlay-shell .opportunity-card-topline {
-  grid-template-columns: 40px minmax(0, 1fr) auto;
-  gap: 11px;
-}
-
-.overlay-shell .opportunity-company-mark {
-  width: 40px;
-  height: 40px;
-  font-size: 14px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
 }
 
 .overlay-shell .opportunity-card-topline strong {
@@ -2688,7 +2577,9 @@ button {
 }
 
 .overlay-shell .opportunity-card h2 {
-  font-size: 16px;
+  margin-top: 8px;
+  font-size: 10px;
+  line-height: 1.45;
 }
 
 .overlay-shell .opportunity-card-meta > span,
@@ -2706,10 +2597,7 @@ button {
   font-size: 14px;
 }
 
-.overlay-shell .opportunity-empty button,
-.overlay-shell .opportunity-feed-settings label,
-.overlay-shell .opportunity-feed-settings input,
-.overlay-shell .opportunity-feed-settings > button {
+.overlay-shell .opportunity-empty button {
   font-size: 12px;
 }
 
@@ -4950,19 +4838,6 @@ button {
   font-size: 12px;
 }
 
-.sync-state {
-  display: flex;
-  align-items: center;
-  gap: 3px;
-  color: var(--forest);
-  font-family: "Cascadia Mono", "SFMono-Regular", monospace;
-  font-size: 12px;
-}
-
-.sync-state--muted {
-  color: #9b9e99;
-}
-
 .empty-state {
   min-height: 440px;
   display: flex;
@@ -5564,51 +5439,6 @@ textarea {
   border-radius: 12px;
 }
 
-.obsidian-card,
-.opportunity-source-card {
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 16px;
-  padding: 20px;
-}
-
-.opportunity-source-card {
-  align-items: start;
-  margin-top: 12px;
-}
-
-.opportunity-source-icon {
-  background: #252a27;
-}
-
-.opportunity-source-field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  margin-top: 12px;
-}
-
-.opportunity-source-field > span {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-
-.opportunity-source-field input {
-  width: 100%;
-  padding: 9px 10px;
-  background: #efeee7;
-  border: 1px solid #cfcec5;
-  border-radius: 6px;
-  outline: none;
-  font-size: 12px;
-}
-
-.opportunity-source-field input:focus {
-  border-color: #8f928d;
-}
-
 .setting-icon {
   width: 48px;
   height: 48px;
@@ -5731,66 +5561,6 @@ textarea {
   display: flex;
   align-items: center;
   gap: 5px;
-}
-
-.monitor-toggle {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 14px;
-  cursor: pointer;
-}
-
-.monitor-toggle > input {
-  position: absolute;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.toggle-track {
-  position: relative;
-  width: 34px;
-  height: 20px;
-  flex: 0 0 auto;
-  background: #bbbdb7;
-  border-radius: 20px;
-  transition: background 0.16s ease;
-}
-
-.toggle-track > span {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 14px;
-  height: 14px;
-  background: white;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(23, 34, 29, 0.25);
-  transition: transform 0.16s ease;
-}
-
-.monitor-toggle > input:checked + .toggle-track {
-  background: var(--forest);
-}
-
-.monitor-toggle > input:checked + .toggle-track > span {
-  transform: translateX(14px);
-  background: var(--acid);
-}
-
-.toggle-copy strong,
-.toggle-copy small {
-  display: block;
-}
-
-.toggle-copy strong {
-  font-size: 12px;
-}
-
-.toggle-copy small {
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 12px;
 }
 
 .settings-card.compact {
@@ -6032,11 +5802,6 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 
-  .obsidian-card {
-    grid-template-columns: auto 1fr;
-  }
-
-  .obsidian-card .button,
   .ai-actions {
     grid-column: 1 / -1;
   }
@@ -6207,8 +5972,6 @@ button:disabled {
 .profile-status,
 .candidate-list,
 .settings-card,
-.obsidian-card,
-.opportunity-source-card,
 .ai-card,
 .calendar-board,
 .calendar-agenda,
@@ -6269,7 +6032,6 @@ button:disabled {
 .drawer-body input,
 .drawer-body select,
 .drawer-body textarea,
-.opportunity-source-field input,
 .ai-fields input,
 .secret-input,
 .card-footer select {
@@ -6285,7 +6047,6 @@ button:disabled {
 .drawer-body input:focus,
 .drawer-body select:focus,
 .drawer-body textarea:focus,
-.opportunity-source-field input:focus,
 .ai-fields input:focus,
 .secret-input:focus-within,
 .search:focus-within {

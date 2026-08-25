@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>飞书学历类型语义映射测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 16px/1.5 Arial, sans-serif; }
+      .createFormSection-repeatable { display: grid; grid-template-columns: 150px 1fr; gap: 18px; }
+      .createFormSection-formList { display: grid; gap: 10px; }
+      .resumeEditForm-item { padding: 10px; border: 1px solid #ddd; }
+      .atsx-form-item { display: grid; grid-template-columns: 130px 320px; gap: 10px; }
+      .atsx-select-selection { min-height: 36px; padding: 7px 10px; border: 1px solid #bbb; cursor: pointer; }
+      .atsx-select-dropdown { position: fixed; z-index: 30; left: 520px; width: 260px; padding: 4px; background: white; border: 1px solid #aaa; }
+      .atsx-select-dropdown-hidden { display: none; }
+      [role="option"] { padding: 6px 8px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <form class="atsx-form">
+      <section class="createFormSection-repeatable">
+        <div class="createFormSection-left"><p class="createFormSection-text">教育经历</p></div>
+        <div class="createFormSection-right"><div class="createFormSection-formList"></div></div>
+      </section>
+    </form>
+
+    <script>
+      const targetOptions = ["海外及港澳台", "统招全日制", "统招非全日制", "自考", "其他"];
+      const list = document.querySelector(".createFormSection-formList");
+      const dropdowns = [];
+      for (let index = 0; index < 5; index += 1) {
+        const fieldPath = `education[${index}].educationType`;
+        const listId = `education-type-list-${index}`;
+        list.insertAdjacentHTML("beforeend", `<div class="resumeEditForm-item resumeEditForm-education">
+          <div data-cy="${fieldPath}" class="atsx-row atsx-form-item customResumeForm-fieldName-with-desc-item">
+            <div class="atsx-col atsx-form-item-label"><label><div class="customResumeForm-fieldName">学历类型 *</div></label></div>
+            <div class="atsx-col atsx-form-item-control-wrapper">
+              <div class="atsx-select atsx-select-single">
+                <div id="education-type-${index}" data-cy="${fieldPath}" class="atsx-select-selection" role="combobox" aria-controls="${listId}" aria-expanded="false">
+                  <span class="atsx-select-selection-placeholder">请选择</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`);
+        const popup = document.createElement("div");
+        popup.className = "atsx-select-dropdown atsx-select-dropdown-hidden";
+        popup.style.top = `${40 + index * 42}px`;
+        popup.innerHTML = `<div id="${listId}" role="listbox">${targetOptions
+          .map((option) => `<div role="option" data-cy-value="${option}">${option}</div>`)
+          .join("")}</div>`;
+        document.body.appendChild(popup);
+        dropdowns.push(popup);
+      }
+
+      document.addEventListener("click", (event) => {
+        const control = event.target.closest(".atsx-select-selection[role='combobox']");
+        if (control) {
+          dropdowns.forEach((popup) => popup.classList.add("atsx-select-dropdown-hidden"));
+          const popup = document.getElementById(control.getAttribute("aria-controls")).closest(".atsx-select-dropdown");
+          popup.classList.remove("atsx-select-dropdown-hidden");
+          control.setAttribute("aria-expanded", "true");
+          return;
+        }
+        const option = event.target.closest("[role='option'][data-cy-value]");
+        if (option) {
+          const popup = option.closest(".atsx-select-dropdown");
+          const control = document.querySelector(`[aria-controls="${popup.querySelector("[role='listbox']").id}"]`);
+          const root = control.closest(".atsx-select");
+          root.querySelector(".atsx-select-selection-placeholder")?.remove();
+          let selected = root.querySelector("[data-cy='selectedValue']");
+          if (!selected) {
+            selected = document.createElement("span");
+            selected.dataset.cy = "selectedValue";
+            control.appendChild(selected);
+          }
+          selected.textContent = option.dataset.cyValue;
+          control.setAttribute("aria-expanded", "false");
+          popup.classList.add("atsx-select-dropdown-hidden");
+        }
+      });
+
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const educationForms = [
+        "全国普通高等院校全日制",
+        "全国普通高等院校非全日制",
+        "高等教育自学考试",
+        "境外院校",
+        "网络教育"
+      ];
+      const profileSnapshots = educationForms.map((educationForm) => ({ educationForm }));
+      listener({ type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} }, {}, (scan) => {
+        listener({
+          type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+          fields: scan.fields,
+          values: {},
+          fieldValues: {},
+          profileSnapshots,
+          fillDynamicFields: true,
+          maxRounds: 2,
+          delayMs: 0
+        }, {}, (fill) => {
+          document.body.dataset.ready = "true";
+          document.body.dataset.result = encodeURIComponent(JSON.stringify({ ok: true, data: {
+            scan,
+            fill,
+            selected: Array.from(document.querySelectorAll(".atsx-select")).map((root) =>
+              root.querySelector("[data-cy='selectedValue']")?.textContent.trim() || ""
+            ),
+            openDropdowns: dropdowns.filter((popup) => !popup.classList.contains("atsx-select-dropdown-hidden")).length
+          }}));
+        });
+      });
+    </script>
+  </body>
+</html>

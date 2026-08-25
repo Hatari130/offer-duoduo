@@ -14,6 +14,14 @@ export interface FormPlatformInfo {
   total: number;
   ruleMatched: number;
   unknown: number;
+  /** Most specific rule layer selected by the shared adapter registry. */
+  layer?: "company" | "platform" | "generic";
+  /** Canonical ATS family (for example feishu, beisen or moka). */
+  platformId?: string;
+  /** Optional company overlay applied above the ATS family. */
+  companyId?: string;
+  /** Effective inheritance order, most specific first. */
+  chain?: string[];
 }
 
 export interface FormFieldMatch {
@@ -29,6 +37,10 @@ export interface FormFieldMatch {
   /** Profile record selected for this field when one ATS splits a shared group into sub-sections. */
   profileRepeatIndex?: number;
   repeatIndexSource?: "attribute" | "structural" | "occurrence";
+  /** ATS-native repeated record namespace, independent of global DOM order. */
+  repeatEntryKind?: "education" | "work" | "internship" | "project" | "campus" | "award";
+  /** Index inside the ATS-native namespace (for example internship[1]). */
+  repeatLocalIndex?: number;
   repeatEntryFingerprint?: string;
   domOrder?: number;
   type: string;

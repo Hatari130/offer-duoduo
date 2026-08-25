@@ -10,7 +10,6 @@ import {
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  CircleDot,
   Download,
   ExternalLink,
   FileText,
@@ -35,13 +34,6 @@ import {
   testDeepSeekConnection
 } from "@/integrations/deepseek/deepseek";
 import {
-  chooseObsidianDirectory,
-  downloadBackup,
-  getStoredDirectory,
-  syncJobToObsidian
-} from "@/integrations/obsidian/obsidian";
-import {
-  AUTO_SYNC_NOTICE_KEY,
   EMPTY_PROFILE,
   findDuplicate,
   JOBS_KEY,
@@ -54,7 +46,6 @@ import {
   saveSettings
 } from "@/infrastructure/storage/storage";
 import {
-  DEFAULT_OPPORTUNITY_FEED_URL,
   loadOpportunityCache,
   OPPORTUNITY_CACHE_KEY,
   refreshOpportunityFeed
@@ -101,7 +92,6 @@ export function OverlayPanel({
   onEdit,
   onToggleFavorite,
   onRefresh,
-  onRefreshOpportunities,
   onOpenResumeManager,
   onClose
 }: {
@@ -119,7 +109,6 @@ export function OverlayPanel({
   onEdit: (job: JobApplication) => void;
   onToggleFavorite: (job: JobApplication) => void;
   onRefresh: () => void;
-  onRefreshOpportunities: () => void;
   onOpenResumeManager: () => void;
   onClose: () => void;
 }) {
@@ -325,7 +314,10 @@ export function OverlayPanel({
         </div>
       </header>
 
-      <div className="overlay-scroll" ref={overlayScrollRef}>
+      <div
+        className={`overlay-scroll${tab === "opportunities" ? " overlay-scroll--opportunities" : ""}`}
+        ref={overlayScrollRef}
+      >
         {tab === "overview" && (
           <div className="overlay-action-stack">
             <section className="overlay-capture-card">
@@ -379,7 +371,7 @@ export function OverlayPanel({
             error={opportunityError}
             configured={Boolean(settings.opportunityFeedUrl)}
             onOpen={onOpenOpportunity}
-            onRefresh={onRefreshOpportunities}
+            onRefresh={onRefresh}
             onConfigure={() => setTab("settings")}
           />
         )}
@@ -576,27 +568,12 @@ export function OverlayPanel({
           <section className="overlay-page">
             <div className="overlay-page-title">
               <span className="overlay-section-icon"><Settings2 size={18} /></span>
-              <div><h1>连接</h1><p>JobKoI 的本地服务状态</p></div>
+              <div><h1>连接</h1><p>服务状态</p></div>
             </div>
             <div className="overlay-connection-list">
-              <div><Megaphone size={17} /><span><strong>校招机会</strong><small>{settings.opportunityFeedUrl ? `${opportunitySnapshot.opportunities.length} 条机会` : "使用内置数据或配置外部源"}</small></span><i className={opportunitySnapshot.opportunities.length ? "active" : ""} /></div>
               <div><Sparkles size={17} /><span><strong>DeepSeek</strong><small>{settings.deepseekApiKey ? "已连接" : "未配置"}</small></span><i className={settings.deepseekApiKey ? "active" : ""} /></div>
-              <div><CircleDot size={17} /><span><strong>实时监听</strong><small>{(settings.autoMonitorEnabled ?? true) ? "已开启" : "已关闭"}</small></span><i className={(settings.autoMonitorEnabled ?? true) ? "active" : ""} /></div>
-              <div><FileText size={17} /><span><strong>Obsidian</strong><small>{settings.obsidianFolderName || "未连接"}</small></span><i className={settings.obsidianFolderName ? "active" : ""} /></div>
             </div>
             <CloudSyncSettings />
-            <div className="opportunity-feed-settings">
-              <label>校招机会数据源</label>
-              <p>已直连公开 JSON，后台每 15 分钟自动同步。</p>
-              <code>{DEFAULT_OPPORTUNITY_FEED_URL}</code>
-              <button
-                onClick={onRefreshOpportunities}
-                disabled={opportunityLoading}
-              >
-                {opportunityLoading ? <RefreshCw className="spin" size={14} /> : <Check size={14} />}
-                立即同步
-              </button>
-            </div>
           </section>
         )}
 

@@ -28,7 +28,7 @@
 | 技术栈 | React 19 + Vite 8 + **Ant Design 6** + oxlint | React 18 + Vite 6 + 自定义 CSS + lucide-react |
 | 表单检测 | 内嵌 `FormDetector` + `FieldMatcher`（content script 内） | `form-adapters.js` + `matchFormFields`（辅助，非主战场） |
 | AI 接入 | **OpenAI 兼容 / Claude 双后端**，用户自配 baseUrl+key+model | **仅 DeepSeek**（`deepseek-v4-flash`，json_object） |
-| 同步 | JSON 备份 + **WebDAV** 自动同步（ETag 防覆盖） | 云端 `@offerflow/api`（设备码配对）+ Obsidian |
+| 同步 | JSON 备份 + **WebDAV** 自动同步（ETag 防覆盖） | 云端 `@offerflow/api`（设备码配对）+ JSON/CSV 本地备份 |
 | 测试 | 内置 `node --test` 单测（form/visual/nlp/backup 等） | 以 typecheck/build 为准 |
 
 ---
@@ -85,7 +85,7 @@
 - **JD 抓取与解析**：`content.js` `extract()` 从 JSON-LD `JobPosting` + 文本正则抽 `company/position/responsibilities/requirements`；`extractProgressEvidence()` 用阶段模式 + 颜色/aria 抽**投递进度**；DeepSeek 精炼时 **DOM 证据优先级 > LLM 推断**。
 - **投递跟踪（对方完全没有）**：`JobApplication` 存 `offerflow.jobs`，`findDuplicate` 归一化去重；background `alarms` 每 5 分钟 + content `MutationObserver` 自动回写阶段/事件。
 - **简历对靶定制（对方没有）**：`tailorResumeWithDeepSeek` 把 `PersonalProfile` 拍平为 `ResumeData`，返回 `TailoredResumeBundle{context, jd, resume, notes, unsupportedClaims}`；`mergeResume` 只改 bullet 措辞、**冻结日期/雇主/数字**，虚构事实进 `unsupportedClaims`；`buildLocalFallback` 无 key 时关键词兜底。生成可编辑 HTML 支持 **JD↔bullet 双向高亮**，PDF base64 存 `offerflow.tailoredPdf.{jobKey}`。
-- **同步**：云端 `@offerflow/api` 设备码配对 + Obsidian Markdown 同步；`redactForLLM` 做 PII 脱敏。
+- **同步**：云端 `@offerflow/api` 设备码配对 + JSON/CSV 本地备份；`redactForLLM` 做 PII 脱敏。
 - **表单填写（我方有完整引擎，非仅辅助）**：扫描用 `scanApplicationForm` + `OfferFlowFormAdapters`（按 ATS 选适配器：北森/Beisen、Moka、牛客/Nowcoder、腾讯/Tencent、generic），正则匹配 field→profile key；未知字段才调 `matchFormFields`（DeepSeek 只做语义映射，不发资料值）。写入用 `fillApplicationForm → setNativeValue`：覆盖原生 select、radio/checkbox（含 `role=radio`/phoenix）、Element UI cascader/select、combobox（ArrowDown/Enter）、phoenix-select（日期/地区/普通）、contenteditable、input/textarea（原生 setter + `dispatchInputEvents`）；写后 `readControlValue` **回读校验**并 `sendFillProgress` 实时反馈；`ensureRepeatableEntries` 展开重复行。详见 `2026-08-08-填表引擎对比.md`。
 
 ---
@@ -103,7 +103,7 @@
 | JD×简历对靶审阅/双向高亮 | ❌ | ✅ 独有 |
 | 多简历 × 多岗位定制 | ❌（单一 profile） | ✅ |
 | AI 模型灵活度（任意 OpenAI 兼容/Claude） | ✅ | ❌（仅 DeepSeek） |
-| 云端同步 | ⚠️ WebDAV | ✅ 自有 API + Obsidian |
+| 云端同步 | ⚠️ WebDAV | ✅ 自有 API |
 | PII 脱敏 | ❌ 明文 | ✅ |
 
 ---

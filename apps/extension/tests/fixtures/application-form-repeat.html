@@ -105,6 +105,7 @@
         }
       };
     </script>
+    <script src="../../public/adapter-registry.js"></script>
     <script src="../../public/extraction-rules.js"></script>
     <script src="../../public/form-adapters.js"></script>
     <script src="../../public/form-runtime.js"></script>
@@ -113,7 +114,7 @@
     <script>
       const listener = globalThis.__offerflowListeners.at(-1);
       listener(
-        { type: "OFFERFLOW_SCAN_APPLICATION_FORM", repeatCounts: { education: 2 } },
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM", expandRepeaters: true, repeatCounts: { education: 2 } },
         {},
         (scan) => {
           const valuesByIndex = [

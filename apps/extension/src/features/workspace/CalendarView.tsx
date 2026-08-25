@@ -36,13 +36,6 @@ import {
   testDeepSeekConnection
 } from "@/integrations/deepseek/deepseek";
 import {
-  chooseObsidianDirectory,
-  downloadBackup,
-  getStoredDirectory,
-  syncJobToObsidian
-} from "@/integrations/obsidian/obsidian";
-import {
-  AUTO_SYNC_NOTICE_KEY,
   EMPTY_PROFILE,
   findDuplicate,
   JOBS_KEY,

@@ -56,7 +56,11 @@
         <p class="applyFormModuleWrapper-text">教育经历</p>
       </div>
       <div class="applyFormModuleWrapper-right">
-        <div id="education-cards"></div>
+        <div class="formily-depth"><div class="formily-depth"><div class="formily-depth"><div class="formily-depth"><div class="formily-depth">
+          <div class="formily-depth"><div class="formily-depth"><div class="formily-depth"><div class="formily-depth"><div class="formily-depth">
+            <div id="education-cards"></div>
+          </div></div></div></div></div>
+        </div></div></div></div></div>
         <div class="apply-form-array-card-operate__fixture"><button id="add-education" type="button">添加</button></div>
       </div>
     </section>
@@ -66,7 +70,8 @@
         <p class="applyFormModuleWrapper-text">实习经历</p>
       </div>
       <div class="applyFormModuleWrapper-right">
-        <article class="apply-form-array-card__fixture experience-card">
+        <div id="experience-cards">
+          <article class="apply-form-array-card__fixture experience-card">
           <div class="ud-formily-item">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">公司名称</span></div>
             <input class="ud__native-input" data-form-field-id="company_name" data-form-field-name="company_name" />
@@ -75,7 +80,7 @@
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">职位名称</span></div>
             <input class="ud__native-input" data-form-field-id="job_title" data-form-field-name="job_title" />
           </div>
-          <div id="formily-item-internship-time-period" class="ud-formily-item">
+          <div id="formily-item-start_end_time" class="ud-formily-item" data-form-field-name="start_end_time">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">起止时间</span></div>
             <div class="throne-biz-date-range-picker-wrapper" data-form-field-name="time_period">
               <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
@@ -87,7 +92,9 @@
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">工作描述</span></div>
             <textarea class="ud__native-input" data-form-field-id="work_description" data-form-field-name="work_description"></textarea>
           </div>
-        </article>
+          </article>
+        </div>
+        <div class="apply-form-array-card-operate__fixture"><button id="add-experience" type="button">添加</button></div>
       </div>
     </section>
 
@@ -142,7 +149,7 @@
         ],
         city: ["北京", "上海", "南京"],
         degree: ["本科", "硕士", "博士"],
-        school: ["南京大学", "北京林业大学", "南京林业大学"]
+        school: ["南京大学", "北京林业大学", "同济大学", "南京林业大学"]
       };
       const bindSelect = (root) => {
         if (root.dataset.bound === "true") return;
@@ -160,10 +167,16 @@
           list.innerHTML = options.map((option) => {
             const text = typeof option === "string" ? option : option.text;
             const dataValue = typeof option === "string" ? option : option.value;
-            return `<div class="ud__select__list__item" data-value="${dataValue}"><span>${text}</span></div>`;
+            return `<div class="ud__select__list__item" data-value="${dataValue}"><div class="ud__select__list__item__content"><span>${text}</span></div></div>`;
           }).join("");
           list.querySelectorAll(".ud__select__list__item").forEach((option) => {
-            option.addEventListener("click", () => {
+            const content = option.querySelector(".ud__select__list__item__content");
+            content.addEventListener("mousedown", () => {
+              option.dataset.pointerReady = "true";
+            });
+            option.addEventListener("click", (event) => {
+              if (!event.target.closest(".ud__select__list__item__content") || option.dataset.pointerReady !== "true") return;
+              delete option.dataset.pointerReady;
               root.querySelector(".ud__select__selector__placeholder")?.remove();
               let selected = root.querySelector(".ud__select__selector__selectItem");
               if (!selected) {
@@ -224,13 +237,15 @@
       };
 
       const educationCards = document.getElementById("education-cards");
+      const experienceCards = document.getElementById("experience-cards");
       let educationAdds = 0;
+      let experienceAdds = 0;
       const addEducationCard = () => {
         const index = educationCards.children.length;
         const card = document.createElement("article");
         card.className = "apply-form-array-card__fixture education-card";
         card.innerHTML = `
-          <div id="formily-item-school-${index}" class="ud-formily-item">
+          <div id="formily-item-school" class="ud-formily-item" data-form-field-name="school">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">学校名称</span></div>
             <div class="ud__select" data-select="school" data-remote="true">
               <div class="ud__select__selector">
@@ -241,7 +256,7 @@
               </div>
             </div>
           </div>
-          <div id="formily-item-degree-${index}" class="ud-formily-item">
+          <div id="formily-item-degree" class="ud-formily-item" data-form-field-name="degree">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">学历</span></div>
             <div class="ud__select" data-select="degree">
               <div class="ud__select__selector ud__select__selector-readOnly">
@@ -252,13 +267,13 @@
               </div>
             </div>
           </div>
-          <div id="formily-item-field_of_study-${index}" class="ud-formily-item">
+          <div id="formily-item-field_of_study" class="ud-formily-item" data-form-field-name="field_of_study">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">专业</span></div>
             <input class="ud__native-input" data-form-field-id="field_of_study" data-form-field-name="field_of_study" data-form-field-i18n-name="专业" />
           </div>
-          <div id="formily-item-start_end_time-${index}" class="ud-formily-item">
+          <div id="formily-item-start_end_time" class="ud-formily-item" data-form-field-name="start_end_time">
             <div class="ud-formily-item-label"><span class="ud-formily-item-label-content">起止时间</span></div>
-            <div class="throne-biz-date-range-picker-wrapper" data-form-field-name="time_period">
+            <div class="throne-biz-date-range-picker-wrapper">
               <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
               <div class="throne-biz-date-range-picker-input"><input class="ud__native-input" type="month" /></div>
             </div>
@@ -275,7 +290,18 @@
         educationAdds += 1;
         addEducationCard();
       });
+      document.getElementById("add-experience").addEventListener("click", () => {
+        experienceAdds += 1;
+        const card = experienceCards.firstElementChild.cloneNode(true);
+        card.querySelectorAll("input,textarea").forEach((control) => {
+          if (control.type === "checkbox") control.checked = false;
+          else control.value = "";
+        });
+        experienceCards.appendChild(card);
+        bindDateRange(card.querySelector(".throne-biz-date-range-picker-wrapper"));
+      });
     </script>
+    <script src="../../public/adapter-registry.js"></script>
     <script src="../../public/extraction-rules.js"></script>
     <script src="../../public/form-adapters.js"></script>
     <script src="../../public/form-runtime.js"></script>
@@ -283,10 +309,12 @@
     <script src="../../public/content.js"></script>
     <script>
       const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { education: 3, experience: 2, project: 1 };
       listener(
-        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
+        { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", expandRepeaters: false, repeatCounts },
         {},
         (scan) => {
+          const addsAfterScan = { education: educationAdds, experience: experienceAdds };
           const snapshots = [
             {
               fullName: "林知夏", gender: "女", currentCity: "南京",
@@ -301,7 +329,14 @@
             },
             {
               school: "北京林业大学", degree: "本科", major: "城乡规划",
-              educationStartDate: "2018-09", educationEndDate: "2023-06"
+              educationStartDate: "2018-09", educationEndDate: "2023-06",
+              experienceOrganization: "南京开为网络科技有限公司", experienceTitle: "产品部门 AI产品经理",
+              experienceStartDate: "2025-11", experienceEndDate: "2026-03",
+              experienceDescription: "负责 Agnes APP 对话体验与留存增长"
+            },
+            {
+              school: "同济大学", degree: "本科", major: "城市规划",
+              educationStartDate: "2014-09", educationEndDate: "2018-06"
             }
           ];
           const rangeEndKeys = {
@@ -321,7 +356,7 @@
               fields: scan.fields,
               fieldValues,
               profileSnapshots: snapshots,
-              repeatCounts: { education: 2, experience: 1, project: 1 },
+              repeatCounts,
               repeatPlan: {},
               fillDynamicFields: true,
               maxRounds: 5,
@@ -329,45 +364,65 @@
             },
             {},
             (fill) => {
-              const education = Array.from(document.querySelectorAll("#education-cards .education-card")).map((card) => ({
-                school: card.querySelector("[data-select='school'] .ud__select__selector__selectItem")?.textContent.trim() || "",
-                degree: card.querySelector("[data-select='degree'] .ud__select__selector__selectItem")?.textContent.trim() || "",
-                major: card.querySelector("[data-form-field-name='field_of_study']").value,
-                dates: Array.from(card.querySelectorAll(".throne-biz-date-range-picker-wrapper input")).map((input) => input.value)
-              }));
-              const experienceCard = document.querySelector(".experience-card");
-              const experience = {
-                company: experienceCard.querySelector("[data-form-field-name='company_name']").value,
-                title: experienceCard.querySelector("[data-form-field-name='job_title']").value,
-                dates: Array.from(experienceCard.querySelectorAll(".throne-biz-date-range-picker-wrapper input:not([type='checkbox'])")).map((input) => input.value),
-                current: experienceCard.querySelector("[data-current-date]").checked,
-                description: experienceCard.querySelector("[data-form-field-name='work_description']").value
-              };
-              const projectCard = document.querySelector(".project-card");
-              const project = {
-                name: projectCard.querySelector("[data-form-field-name='project_name']").value,
-                role: projectCard.querySelector("[data-form-field-name='project_role']").value,
-                dates: Array.from(projectCard.querySelectorAll(".throne-biz-date-range-picker-wrapper input:not([type='checkbox'])")).map((input) => input.value),
-                current: projectCard.querySelector("[data-current-date]").checked,
-                description: projectCard.querySelector("[data-form-field-name='project_description']").value
-              };
-              document.body.dataset.ready = "true";
-              document.body.dataset.result = encodeURIComponent(JSON.stringify({
-                ok: true,
-                data: {
-                  scan,
-                  fill,
-                  educationAdds,
-                  name: document.querySelector("[data-form-field-name='name']").value,
-                  gender: document.querySelector("[data-select='gender'] .ud__select__selector__selectItem")?.textContent.trim() || "",
-                  city: document.querySelector("[data-select='city'] .ud__select__selector__selectItem")?.textContent.trim() || "",
-                  education,
-                  experience,
-                  project,
-                  dewuAdapter: window.OfferFlowFormAdapters.resolve({ hostname: "campus.dewu.com", pathname: "/578078/resume/example/apply" }).id,
-                  openDropdowns: Array.from(document.querySelectorAll(".ud__select__dropdown")).filter((item) => getComputedStyle(item).display !== "none").length
+              const addsAfterFirstFill = { education: educationAdds, experience: experienceAdds };
+              listener(
+                {
+                  type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+                  fields: [],
+                  fieldValues: {},
+                  profileSnapshots: snapshots,
+                  repeatCounts,
+                  repeatPlan: {},
+                  fillDynamicFields: false,
+                  maxRounds: 1,
+                  delayMs: 0
+                },
+                {},
+                (secondFill) => {
+                  const education = Array.from(document.querySelectorAll("#education-cards .education-card")).map((card) => ({
+                    school: card.querySelector("[data-select='school'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                    degree: card.querySelector("[data-select='degree'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                    major: card.querySelector("input[data-form-field-name='field_of_study']").value,
+                    dates: Array.from(card.querySelectorAll(".throne-biz-date-range-picker-wrapper input")).map((input) => input.value)
+                  }));
+                  const experience = Array.from(document.querySelectorAll(".experience-card")).map((experienceCard) => ({
+                    company: experienceCard.querySelector("[data-form-field-name='company_name']").value,
+                    title: experienceCard.querySelector("[data-form-field-name='job_title']").value,
+                    dates: Array.from(experienceCard.querySelectorAll(".throne-biz-date-range-picker-wrapper input:not([type='checkbox'])")).map((input) => input.value),
+                    current: experienceCard.querySelector("[data-current-date]").checked,
+                    description: experienceCard.querySelector("[data-form-field-name='work_description']").value
+                  }));
+                  const projectCard = document.querySelector(".project-card");
+                  const project = {
+                    name: projectCard.querySelector("[data-form-field-name='project_name']").value,
+                    role: projectCard.querySelector("[data-form-field-name='project_role']").value,
+                    dates: Array.from(projectCard.querySelectorAll(".throne-biz-date-range-picker-wrapper input:not([type='checkbox'])")).map((input) => input.value),
+                    current: projectCard.querySelector("[data-current-date]").checked,
+                    description: projectCard.querySelector("[data-form-field-name='project_description']").value
+                  };
+                  document.body.dataset.ready = "true";
+                  document.body.dataset.result = encodeURIComponent(JSON.stringify({
+                    ok: true,
+                    data: {
+                      scan,
+                      fill,
+                      secondFill,
+                      addsAfterScan,
+                      addsAfterFirstFill,
+                      educationAdds,
+                      experienceAdds,
+                      name: document.querySelector("[data-form-field-name='name']").value,
+                      gender: document.querySelector("[data-select='gender'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                      city: document.querySelector("[data-select='city'] .ud__select__selector__selectItem")?.textContent.trim() || "",
+                      education,
+                      experience,
+                      project,
+                      dewuAdapter: window.OfferFlowFormAdapters.resolve({ hostname: "campus.dewu.com", pathname: "/578078/resume/example/apply" }).id,
+                      openDropdowns: Array.from(document.querySelectorAll(".ud__select__dropdown")).filter((item) => getComputedStyle(item).display !== "none").length
+                    }
+                  }));
                 }
-              }));
+              );
             }
           );
         }

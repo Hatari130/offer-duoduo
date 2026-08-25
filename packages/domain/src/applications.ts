@@ -170,7 +170,6 @@ export interface JobApplication {
    * be recognised across job-detail and progress-list URLs.
    */
   identityAliases?: string[];
-  obsidianPath?: string;
 }
 
 export interface ExtractedJob {

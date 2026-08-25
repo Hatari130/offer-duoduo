@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>朴朴招聘官网</title>
+    <style>
+      body { font: 16px/1.5 Arial, sans-serif; }
+      .FormItem__fixture { margin: 16px; padding: 12px; border: 1px solid #ddd; }
+      .FormLabel__fixture { display: block; font-size: 22px; font-weight: 700; }
+      .FormItemBox__fixture { margin: 10px 0; padding: 10px; border: 1px solid #bbb; }
+      .ant-form-item { margin: 8px 0; }
+      input, textarea, button, .addBtn__fixture { min-height: 32px; margin: 4px; }
+      .addBtn__fixture { cursor: pointer; color: #1677ff; }
+    </style>
+  </head>
+  <body>
+    <section class="ApplyFormBox__fixture">
+      <div class="FormItem__fixture" data-section="basic">
+        <span class="FormLabel__fixture">基本信息</span>
+        <div class="NewFormBtn__fixture">
+          <div class="FormContainer__fixture"><div class="summary">姓名：-</div></div>
+          <button class="edit-basic" type="button">编 辑</button>
+        </div>
+      </div>
+
+      <div class="FormItem__fixture" data-section="education">
+        <span class="FormLabel__fixture">教育经历</span>
+        <div class="NewFormBtn__fixture">
+          <div class="FormContainer__fixture"></div>
+          <div class="addBtn__fixture">添加教育经历</div>
+        </div>
+      </div>
+
+      <div class="FormItem__fixture" data-section="experience">
+        <span class="FormLabel__fixture">实习经历</span>
+        <div class="NewFormBtn__fixture">
+          <div class="FormContainer__fixture"></div>
+          <div class="addBtn__fixture">添加实习经历</div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      const state = {
+        adds: { education: 0, experience: 0 },
+        saves: { education: 0, experience: 0 }
+      };
+
+      const formItem = (label, control) => {
+        const item = document.createElement("div");
+        item.className = "ant-form-item";
+        const title = document.createElement("label");
+        title.textContent = label;
+        item.append(title, control);
+        return item;
+      };
+
+      const monthPicker = (id) => {
+        const root = document.createElement("div");
+        root.className = "ant-picker";
+        const input = document.createElement("input");
+        input.id = id;
+        input.readOnly = true;
+        input.placeholder = "请选择";
+        root.append(input);
+        input.addEventListener("mousedown", () => {
+          document.querySelector(".ant-picker-dropdown")?.remove();
+          const popup = document.createElement("div");
+          popup.className = "ant-picker-dropdown";
+          let year = 2026;
+          const render = () => {
+            popup.innerHTML = `<div class="ant-picker-month-panel">
+              <button type="button" class="ant-picker-header-super-prev-btn">prev</button>
+              <button type="button" class="ant-picker-year-btn">${year}年</button>
+              <button type="button" class="ant-picker-header-super-next-btn">next</button>
+              <table><tbody><tr>${Array.from({ length: 12 }, (_, month) => {
+                const value = `${year}-${String(month + 1).padStart(2, "0")}`;
+                return `<td class="ant-picker-cell" title="${value}"><div class="ant-picker-cell-inner">${month + 1}月</div></td>`;
+              }).join("")}</tr></tbody></table>
+            </div>`;
+            popup.querySelector(".ant-picker-header-super-prev-btn").addEventListener("click", () => { year -= 1; render(); });
+            popup.querySelector(".ant-picker-header-super-next-btn").addEventListener("click", () => { year += 1; render(); });
+            popup.querySelectorAll("td[title]").forEach((cell) => cell.addEventListener("click", () => {
+              input.value = cell.title;
+              input.dispatchEvent(new Event("change", { bubbles: true }));
+              popup.remove();
+            }));
+          };
+          render();
+          document.body.append(popup);
+        });
+        return { root, input };
+      };
+
+      const currentCityCascader = () => {
+        const input = document.createElement("input");
+        input.id = "currentResidentialCode";
+        input.className = "ant-input ant-cascader-input";
+        input.placeholder = "请选择";
+        input.addEventListener("mousedown", () => {
+          document.querySelector(".ant-cascader-menus")?.remove();
+          const popup = document.createElement("div");
+          popup.className = "ant-cascader-menus";
+          const provinceMenu = document.createElement("ul");
+          provinceMenu.className = "ant-cascader-menu";
+          for (const province of ["江苏省", "福建省"]) {
+            const option = document.createElement("li");
+            option.className = "ant-cascader-menu-item";
+            option.textContent = province;
+            option.addEventListener("click", () => {
+              popup.querySelectorAll(".ant-cascader-menu")[1]?.remove();
+              const cityMenu = document.createElement("ul");
+              cityMenu.className = "ant-cascader-menu";
+              const cities = province === "江苏省" ? ["南京市", "苏州市"] : ["福州市", "厦门市"];
+              for (const city of cities) {
+                const cityOption = document.createElement("li");
+                cityOption.className = "ant-cascader-menu-item";
+                cityOption.textContent = city;
+                cityOption.addEventListener("click", () => {
+                  input.value = `${province} / ${city}`;
+                  input.dispatchEvent(new Event("change", { bubbles: true }));
+                  popup.remove();
+                });
+                cityMenu.append(cityOption);
+              }
+              popup.append(cityMenu);
+            });
+            provinceMenu.append(option);
+          }
+          popup.append(provinceMenu);
+          document.body.append(popup);
+        });
+        return input;
+      };
+
+      document.querySelector(".edit-basic").addEventListener("click", () => {
+        const section = document.querySelector("[data-section='basic']");
+        if (section.querySelector("#name")) return;
+        const form = document.createElement("form");
+        form.className = "ant-form";
+        const name = document.createElement("input");
+        name.id = "name";
+        name.placeholder = "请填写姓名";
+        form.append(formItem("姓名", name), formItem("现居住地", currentCityCascader()));
+        section.querySelector(".FormContainer__fixture").replaceChildren(form);
+        section.querySelector(".edit-basic").remove();
+      });
+
+      const addRepeat = (group) => {
+        const section = document.querySelector(`[data-section='${group}']`);
+        const container = section.querySelector(".FormContainer__fixture");
+        const add = section.querySelector(".addBtn__fixture");
+        const index = container.children.length;
+        state.adds[group] += 1;
+        const card = document.createElement("div");
+        card.className = "FormItemBox__fixture";
+        const form = document.createElement("form");
+        form.className = "ant-form";
+        if (group === "education") {
+          const school = document.createElement("input");
+          school.id = `schoolName-${index}`;
+          school.setAttribute("data-field-id", "schoolName");
+          const major = document.createElement("input");
+          major.id = `major-${index}`;
+          major.setAttribute("data-field-id", "major");
+          const start = monthPicker(`enrollmentTime-${index}`);
+          start.input.setAttribute("data-field-id", "enrollmentTime");
+          const end = monthPicker(`graduationTime-${index}`);
+          end.input.setAttribute("data-field-id", "graduationTime");
+          const dates = document.createElement("div");
+          dates.className = "ant-form-item";
+          const dateLabel = document.createElement("label");
+          dateLabel.textContent = "在读时间";
+          dates.append(dateLabel, start.root, end.root);
+          form.append(formItem("毕业院校", school), formItem("专业", major), dates);
+        } else {
+          const company = document.createElement("input");
+          company.id = `companyName-${index}`;
+          company.setAttribute("data-field-id", "companyName");
+          const title = document.createElement("input");
+          title.id = `jobTitle-${index}`;
+          title.setAttribute("data-field-id", "jobTitle");
+          const description = document.createElement("textarea");
+          description.id = `jobDescription-${index}`;
+          description.setAttribute("data-field-id", "jobDescription");
+          const start = monthPicker(`timeStart-${index}`);
+          start.input.setAttribute("data-field-id", "timeStart");
+          const end = monthPicker(`timeEnd-${index}`);
+          end.input.setAttribute("data-field-id", "timeEnd");
+          const dates = document.createElement("div");
+          dates.className = "ant-form-item";
+          const dateLabel = document.createElement("label");
+          dateLabel.textContent = "起止时间";
+          dates.append(dateLabel, start.root, end.root);
+          form.append(formItem("企业名称", company), dates, formItem("职位名称", title), formItem("工作描述", description));
+        }
+        const save = document.createElement("button");
+        save.type = "button";
+        save.textContent = "保 存";
+        save.addEventListener("click", () => {
+          const anchor = group === "education"
+            ? form.querySelector("[data-field-id='schoolName']")
+            : form.querySelector("[data-field-id='companyName']");
+          if (!anchor.value) return;
+          state.saves[group] += 1;
+          card.dataset.value = anchor.value;
+          card.dataset.dates = Array.from(form.querySelectorAll(".ant-picker input")).map((input) => input.value).join("|");
+          card.textContent = anchor.value;
+          if (!section.querySelector(".addBtn__fixture")) {
+            section.querySelector(".NewFormBtn__fixture").append(add);
+          }
+        });
+        form.append(save);
+        card.append(form);
+        container.append(card);
+        add.remove();
+      };
+
+      document.querySelector("[data-section='education'] .addBtn__fixture")
+        .addEventListener("click", () => addRepeat("education"));
+      document.querySelector("[data-section='experience'] .addBtn__fixture")
+        .addEventListener("click", () => addRepeat("experience"));
+
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script>
+      const pupumallAdapter = window.OfferFlowFormAdapters.resolve({
+        hostname: "jobs.pupumall.net",
+        pathname: "/recruit-webapp/candidate/school/deliverySchoolResume"
+      });
+      window.OfferFlowFormAdapters.resolve = () => pupumallAdapter;
+    </script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { education: 3, experience: 2 };
+      const repeatPlan = { experience: { internship: 2, work: 0, internshipIndexes: [0, 1], workIndexes: [] } };
+      const snapshots = [
+        {
+          fullName: "林知夏",
+          currentCity: "南京",
+          school: "南京大学", major: "城乡规划",
+          educationStartDate: "2024-09", educationEndDate: "2027-06",
+          experienceOrganization: "携程集团", experienceTitle: "AI产品经理", experienceDescription: "负责酒店业务 AI 产品体验",
+          experienceStartDate: "2026-04", experienceEndDate: "2026-08"
+        },
+        {
+          school: "北京林业大学", major: "城乡规划",
+          educationStartDate: "2018-09", educationEndDate: "2023-06",
+          experienceOrganization: "南京开为网络科技有限公司", experienceTitle: "产品部门 AI产品经理", experienceDescription: "负责 Agnes APP 对话体验",
+          experienceStartDate: "2025-11", experienceEndDate: "2026-03"
+        },
+        { school: "同济大学", major: "城市规划", educationStartDate: "2014-09", educationEndDate: "2018-06" }
+      ];
+      listener({
+        type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2",
+        expandRepeaters: false,
+        repeatCounts,
+        repeatPlan
+      }, {}, (scan) => {
+        listener({
+          type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+          fields: scan.fields,
+          fieldValues: Object.fromEntries(scan.fields.map((field) => [field.id, snapshots[0][field.key] || ""])),
+          profileSnapshots: snapshots,
+          repeatCounts,
+          repeatPlan,
+          fillDynamicFields: true,
+          maxRounds: 5,
+          delayMs: 0
+        }, {}, (fill) => {
+          document.body.dataset.ready = "true";
+          document.body.dataset.result = encodeURIComponent(JSON.stringify({
+            ok: true,
+            data: {
+              scan,
+              fill,
+              state,
+              name: document.querySelector("#name")?.value || "",
+              currentCity: document.querySelector("#currentResidentialCode")?.value || "",
+              education: Array.from(document.querySelectorAll("[data-section='education'] .FormItemBox__fixture")).map((card) => ({ value: card.dataset.value || "", dates: (card.dataset.dates || "").split("|") })),
+              experience: Array.from(document.querySelectorAll("[data-section='experience'] .FormItemBox__fixture")).map((card) => ({ value: card.dataset.value || "", dates: (card.dataset.dates || "").split("|") }))
+            }
+          }));
+        });
+      });
+    </script>
+  </body>
+</html>

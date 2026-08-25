@@ -18,12 +18,14 @@ import {
   UserRound,
   X
 } from "lucide-react";
+import { resolveProfileExperienceKind } from "@/shared/types";
 import type {
   PersonalProfile,
   ProfileAward,
   ProfileCampusExperience,
   ProfileEducation,
   ProfileExperience,
+  ProfileExperienceKind,
   ProfileProject
 } from "@/shared/types";
 import type { StoredResume } from "@/infrastructure/storage/storage";
@@ -60,7 +62,8 @@ type EditorSectionKey =
   | "basic"
   | "preference"
   | "education"
-  | "experience"
+  | "internships"
+  | "work"
   | "projects"
   | "campus"
   | "awards"
@@ -71,7 +74,8 @@ const SECTION_INDEX: Array<{ key: EditorSectionKey; label: string }> = [
   { key: "basic", label: "基本信息" },
   { key: "preference", label: "求职偏好" },
   { key: "education", label: "教育经历" },
-  { key: "experience", label: "实习 / 工作" },
+  { key: "internships", label: "实习经历" },
+  { key: "work", label: "工作经历" },
   { key: "projects", label: "项目经历" },
   { key: "campus", label: "在校经历" },
   { key: "awards", label: "获奖证书" },
@@ -150,7 +154,7 @@ export default function ResumeEditor({
   const [position, setPosition] = useState(resume.position || "");
   const [extraRows, setExtraRows] = useState<ExtraRow[]>(() => initialExtraRows(resume.profile));
   const [openSections, setOpenSections] = useState<Set<EditorSectionKey>>(
-    () => new Set(["basic", "preference", "education", "experience", "projects", "campus", "awards", "answers", "extra"])
+    () => new Set(["basic", "preference", "education", "internships", "work", "projects", "campus", "awards", "answers", "extra"])
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -256,6 +260,45 @@ export default function ResumeEditor({
   };
 
   const addExtra = () => setExtraRows((current) => [...current, { id: newId("extra"), key: "", value: "" }]);
+  const internshipExperiences = draft.experiences.filter(
+    (experience) => resolveProfileExperienceKind(experience) === "internship"
+  );
+  const workExperiences = draft.experiences.filter(
+    (experience) => resolveProfileExperienceKind(experience) === "work"
+  );
+  const addExperience = (kind: ProfileExperienceKind) => set("experiences", [
+    ...draft.experiences,
+    {
+      id: newId(kind === "internship" ? "internship" : "work"),
+      kind,
+      organization: "",
+      title: "",
+      startDate: "",
+      endDate: "",
+      description: ""
+    }
+  ]);
+  const experienceEntries = (items: ProfileExperience[], kind: ProfileExperienceKind) => items.map((item) => (
+    <EditorEntry
+      key={item.id}
+      title={item.organization || (kind === "internship" ? "新实习经历" : "新工作经历")}
+      onRemove={() => set("experiences", draft.experiences.filter((entry) => entry.id !== item.id))}
+    >
+      <div className="resume-editor-grid">
+        <EditorField label="经历类别">
+          <select value={resolveProfileExperienceKind(item)} onChange={(event) => updateExperience(item.id, { kind: event.target.value as ProfileExperienceKind })}>
+            <option value="internship">实习经历</option>
+            <option value="work">工作经历</option>
+          </select>
+        </EditorField>
+        <EditorField label={kind === "internship" ? "实习单位 / 组织" : "公司 / 组织"}><input value={item.organization} onChange={(event) => updateExperience(item.id, { organization: event.target.value })} /></EditorField>
+        <EditorField label={kind === "internship" ? "实习岗位" : "工作岗位"}><input value={item.title} onChange={(event) => updateExperience(item.id, { title: event.target.value })} /></EditorField>
+        <EditorField label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(event) => updateExperience(item.id, { startDate: event.target.value })} /></EditorField>
+        <EditorField label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(event) => updateExperience(item.id, { endDate: event.target.value })} /></EditorField>
+        <EditorField label={kind === "internship" ? "实习内容" : "工作职责"} wide><textarea rows={5} value={item.description} onChange={(event) => updateExperience(item.id, { description: event.target.value })} placeholder="写清楚负责内容、方法和结果" /></EditorField>
+      </div>
+    </EditorEntry>
+  ));
 
   return (
     <div className="resume-editor">
@@ -352,17 +395,14 @@ export default function ResumeEditor({
           {draft.education.length === 0 && <EmptyEditorEntry text="还没有教育经历，点击添加" onClick={() => set("education", [{ id: newId("edu"), school: "", college: "", major: "", degree: "", educationForm: "", startDate: "", endDate: "", gpa: "" }])} />}
         </EditorSection>
 
-        <EditorSection keyName="experience" title="实习 / 工作经历" description={`${draft.experiences.length} 段经历 · 支持手动添加多段`} icon={<BriefcaseBusiness size={17} />} open={openSections.has("experience")} onToggle={toggle} action="添加工作经历" onAction={() => set("experiences", [...draft.experiences, { id: newId("exp"), organization: "", title: "", startDate: "", endDate: "", description: "" }])}>
-          {draft.experiences.map((item) => <EditorEntry key={item.id} title={item.organization || "新工作经历"} onRemove={() => set("experiences", draft.experiences.filter((entry) => entry.id !== item.id))}>
-            <div className="resume-editor-grid">
-              <EditorField label="公司 / 组织"><input value={item.organization} onChange={(event) => updateExperience(item.id, { organization: event.target.value })} /></EditorField>
-              <EditorField label="岗位"><input value={item.title} onChange={(event) => updateExperience(item.id, { title: event.target.value })} /></EditorField>
-              <EditorField label="开始时间"><input type="month" value={monthInputValue(item.startDate)} onChange={(event) => updateExperience(item.id, { startDate: event.target.value })} /></EditorField>
-              <EditorField label="结束时间"><input type="month" value={monthInputValue(item.endDate)} onChange={(event) => updateExperience(item.id, { endDate: event.target.value })} /></EditorField>
-              <EditorField label="经历描述" wide><textarea rows={5} value={item.description} onChange={(event) => updateExperience(item.id, { description: event.target.value })} placeholder="写清楚负责内容、方法和结果" /></EditorField>
-            </div>
-          </EditorEntry>)}
-          {draft.experiences.length === 0 && <EmptyEditorEntry text="还没有实习 / 工作经历，点击添加" onClick={() => set("experiences", [{ id: newId("exp"), organization: "", title: "", startDate: "", endDate: "", description: "" }])} />}
+        <EditorSection keyName="internships" title="实习经历" description={`${internshipExperiences.length} 段实习 · 自动匹配网申的实习经历区块`} icon={<BriefcaseBusiness size={17} />} open={openSections.has("internships")} onToggle={toggle} action="添加实习经历" onAction={() => addExperience("internship")}>
+          {experienceEntries(internshipExperiences, "internship")}
+          {internshipExperiences.length === 0 && <EmptyEditorEntry text="还没有实习经历，点击添加" onClick={() => addExperience("internship")} />}
+        </EditorSection>
+
+        <EditorSection keyName="work" title="工作经历" description={`${workExperiences.length} 段工作 · 自动匹配网申的工作经历区块`} icon={<BriefcaseBusiness size={17} />} open={openSections.has("work")} onToggle={toggle} action="添加工作经历" onAction={() => addExperience("work")}>
+          {experienceEntries(workExperiences, "work")}
+          {workExperiences.length === 0 && <EmptyEditorEntry text="还没有工作经历，点击添加" onClick={() => addExperience("work")} />}
         </EditorSection>
 
         <EditorSection keyName="projects" title="项目经历" description={`${draft.projects.length} 个项目 · 产品、研究或比赛均可添加`} icon={<FileCheck2 size={17} />} open={openSections.has("projects")} onToggle={toggle} action="添加项目经历" onAction={() => set("projects", [...draft.projects, { id: newId("project"), name: "", role: "", startDate: "", endDate: "", description: "" }])}>

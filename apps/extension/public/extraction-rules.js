@@ -1,4 +1,5 @@
 (() => {
+  const registry = globalThis.OfferFlowAdapterRegistry;
   const clean = (value) => String(value || "").replace(/\s+/g, " ").trim();
 
   const statusPrefixPattern = /^(?:(?:应聘|申请|投递|招聘|流程|当前)状态)\s*[：:]?\s*/i;
@@ -213,6 +214,31 @@
     numericApplicationIds: false
   };
 
+  if (registry) {
+    registry.registerGeneric({ extractionAdapterId: "generic" });
+    for (const adapter of platformAdapters) {
+      const platformId = registry.canonicalPlatformId(adapter.id);
+      if (["jd", "alibaba", "baidu"].includes(adapter.id)) {
+        registry.registerCompany({
+          id: adapter.id,
+          name: adapter.defaultCompany || adapter.id,
+          hosts: [adapter.hostPattern],
+          basePlatformId: "generic",
+          extractionAdapterId: adapter.id,
+          priority: 50
+        });
+      } else {
+        registry.registerPlatform({
+          id: platformId,
+          name: adapter.id,
+          hosts: [adapter.hostPattern],
+          extractionAdapterId: adapter.id,
+          priority: 10
+        });
+      }
+    }
+  }
+
   const stageTextValue = (value) => clean(value).replace(statusPrefixPattern, "");
 
   const occupationScore = (value) => {
@@ -261,8 +287,14 @@
       .replace(/[\s\-—_｜|（）()【】\[\]]/g, "")
       .toLowerCase();
 
-  const getAdapter = (hostname) =>
-    platformAdapters.find((adapter) => adapter.hostPattern.test(clean(hostname))) || genericAdapter;
+  const getAdapter = (hostname) => {
+    const route = registry?.resolve({
+      location: { hostname: clean(hostname), pathname: globalThis.location?.pathname || "" },
+      document: globalThis.document
+    });
+    const routed = route && platformAdapters.find((adapter) => adapter.id === route.extractionAdapterId);
+    return routed || platformAdapters.find((adapter) => adapter.hostPattern.test(clean(hostname))) || genericAdapter;
+  };
 
   const extractApplicationId = (value, adapter = genericAdapter) => {
     const text = clean(value);

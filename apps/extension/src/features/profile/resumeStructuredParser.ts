@@ -742,6 +742,7 @@ function parseExperienceSection(section: WorkingSection): ParsedEntries<ProfileE
       id: entryId,
       organization,
       title,
+      kind: /工作|职业/.test(section.heading) && !/实习/.test(section.heading) ? "work" : "internship",
       type: /实习/.test(section.heading) ? "实习" : /工作|职业/.test(section.heading) ? "工作" : "",
       department: department.value,
       startDate: dates.range.startDate,

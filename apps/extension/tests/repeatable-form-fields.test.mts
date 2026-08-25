@@ -1,7 +1,16 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { resolveProfileExperienceKind } from "../../../packages/domain/src/profile.ts";
 import type { FormFieldMatch } from "../src/shared/types.ts";
 import { normalizeRepeatableFormFields } from "../src/features/profile/repeatableFormFields.ts";
+
+test("experience kind keeps explicit categories and safely resolves legacy records", () => {
+  assert.equal(resolveProfileExperienceKind({ kind: "work", type: "实习" }), "work");
+  assert.equal(resolveProfileExperienceKind({ kind: "internship", type: "全职" }), "internship");
+  assert.equal(resolveProfileExperienceKind({ type: "实习" }), "internship");
+  assert.equal(resolveProfileExperienceKind({ type: "全职" }), "work");
+  assert.equal(resolveProfileExperienceKind({ type: "" }), "internship");
+});
 
 const field = (
   id: string,
@@ -68,5 +77,78 @@ test("keeps every field in the same structural card on the same repeat index", (
       { id: "second-title", repeatIndex: 1 }
     ],
     "the card fingerprint must outrank conflicting per-field occurrence counters"
+  );
+});
+
+test("ATS-native local indexes keep every Feishu internship field on one record", () => {
+  const normalized = normalizeRepeatableFormFields([
+    {
+      ...field("work-company", "experienceOrganization", 0),
+      repeatEntryKind: "work" as const,
+      repeatLocalIndex: 0,
+      repeatEntryFingerprint: "experience:atsx:work:0",
+      section: "工作经历"
+    },
+    {
+      ...field("internship-company", "experienceOrganization", 1),
+      repeatEntryKind: "internship" as const,
+      repeatLocalIndex: 0,
+      repeatEntryFingerprint: "experience:atsx:internship:0",
+      section: "实习经历"
+    },
+    {
+      ...field("internship-description", "experienceDescription", 2),
+      repeatEntryKind: "internship" as const,
+      repeatLocalIndex: 0,
+      repeatEntryFingerprint: "experience:atsx:internship:0",
+      section: "实习经历"
+    }
+  ]);
+
+  assert.deepEqual(
+    normalized.map(({ id, repeatIndex, repeatEntryKind, repeatLocalIndex }) => ({
+      id,
+      repeatIndex,
+      repeatEntryKind,
+      repeatLocalIndex
+    })),
+    [
+      { id: "work-company", repeatIndex: 0, repeatEntryKind: "work", repeatLocalIndex: 0 },
+      { id: "internship-company", repeatIndex: 0, repeatEntryKind: "internship", repeatLocalIndex: 0 },
+      { id: "internship-description", repeatIndex: 0, repeatEntryKind: "internship", repeatLocalIndex: 0 }
+    ]
+  );
+});
+
+test("keeps education-summary fields in personal basic information single-valued", () => {
+  const normalized = normalizeRepeatableFormFields([
+    { ...field("basic-school", "school"), section: "个人基本信息" },
+    { ...field("basic-major", "major"), section: "个人基本信息" },
+    { ...field("basic-degree", "degree"), section: "个人基本信息" },
+    {
+      ...field("education-school", "school", 0),
+      section: "教育经历",
+      repeatGroup: "education",
+      repeatIndexSource: "attribute",
+      repeatEntryFingerprint: "education:hotjob:14:0"
+    },
+    {
+      ...field("education-degree", "degree", 0),
+      section: "教育经历",
+      repeatGroup: "education",
+      repeatIndexSource: "attribute",
+      repeatEntryFingerprint: "education:hotjob:14:0"
+    }
+  ]);
+
+  assert.deepEqual(
+    normalized.map(({ id, repeatGroup, repeatIndex }) => ({ id, repeatGroup, repeatIndex })),
+    [
+      { id: "basic-school", repeatGroup: undefined, repeatIndex: undefined },
+      { id: "basic-major", repeatGroup: undefined, repeatIndex: undefined },
+      { id: "basic-degree", repeatGroup: undefined, repeatIndex: undefined },
+      { id: "education-school", repeatGroup: "education", repeatIndex: 0 },
+      { id: "education-degree", repeatGroup: "education", repeatIndex: 0 }
+    ]
   );
 });

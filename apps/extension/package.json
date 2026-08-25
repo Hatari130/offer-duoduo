@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "pnpm run typecheck && vite build && pnpm run validate:build",
-    "test:capture": "node --test tests/capture-matching.test.mjs tests/deepseek-sanitize.test.mjs && node tests/run-dom-fixture.mjs",
+    "test:capture": "node --test tests/adapter-registry.test.mjs tests/capture-matching.test.mjs tests/deepseek-sanitize.test.mjs && node --experimental-transform-types --test tests/repeatable-form-fields.test.mts && node tests/run-dom-fixture.mjs",
     "test:pdf-fidelity": "node scripts/check-pdf-fidelity.mjs",
     "test:extension-pdf-flow": "node scripts/check-extension-pdf-flow.mjs",
     "test:tailor": "node --experimental-transform-types --test tests/pdf-editable-blocks.test.mjs tests/pdf-backed-html.test.mjs tests/source-pdf-reference.test.mjs tests/tailor-render.test.mts",

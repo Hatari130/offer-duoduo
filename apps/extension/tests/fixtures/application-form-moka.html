@@ -154,6 +154,7 @@
         if (!event.target.closest?.("label[class*='sd-Select-container-'],.sd-Dropdown-dropdown-fixture")) closePopup();
       });
     </script>
+    <script src="../../public/adapter-registry.js"></script>
     <script src="../../public/extraction-rules.js"></script>
     <script src="../../public/form-adapters.js"></script>
     <script src="../../public/form-runtime.js"></script>
@@ -164,6 +165,7 @@
       listener(
         {
           type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2",
+          expandRepeaters: true,
           repeatCounts: { education: 2, experience: 2, project: 0, award: 1 },
           repeatPlan: { experience: { work: 0, internship: 2 } }
         },

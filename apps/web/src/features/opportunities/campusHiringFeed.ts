@@ -39,8 +39,17 @@ function validHttpUrl(value: string): boolean {
 }
 
 function normalizedDeadline(value: unknown): string | undefined {
-  const deadline = text(value);
-  return /^\d{4}-\d{2}-\d{2}$/.test(deadline) ? deadline : undefined;
+  const rawDate = text(value);
+  const match = rawDate.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})(?:[T ].*)?$/);
+  if (!match) return undefined;
+
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const date = new Date(year, month - 1, day);
+  if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) return undefined;
+
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
 }
 
 function normalizeItem(value: unknown): CampusHiringOpportunity | undefined {
@@ -62,10 +71,14 @@ function normalizeItem(value: unknown): CampusHiringOpportunity | undefined {
   const deadlineLabel = text(item.deadline) || undefined;
   const deadline = normalizedDeadline(item.deadline);
   const sourceUpdatedAt = text(item.updatedAt) || undefined;
-  const openAt = normalizedDeadline(sourceUpdatedAt);
+  const openAt = normalizedDeadline(item.openAt) || normalizedDeadline(sourceUpdatedAt);
   const targetCohort = text(item.targetCohort);
   const industry = text(item.industry);
-  const companyType = text(item.companyType);
+  const companyType = text(item.companyType)
+    || text(item.companyNature)
+    || text(item.nature)
+    || text(item.ownershipType)
+    || text(item.ownership);
   const opportunity: CampusHiringOpportunity = {
     id: text(item.id) || `${company}-${officialUrl}`,
     company,

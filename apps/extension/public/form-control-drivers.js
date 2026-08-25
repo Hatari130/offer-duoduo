@@ -1,5 +1,5 @@
 (() => {
-  const DRIVER_VERSION = "2026-08-21.autofill-v8";
+  const DRIVER_VERSION = "2026-08-25.autofill-v27";
   const driverSession = `${DRIVER_VERSION}:${globalThis.__offerflowDesiredContentSession || "manifest"}`;
   if (globalThis.__offerflowControlDriverVersion === driverSession) return;
   globalThis.__offerflowControlDriverVersion = driverSession;
@@ -53,14 +53,24 @@
     {
       id: "feishu",
       roots: ".ud__select,.ud__cascader",
-      opener: ".ud__select__selector,[role='combobox']",
-      popups: [".ud__select__dropdown:not(.ud__select__dropdown-hidden)", ".ud__cascader__dropdown"],
+      opener: ".ud__select__selector,.ud__input-input-wrap,[role='combobox'],input[data-form-field-name]",
+      popups: [
+        ".ud__select__dropdown:not(.ud__select__dropdown-hidden)",
+        "[class*='ud__select__dropdown']:not(.ud__select__dropdown-hidden)",
+        ".ud__cascader__dropdown",
+        "[role='listbox']"
+      ],
       options: [".ud__select__list__item", ".ud__select__option", ".ud__tree__node", "[role='option']"],
       selected: [
         ".ud__select__selector__selectItem", ".ud__select__selector__selected-item",
         ".ud__select__selected", ".ud__select__value", ".ud__tag"
       ],
-      search: ["input[role='combobox']", ".ud__select__input"]
+      search: [
+        "input[role='combobox']",
+        ".ud__select__input",
+        ".ud__native-input[data-form-field-name]:not([readonly])",
+        "input[data-form-field-name]:not([readonly])"
+      ]
     },
     {
       id: "phoenix",
@@ -358,7 +368,13 @@
         const alreadySelected = /selected|checked|active/.test(String(match.option.className || "").toLowerCase()) ||
           match.option.getAttribute("aria-selected") === "true" ||
           match.option.getAttribute("aria-checked") === "true";
-        if (!alreadySelected) click(match.option);
+        // Universe Select attaches the state-changing pointer handlers to the
+        // content node inside the visible option row. Clicking only the outer
+        // row can look successful while leaving the controlled value empty.
+        const interactionTarget = id === "feishu"
+          ? match.option.querySelector(".ud__select__list__item__content") || match.option
+          : match.option;
+        if (!alreadySelected) click(interactionTarget);
         selected.push(match.text);
         await wait(75);
         if (type === "cascader" && index + 1 < parts.length) {

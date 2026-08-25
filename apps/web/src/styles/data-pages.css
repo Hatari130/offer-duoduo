@@ -314,7 +314,7 @@
 
 .opportunity-page-header {
   display: grid;
-  grid-template-columns: minmax(16rem, 1fr) auto;
+  grid-template-columns: minmax(16rem, 1fr) minmax(27rem, 40%);
   align-items: start;
   gap: 1.25rem;
   margin-block-end: 1.25rem;
@@ -345,6 +345,8 @@
 
 .opportunity-header-aside {
   display: grid;
+  width: 100%;
+  align-content: start;
   justify-items: end;
   gap: 0.65rem;
 }
@@ -401,7 +403,8 @@
 
 .opportunity-metrics {
   display: grid;
-  grid-template-columns: repeat(3, 8.7rem);
+  width: 100%;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.6rem;
   margin: 0;
 }
@@ -639,12 +642,13 @@
   table-layout: fixed;
 }
 
-.opportunity-col-company { width: 24%; }
-.opportunity-col-type { width: 9%; }
-.opportunity-col-industry { width: 9%; }
-.opportunity-col-status { width: 9%; }
-.opportunity-col-city { width: 10%; }
-.opportunity-col-open-at { width: 9%; }
+.opportunity-col-company { width: 21%; }
+.opportunity-col-type { width: 8%; }
+.opportunity-col-industry { width: 8%; }
+.opportunity-col-company-type { width: 8%; }
+.opportunity-col-status { width: 8%; }
+.opportunity-col-city { width: 9%; }
+.opportunity-col-open-at { width: 8%; }
 .opportunity-col-deadline { width: 10%; }
 .opportunity-col-qcc { width: 9.5%; }
 .opportunity-col-apply { width: 10.5%; }
@@ -856,7 +860,8 @@
 .status-badge--upcoming { color: var(--of-brand-700); background: var(--of-brand-50); }
 
 .opportunity-type-badge,
-.industry-cell {
+.industry-cell,
+.company-type-cell {
   display: inline-block;
   max-width: 100%;
   overflow: hidden;
@@ -877,6 +882,15 @@
 .industry-cell {
   color: var(--of-text);
   font-size: 0.8125rem;
+}
+
+.company-type-cell {
+  padding: 0.25rem 0.45rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border-radius: 0.45rem;
+  font-size: 0.75rem;
+  font-weight: 650;
 }
 
 .cell-icon,
@@ -2914,8 +2928,14 @@
   }
 
   .opportunity-page-header {
+    grid-template-columns: minmax(0, 1fr);
     gap: 1.15rem;
     margin-block-end: 1.5rem;
+  }
+
+  .opportunity-header-aside,
+  .opportunity-source-status {
+    justify-items: start;
   }
 
   .opportunity-page-heading h1 {

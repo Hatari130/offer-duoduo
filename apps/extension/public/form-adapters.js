@@ -1,8 +1,10 @@
 (() => {
   // Versioned, site-aware mapping library. Keep this file data-first so a new
   // ATS label can be added without changing the scanner or the AI prompt.
-  const VERSION = "2026.08.21";
-  const STORAGE_KEY = "offerflow.formMappingOverrides";
+  const VERSION = "2026.08.25.registry-v5";
+  const registry = globalThis.OfferFlowAdapterRegistry;
+  const LEGACY_STORAGE_KEY = "offerflow.formMappingOverrides";
+  const STORAGE_KEY = registry?.storageKey || LEGACY_STORAGE_KEY;
 
   const clean = (value) => String(value || "").replace(/\s+/g, " ").trim();
   const normalize = (value) =>
@@ -49,6 +51,7 @@
     ["githubUrl", "github|代码仓库|开源地址|git.?hub"],
     ["school", "毕业院校|学校名称|就读学校|所在学校|学校|院校|毕业学校|university|college|school"],
     ["major", "专业名称|所学专业|主修专业|专业|major|field.?of.?study"],
+    ["educationForm", "学历类型|学习形式|培养方式|教育形式|招生类型|入学类型|study.?form|education.?type"],
     ["degree", "学历|学位|最高学历|教育程度|degree|education.?level"],
     ["gpa", "绩点|平均成绩|平均分|gpa|grade.?point"],
     ["selfIntroduction", "自我介绍|自我描述|个人简介|个人总结|自我评价|about.?you|self.?intro|profile"],
@@ -95,6 +98,39 @@
 
   const adapters = [
     {
+      id: "hotjob",
+      name: "Hotjob / Wecruit",
+      hosts: [/(^|\.)hotjob\.cn$/i],
+      markers: [
+        ".resume-content-wrap .form-cell > .tit-wrap",
+        ".form-cell-right > .form-cell-inner",
+        ".add-more > .add-more-btn"
+      ],
+      mappings: [
+        ["fullName", "姓名|真实姓名|候选人姓名|申请人姓名"],
+        ["countryRegion", "国籍/地区|国家/地区"],
+        ["phone", "移动电话|手机号码|手机号|联系电话"],
+        ["email", "电子邮箱|邮箱|电子邮件"],
+        ["emergencyContactName", "紧急联系人"],
+        ["emergencyContactPhone", "紧急联系电话|紧急联系人电话"],
+        ["targetCities", "期望工作地点|期望工作城市"],
+        ["expectedSalary", "期望年薪|期望薪资"],
+        ["school", "毕业院校|学校"],
+        ["major", "专业名称|专业"],
+        ["educationDegree", "学位"],
+        ["degree", "学历"],
+        ["educationForm", "培养方式|学习形式"],
+        ["educationRank", "班级排名|专业排名"],
+        ["experienceOrganization", "企业名称|公司名称|工作单位"],
+        ["experienceTitle", "职位名称|岗位名称"],
+        ["experienceDescription", "工作描述|工作内容"],
+        ["projectName", "项目名称"],
+        ["projectDescription", "项目描述|项目职责"],
+        ["languageCertificate", "英语证书名称|证书名称"],
+        ["languageScore", "成绩|分数"]
+      ]
+    },
+    {
       id: "beisen",
       name: "北森 Beisen",
       hosts: [/\.zhiye\.com$/i, /(^|\.)beisen\.com$/i, /beisen/i],
@@ -128,6 +164,9 @@
         ["targetRole", "应聘职位|申请职位|意向职位|求职意向"],
         ["targetCities", "期望工作地点|期望工作城市|期望工作地区"],
         ["earliestStartDate", "预计入职时间|到岗时间|报到时间"],
+        ["experienceOrganization", "单位名称|公司名称|工作单位|实习单位|任职单位"],
+        ["experienceTitle", "职位名称|岗位名称|实习岗位|工作岗位"],
+        ["experienceDescription", "实习内容|实习职责|工作职责|工作内容|经历描述"],
         ["selfIntroduction", "自我介绍|个人简介|自我评价"],
         ["address", "详细地址|家庭地址"],
         ["emergencyContactName", "紧急联系人姓名|紧急联系人"],
@@ -225,12 +264,51 @@
       mappings: []
     },
     {
+      id: "pupumall",
+      name: "朴朴招聘",
+      hosts: [/^jobs\.pupumall\.net$/i],
+      markers: ["[class*='ApplyFormBox']", "[class*='FormItem__']", "[class*='NewFormBtn__']"],
+      mappings: [
+        ["fullName", "^姓名$|(?:^|[^a-z])name(?:$|[^a-z])"],
+        ["phone", "联系电话|(?:^|[^a-z])phone(?:$|[^a-z])"],
+        ["email", "电子邮箱|(?:^|[^a-z])email(?:$|[^a-z])"],
+        ["gender", "性别|gender"],
+        ["idNumber", "身份证号|idNumber"],
+        ["birthDate", "出生日期|birthday"],
+        ["nationality", "民族|nation"],
+        ["height", "身高|height"],
+        ["weight", "体重|weight"],
+        ["nativePlace", "户籍所在地|permanentResidenceCode"],
+        ["currentCity", "现居住地|currentResidentialCode"],
+        ["selfIntroduction", "自我评价|selfEvaluation"],
+        ["school", "毕业院校|schoolName"],
+        ["degree", "^学历$|qualification"],
+        ["educationDegree", "^学位$|(?:^|[^a-z])degree(?:$|[^a-z])"],
+        ["educationForm", "学习形式|studyModeCode"],
+        ["major", "^专业$|(?:^|[^a-z])major(?:$|[^a-z])"],
+        ["educationStartDate", "enrollmentTime"],
+        ["educationEndDate", "graduationTime"],
+        ["educationRank", "专业.*成绩排名|professionScoreRank"],
+        ["experienceOrganization", "企业名称|companyName"],
+        ["experienceStartDate", "timeStart"],
+        ["experienceEndDate", "timeEnd"],
+        ["experienceTitle", "职位名称|jobTitle"],
+        ["experienceDescription", "工作描述|jobDescription"],
+        ["targetCities", "第一志愿城市|firstChoiceCity"],
+        ["emergencyContactName", "紧急联系人|emergencyContact"],
+        ["emergencyContactPhone", "紧急.*联系电话|emergencyContactNumber"]
+      ]
+    },
+    {
       id: "feishu-career",
       name: "飞书招聘 ATSX",
       // ATSX uses a tenant-owned career domain. Keep known tenants here so
       // their Formily/Universe controls never depend on generic detection.
-      hosts: [/^campus\.duxiaoman\.com$/i, /^campus\.dewu\.com$/i],
-      markers: [".ud-formily-item", ".ud__select", ".throne-biz-date-range-picker-wrapper"],
+      hosts: [/^campus\.duxiaoman\.com$/i, /^campus\.dewu\.com$/i, /\.jobs\.feishu\.cn$/i],
+      markers: [
+        ".ud-formily-item", ".ud__select", ".throne-biz-date-range-picker-wrapper",
+        ".createFormSection-repeatable", ".createFormSection-formList", ".atsx-form-item"
+      ],
       mappings: [
         ["fullName", "姓名|name"],
         ["email", "邮箱|email"],
@@ -239,6 +317,7 @@
         ["nationality", "国籍（地区）|国籍|nationality"],
         ["currentCity", "所在地点|现居地点|current.?city"],
         ["school", "学校名称|school"],
+        ["educationForm", "学历类型|学习形式|培养方式|教育形式|招生类型|入学类型|study.?form|education.?type"],
         ["degree", "学历|degree"],
         ["major", "专业|field.?of.?study"]
       ]
@@ -251,6 +330,76 @@
       mappings: []
     }
   ];
+
+  registry?.registerGeneric({
+    name: "通用表单",
+    formAdapterId: "generic",
+    mappings: commonMappings
+  });
+  for (const adapter of adapters) {
+    if (["generic", "xiaomi", "tencent", "pupumall"].includes(adapter.id)) continue;
+    registry?.registerPlatform({
+      id: adapter.id,
+      name: adapter.name,
+      formAdapterId: adapter.id,
+      hosts: adapter.id === "feishu-career" ? [/\.jobs\.feishu\.cn$/i] : adapter.hosts,
+      // Generic words such as "job" and "apply" occur on almost every
+      // careers site. Nowcoder is therefore host-routed until we have a
+      // platform-unique DOM signature; otherwise unknown sites would be
+      // incorrectly promoted out of the generic layer.
+      markers: adapter.id === "nowcoder" ? [] : adapter.markers,
+      minMarkerMatches: ["moka", "feishu-career"].includes(adapter.id) ? 2 : 1,
+      mappings: adapter.mappings,
+      priority: adapter.id === "feishu-career" ? 40 : 20
+    });
+  }
+  registry?.registerCompany({
+    id: "xiaomi",
+    name: "小米招聘",
+    hosts: [/\.mioffice\.cn$/i],
+    basePlatformId: "generic",
+    formAdapterId: "xiaomi",
+    mappings: adapters.find((adapter) => adapter.id === "xiaomi")?.mappings || [],
+    priority: 80
+  });
+  registry?.registerCompany({
+    id: "tencent",
+    name: "腾讯招聘",
+    hosts: [/join\.qq\.com$/i, /(^|\.)tencent\.com$/i],
+    detect: ({ document: documentLike }) => /腾讯招聘|Tencent Careers/i.test(
+      `${documentLike?.title || ""} ${clean(documentLike?.body?.innerText || "").slice(0, 1600)}`
+    ),
+    basePlatformId: "generic",
+    formAdapterId: "tencent",
+    mappings: adapters.find((adapter) => adapter.id === "tencent")?.mappings || [],
+    priority: 70
+  });
+  registry?.registerCompany({
+    id: "pupumall",
+    name: "朴朴招聘",
+    hosts: [/^jobs\.pupumall\.net$/i],
+    paths: [/\/recruit-webapp\/candidate\/(?:school|social)\/delivery(?:School)?Resume/i],
+    basePlatformId: "generic",
+    formAdapterId: "pupumall",
+    mappings: adapters.find((adapter) => adapter.id === "pupumall")?.mappings || [],
+    priority: 95
+  });
+  registry?.registerCompany({
+    id: "duxiaoman",
+    name: "度小满校园招聘",
+    hosts: [/^campus\.duxiaoman\.com$/i],
+    basePlatformId: "feishu",
+    formAdapterId: "feishu-career",
+    priority: 90
+  });
+  registry?.registerCompany({
+    id: "dewu",
+    name: "得物校园招聘",
+    hosts: [/^campus\.dewu\.com$/i],
+    basePlatformId: "feishu",
+    formAdapterId: "feishu-career",
+    priority: 90
+  });
 
   const compiled = (mapping) => mapping.map(([key, pattern]) => ({
     key,
@@ -268,6 +417,7 @@
   const overrides = new Map();
   const applyOverrides = (payload) => {
     if (!payload || typeof payload !== "object") return;
+    registry?.applyOverrides(payload);
     Object.entries(payload).forEach(([adapterId, entries]) => {
       if (!Array.isArray(entries)) return;
       const adapter = adapters.find((item) => item.id === adapterId);
@@ -281,16 +431,18 @@
 
   const loadStoredOverrides = async () => {
     try {
+      if (registry?.ready) await registry.ready;
       if (typeof chrome !== "undefined" && chrome.storage?.local) {
-        const result = await chrome.storage.local.get(STORAGE_KEY);
+        const result = await chrome.storage.local.get([STORAGE_KEY, LEGACY_STORAGE_KEY]);
         applyOverrides(result?.[STORAGE_KEY]);
+        if (LEGACY_STORAGE_KEY !== STORAGE_KEY) applyOverrides(result?.[LEGACY_STORAGE_KEY]);
       }
     } catch {
       // Built-in mappings remain available if storage is unavailable.
     }
   };
 
-  const resolve = (locationLike = window.location) => {
+  const resolveLegacy = (locationLike = window.location) => {
     const host = String(locationLike.hostname || "").toLowerCase();
     const pathname = String(locationLike.pathname || "");
     const found = adapters.find((adapter) =>
@@ -315,12 +467,58 @@
     ) {
       return adapters.find((adapter) => adapter.id === "feishu-career");
     }
+    if (
+      document.querySelector(".createFormSection-repeatable,.createFormSection-formList") &&
+      document.querySelector(".atsx-form-item,[data-cy^='education['],[data-cy^='career[']")
+    ) {
+      return adapters.find((adapter) => adapter.id === "feishu-career");
+    }
     return adapters.find((adapter) => adapter.id === "generic") || { id: "generic", name: "通用表单", markers: [], compiled: [] };
   };
 
+  const resolve = (locationLike = window.location) => {
+    const route = registry?.resolve({ location: locationLike, document });
+    if (!route) return resolveLegacy(locationLike);
+    const adapter = adapters.find((candidate) => candidate.id === route.formAdapterId) ||
+      adapters.find((candidate) => candidate.id === "generic");
+    return adapter ? { ...adapter, route } : resolveLegacy(locationLike);
+  };
+
   const match = (element, label, adapter = resolve()) => {
+    const routeLayers = adapter.route?.mappingLayers || [];
+    if (routeLayers.length) {
+      const attributes = element
+        ? [
+            "name", "id", "placeholder", "aria-label", "data-nc-label", "data-field", "data-question",
+            "data-form-field-id", "data-form-field-name", "data-form-field-i18n-name"
+          ]
+            .map((name) => element.getAttribute?.(name) || "")
+            .filter(Boolean)
+        : [];
+      const text = normalize([label, ...attributes].join(" "));
+      for (const layer of routeLayers) {
+        for (const entry of layer.mappings || []) {
+          let pattern;
+          try {
+            pattern = new RegExp(String(entry.pattern), "i");
+          } catch {
+            continue;
+          }
+          if (!pattern.test(text)) continue;
+          return {
+            key: entry.key,
+            confidence: layer.confidence,
+            source: "rules",
+            evidence: [`${layer.layer} 规则：${layer.id}`, `匹配标签：${clean(label).slice(0, 60)}`]
+          };
+        }
+      }
+    }
     // First check adapter-specific mappings (higher priority)
-    const adapterCandidates = adapter.compiled?.filter((c) => c.isAdapterRule);
+    const adapterCandidates = [
+      ...(overrides.get(adapter.id) || []).map((candidate) => ({ ...candidate, isAdapterRule: true })),
+      ...(adapter.compiled?.filter((c) => c.isAdapterRule) || [])
+    ];
     const commonCandidates = adapter.compiled?.filter((c) => !c.isAdapterRule);
 
     const attributes = element

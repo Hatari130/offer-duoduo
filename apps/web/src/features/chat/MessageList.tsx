@@ -1,6 +1,8 @@
 import { useEffect, useRef } from "react";
 import type { ChatMessage } from "@offerflow/domain";
 import { Check, Copy, RefreshCw, Waypoints } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -34,7 +36,20 @@ export function MessageList({ messages, copiedMessageId, onCopy, onRetry }: Mess
               </div>
             )}
             <div className="message-copy">
-              {message.content || (message.status === "streaming" ? <ThinkingIndicator /> : null)}
+              {message.content ? (
+                message.role === "assistant" ? (
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      a: ({ node: _node, ...props }) => (
+                        <a {...props} target="_blank" rel="noreferrer" />
+                      )
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                ) : message.content
+              ) : message.status === "streaming" ? <ThinkingIndicator /> : null}
             </div>
             {message.citations.length > 0 && (
               <section className="citation-list" aria-label="回答参考资料">

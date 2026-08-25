@@ -26,7 +26,7 @@
   "content_scripts": [
     {
       "matches": ["http://*/*", "https://*/*"],
-      "js": ["extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"],
+      "js": ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"],
       "run_at": "document_idle"
     }
   ],

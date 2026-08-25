@@ -36,6 +36,9 @@ export const repeatGroupForKey = (key?: ProfileFieldKey): RepeatGroup | undefine
 const repeatGroupForField = (field: FormFieldMatch): RepeatGroup | undefined => {
   const semanticGroup = repeatGroupForKey(field.key);
   const section = field.section || "";
+  if (/^(?:个人(?:基本)?信息|个人(?:基本)?资料|基本信息|基本资料|求职意向|求职偏好|语言能力|自我描述|自我介绍|联系方式)$/i.test(section.trim())) {
+    return undefined;
+  }
   const contextualGroup: RepeatGroup | undefined = /教育|学历|学业|education|academic/i.test(section)
     ? "education"
     : /工作|实习|任职|employment|work/i.test(section)
@@ -95,6 +98,9 @@ export function normalizeRepeatableFormFields(fields: FormFieldMatch[]): FormFie
   return fields.map((field) => {
     const group = repeatGroupForField(field);
     if (!group || !field.key) return field;
+    if (Number.isInteger(field.repeatLocalIndex) && Number(field.repeatLocalIndex) >= 0) {
+      return { ...field, repeatGroup: group, repeatIndex: Number(field.repeatLocalIndex) };
+    }
     const entryIndex = field.repeatEntryFingerprint
       ? entryIndexes.get(group)?.get(field.repeatEntryFingerprint)
       : undefined;

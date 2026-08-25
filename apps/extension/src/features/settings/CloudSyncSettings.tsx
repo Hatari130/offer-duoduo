@@ -25,16 +25,6 @@ import {
 } from "@/infrastructure/sync/syncState";
 import "./cloud-sync.css";
 
-function formatSyncTime(value?: string): string {
-  if (!value) return "尚未同步";
-  return new Intl.DateTimeFormat("zh-CN", {
-    month: "numeric",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit"
-  }).format(new Date(value));
-}
-
 export default function CloudSyncSettings() {
   const [overview, setOverview] = useState<CloudSyncOverview>();
   const [apiBaseUrl, setApiBaseUrl] = useState(DEFAULT_CLOUD_API_URL);
@@ -156,26 +146,15 @@ export default function CloudSyncSettings() {
         <Cloud size={24} aria-hidden="true" />
       </div>
       <div className="setting-copy cloud-sync-copy">
-        <h3 id="cloud-sync-title">JobKoI Web 工作台</h3>
-        <p>本地优先保存，联网后只同步发生变化的投递记录；版本冲突会保留本地内容并提示处理。</p>
+        <h3 id="cloud-sync-title">Web 工作台</h3>
 
         {connection ? (
           <div className="cloud-sync-connected">
-            <div className="connection-state">
+            <div className="cloud-sync-status-line">
               <span className="connected-dot" />
-              已连接 {connection.user.displayName} · {connection.user.email}
+              <strong>连接正常</strong>
+              <span>{connection.user.displayName} · {connection.user.email}</span>
             </div>
-            <dl className="cloud-sync-stats">
-              <div><dt>最近同步</dt><dd>{formatSyncTime(overview?.state.lastSyncedAt)}</dd></div>
-              <div><dt>待上传</dt><dd>{overview?.pendingCount ?? 0} 条</dd></div>
-              <div><dt>冲突</dt><dd className={conflicts.length ? "has-conflict" : ""}>{conflicts.length} 条</dd></div>
-            </dl>
-            {overview?.state.lastSyncedAt && (
-              <p className="cloud-sync-last-result">
-                最近一次同步：上传 {overview.state.lastUploadedCount ?? 0} 条，收到 {overview.state.lastReceivedCount ?? 0} 条更新
-              </p>
-            )}
-            <code className="cloud-sync-endpoint">{connection.apiBaseUrl}</code>
           </div>
         ) : (
           <>
@@ -223,12 +202,7 @@ export default function CloudSyncSettings() {
             <AlertTriangle size={15} aria-hidden="true" />
             <div>
               <strong>有 {conflicts.length} 条记录需要确认</strong>
-              <span>
-                {conflicts.slice(0, 2).map((conflict) => {
-                  const application = conflict.server?.application;
-                  return application ? `${application.company} · ${application.position}` : conflict.entityId;
-                }).join("、")}
-              </span>
+              <span>请在 Web 工作台处理后再同步。</span>
             </div>
           </div>
         )}
@@ -241,17 +215,22 @@ export default function CloudSyncSettings() {
 
       {connection && (
         <div className="cloud-sync-actions">
-          <button className="button button--secondary" type="button" onClick={() => void syncNow()} disabled={busy}>
+          <button className="button button--primary" type="button" onClick={() => void syncNow()} disabled={busy}>
             <RefreshCw className={busy ? "spin" : ""} size={16} />
-            立即同步
+            同步
           </button>
-          <button className="button button--secondary" type="button" onClick={() => void resyncAll()} disabled={busy}>
-            <Upload size={14} />
-            重新上传全部
-          </button>
-          <button className="cloud-disconnect-button" type="button" onClick={() => void disconnect()} disabled={busy}>
-            <Unplug size={14} />断开
-          </button>
+          <details className="cloud-sync-more">
+            <summary>更多操作</summary>
+            <div>
+              <button className="button button--secondary" type="button" onClick={() => void resyncAll()} disabled={busy}>
+                <Upload size={14} />
+                重新上传全部
+              </button>
+              <button className="cloud-disconnect-button" type="button" onClick={() => void disconnect()} disabled={busy}>
+                <Unplug size={14} />断开连接
+              </button>
+            </div>
+          </details>
         </div>
       )}
     </section>

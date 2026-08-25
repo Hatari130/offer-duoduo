@@ -49,23 +49,11 @@ export default function OpportunityView({
   onConfigure: () => void;
 }) {
   const [query, setQuery] = useState("");
-  const [statusFilter, setStatusFilter] = useState<"all" | OpportunityStatus>("all");
-
-  const counts = useMemo(() => {
-    const result = new Map<OpportunityStatus, number>();
-    for (const opportunity of snapshot.opportunities) {
-      const status = opportunityStatus(opportunity);
-      result.set(status, (result.get(status) || 0) + 1);
-    }
-    return result;
-  }, [snapshot.opportunities]);
 
   const visible = useMemo(() => {
     const keyword = query.trim().toLowerCase();
     return [...snapshot.opportunities]
       .filter((opportunity) => {
-        const status = opportunityStatus(opportunity);
-        if (statusFilter !== "all" && status !== statusFilter) return false;
         if (!keyword) return true;
         return [
           opportunity.company,
@@ -87,16 +75,24 @@ export default function OpportunityView({
           left.openAt || left.updatedAt || ""
         );
       });
-  }, [snapshot.opportunities, query, statusFilter]);
+  }, [snapshot.opportunities, query]);
 
   return (
     <section className="overlay-page opportunity-page">
+      <div className="opportunity-discovery-controls">
+        <div className="opportunity-search">
+          <Search size={15} />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="搜索公司、批次、城市或岗位方向"
+          />
+        </div>
+      </div>
+
       <div className="overlay-page-title opportunity-title">
         <span className="overlay-section-icon"><Megaphone size={18} /></span>
-        <div>
-          <h1>机会</h1>
-          <p>全部校招入口，不替你筛掉任何公司</p>
-        </div>
+        <div><h1>机会</h1></div>
         <button
           className={`opportunity-refresh ${loading ? "loading" : ""}`}
           onClick={onRefresh}
@@ -105,30 +101,6 @@ export default function OpportunityView({
         >
           <RefreshCw size={16} />
         </button>
-      </div>
-
-      <div className="opportunity-search">
-        <Search size={15} />
-        <input
-          value={query}
-          onChange={(event) => setQuery(event.target.value)}
-          placeholder="搜索公司、批次、城市或岗位方向"
-        />
-      </div>
-
-      <div className="opportunity-filters" role="tablist" aria-label="招聘状态">
-        <button className={statusFilter === "all" ? "active" : ""} onClick={() => setStatusFilter("all")}>
-          全部 <small>{snapshot.opportunities.length}</small>
-        </button>
-        {STATUS_ORDER.map((status) => (
-          <button
-            className={statusFilter === status ? "active" : ""}
-            key={status}
-            onClick={() => setStatusFilter(status)}
-          >
-            {STATUS_LABELS[status]} <small>{counts.get(status) || 0}</small>
-          </button>
-        ))}
       </div>
 
       {error && (
@@ -150,14 +122,13 @@ export default function OpportunityView({
           return (
             <article className={`opportunity-card opportunity-card--${status}`} key={opportunity.id}>
               <div className="opportunity-card-topline">
-                <span className="opportunity-company-mark">{opportunity.company.slice(0, 1)}</span>
                 <span>
                   <strong>{opportunity.company}</strong>
                   <small>{opportunity.batch || "校园招聘"}</small>
                 </span>
                 <em>{STATUS_LABELS[status]}</em>
               </div>
-              <h2>{opportunity.title}</h2>
+              <h2 title={opportunity.title}>{opportunity.title}</h2>
               {tags.length > 0 && (
                 <div className="opportunity-tags">
                   {tags.map((tag) => <span key={tag}>{tag}</span>)}

@@ -1,0 +1,361 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Hotjob / Wecruit 重复经历测试</title>
+    <style>
+      body { margin: 0; padding: 24px; font: 15px/1.5 Arial, sans-serif; }
+      .resume-content-wrap { width: 920px; }
+      .form-cell { margin: 18px 0; padding: 12px; border: 1px solid #ddd; }
+      .tit-wrap .tit p { margin: 0 0 12px; font-size: 20px; font-weight: 700; }
+      .form-cell-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 12px; border-top: 1px solid #eee; }
+      .ant-form-item { min-height: 58px; }
+      .ant-form-item-label { margin-bottom: 4px; }
+      input, textarea, .ant-select-selection { box-sizing: border-box; width: 100%; min-height: 34px; padding: 6px; border: 1px solid #bbb; }
+      .ant-radio-wrapper, .add-more-btn, .school-item, .ant-select-dropdown-menu-item, .ant-calendar-date { cursor: pointer; }
+      .ant-radio-wrapper { display: inline-flex; gap: 4px; margin-right: 14px; }
+      .ant-select { position: relative; }
+      .ant-select-search { display: none; }
+      .cascader-plugins-wrap { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .add-more-btn { margin-top: 8px; color: #d0021b; }
+      .ant-select-dropdown, .ant-calendar-picker-container, .school-wrap { position: fixed; z-index: 50; left: 440px; top: 40px; width: 360px; padding: 12px; background: white; border: 1px solid #888; }
+      .ant-select-dropdown-menu { margin: 0; padding: 0; list-style: none; }
+      .ant-select-dropdown-menu-item, .school-item { display: block; padding: 5px; }
+      .ant-calendar-header { display: flex; gap: 8px; }
+      .ant-calendar-tbody { display: grid; grid-template-columns: repeat(7, 42px); gap: 3px; }
+      .ant-calendar-tbody tr { display: contents; }
+      .ant-calendar-cell { display: block; }
+      .school-list { max-height: 180px; overflow: auto; }
+    </style>
+  </head>
+  <body>
+    <div class="resume-content-wrap">
+      <form class="ant-form ant-form-horizontal">
+        <section class="form-cell" id="11">
+          <div class="tit-wrap"><div class="tit"><p title="个人基本信息">个人基本信息</p></div></div>
+          <div class="form-cell-right"><div class="form-cell-inner">
+            <div id="11_3_0"><div class="ant-row ant-form-item">
+              <div class="ant-form-item-label"><label>性别*</label></div>
+              <div class="ant-radio-group ant-radio-group-outline">
+                <label class="ant-radio-wrapper"><span class="ant-radio"><input type="radio" class="ant-radio-input" value="male" /></span><span>男</span></label>
+                <label class="ant-radio-wrapper"><span class="ant-radio"><input type="radio" class="ant-radio-input" value="female" /></span><span>女</span></label>
+              </div>
+            </div></div>
+          </div></div>
+        </section>
+
+        <section class="form-cell" id="13">
+          <div class="tit-wrap"><div class="tit"><p title="求职意向">求职意向</p></div></div>
+          <div class="form-cell-right"><div class="form-cell-inner">
+            <div id="13_44_0"><div class="ant-row ant-form-item">
+              <div class="ant-form-item-label"><label>期望工作地点*</label></div>
+              <div class="cascader-plugins-wrap">
+                <div class="ant-select" data-select-key="province"></div>
+                <div class="ant-select" data-select-key="city"></div>
+              </div>
+            </div></div>
+          </div></div>
+        </section>
+
+        <section class="form-cell" id="14">
+          <div class="tit-wrap"><div class="tit"><p title="教育经历">教育经历</p></div></div>
+          <div class="form-cell-right" data-list="education"></div>
+        </section>
+
+        <section class="form-cell" id="19">
+          <div class="tit-wrap"><div class="tit"><p title="工作经历（实践经历）">工作经历（实践经历）</p></div></div>
+          <div class="form-cell-right" data-list="experience"></div>
+        </section>
+
+        <section class="form-cell" id="40">
+          <div class="tit-wrap"><div class="tit"><p title="项目经验">项目经验</p></div></div>
+          <div class="form-cell-right" data-list="project"></div>
+        </section>
+      </form>
+    </div>
+
+    <script>
+      let addClicks = { education: 0, experience: 0, project: 0 };
+      const selectOptions = {
+        province: ["全国", "北京", "上海", "江苏省", "浙江省", "广东省"],
+        city: ["南京", "苏州", "杭州", "广州", "深圳"],
+        degree: ["本科", "硕士研究生", "博士研究生"],
+        educationDegree: ["学士", "硕士", "博士"],
+        educationForm: ["全日制", "非全日制"]
+      };
+
+      const antSelectHtml = (key, placeholder) => {
+        const controlId = `select-${key}-${Math.random().toString(36).slice(2)}`;
+        return `<div class="ant-select ant-select-enabled" data-select-key="${key}">
+          <div class="ant-select-selection ant-select-selection--single" role="combobox" aria-controls="${controlId}" aria-expanded="false" tabindex="0">
+            <div class="ant-select-selection__rendered"><div class="ant-select-selection__placeholder">${placeholder}</div></div>
+          </div>
+        </div>`;
+      };
+
+      const dateField = (section, field, index, label) => `<div id="${section}_${field}_${index}"><div class="ant-row ant-form-item">
+        <div class="ant-form-item-label"><label>${label}</label></div>
+        <span class="ant-calendar-picker"><input readonly placeholder="请选择${label}" class="ant-calendar-picker-input ant-input" value="" /></span>
+      </div></div>`;
+      const inputField = (section, field, index, label, placeholder = label) => `<div id="${section}_${field}_${index}"><div class="ant-row ant-form-item">
+        <div class="ant-form-item-label"><label>${label}</label></div>
+        <input placeholder="请填写${placeholder}" class="ant-input" value="" />
+      </div></div>`;
+      const textareaField = (section, field, index, label) => `<div id="${section}_${field}_${index}"><div class="ant-row ant-form-item">
+        <div class="ant-form-item-label"><label>${label}</label></div><textarea placeholder="请填写${label}" class="ant-input"></textarea>
+      </div></div>`;
+
+      const educationEntry = (index) => `<div class="form-cell-inner" data-entry-index="${index}">
+        ${dateField(14, 49, index, "开始时间*")}${dateField(14, 50, index, "结束时间*")}
+        <div id="14_51_${index}"><div class="ant-row ant-form-item"><div class="ant-form-item-label"><label>学校*</label></div><input placeholder="请选择学校" class="ant-input" value="" /></div></div>
+        ${inputField(14, 307601, index, "学院*")}
+        <div id="14_53_${index}"><div class="ant-row ant-form-item"><div class="ant-form-item-label"><label>学历*</label></div>${antSelectHtml("degree", "请选择学历")}</div></div>
+        <div id="14_248_${index}"><div class="ant-row ant-form-item"><div class="ant-form-item-label"><label>学位*</label></div>${antSelectHtml("educationDegree", "请选择学位")}</div></div>
+        ${inputField(14, 54, index, "专业*")}
+        <div id="14_66011_${index}"><div class="ant-row ant-form-item"><div class="ant-form-item-label"><label>培养方式*</label></div>${antSelectHtml("educationForm", "请选择培养方式")}</div></div>
+        ${inputField(14, 100113, index, "成绩（GPA）绩点*")}
+      </div>`;
+
+      const experienceEntry = (index) => `<div class="form-cell-inner" data-entry-index="${index}">
+        ${dateField(19, 72, index, "开始时间")}${dateField(19, 73, index, "结束时间")}
+        ${inputField(19, 198, index, "企业名称")}${inputField(19, 76, index, "职位名称")}
+        ${textareaField(19, 78, index, "工作描述")}
+      </div>`;
+      const projectEntry = (index) => `<div class="form-cell-inner" data-entry-index="${index}">
+        ${dateField(40, 206, index, "开始时间")}${dateField(40, 207, index, "结束时间")}
+        ${inputField(40, 208, index, "项目名称")}${textareaField(40, 209, index, "项目描述")}
+      </div>`;
+
+      const appendEntry = (group) => {
+        const list = document.querySelector(`[data-list="${group}"]`);
+        const index = list.querySelectorAll(":scope > .form-cell-inner").length;
+        const add = list.querySelector(":scope > .add-more");
+        const wrapper = document.createElement("div");
+        wrapper.innerHTML = group === "education" ? educationEntry(index) : group === "experience" ? experienceEntry(index) : projectEntry(index);
+        list.insertBefore(wrapper.firstElementChild, add);
+      };
+
+      const addControl = (group, text) => {
+        const list = document.querySelector(`[data-list="${group}"]`);
+        list.insertAdjacentHTML("beforeend", `<div class="add-more"><div class="add-more-btn" data-add="${group}">添加新的${text}</div></div>`);
+      };
+
+      const basicSummary = document.getElementById("11").querySelector(":scope > .form-cell-right > .form-cell-inner");
+      basicSummary.insertAdjacentHTML("beforeend", `
+        ${inputField(11, 300, 0, "毕业院校*", "毕业院校")}
+        ${dateField(11, 301, 0, "毕业时间*")}
+        ${inputField(11, 302, 0, "专业*")}
+        <div id="11_303_0"><div class="ant-row ant-form-item"><div class="ant-form-item-label"><label>学历*</label></div>${antSelectHtml("degree", "请选择学历")}</div></div>
+        <div id="11_304_0"><div class="ant-row ant-form-item"><div class="ant-form-item-label"><label>学位*</label></div>${antSelectHtml("educationDegree", "请选择学位")}</div></div>
+      `);
+
+      document.querySelector("[data-select-key='province']").innerHTML = antSelectHtml("province", "请选择省份").replace(/^<div[^>]+>|<\/div>$/g, "");
+      document.querySelector("[data-select-key='city']").innerHTML = antSelectHtml("city", "请选择城市").replace(/^<div[^>]+>|<\/div>$/g, "");
+      addControl("education", "教育经历");
+      addControl("experience", "工作经历（实践经历）");
+      addControl("project", "项目经验");
+      appendEntry("education");
+
+      const closePortals = () => document.querySelectorAll(".ant-select-dropdown,.ant-calendar-picker-container,.school-wrap").forEach((node) => node.remove());
+      const openSelect = (root) => {
+        closePortals();
+        const control = root.querySelector("[role='combobox']");
+        control.setAttribute("aria-expanded", "true");
+        root.classList.add("ant-select-open");
+        const popup = document.createElement("div");
+        popup.className = "ant-select-dropdown ant-select-dropdown--single";
+        popup.dataset.controlId = control.getAttribute("aria-controls");
+        popup.innerHTML = `<div id="${popup.dataset.controlId}"><ul role="listbox" class="ant-select-dropdown-menu">${(selectOptions[root.dataset.selectKey] || [])
+          .map((option) => `<li role="option" class="ant-select-dropdown-menu-item">${option}</li>`).join("")}</ul></div>`;
+        document.body.appendChild(popup);
+      };
+
+      const renderCalendar = (popup) => {
+        const year = Number(popup.dataset.year);
+        const month = Number(popup.dataset.month);
+        const lastDay = new Date(year, month, 0).getDate();
+        popup.innerHTML = `<div class="ant-calendar"><input class="ant-calendar-input" placeholder="${popup.dataset.placeholder}" />
+          <div class="ant-calendar-header"><a class="ant-calendar-prev-year-btn">上一年</a><a class="ant-calendar-prev-month-btn">上个月</a>
+            <a class="ant-calendar-year-select">${year}年</a><a class="ant-calendar-month-select">${month}月</a>
+            <a class="ant-calendar-next-month-btn">下个月</a><a class="ant-calendar-next-year-btn">下一年</a></div>
+          <table><tbody class="ant-calendar-tbody"><tr>${Array.from({ length: lastDay }, (_, offset) => offset + 1)
+            .map((day) => `<td class="ant-calendar-cell" title="${year}年${month}月${day}日"><div class="ant-calendar-date">${day}</div></td>`).join("")}</tr></tbody></table></div>`;
+      };
+
+      const openCalendar = (input) => {
+        closePortals();
+        const popup = document.createElement("div");
+        popup.className = "ant-calendar-picker-container";
+        popup.dataset.target = input.closest("[id]").id;
+        popup.dataset.placeholder = input.placeholder;
+        popup.dataset.year = "2026";
+        popup.dataset.month = "8";
+        renderCalendar(popup);
+        document.body.appendChild(popup);
+      };
+
+      const openSchool = (input) => {
+        closePortals();
+        const modal = document.createElement("div");
+        modal.className = "school-wrap ant-modal-wrap";
+        modal.dataset.target = input.closest("[id]").id;
+        modal.innerHTML = `<div class="ant-modal"><input placeholder="请输入学校名称" class="ant-input" /><div class="school-list"></div>
+          <button class="ant-btn">取消</button><button class="ant-btn ant-btn-primary">选择</button></div>`;
+        document.body.appendChild(modal);
+      };
+
+      document.addEventListener("input", (event) => {
+        if (!event.target.matches(".school-wrap input[placeholder='请输入学校名称']")) return;
+        event.target.closest(".school-wrap").querySelector(".school-list").innerHTML = [event.target.value, `${event.target.value}继续教育学院`]
+          .map((school) => `<span class="school-item">${school}</span>`).join("");
+      });
+
+      document.addEventListener("click", (event) => {
+        const add = event.target.closest("[data-add]");
+        if (add) { addClicks[add.dataset.add] += 1; appendEntry(add.dataset.add); return; }
+        const schoolInput = event.target.closest("input[placeholder='请选择学校']");
+        if (schoolInput) { openSchool(schoolInput); return; }
+        const school = event.target.closest(".school-item");
+        if (school) {
+          school.closest(".school-wrap").querySelectorAll(".school-item").forEach((item) => item.classList.remove("active"));
+          school.classList.add("active");
+          return;
+        }
+        const schoolButton = event.target.closest(".school-wrap button");
+        if (schoolButton) {
+          const modal = schoolButton.closest(".school-wrap");
+          if (schoolButton.textContent.trim() === "选择") {
+            const selected = modal.querySelector(".school-item.active");
+            const input = document.getElementById(modal.dataset.target)?.querySelector("input[placeholder='请选择学校']");
+            if (selected && input) {
+              const replacement = input.cloneNode(true);
+              replacement.removeAttribute("data-offerflow-field-id");
+              replacement.removeAttribute("data-offerflow-fingerprint");
+              replacement.value = selected.textContent.trim();
+              input.replaceWith(replacement);
+            }
+          }
+          modal.remove();
+          return;
+        }
+        const dateInput = event.target.closest(".ant-calendar-picker-input");
+        if (dateInput) { openCalendar(dateInput); return; }
+        const popup = event.target.closest(".ant-calendar-picker-container");
+        if (popup) {
+          if (event.target.closest(".ant-calendar-prev-year-btn")) popup.dataset.year = String(Number(popup.dataset.year) - 1);
+          else if (event.target.closest(".ant-calendar-next-year-btn")) popup.dataset.year = String(Number(popup.dataset.year) + 1);
+          else if (event.target.closest(".ant-calendar-prev-month-btn")) popup.dataset.month = String(Number(popup.dataset.month) - 1);
+          else if (event.target.closest(".ant-calendar-next-month-btn")) popup.dataset.month = String(Number(popup.dataset.month) + 1);
+          else {
+            const cell = event.target.closest(".ant-calendar-cell[title]");
+            if (cell) {
+              const match = cell.title.match(/(\d+)年(\d+)月(\d+)日/);
+              const input = document.getElementById(popup.dataset.target)?.querySelector(".ant-calendar-picker-input");
+              input.value = `${match[1]}-${match[2].padStart(2, "0")}-${match[3].padStart(2, "0")}`;
+              popup.remove();
+              return;
+            }
+          }
+          if (Number(popup.dataset.month) < 1) { popup.dataset.month = "12"; popup.dataset.year = String(Number(popup.dataset.year) - 1); }
+          if (Number(popup.dataset.month) > 12) { popup.dataset.month = "1"; popup.dataset.year = String(Number(popup.dataset.year) + 1); }
+          renderCalendar(popup);
+          return;
+        }
+        const option = event.target.closest(".ant-select-dropdown-menu-item");
+        if (option) {
+          const dropdown = option.closest(".ant-select-dropdown");
+          const control = document.querySelector(`[aria-controls="${dropdown.dataset.controlId}"]`);
+          const rendered = control.querySelector(".ant-select-selection__rendered");
+          rendered.innerHTML = `<div class="ant-select-selection-selected-value" title="${option.textContent.trim()}">${option.textContent.trim()}</div>`;
+          control.setAttribute("aria-expanded", "false");
+          control.closest(".ant-select").classList.remove("ant-select-open");
+          dropdown.remove();
+          return;
+        }
+        const control = event.target.closest(".ant-select-selection");
+        if (control) { openSelect(control.closest(".ant-select")); return; }
+      });
+
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { education: 4, experience: 4, project: 4 };
+      listener({ type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", expandRepeaters: true, repeatCounts }, {}, (scan) => {
+        const profileSnapshots = [
+          {
+            gender: "男", targetCities: "南京", school: "南京大学", graduationDate: "2027-06", educationCollege: "建筑与城市规划学院",
+            degree: "硕士研究生", educationDegree: "硕士", major: "城乡规划", educationForm: "全日制", gpa: "3.8",
+            educationStartDate: "2024-09", educationEndDate: "2027-06",
+            experienceOrganization: "携程集团", experienceTitle: "AI产品经理", experienceDescription: "负责酒店业务 AI 产品体验",
+            experienceStartDate: "2026-04", experienceEndDate: "2026-08",
+            projectName: "TripYoYo", projectDescription: "企业级通用桌面智能体", projectStartDate: "2026-03", projectEndDate: "2026-08"
+          },
+          {
+            school: "北京林业大学", educationCollege: "园林学院", degree: "本科", educationDegree: "学士", major: "城乡规划",
+            educationForm: "全日制", gpa: "3.6", educationStartDate: "2018-09", educationEndDate: "2023-06",
+            experienceOrganization: "南京开为网络科技有限公司", experienceTitle: "AI产品经理", experienceDescription: "负责 Agnes APP 对话体验",
+            experienceStartDate: "2025-11", experienceEndDate: "2026-03",
+            projectName: "OfferFlow", projectDescription: "招聘自动化平台", projectStartDate: "2025-01", projectEndDate: "2025-12"
+          },
+          {
+            school: "同济大学", educationCollege: "建筑与城市规划学院", degree: "本科", educationDegree: "学士", major: "城市规划",
+            educationForm: "全日制", gpa: "3.7", educationStartDate: "2014-09", educationEndDate: "2018-06",
+            experienceOrganization: "第三段实践企业", experienceTitle: "产品实习生", experienceDescription: "负责第三段实践的用户研究",
+            experienceStartDate: "2024-07", experienceEndDate: "2024-10",
+            projectName: "Project Three", projectDescription: "第三段项目描述", projectStartDate: "2024-02", projectEndDate: "2024-07"
+          },
+          {
+            school: "东南大学", educationCollege: "建筑学院", degree: "本科", educationDegree: "学士", major: "城乡规划",
+            educationForm: "全日制", gpa: "3.5", educationStartDate: "2010-09", educationEndDate: "2014-06",
+            experienceOrganization: "第四段实践企业", experienceTitle: "产品助理", experienceDescription: "负责第四段实践的需求分析",
+            experienceStartDate: "2023-03", experienceEndDate: "2023-08",
+            projectName: "Project Four", projectDescription: "第四段项目描述", projectStartDate: "2023-01", projectEndDate: "2023-06"
+          }
+        ];
+        listener({
+          type: "OFFERFLOW_FILL_APPLICATION_FORM_V2", fields: scan.fields, values: {}, fieldValues: {}, profileSnapshots,
+          repeatCounts, repeatPlan: { experience: { work: 0, internship: 4, workIndexes: [], internshipIndexes: [0, 1, 2, 3] } },
+          fillDynamicFields: true, maxRounds: 5, delayMs: 0
+        }, {}, (fill) => {
+          const entries = (group) => Array.from(document.querySelectorAll(`[data-list="${group}"] > .form-cell-inner`)).map((entry) => ({
+            values: Array.from(entry.querySelectorAll("input:not(.ant-select-search__field),textarea")).map((input) => input.value),
+            selects: Array.from(entry.querySelectorAll(".ant-select-selection-selected-value")).map((item) => item.textContent.trim())
+          }));
+          document.body.dataset.ready = "true";
+          document.body.dataset.result = encodeURIComponent(JSON.stringify({ ok: true, data: {
+            scan, fill, addClicks, gender: document.querySelector(".ant-radio-wrapper .ant-radio-input:checked")?.closest("label")?.innerText.trim() || "",
+            location: Array.from(document.querySelectorAll(".cascader-plugins-wrap .ant-select-selection-selected-value")).map((item) => item.textContent.trim()),
+            basicEducationSummary: {
+              values: [
+                document.getElementById("11_300_0")?.querySelector("input")?.value || "",
+                document.getElementById("11_301_0")?.querySelector("input")?.value || "",
+                document.getElementById("11_302_0")?.querySelector("input")?.value || ""
+              ],
+              selects: [
+                document.getElementById("11_303_0")?.querySelector(".ant-select-selection-selected-value")?.textContent.trim() || "",
+                document.getElementById("11_304_0")?.querySelector(".ant-select-selection-selected-value")?.textContent.trim() || ""
+              ]
+            },
+            education: entries("education"), experience: entries("experience"), project: entries("project"),
+            openPortals: document.querySelectorAll(".ant-select-dropdown,.ant-calendar-picker-container,.school-wrap").length
+          }}));
+        });
+      });
+    </script>
+  </body>
+</html>

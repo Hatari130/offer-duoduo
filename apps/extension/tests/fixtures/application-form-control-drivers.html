@@ -13,6 +13,7 @@
       .ivu-select-dropdown { left: 28px; top: 105px; }
       .semi-portal { left: 28px; top: 250px; }
       .generic-listbox { left: 28px; top: 395px; }
+      .ud__select__dropdown-live { left: 28px; top: 535px; }
       [role="option"] { display: block; width: 100%; padding: 8px; text-align: left; }
       .popup-footer { display: flex; justify-content: flex-end; margin-top: 10px; }
     </style>
@@ -41,6 +42,27 @@
         <span id="years-selected"></span>
       </div>
 
+      <div class="form-item">
+        <label id="school-label">学校名称</label>
+        <div class="ud__select" style="width: 100%">
+          <div>
+            <div class="ud__input ud__input--size-lg">
+              <label class="ud__input-input-wrap">
+                <input
+                  id="school-control"
+                  class="ud__native-input"
+                  data-form-field-id="school"
+                  data-form-field-name="school"
+                  data-form-field-i18n-name="学校名称"
+                  aria-labelledby="school-label"
+                />
+              </label>
+            </div>
+          </div>
+          <span class="ud__select__value"></span>
+        </div>
+      </div>
+
       <button id="final-submit" type="submit">确认</button>
     </form>
 
@@ -57,6 +79,10 @@
 
     <div id="years-options" class="popup generic-listbox" role="listbox" hidden>
       <button type="button" role="option">Less than 1 year</button>
+    </div>
+
+    <div id="school-options" class="popup ud__select__dropdown-live" role="listbox" hidden>
+      <div>暂无数据</div>
     </div>
 
     <div id="decoy-popup" class="popup" role="dialog" style="left: 520px; top: 250px">
@@ -81,7 +107,10 @@
       const cityPopup = document.getElementById("city-options");
       const yearsControl = document.getElementById("years-control");
       const yearsPopup = document.getElementById("years-options");
+      const schoolControl = document.getElementById("school-control");
+      const schoolPopup = document.getElementById("school-options");
       let degreeSearches = 0;
+      let schoolSearches = 0;
       let cityConfirmClicks = 0;
       let yearsEnterConfirmations = 0;
       let decoyConfirmClicks = 0;
@@ -150,6 +179,24 @@
         yearsControl.setAttribute("aria-expanded", "false");
         yearsPopup.hidden = true;
       });
+      const openSchoolPopup = () => {
+        schoolPopup.hidden = false;
+      };
+      schoolControl.addEventListener("click", openSchoolPopup);
+      schoolControl.closest(".ud__input-input-wrap").addEventListener("click", openSchoolPopup);
+      schoolControl.addEventListener("input", () => {
+        schoolSearches += 1;
+        const requested = schoolControl.value;
+        setTimeout(() => {
+          schoolPopup.innerHTML = `<button type="button" class="ud__select__list__item" role="option">${requested}</button>`;
+          schoolPopup.querySelector("[role='option']").addEventListener("click", (event) => {
+            const selected = event.currentTarget.textContent;
+            document.querySelector(".ud__select__value").textContent = selected;
+            schoolControl.setAttribute("aria-valuetext", selected);
+            schoolPopup.hidden = true;
+          });
+        }, 45);
+      });
       document.getElementById("decoy-confirm").addEventListener("click", () => {
         decoyConfirmClicks += 1;
       });
@@ -158,6 +205,7 @@
         finalSubmitClicks += 1;
       });
     </script>
+    <script src="../../public/adapter-registry.js"></script>
     <script src="../../public/extraction-rules.js"></script>
     <script src="../../public/form-adapters.js"></script>
     <script src="../../public/form-runtime.js"></script>
@@ -169,7 +217,12 @@
         { type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2", repeatCounts: {} },
         {},
         (scan) => {
-          const profileSnapshots = [{ degree: "硕士", currentCity: "江苏省/南京市", workYears: "Less than 1 year" }];
+          const profileSnapshots = [{
+            degree: "硕士",
+            currentCity: "江苏省/南京市",
+            workYears: "Less than 1 year",
+            school: "南京大学"
+          }];
           const fieldValues = Object.fromEntries(
             scan.fields.map((field) => [field.id, profileSnapshots[0][field.key] || ""])
           );
@@ -193,7 +246,9 @@
                   degree: degreeControl.getAttribute("aria-valuetext"),
                   city: cityControl.getAttribute("aria-valuetext"),
                   workYears: yearsControl.getAttribute("aria-valuetext"),
+                  school: schoolControl.getAttribute("aria-valuetext"),
                   degreeSearches,
+                  schoolSearches,
                   cityConfirmClicks,
                   yearsEnterConfirmations,
                   decoyConfirmClicks,

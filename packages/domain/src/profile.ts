@@ -18,10 +18,15 @@ export interface ProfileEducation {
   gpa: string;
 }
 
+export type ProfileExperienceKind = "internship" | "work";
+
 export interface ProfileExperience {
   id: string;
   organization: string;
   title: string;
+  /** Whether this record belongs to an internship or formal work section.
+   * `type` remains the site's employment-type value (for example full-time). */
+  kind?: ProfileExperienceKind;
   type?: string;
   department?: string;
   salary?: string;
@@ -38,6 +43,18 @@ export interface ProfileExperience {
   leavingReason?: string;
   subordinateCount?: string;
   isCurrent?: boolean;
+}
+
+/** Resolve old profiles that predate the explicit kind field without losing
+ * data. Historically unclassified records were treated as internships. */
+export function resolveProfileExperienceKind(
+  experience: Pick<ProfileExperience, "kind" | "type">
+): ProfileExperienceKind {
+  if (experience.kind === "work" || experience.kind === "internship") return experience.kind;
+  const legacyType = String(experience.type || "").trim();
+  if (/实习|实践|intern|trainee/i.test(legacyType)) return "internship";
+  if (/工作|全职|兼职|正式|work|employment|full.?time|part.?time/i.test(legacyType)) return "work";
+  return "internship";
 }
 
 export interface ProfileProject {
