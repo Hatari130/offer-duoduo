@@ -10,7 +10,7 @@ import {
 import type { LoginRequest, RegisterRequest, SessionUser } from "@offerflow/contracts";
 import { ACCESS_TOKEN_KEY, api } from "./api";
 
-type AuthStatus = "loading" | "authenticated" | "anonymous";
+type AuthStatus = "loading" | "authenticated" | "guest" | "anonymous";
 
 interface AuthContextValue {
   status: AuthStatus;
@@ -23,6 +23,7 @@ interface AuthContextValue {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 const handoffExchanges = new Map<string, ReturnType<typeof api.auth.exchangeHandoff>>();
+let guestSessionRequest: ReturnType<typeof api.auth.demo> | undefined;
 
 function exchangeHandoffOnce(code: string) {
   const existing = handoffExchanges.get(code);
@@ -32,15 +33,23 @@ function exchangeHandoffOnce(code: string) {
   return request;
 }
 
+function createGuestSessionOnce() {
+  if (guestSessionRequest) return guestSessionRequest;
+  guestSessionRequest = api.auth.demo().finally(() => {
+    guestSessionRequest = undefined;
+  });
+  return guestSessionRequest;
+}
+
 export function AuthProvider({ children }: PropsWithChildren) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<SessionUser>();
 
   const establishSession = useCallback(
-    (session: { accessToken: string; user: SessionUser }) => {
+    (session: { accessToken: string; user: SessionUser }, nextStatus: "authenticated" | "guest" = "authenticated") => {
       window.localStorage.setItem(ACCESS_TOKEN_KEY, session.accessToken);
       setUser(session.user);
-      setStatus("authenticated");
+      setStatus(nextStatus);
     },
     []
   );
@@ -48,8 +57,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const logout = useCallback(() => {
     window.localStorage.removeItem(ACCESS_TOKEN_KEY);
     setUser(undefined);
-    setStatus("anonymous");
-  }, []);
+    setStatus("loading");
+    void createGuestSessionOnce()
+      .then((session) => establishSession(session, "guest"))
+      .catch(() => setStatus("anonymous"));
+  }, [establishSession]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -73,8 +85,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
     const token = window.localStorage.getItem(ACCESS_TOKEN_KEY);
     if (!token) {
-      setStatus("anonymous");
-      return;
+      let active = true;
+      void createGuestSessionOnce()
+        .then((session) => {
+          if (active) establishSession(session, "guest");
+        })
+        .catch(() => {
+          if (active) setStatus("anonymous");
+        });
+      return () => {
+        active = false;
+      };
     }
     let active = true;
     api.auth
@@ -82,7 +103,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       .then((session) => {
         if (!active) return;
         setUser(session.user);
-        setStatus("authenticated");
+        setStatus(session.user.id === "demo-user" ? "guest" : "authenticated");
       })
       .catch(() => {
         if (active) logout();
@@ -103,7 +124,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       user,
       login: async (request) => establishSession(await api.auth.login(request)),
       register: async (request) => establishSession(await api.auth.register(request)),
-      enterDemo: async () => establishSession(await api.auth.demo()),
+      enterDemo: async () => establishSession(await createGuestSessionOnce(), "guest"),
       logout
     }),
     [establishSession, logout, status, user]

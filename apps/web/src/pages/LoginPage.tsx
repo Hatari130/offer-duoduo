@@ -2,6 +2,7 @@ import { useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Logo } from "../components/Logo";
 import { useAuth } from "../app/AuthContext";
+import { navigate } from "../app/router";
 import loginJourney from "../assets/auth/login-journey.png";
 
 type Mode = "login" | "register";
@@ -54,6 +55,7 @@ export function LoginPage() {
     setError("");
     try {
       await enterDemo();
+      navigate("/app/chat");
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "暂时无法进入体验账号");
     } finally {

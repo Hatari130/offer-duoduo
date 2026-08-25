@@ -36,13 +36,22 @@ export function App() {
 
   useEffect(() => {
     if (status === "anonymous" && pathname !== "/login" && !extensionConnect && !extensionLanding) navigate("/login", { replace: true });
-    if (status === "authenticated" && !pathname.startsWith("/app") && !extensionConnect && !extensionLanding) navigate("/app/chat", { replace: true });
+    if (status === "authenticated" && pathname === "/login") navigate("/app/chat", { replace: true });
+    if (
+      (status === "authenticated" || status === "guest")
+      && pathname !== "/login"
+      && !pathname.startsWith("/app")
+      && !extensionConnect
+      && !extensionLanding
+    ) {
+      navigate("/app/chat", { replace: true });
+    }
   }, [extensionConnect, extensionLanding, pathname, status]);
 
   useEffect(() => {
     const section = titles.find(([pattern]) => pattern.test(pathname))?.[1];
     document.title = section ? `${section} · JobKoI` : "JobKoI · 求职工作台";
-    if (status === "authenticated") {
+    if (status === "authenticated" || status === "guest") {
       window.requestAnimationFrame(() => document.querySelector<HTMLElement>("#main-content h1")?.focus());
     }
   }, [pathname, status]);
@@ -71,6 +80,7 @@ export function App() {
   }
 
   if (status === "anonymous") return <LoginPage />;
+  if (pathname === "/login") return <LoginPage />;
   if (pathname.startsWith("/app/upgrade")) return <MembershipPage />;
   const tailorMatch = pathname.match(/^\/app\/resumes\/tailor\/([^/]+)$/);
   if (tailorMatch) return <ResumeStudioPage taskId={decodeURIComponent(tailorMatch[1])} />;

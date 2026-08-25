@@ -10,6 +10,7 @@ import {
   Gift,
   Home,
   Info,
+  LogIn,
   LogOut,
   Menu,
   MessageCircleMore,
@@ -54,7 +55,8 @@ const primaryNavigation = [
 ];
 
 export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: string }>) {
-  const { user, logout } = useAuth();
+  const { status, user, logout } = useAuth();
+  const isGuest = status === "guest";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -134,7 +136,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   return (
     <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
-      <header className="mobile-header">
+      <header className={`mobile-header${isGuest ? " is-guest" : ""}`}>
         <button
           type="button"
           aria-label="打开更多菜单"
@@ -145,7 +147,11 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           <Menu aria-hidden="true" size={21} />
         </button>
         <Logo />
-        <span className="mobile-avatar" aria-hidden="true">{user?.displayName.slice(0, 1) || "O"}</span>
+        {isGuest ? (
+          <AppLink href="/login" className="mobile-login-link">登录</AppLink>
+        ) : (
+          <span className="mobile-avatar" aria-hidden="true">{user?.displayName.slice(0, 1) || "O"}</span>
+        )}
       </header>
 
       <button
@@ -242,71 +248,86 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
             <em>免费</em>
           </a>
 
-          <div className="sidebar-account-row">
-            <div
-              className={`account-menu${accountOpen ? " is-open" : ""}`}
-              ref={accountMenuRef}
-              onMouseEnter={() => setAccountOpen(true)}
-              onMouseLeave={() => setAccountOpen(false)}
-              onFocus={() => setAccountOpen(true)}
-              onBlur={(event) => closeWhenFocusLeaves(event, () => setAccountOpen(false))}
-            >
-              <button
-                className="account-trigger"
-                type="button"
-                aria-label="打开账户菜单"
-                aria-expanded={accountOpen}
-                aria-controls="account-popover"
-                onClick={() => setAccountOpen((current) => !current)}
+          <div className={`sidebar-account-row${isGuest ? " is-guest" : ""}`}>
+            {isGuest ? (
+              <AppLink
+                href="/login"
+                className="account-trigger account-trigger--guest"
+                title={sidebarCollapsed ? "登录" : undefined}
+                onNavigate={closeMobile}
               >
-                <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
-                <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>Free</small></span>
-                <ChevronDown aria-hidden="true" size={15} />
-              </button>
+                <span className="account-avatar">访</span>
+                <span><strong>访客模式</strong><small>登录后同步</small></span>
+                <LogIn aria-hidden="true" size={15} />
+              </AppLink>
+            ) : (
+              <div
+                className={`account-menu${accountOpen ? " is-open" : ""}`}
+                ref={accountMenuRef}
+                onMouseEnter={() => setAccountOpen(true)}
+                onMouseLeave={() => setAccountOpen(false)}
+                onFocus={() => setAccountOpen(true)}
+                onBlur={(event) => closeWhenFocusLeaves(event, () => setAccountOpen(false))}
+              >
+                <button
+                  className="account-trigger"
+                  type="button"
+                  aria-label="打开账户菜单"
+                  aria-expanded={accountOpen}
+                  aria-controls="account-popover"
+                  onClick={() => setAccountOpen((current) => !current)}
+                >
+                  <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
+                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>Free</small></span>
+                  <ChevronDown aria-hidden="true" size={15} />
+                </button>
 
-              <div className="account-popover" id="account-popover" aria-label="账户菜单">
-                <header className="account-profile">
-                  <span className="account-avatar account-avatar--large">{user?.displayName.slice(0, 1) || "O"}</span>
-                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>{user?.email}</small></span>
-                </header>
+                <div className="account-popover" id="account-popover" aria-label="账户菜单">
+                  <header className="account-profile">
+                    <span className="account-avatar account-avatar--large">{user?.displayName.slice(0, 1) || "O"}</span>
+                    <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>{user?.email}</small></span>
+                  </header>
 
-                <section className="account-plan-card" aria-label="当前会员方案">
-                  <div><strong>Free</strong><AppLink href="/app/upgrade" onNavigate={closeMobile}>升级</AppLink></div>
-                  <p><span>试用额度</span><b>5 次</b></p>
-                  <p><span>云端同步</span><b className="is-connected"><Cloud aria-hidden="true" size={13} />已连接</b></p>
-                </section>
+                  <section className="account-plan-card" aria-label="当前会员方案">
+                    <div><strong>Free</strong><AppLink href="/app/upgrade" onNavigate={closeMobile}>升级</AppLink></div>
+                    <p><span>试用额度</span><b>5 次</b></p>
+                    <p><span>云端同步</span><b className="is-connected"><Cloud aria-hidden="true" size={13} />已连接</b></p>
+                  </section>
 
-                <div className="account-popover-links">
-                  <AppLink href="/app/settings" onNavigate={closeMobile}>
-                    <Settings aria-hidden="true" size={16} />设置与设备同步
-                  </AppLink>
-                  <AppLink href="/app/chat" onNavigate={closeMobile}>
-                    <Home aria-hidden="true" size={16} />返回首页
-                  </AppLink>
-                  <button type="button" onClick={() => { setAccountOpen(false); setContactOpen(true); }}>
-                    <MessageCircleMore aria-hidden="true" size={16} />联系我们
-                  </button>
-                  <button type="button" disabled title="后续接入">
-                    <Info aria-hidden="true" size={16} />更新日志<span>即将上线</span>
-                  </button>
-                  <button type="button" disabled title="后续接入">
-                    <Gift aria-hidden="true" size={16} />赠送会员<span>即将上线</span>
-                  </button>
-                  <button type="button" onClick={logout}>
-                    <LogOut aria-hidden="true" size={16} />退出登录
-                  </button>
+                  <div className="account-popover-links">
+                    <AppLink href="/app/settings" onNavigate={closeMobile}>
+                      <Settings aria-hidden="true" size={16} />设置与设备同步
+                    </AppLink>
+                    <AppLink href="/app/chat" onNavigate={closeMobile}>
+                      <Home aria-hidden="true" size={16} />返回首页
+                    </AppLink>
+                    <button type="button" onClick={() => { setAccountOpen(false); setContactOpen(true); }}>
+                      <MessageCircleMore aria-hidden="true" size={16} />联系我们
+                    </button>
+                    <button type="button" disabled title="后续接入">
+                      <Info aria-hidden="true" size={16} />更新日志<span>即将上线</span>
+                    </button>
+                    <button type="button" disabled title="后续接入">
+                      <Gift aria-hidden="true" size={16} />赠送会员<span>即将上线</span>
+                    </button>
+                    <button type="button" onClick={logout}>
+                      <LogOut aria-hidden="true" size={16} />退出登录
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
-            <AppLink
-              href="/app/settings"
-              className="sidebar-footer-icon"
-              onNavigate={closeMobile}
-            >
-              <MonitorSmartphone aria-hidden="true" size={17} />
-              <span className="sr-only">打开设备同步设置</span>
-            </AppLink>
+            {!isGuest && (
+              <AppLink
+                href="/app/settings"
+                className="sidebar-footer-icon"
+                onNavigate={closeMobile}
+              >
+                <MonitorSmartphone aria-hidden="true" size={17} />
+                <span className="sr-only">打开设备同步设置</span>
+              </AppLink>
+            )}
 
             <div
               className={`contact-menu${contactOpen ? " is-open" : ""}`}
@@ -347,7 +368,15 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </div>
       </aside>
 
-      <div className="workspace-shell">
+      <div className={`workspace-shell${isGuest ? " workspace-shell--guest" : ""}`}>
+        {isGuest && (
+          <header className="guest-toolbar" aria-label="账户操作">
+            <AppLink href="/login" className="guest-login-link">
+              <LogIn aria-hidden="true" size={16} strokeWidth={2} />
+              登录
+            </AppLink>
+          </header>
+        )}
         <main
           id="main-content"
           className={`workspace-main${pathname.startsWith("/app/chat") ? " workspace-main--chat" : ""}`}
