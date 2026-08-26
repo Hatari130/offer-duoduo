@@ -107,8 +107,11 @@ if [[ ! -f "$staging_path/apps/web/dist/index.html" ]]; then
 fi
 
 chown -R admin:admin "$staging_path"
-runuser -u admin -- env HOME=/home/admin CI=true \
-  /usr/bin/pnpm --dir "$staging_path" install --frozen-lockfile
+(
+  cd "$staging_path"
+  runuser -u admin -- env HOME=/home/admin CI=true \
+    /usr/bin/pnpm install --frozen-lockfile
+)
 
 set -a
 # shellcheck disable=SC1090
@@ -118,8 +121,11 @@ if [[ -z "${DATABASE_URL:-}" ]]; then
   echo "DATABASE_URL is required for migrations" >&2
   false
 fi
-runuser -u admin -- env HOME=/home/admin DATABASE_URL="$DATABASE_URL" \
-  /usr/bin/pnpm --dir "$staging_path" --filter @offerflow/api db:migrate
+(
+  cd "$staging_path"
+  runuser -u admin -- env HOME=/home/admin DATABASE_URL="$DATABASE_URL" \
+    /usr/bin/pnpm --filter @offerflow/api db:migrate
+)
 
 mv "$staging_path" "$release_path"
 rm -f "$next_link"
