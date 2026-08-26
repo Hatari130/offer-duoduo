@@ -96,13 +96,5 @@ jobs:
           target="${DEPLOY_USER}@${DEPLOY_HOST}"
           ssh_options=(-i ~/.ssh/jobkoi_deploy -o BatchMode=yes -o StrictHostKeyChecking=yes)
           scp "${ssh_options[@]}" release.tar.gz "$target:/www/wwwroot/jobkoi-incoming/${GITHUB_SHA}.tar.gz"
-          ssh "${ssh_options[@]}" "$target" "set -eu; \
-            release='/www/wwwroot/jobkoi-releases/${GITHUB_SHA}'; \
-            archive='/www/wwwroot/jobkoi-incoming/${GITHUB_SHA}.tar.gz'; \
-            test ! -e \"\$release\"; \
-            mkdir -p \"\$release\"; \
-            tar -xzf \"\$archive\" -C \"\$release\"; \
-            rm -f \"\$archive\"; \
-            cd \"\$release\"; \
-            CI=true /usr/bin/pnpm install --frozen-lockfile; \
-            sudo /usr/local/sbin/jobkoi-activate-release '${GITHUB_SHA}'"
+          ssh "${ssh_options[@]}" "$target" \
+            "sudo /usr/local/sbin/jobkoi-activate-release '${GITHUB_SHA}'"
