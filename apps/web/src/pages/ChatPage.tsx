@@ -45,7 +45,7 @@ const recommendationCards = [
 ] as const;
 
 export function ChatPage({ conversationId }: { conversationId?: string }) {
-  const { user } = useAuth();
+  const { status, requestLogin } = useAuth();
   const [conversation, setConversation] = useState<ChatConversation>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
@@ -91,6 +91,12 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
 
   useEffect(() => () => abortRef.current?.abort(), []);
 
+  const requireChatLogin = () => {
+    if (status !== "anonymous") return true;
+    requestLogin("登录后即可发送问题；你刚刚输入的内容会继续保留。");
+    return false;
+  };
+
   const consumeStream = async (
     stream: AsyncGenerator<import("@offerflow/contracts").ChatStreamEvent>,
     controller: AbortController
@@ -132,6 +138,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const send = async (suggested?: string) => {
     const content = (suggested ?? draft).trim();
     if (!content || streaming) return;
+    if (!requireChatLogin()) return;
     setError("");
     setStreaming(true);
     const controller = new AbortController();
@@ -181,6 +188,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
 
   const retry = async (message: ChatMessage) => {
     if (!conversation || streaming) return;
+    if (!requireChatLogin()) return;
     setStreaming(true);
     setError("");
     const controller = new AbortController();
@@ -229,6 +237,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             autoFocus
             onChange={setDraft}
             onAttachmentsChange={setAttachments}
+            onAttachmentRequest={requireChatLogin}
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
@@ -283,6 +292,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               streaming={streaming}
               onChange={setDraft}
               onAttachmentsChange={setAttachments}
+              onAttachmentRequest={requireChatLogin}
               onSubmit={() => void send()}
               onStop={() => abortRef.current?.abort()}
             />

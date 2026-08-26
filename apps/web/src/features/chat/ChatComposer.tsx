@@ -10,6 +10,7 @@ interface ChatComposerProps {
   autoFocus?: boolean;
   onChange: (value: string) => void;
   onAttachmentsChange: (attachments: ChatAttachment[]) => void;
+  onAttachmentRequest?: () => boolean;
   onSubmit: () => void;
   onStop: () => void;
 }
@@ -21,6 +22,7 @@ export function ChatComposer({
   autoFocus,
   onChange,
   onAttachmentsChange,
+  onAttachmentRequest,
   onSubmit,
   onStop
 }: ChatComposerProps) {
@@ -88,7 +90,10 @@ export function ChatComposer({
             className="composer-icon-button"
             type="button"
             aria-label="添加附件"
-            onClick={() => fileRef.current?.click()}
+            onClick={() => {
+              if (onAttachmentRequest && !onAttachmentRequest()) return;
+              fileRef.current?.click();
+            }}
             disabled={attachments.length >= 4}
           >
             <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />

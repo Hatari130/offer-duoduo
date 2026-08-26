@@ -123,6 +123,59 @@
   box-shadow: var(--of-shadow-float);
 }
 
+.auth-dialog {
+  width: min(30rem, calc(100vw - 2rem));
+  max-width: none;
+  max-height: min(46rem, calc(100dvh - 2rem));
+  margin: auto;
+  padding: 0;
+  overflow: visible;
+  color: inherit;
+  background: transparent;
+  border: 0;
+}
+
+.auth-dialog::backdrop {
+  background: color-mix(in srgb, var(--of-text-strong) 38%, transparent);
+  backdrop-filter: blur(0.35rem);
+}
+
+.auth-dialog-surface {
+  position: relative;
+  max-height: min(46rem, calc(100dvh - 2rem));
+  overflow: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--of-radius-lg);
+  box-shadow: 0 1.5rem 5rem rgb(30 37 55 / 0.28);
+}
+
+.auth-dialog .auth-card {
+  width: 100%;
+  box-shadow: none;
+}
+
+.auth-dialog-close {
+  position: absolute;
+  inset-block-start: 0.85rem;
+  inset-inline-end: 0.85rem;
+  z-index: 3;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  place-items: center;
+  color: var(--of-text-muted);
+  background: color-mix(in srgb, var(--of-surface) 88%, transparent);
+  border: 1px solid var(--of-line);
+  border-radius: 50%;
+}
+
+.auth-dialog-close:hover { color: var(--of-text-strong); background: var(--of-surface-raised); }
+
+.auth-dialog-close:focus-visible {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
 /* The existing decorative orbit becomes a quiet route contour. */
 .auth-card-orbit {
   position: absolute;
@@ -382,6 +435,27 @@
 @media (max-width: 30rem) {
   .auth-page { padding-inline: 0; padding-block-end: env(safe-area-inset-bottom); }
   .auth-card { border-radius: var(--of-radius-lg) var(--of-radius-lg) 0 0; }
+
+  .auth-dialog {
+    width: calc(100vw - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .auth-dialog-surface { max-height: calc(100dvh - 1rem); }
+  .auth-dialog .auth-card { border-radius: var(--of-radius-lg); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .auth-dialog[open] .auth-dialog-surface { animation: auth-dialog-enter 180ms ease-out both; }
+  .auth-dialog[open]::backdrop { animation: auth-backdrop-enter 180ms ease-out both; }
+}
+
+@keyframes auth-dialog-enter {
+  from { opacity: 0; transform: translateY(0.75rem) scale(0.985); }
+}
+
+@keyframes auth-backdrop-enter {
+  from { opacity: 0; }
 }
 
 .extension-connect-page {

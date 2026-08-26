@@ -32,14 +32,16 @@ interface AppLinkProps extends PropsWithChildren {
   href: string;
   className?: string;
   onNavigate?: () => void;
+  guard?: () => boolean;
   ariaCurrent?: "page";
   title?: string;
 }
 
-function AppLink({ href, className, onNavigate, ariaCurrent, title, children }: AppLinkProps) {
+function AppLink({ href, className, onNavigate, guard, ariaCurrent, title, children }: AppLinkProps) {
   const open = (event: MouseEvent<HTMLAnchorElement>) => {
     if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
     event.preventDefault();
+    if (guard && !guard()) return;
     navigate(href);
     onNavigate?.();
   };
@@ -47,16 +49,18 @@ function AppLink({ href, className, onNavigate, ariaCurrent, title, children }: 
 }
 
 const primaryNavigation = [
-  { href: "/app/chat", label: "求职助手", mobileLabel: "助手", icon: MessageCircleMore },
-  { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper },
-  { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2 },
-  { href: "/app/resumes", label: "简历中心", mobileLabel: "简历", icon: FileText },
-  { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness }
+  { href: "/app/chat", label: "求职助手", mobileLabel: "助手", icon: MessageCircleMore, requiresAuth: false },
+  { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper, requiresAuth: false },
+  { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2, requiresAuth: false },
+  { href: "/app/resumes", label: "简历中心", mobileLabel: "简历", icon: FileText, requiresAuth: true },
+  { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness, requiresAuth: true }
 ];
 
 export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: string }>) {
-  const { status, user, logout } = useAuth();
+  const { status, user, logout, requestLogin } = useAuth();
   const isGuest = status === "guest";
+  const isAnonymous = status === "anonymous";
+  const isVisitor = isAnonymous || isGuest;
   const [mobileOpen, setMobileOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     if (typeof window === "undefined") return false;
@@ -98,6 +102,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   }, []);
 
   useEffect(() => {
+    if (isAnonymous) {
+      setConversations([]);
+      return;
+    }
     let active = true;
     const load = () => {
       api.chat
@@ -113,7 +121,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       active = false;
       window.removeEventListener("offerflow:conversation-updated", load);
     };
-  }, [user?.id]);
+  }, [isAnonymous, user?.id]);
 
   const closeMobile = () => {
     setMobileOpen(false);
@@ -132,11 +140,17 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       setSidebarCollapsed(next);
     }, "sidebar");
   };
+  const requireLogin = (reason: string) => {
+    if (!isAnonymous) return true;
+    closeMobile();
+    requestLogin(reason);
+    return false;
+  };
 
   return (
     <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
-      <header className={`mobile-header${isGuest ? " is-guest" : ""}`}>
+      <header className={`mobile-header${isVisitor ? " is-guest" : ""}`}>
         <button
           type="button"
           aria-label="打开更多菜单"
@@ -147,8 +161,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           <Menu aria-hidden="true" size={21} />
         </button>
         <Logo />
-        {isGuest ? (
-          <AppLink href="/login" className="mobile-login-link">登录</AppLink>
+        {isVisitor ? (
+          <button className="mobile-login-link" type="button" onClick={() => requestLogin("登录后即可同步并继续使用全部功能。")}>登录</button>
         ) : (
           <span className="mobile-avatar" aria-hidden="true">{user?.displayName.slice(0, 1) || "O"}</span>
         )}
@@ -182,7 +196,13 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           </button>
         </div>
 
-        <AppLink href="/app/chat" className="new-chat-button" title={sidebarCollapsed ? "新对话" : undefined} onNavigate={closeMobile}>
+        <AppLink
+          href="/app/chat"
+          className="new-chat-button"
+          title={sidebarCollapsed ? "新对话" : undefined}
+          guard={() => requireLogin("登录后即可开始并保存新的求职对话。")}
+          onNavigate={closeMobile}
+        >
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
           新对话
           <span>⌘ K</span>
@@ -199,6 +219,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                 className={`nav-link${active ? " is-active" : ""}`}
                 ariaCurrent={active ? "page" : undefined}
                 title={sidebarCollapsed ? item.label : undefined}
+                guard={item.requiresAuth ? () => requireLogin(`登录后即可使用${item.label}。`) : undefined}
                 onNavigate={closeMobile}
               >
                 <Icon aria-hidden="true" size={18} strokeWidth={1.8} />
@@ -248,18 +269,18 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
             <em>免费</em>
           </a>
 
-          <div className={`sidebar-account-row${isGuest ? " is-guest" : ""}`}>
-            {isGuest ? (
-              <AppLink
-                href="/login"
+          <div className={`sidebar-account-row${isVisitor ? " is-guest" : ""}`}>
+            {isVisitor ? (
+              <button
+                type="button"
                 className="account-trigger account-trigger--guest"
                 title={sidebarCollapsed ? "登录" : undefined}
-                onNavigate={closeMobile}
+                onClick={() => requestLogin("登录后即可同步对话、简历和投递记录。")}
               >
                 <span className="account-avatar">访</span>
-                <span><strong>访客模式</strong><small>登录后同步</small></span>
+                <span><strong>点击登录</strong><small>登录后同步</small></span>
                 <LogIn aria-hidden="true" size={15} />
-              </AppLink>
+              </button>
             ) : (
               <div
                 className={`account-menu${accountOpen ? " is-open" : ""}`}
@@ -318,7 +339,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               </div>
             )}
 
-            {!isGuest && (
+            {!isVisitor && (
               <AppLink
                 href="/app/settings"
                 className="sidebar-footer-icon"
@@ -396,6 +417,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               href={item.href}
               className={`mobile-bottom-link${active ? " is-active" : ""}`}
               ariaCurrent={active ? "page" : undefined}
+              guard={item.requiresAuth ? () => requireLogin(`登录后即可使用${item.label}。`) : undefined}
             >
               <Icon aria-hidden="true" size={20} strokeWidth={1.8} />
               <span>{item.mobileLabel}</span>

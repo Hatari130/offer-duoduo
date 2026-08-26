@@ -680,6 +680,7 @@
   padding-inline: 1rem;
   color: var(--of-text-inverse);
   background: var(--of-brand-600);
+  border: 0;
   border-radius: 0.75rem;
   font-size: 0.82rem;
   font-weight: 680;

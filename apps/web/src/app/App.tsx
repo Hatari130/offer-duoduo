@@ -16,6 +16,8 @@ import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
 import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
 import { Logo } from "../components/Logo";
 import { LegalPage } from "../pages/LegalPage";
+import { AuthDialog } from "../components/AuthDialog";
+import { loginReasonForPath } from "./authAccess";
 
 const titles: Array<[RegExp, string]> = [
   [/^\/app\/chat/, "求职助手"],
@@ -33,16 +35,21 @@ const titles: Array<[RegExp, string]> = [
 
 export function App() {
   const pathname = usePathname();
-  const { status } = useAuth();
+  const { status, requestLogin } = useAuth();
   const extensionConnect = pathname.startsWith("/extension/connect");
   const extensionLanding = pathname.startsWith("/browser-extension");
   const legalPage = pathname === "/privacy" || pathname === "/terms";
+  const protectedReason = status === "anonymous" ? loginReasonForPath(pathname) : undefined;
 
   useEffect(() => {
-    if (status === "anonymous" && pathname !== "/login" && !extensionConnect && !extensionLanding && !legalPage) navigate("/login", { replace: true });
-    if (status === "authenticated" && pathname === "/login") navigate("/app/chat", { replace: true });
+    if (status === "anonymous" && protectedReason) {
+      requestLogin(protectedReason);
+      navigate("/app/chat", { replace: true });
+      return;
+    }
+    if ((status === "authenticated" || status === "guest") && pathname === "/login") navigate("/app/chat", { replace: true });
     if (
-      (status === "authenticated" || status === "guest")
+      status !== "loading"
       && pathname !== "/login"
       && !pathname.startsWith("/app")
       && !extensionConnect
@@ -51,12 +58,12 @@ export function App() {
     ) {
       navigate("/app/chat", { replace: true });
     }
-  }, [extensionConnect, extensionLanding, legalPage, pathname, status]);
+  }, [extensionConnect, extensionLanding, legalPage, pathname, protectedReason, requestLogin, status]);
 
   useEffect(() => {
     const section = titles.find(([pattern]) => pattern.test(pathname))?.[1];
     document.title = section ? `${section} · JobKoI` : "JobKoI · 求职工作台";
-    if (status === "authenticated" || status === "guest") {
+    if (status !== "loading" && pathname.startsWith("/app")) {
       window.requestAnimationFrame(() => document.querySelector<HTMLElement>("#main-content h1")?.focus());
     }
   }, [pathname, status]);
@@ -65,12 +72,13 @@ export function App() {
     const shortcut = (event: KeyboardEvent) => {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
-        navigate("/app/chat");
+        if (status === "anonymous") requestLogin("登录后即可开始并保存新的求职对话。");
+        else navigate("/app/chat");
       }
     };
     window.addEventListener("keydown", shortcut);
     return () => window.removeEventListener("keydown", shortcut);
-  }, []);
+  }, [requestLogin, status]);
 
   if (extensionLanding) return <BrowserExtensionPage />;
   if (legalPage) return <LegalPage kind={pathname === "/privacy" ? "privacy" : "terms"} />;
@@ -85,14 +93,14 @@ export function App() {
     );
   }
 
-  if (status === "anonymous") return <LoginPage />;
   if (pathname === "/login") return <LoginPage />;
-  if (pathname.startsWith("/app/upgrade")) return <MembershipPage />;
+  if (pathname.startsWith("/app/upgrade") && !protectedReason) return <MembershipPage />;
   const tailorMatch = pathname.match(/^\/app\/resumes\/tailor\/([^/]+)$/);
-  if (tailorMatch) return <ResumeStudioPage taskId={decodeURIComponent(tailorMatch[1])} />;
+  if (tailorMatch && !protectedReason) return <ResumeStudioPage taskId={decodeURIComponent(tailorMatch[1])} />;
 
   let page: React.ReactNode;
-  if (extensionConnect) page = <ExtensionConnectPage />;
+  if (protectedReason) page = <ChatPage />;
+  else if (extensionConnect) page = <ExtensionConnectPage />;
   else if (pathname.startsWith("/app/opportunities")) page = <OpportunitiesPage />;
   else if (pathname.startsWith("/app/companies")) page = <CompanyDirectoryPage />;
   else if (pathname.startsWith("/app/applications")) page = <ApplicationsPage />;
@@ -100,5 +108,10 @@ export function App() {
   else if (pathname.startsWith("/app/settings")) page = <SettingsPage />;
   else page = <ChatPage conversationId={conversationIdFromPath(pathname)} />;
 
-  return <AppShell pathname={pathname}>{page}</AppShell>;
+  return (
+    <>
+      <AppShell pathname={pathname}>{page}</AppShell>
+      <AuthDialog />
+    </>
+  );
 }

@@ -16,10 +16,13 @@ interface AuthContextValue {
   status: AuthStatus;
   user?: SessionUser;
   capabilities?: AuthCapabilities;
+  loginPrompt?: string;
   login: (request: LoginRequest) => Promise<void>;
   register: (request: RegisterRequest) => Promise<void>;
   enterDemo: () => Promise<void>;
   logout: () => Promise<void>;
+  requestLogin: (reason?: string) => void;
+  dismissLogin: () => void;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -46,11 +49,13 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<SessionUser>();
   const [capabilities, setCapabilities] = useState<AuthCapabilities>();
+  const [loginPrompt, setLoginPrompt] = useState<string>();
 
   const establishSession = useCallback(
     (session: { user: SessionUser }, nextStatus: "authenticated" | "guest" = "authenticated") => {
       setUser(session.user);
       setStatus(nextStatus);
+      setLoginPrompt(undefined);
     },
     []
   );
@@ -67,6 +72,14 @@ export function AuthProvider({ children }: PropsWithChildren) {
       clearSession();
     }
   }, [clearSession]);
+
+  const requestLogin = useCallback((reason = "登录后即可继续使用这项功能。") => {
+    setLoginPrompt(reason);
+  }, []);
+
+  const dismissLogin = useCallback(() => {
+    setLoginPrompt(undefined);
+  }, []);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -117,12 +130,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
       status,
       user,
       capabilities,
+      loginPrompt,
       login: async (request) => establishSession(await api.auth.login(request)),
       register: async (request) => establishSession(await api.auth.register(request)),
       enterDemo: async () => establishSession(await createGuestSessionOnce(), "guest"),
-      logout
+      logout,
+      requestLogin,
+      dismissLogin
     }),
-    [capabilities, establishSession, logout, status, user]
+    [capabilities, dismissLogin, establishSession, loginPrompt, logout, requestLogin, status, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
