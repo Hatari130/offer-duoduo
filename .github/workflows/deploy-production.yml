@@ -1,0 +1,109 @@
+name: Deploy production
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: jobkoi-production
+  cancel-in-progress: false
+
+jobs:
+  validate-and-package:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the exact commit
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Type-check workspaces
+        run: pnpm typecheck
+
+      - name: Run automated tests
+        run: pnpm test && pnpm --filter @offerflow/web test
+
+      - name: Build the production website
+        env:
+          VITE_API_BASE_URL: /api
+        run: pnpm --filter @offerflow/web build:production
+
+      - name: Package the immutable release
+        run: |
+          printf '%s\n' "$GITHUB_SHA" > REVISION
+          tar \
+            --exclude=.git \
+            --exclude=.github \
+            --exclude=node_modules \
+            --exclude='*/node_modules' \
+            --exclude='.env' \
+            --exclude='*/.env' \
+            --exclude='.env.*' \
+            --exclude='*/.env.*' \
+            --exclude=release.tar.gz \
+            -czf release.tar.gz .
+
+      - name: Store the release for the deploy job
+        uses: actions/upload-artifact@v7
+        with:
+          name: jobkoi-${{ github.sha }}
+          path: release.tar.gz
+          if-no-files-found: error
+          retention-days: 7
+
+  deploy:
+    needs: validate-and-package
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: production
+    steps:
+      - name: Download the validated release
+        uses: actions/download-artifact@v8
+        with:
+          name: jobkoi-${{ github.sha }}
+
+      - name: Configure the dedicated deploy key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.JOBKOI_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.JOBKOI_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/jobkoi_deploy
+          chmod 600 ~/.ssh/jobkoi_deploy
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload and activate the release
+        env:
+          DEPLOY_HOST: ${{ secrets.JOBKOI_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.JOBKOI_DEPLOY_USER }}
+        run: |
+          target="${DEPLOY_USER}@${DEPLOY_HOST}"
+          ssh_options=(-i ~/.ssh/jobkoi_deploy -o BatchMode=yes -o StrictHostKeyChecking=yes)
+          scp "${ssh_options[@]}" release.tar.gz "$target:/www/wwwroot/jobkoi-incoming/${GITHUB_SHA}.tar.gz"
+          ssh "${ssh_options[@]}" "$target" "set -eu; \
+            release='/www/wwwroot/jobkoi-releases/${GITHUB_SHA}'; \
+            archive='/www/wwwroot/jobkoi-incoming/${GITHUB_SHA}.tar.gz'; \
+            test ! -e \"\$release\"; \
+            mkdir -p \"\$release\"; \
+            tar -xzf \"\$archive\" -C \"\$release\"; \
+            rm -f \"\$archive\"; \
+            cd \"\$release\"; \
+            CI=true /usr/bin/pnpm install --frozen-lockfile; \
+            sudo /usr/local/sbin/jobkoi-activate-release '${GITHUB_SHA}'"

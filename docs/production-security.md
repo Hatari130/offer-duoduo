@@ -33,6 +33,14 @@
 6. 插件发布构建必须设置 `VITE_OFFERFLOW_API_URL=https://app.example.com/api`、`VITE_OFFERFLOW_WEB_URL=https://app.example.com`，再执行 `pnpm --filter @offerflow/extension build:production`。将商店分配的扩展 ID 写入 API 的精确 CORS 白名单。
 7. 做验收：注册开关、登录/退出、Cookie 标志、设备撤销、跨账号阻断、冲突选择、数据导出、账号删除、恢复备份、限流和安全响应头。
 
+## GitHub 单一发布源
+
+- `main` 是生产代码的唯一来源，禁止直接编辑或手工覆盖服务器工作目录。
+- 推送 `main` 后，GitHub Actions 会安装锁定依赖、运行类型检查与测试、构建 Web，再上传以 Git commit SHA 命名的不可变 release。
+- 服务器只保留 `/etc/jobkoi-api.env`、数据库、日志和备份等运行时状态；这些内容不进入 release，也不进入 GitHub。
+- `/www/wwwroot/jobkoi` 是指向当前 release 的符号链接。激活脚本先执行前向数据库迁移，再原子切换链接、重启 API 并检查健康状态；失败时恢复上一个 release。
+- GitHub 使用专用的 `admin` 部署密钥，并只能通过受限 sudo 命令激活已经上传且校验过结构的 release。
+
 ## 运维底线
 
 - PostgreSQL 每日加密备份，至少保留 7 个日备和 4 个周备；每季度做一次实际恢复演练。备份与生产机使用不同账号/区域。
