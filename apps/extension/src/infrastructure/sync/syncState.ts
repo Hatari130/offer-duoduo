@@ -10,6 +10,7 @@ export const CLOUD_SYNC_STATE_KEY = "offerflow.cloudSyncState";
 export const CLOUD_SYNC_OUTBOX_KEY = "offerflow.cloudSyncOutbox";
 export const CLOUD_SYNC_METADATA_KEY = "offerflow.cloudSyncMetadata";
 export const CLOUD_DEVICE_ID_KEY = "offerflow.cloudDeviceId";
+export const CLOUD_DATA_OWNER_KEY = "offerflow.cloudDataOwner";
 
 export interface CloudConnection {
   apiBaseUrl: string;
@@ -136,6 +137,18 @@ export async function saveCloudConnection(connection: CloudConnection): Promise<
   await writeValue(CLOUD_CONNECTION_KEY, connection);
 }
 
+export async function loadCloudDataOwner(): Promise<string | undefined> {
+  return readValue<string>(CLOUD_DATA_OWNER_KEY);
+}
+
+export async function saveCloudDataOwner(userId: string): Promise<void> {
+  await writeValue(CLOUD_DATA_OWNER_KEY, userId);
+}
+
+export async function clearCloudDataOwner(): Promise<void> {
+  await removeValues([CLOUD_DATA_OWNER_KEY]);
+}
+
 export async function loadCloudSyncState(): Promise<CloudSyncState> {
   const stored = await readValue<Partial<CloudSyncState>>(CLOUD_SYNC_STATE_KEY);
   return {
@@ -193,6 +206,8 @@ export async function getOrCreateCloudDeviceId(): Promise<string> {
 }
 
 export async function clearCloudSyncStorage(): Promise<void> {
+  // Keep CLOUD_DATA_OWNER_KEY. Disconnecting an account must never make the
+  // same local records look unowned and eligible for upload to another user.
   await removeValues([
     CLOUD_CONNECTION_KEY,
     CLOUD_SYNC_STATE_KEY,

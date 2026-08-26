@@ -99,7 +99,7 @@ function pdfJsAssetDirectory(directory: "cmaps" | "standard_fonts" | "wasm" | "i
   if (typeof chrome !== "undefined" && chrome.runtime?.getURL) {
     return chrome.runtime.getURL(relativePath);
   }
-  return new URL(`/${relativePath}`, globalThis.location?.origin || "http://127.0.0.1").href;
+  return new URL(`/${relativePath}`, globalThis.location?.origin || "https://extension.invalid").href;
 }
 
 function pdfDocumentOptions(buffer: ArrayBuffer) {

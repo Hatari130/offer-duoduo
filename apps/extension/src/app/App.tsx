@@ -56,9 +56,6 @@ import {
   refreshOpportunityFeed
 } from "@/features/opportunities/opportunities";
 import {
-  publishOpportunityFeed
-} from "@/infrastructure/sync/opportunitySync";
-import {
   STAGE_LABELS,
   selectableStage,
   type ApplicationStage,
@@ -162,7 +159,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         .then((snapshot) => {
           setOpportunitySnapshot(snapshot);
           setOpportunityError("");
-          publishSnapshot(snapshot);
         })
         .catch((error) => {
           if (storedSettings.opportunityFeedUrl) {
@@ -236,7 +232,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     try {
       const snapshot = await refreshOpportunityFeed(sourceUrl);
       setOpportunitySnapshot(snapshot);
-      publishSnapshot(snapshot);
       return snapshot;
     } catch (error) {
       const message = error instanceof Error ? error.message : "机会数据同步失败";
@@ -245,10 +240,6 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     } finally {
       setOpportunityLoading(false);
     }
-  };
-
-  const publishSnapshot = (snapshot: OpportunityFeedSnapshot) => {
-    void publishOpportunityFeed(snapshot).catch(() => undefined);
   };
 
   const openOpportunity = async (opportunity: RecruitmentOpportunity) => {

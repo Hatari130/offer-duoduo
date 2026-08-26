@@ -1,4 +1,4 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, statSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -70,6 +70,21 @@ for (const htmlFile of ["dashboard.html", "sidepanel.html", "resume.html", "tail
   for (const match of assetReferences) {
     if (!existsSync(join(distDirectory, match[1]))) {
       throw new Error(`${htmlFile} references a missing asset: ${match[1]}`);
+    }
+  }
+}
+
+if (process.argv.includes("--production")) {
+  const forbidden = ["http://127.0.0.1", "http://localhost", "chrome-extension://*"];
+  const walk = (directory, prefix = "") => readdirSync(directory).flatMap((name) => {
+    const absolute = join(directory, name);
+    const relative = join(prefix, name);
+    return statSync(absolute).isDirectory() ? walk(absolute, relative) : [relative];
+  });
+  for (const relativePath of walk(distDirectory).filter((file) => /\.m?js$/.test(file))) {
+    const source = readFileSync(join(distDirectory, relativePath), "utf8");
+    for (const value of forbidden) {
+      if (source.includes(value)) throw new Error(`Production extension contains forbidden endpoint ${value} in ${relativePath}`);
     }
   }
 }

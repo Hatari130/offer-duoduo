@@ -2668,6 +2668,31 @@
   line-height: 1.55;
 }
 
+.device-sessions-card,
+.data-rights-card { grid-column: span 2; }
+
+.device-session-list { list-style: none; margin: 0.5rem 0 0; padding: 0; display: grid; gap: 0.55rem; }
+.device-session-list li { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.75rem; border: 1px solid var(--of-border); border-radius: 12px; }
+.device-session-list li div { display: grid; gap: 0.22rem; }
+.device-session-list small { color: var(--of-text-muted); }
+.device-session-list .icon-button { min-width: 2.75rem; min-height: 2.75rem; border: 0; border-radius: 10px; background: transparent; color: var(--of-danger, #a13d32); cursor: pointer; }
+.device-session-list .icon-button:hover { background: color-mix(in srgb, #a13d32 9%, transparent); }
+.device-session-list .icon-button:focus-visible { outline: 2px solid var(--of-accent); outline-offset: 2px; }
+
+.data-rights-card details { margin-top: 0.8rem; }
+.data-rights-card summary { cursor: pointer; color: #8d3028; font-weight: 700; }
+.delete-account-form { display: grid; gap: 0.75rem; max-width: 34rem; padding-top: 1rem; }
+.delete-account-form label { display: grid; gap: 0.35rem; }
+.delete-account-form input { min-height: 2.75rem; padding: 0 0.75rem; border: 1px solid var(--of-border); border-radius: 10px; }
+.danger-button { display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem; min-height: 2.75rem; width: fit-content; padding: 0 1rem; border: 1px solid #a13d32; border-radius: 10px; background: #a13d32; color: white; font: inherit; font-weight: 700; cursor: pointer; }
+.danger-button:disabled { opacity: 0.55; cursor: not-allowed; }
+
+@media (max-width: 760px) {
+  .device-sessions-card,
+  .data-rights-card { grid-column: 1; }
+  .device-session-list li { align-items: flex-start; }
+}
+
 .settings-card-heading {
   display: flex;
   align-items: center;

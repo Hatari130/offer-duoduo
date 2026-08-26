@@ -8,7 +8,7 @@ extension, a shared API boundary and a PostgreSQL data model.
 | Workspace | Status | Purpose |
 | --- | --- | --- |
 | `apps/web` | runnable | Login, career chat, opportunity shell, application management and device pairing |
-| `apps/api` | runnable local runtime | Authentication, SSE chat, knowledge retrieval, applications and incremental sync |
+| `apps/api` | PostgreSQL production runtime | Cookie/device sessions, SSE chat, knowledge retrieval, applications and incremental sync |
 | `apps/extension` | runnable | Capture/autofill workspace plus local-first Web synchronization |
 | `packages/db` | migration-ready | PostgreSQL schema for auth, chat, knowledge, recruitment and private application data |
 
@@ -16,7 +16,7 @@ extension, a shared API boundary and a PostgreSQL data model.
 
 ```text
 apps/
-  api/                Node HTTP API and local in-memory repository
+  api/                Node HTTP API, PostgreSQL production store and local dev store
   extension/          browser extension
   web/                React/Vite companion website
 packages/
@@ -52,11 +52,16 @@ Type-check every implemented workspace:
 pnpm typecheck
 ```
 
-Build every implemented workspace, including the production extension:
+Build every development artifact:
 
 ```powershell
 pnpm build
 ```
+
+Production security, database migration and deployment steps are documented in
+[docs/production-security.md](docs/production-security.md). A production extension
+must use `build:production` with explicit HTTPS endpoints; the regular build is
+for local development.
 
 Run contract, API end-to-end and synchronization conflict tests:
 

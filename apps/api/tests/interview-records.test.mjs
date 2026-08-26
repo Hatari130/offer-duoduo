@@ -240,7 +240,8 @@ test("transcript and audio create private interview records and feed chat retrie
     body: JSON.stringify({
       displayName: "另一个用户",
       email: "other-interview@example.com",
-      password: "strong-pass-2026"
+      password: "strong-pass-2026",
+      acceptPrivacy: true
     })
   });
   const isolated = await requestJson(

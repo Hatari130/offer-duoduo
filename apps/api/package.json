@@ -6,12 +6,19 @@
   "scripts": {
     "dev": "node --experimental-transform-types --watch src/server.ts",
     "start": "node --experimental-transform-types src/server.ts",
+    "db:migrate": "node --experimental-transform-types scripts/migrate.ts",
+    "db:import-state": "node --experimental-transform-types scripts/import-state.ts",
+    "opportunities:import": "node --experimental-transform-types scripts/import-opportunities.ts",
     "build": "pnpm run typecheck",
     "typecheck": "tsc -p tsconfig.json --pretty false",
     "test": "node --experimental-transform-types --test tests/*.test.mjs"
   },
   "dependencies": {
     "@offerflow/contracts": "workspace:*",
-    "@offerflow/domain": "workspace:*"
+    "@offerflow/domain": "workspace:*",
+    "pg": "^8.23.0"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.23.1"
   }
 }

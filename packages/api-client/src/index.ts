@@ -4,6 +4,8 @@ import type {
   ApplicationListResponse,
   ApplicationSyncRequest,
   ApplicationSyncResponse,
+  AuthCapabilities,
+  AuthDeviceSession,
   AuthSession,
   ChatStreamEvent,
   ConversationListResponse,
@@ -25,8 +27,6 @@ import type {
   OpportunityDetailResponse,
   OpportunityImportStatusResponse,
   OpportunityListResponse,
-  OpportunitySyncRequest,
-  OpportunitySyncResponse,
   ProfileResponse,
   ResumeVersionResponse,
   ResumeVersionListResponse,
@@ -45,6 +45,7 @@ export interface ApiClientOptions {
   fetchImpl?: typeof globalThis.fetch;
   getAccessToken?: () => string | undefined | Promise<string | undefined>;
   onUnauthorized?: () => void;
+  credentials?: RequestCredentials;
 }
 
 export class OfferFlowApiError extends Error {
@@ -109,7 +110,7 @@ export function createApiClient(options: ApiClientOptions) {
 
   async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const headers = await createHeaders(init);
-    const response = await fetchImpl(`${baseUrl}${path}`, { ...init, headers });
+    const response = await fetchImpl(`${baseUrl}${path}`, { ...init, headers, credentials: options.credentials });
     if (!response.ok) throw await readError(response);
 
     const payload = (await response.json()) as ApiResponse<T>;
@@ -135,7 +136,8 @@ export function createApiClient(options: ApiClientOptions) {
       method: "POST",
       body: JSON.stringify(body),
       headers,
-      signal
+      signal,
+      credentials: options.credentials
     });
     if (!response.ok) throw await readError(response);
     if (!response.body) {
@@ -169,6 +171,7 @@ export function createApiClient(options: ApiClientOptions) {
   }
 
   const auth = {
+    capabilities: () => request<AuthCapabilities>("/v1/auth/capabilities"),
     login: (body: LoginRequest) =>
       request<AuthSession>("/v1/auth/login", {
         method: "POST",
@@ -181,7 +184,10 @@ export function createApiClient(options: ApiClientOptions) {
       }),
     demo: () => request<AuthSession>("/v1/auth/demo", { method: "POST" }),
     refresh: () => request<AuthSession>("/v1/auth/refresh", { method: "POST" }),
+    logout: () => request<{ loggedOut: true }>("/v1/auth/logout", { method: "POST" }),
     session: () => request<SessionResponse>("/v1/session"),
+    listSessions: () => request<{ sessions: AuthDeviceSession[]; currentSessionId: string }>("/v1/auth/sessions"),
+    revokeSession: (sessionId: string) => request<{ revoked: true }>(`/v1/auth/sessions/${encodeURIComponent(sessionId)}`, { method: "DELETE" }),
     createDeviceCode: () =>
       request<DeviceCodeResponse>("/v1/auth/device-codes", { method: "POST" }),
     exchangeDeviceCode: (body: ExchangeDeviceCodeRequest) =>
@@ -236,11 +242,6 @@ export function createApiClient(options: ApiClientOptions) {
       request<OpportunityDetailResponse>(
         `/v1/opportunities/${encodeURIComponent(opportunityId)}`
       ),
-    sync: (body: OpportunitySyncRequest) =>
-      request<OpportunitySyncResponse>("/v1/opportunities/sync", {
-        method: "POST",
-        body: JSON.stringify(body)
-      }),
     importStatus: () =>
       request<OpportunityImportStatusResponse>("/v1/imports/opportunities/status")
   };
@@ -331,8 +332,18 @@ export function createApiClient(options: ApiClientOptions) {
     }
   };
 
+  const account = {
+    exportData: () => request<Record<string, unknown>>("/v1/account/export"),
+    delete: (body: { password: string; confirmation: "DELETE" }) =>
+      request<{ deleted: true }>("/v1/account", {
+        method: "DELETE",
+        body: JSON.stringify(body)
+      })
+  };
+
   return {
     auth,
+    account,
     chat,
     opportunities,
     applications,

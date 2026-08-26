@@ -8,17 +8,19 @@ import loginJourney from "../assets/auth/login-journey.png";
 type Mode = "login" | "register";
 
 export function LoginPage() {
-  const { login, register, enterDemo } = useAuth();
+  const { login, register, enterDemo, capabilities } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [acceptPrivacy, setAcceptPrivacy] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const consentRef = useRef<HTMLInputElement>(null);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
@@ -38,11 +40,16 @@ export function LoginPage() {
       passwordRef.current?.focus();
       return;
     }
+    if (mode === "register" && !acceptPrivacy) {
+      setError("请先阅读并同意隐私政策与用户协议");
+      consentRef.current?.focus();
+      return;
+    }
 
     setBusy(true);
     try {
       if (mode === "login") await login({ email: email.trim(), password });
-      else await register({ email: email.trim(), password, displayName: displayName.trim() });
+      else await register({ email: email.trim(), password, displayName: displayName.trim(), acceptPrivacy });
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "暂时无法登录，请稍后重试");
     } finally {
@@ -87,7 +94,9 @@ export function LoginPage() {
 
           <div className="auth-mode" aria-label="账号操作">
             <button type="button" aria-pressed={mode === "login"} onClick={() => { setMode("login"); setError(""); }}>登录</button>
-            <button type="button" aria-pressed={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>创建账号</button>
+            {capabilities?.registrationMode !== "closed" && (
+              <button type="button" aria-pressed={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>创建账号</button>
+            )}
           </div>
 
           <form className="auth-form" onSubmit={submit} noValidate>
@@ -98,6 +107,7 @@ export function LoginPage() {
                   ref={nameRef}
                   name="name"
                   autoComplete="name"
+                  maxLength={80}
                   value={displayName}
                   onChange={(event) => setDisplayName(event.target.value)}
                   aria-invalid={Boolean(error && !displayName.trim())}
@@ -114,8 +124,10 @@ export function LoginPage() {
                 inputMode="email"
                 autoComplete="email"
                 spellCheck={false}
+                maxLength={254}
                 value={email}
                 onChange={(event) => setEmail(event.target.value)}
+                aria-describedby={error ? "auth-error" : undefined}
                 placeholder="name@example.com"
               />
             </label>
@@ -127,8 +139,10 @@ export function LoginPage() {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   autoComplete={mode === "login" ? "current-password" : "new-password"}
+                  maxLength={256}
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
+                  aria-describedby={error ? "auth-error" : undefined}
                   placeholder={mode === "register" ? "至少 8 个字符" : "输入你的密码"}
                 />
                 <button
@@ -141,7 +155,21 @@ export function LoginPage() {
               </span>
             </label>
 
-            <div className="auth-error" role={error ? "alert" : undefined} aria-live="polite">
+            {mode === "register" && (
+              <label className="auth-consent">
+                <input
+                  ref={consentRef}
+                  type="checkbox"
+                  checked={acceptPrivacy}
+                  onChange={(event) => setAcceptPrivacy(event.target.checked)}
+                  aria-invalid={Boolean(error && !acceptPrivacy)}
+                  aria-describedby={error ? "auth-error" : undefined}
+                />
+                <span>我已阅读并同意<a href="/privacy" target="_blank" rel="noreferrer">隐私政策</a>与<a href="/terms" target="_blank" rel="noreferrer">用户协议</a></span>
+              </label>
+            )}
+
+            <div id="auth-error" className="auth-error" role={error ? "alert" : undefined} aria-live="polite">
               {error}
             </div>
 
@@ -152,11 +180,9 @@ export function LoginPage() {
             </button>
           </form>
 
-          <div className="auth-divider"><span>或</span></div>
-          <button className="auth-demo" type="button" onClick={useDemo} disabled={busy}>
-            进入体验账号
-          </button>
-          <footer><ShieldCheck aria-hidden="true" size={14} />登录信息只用于 JobKoI 数据同步</footer>
+          {capabilities?.demoEnabled && <><div className="auth-divider"><span>或</span></div>
+            <button className="auth-demo" type="button" onClick={useDemo} disabled={busy}>进入体验账号</button></>}
+          <footer><ShieldCheck aria-hidden="true" size={14} />会话保存在安全 Cookie 中，密码不会明文存储</footer>
         </div>
       </section>
     </main>

@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1",
     "build": "pnpm run typecheck && vite build",
+    "build:production": "node scripts/validate-production-env.mjs && pnpm run typecheck && vite build",
+    "test": "node --experimental-transform-types --test tests/*.test.mjs",
     "typecheck": "tsc -p tsconfig.json --pretty false"
   },
   "dependencies": {

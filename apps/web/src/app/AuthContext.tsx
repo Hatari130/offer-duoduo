@@ -7,18 +7,19 @@ import {
   useState,
   type PropsWithChildren
 } from "react";
-import type { LoginRequest, RegisterRequest, SessionUser } from "@offerflow/contracts";
-import { ACCESS_TOKEN_KEY, api } from "./api";
+import type { AuthCapabilities, LoginRequest, RegisterRequest, SessionUser } from "@offerflow/contracts";
+import { api } from "./api";
 
 type AuthStatus = "loading" | "authenticated" | "guest" | "anonymous";
 
 interface AuthContextValue {
   status: AuthStatus;
   user?: SessionUser;
+  capabilities?: AuthCapabilities;
   login: (request: LoginRequest) => Promise<void>;
   register: (request: RegisterRequest) => Promise<void>;
   enterDemo: () => Promise<void>;
-  logout: () => void;
+  logout: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -44,24 +45,28 @@ function createGuestSessionOnce() {
 export function AuthProvider({ children }: PropsWithChildren) {
   const [status, setStatus] = useState<AuthStatus>("loading");
   const [user, setUser] = useState<SessionUser>();
+  const [capabilities, setCapabilities] = useState<AuthCapabilities>();
 
   const establishSession = useCallback(
-    (session: { accessToken: string; user: SessionUser }, nextStatus: "authenticated" | "guest" = "authenticated") => {
-      window.localStorage.setItem(ACCESS_TOKEN_KEY, session.accessToken);
+    (session: { user: SessionUser }, nextStatus: "authenticated" | "guest" = "authenticated") => {
       setUser(session.user);
       setStatus(nextStatus);
     },
     []
   );
 
-  const logout = useCallback(() => {
-    window.localStorage.removeItem(ACCESS_TOKEN_KEY);
+  const clearSession = useCallback(() => {
     setUser(undefined);
-    setStatus("loading");
-    void createGuestSessionOnce()
-      .then((session) => establishSession(session, "guest"))
-      .catch(() => setStatus("anonymous"));
-  }, [establishSession]);
+    setStatus("anonymous");
+  }, []);
+
+  const logout = useCallback(async () => {
+    try {
+      await api.auth.logout();
+    } finally {
+      clearSession();
+    }
+  }, [clearSession]);
 
   useEffect(() => {
     const url = new URL(window.location.href);
@@ -83,51 +88,41 @@ export function AuthProvider({ children }: PropsWithChildren) {
       };
     }
 
-    const token = window.localStorage.getItem(ACCESS_TOKEN_KEY);
-    if (!token) {
-      let active = true;
-      void createGuestSessionOnce()
-        .then((session) => {
-          if (active) establishSession(session, "guest");
-        })
-        .catch(() => {
-          if (active) setStatus("anonymous");
-        });
-      return () => {
-        active = false;
-      };
-    }
     let active = true;
+    void api.auth.capabilities().then((value) => {
+      if (active) setCapabilities(value);
+    }).catch(() => undefined);
     api.auth
       .session()
       .then((session) => {
         if (!active) return;
         setUser(session.user);
-        setStatus(session.user.id === "demo-user" ? "guest" : "authenticated");
+        setStatus(session.user.email === "demo@offerflow.cn" ? "guest" : "authenticated");
       })
       .catch(() => {
-        if (active) logout();
+        if (active) clearSession();
       });
     return () => {
       active = false;
     };
-  }, [establishSession, logout]);
+  }, [clearSession, establishSession]);
 
   useEffect(() => {
-    window.addEventListener("offerflow:unauthorized", logout);
-    return () => window.removeEventListener("offerflow:unauthorized", logout);
-  }, [logout]);
+    window.addEventListener("offerflow:unauthorized", clearSession);
+    return () => window.removeEventListener("offerflow:unauthorized", clearSession);
+  }, [clearSession]);
 
   const value = useMemo<AuthContextValue>(
     () => ({
       status,
       user,
+      capabilities,
       login: async (request) => establishSession(await api.auth.login(request)),
       register: async (request) => establishSession(await api.auth.register(request)),
       enterDemo: async () => establishSession(await createGuestSessionOnce(), "guest"),
       logout
     }),
-    [establishSession, logout, status, user]
+    [capabilities, establishSession, logout, status, user]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

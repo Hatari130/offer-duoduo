@@ -19,6 +19,22 @@ export interface LoginRequest {
 
 export interface RegisterRequest extends LoginRequest {
   displayName: string;
+  acceptPrivacy: boolean;
+}
+
+export interface AuthCapabilities {
+  registrationMode: "open" | "allowlist" | "closed";
+  demoEnabled: boolean;
+}
+
+export interface AuthDeviceSession {
+  id: string;
+  scope: "user" | "device";
+  deviceId?: string;
+  deviceName?: string;
+  createdAt: string;
+  lastSeenAt: string;
+  expiresAt: string;
 }
 
 export interface SessionResponse {
@@ -52,7 +68,8 @@ export function isRegisterRequest(value: unknown): value is RegisterRequest {
   return (
     isRecord(value) &&
     isLoginRequest(value) &&
-    typeof (value as Record<string, unknown>).displayName === "string"
+    typeof (value as Record<string, unknown>).displayName === "string" &&
+    (value as Record<string, unknown>).acceptPrivacy === true
   );
 }
 

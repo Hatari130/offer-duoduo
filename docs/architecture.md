@@ -73,8 +73,9 @@ Server-only boundary for:
 - platform-owned AI requests;
 - database transactions.
 
-The local runtime is a Node HTTP server with an in-memory repository. Its store
-interface is the seam for replacing local memory with PostgreSQL in deployment.
+The Node HTTP runtime selects PostgreSQL whenever `DATABASE_URL` is present.
+The file-backed memory repository exists only for local development and tests;
+production startup validation rejects it.
 Chat uses deterministic SSE locally and an OpenAI-compatible server-side model
 when the corresponding environment variables are configured.
 

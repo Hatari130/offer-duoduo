@@ -39,6 +39,7 @@ import {
   X
 } from "lucide-react";
 import { api } from "../app/api";
+import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
 import { InterviewRecordsDialog } from "../features/applications/InterviewRecordsDialog";
 
@@ -215,7 +216,7 @@ export function ApplicationsPage() {
       events: [
         ...item.application.events,
         {
-          id: crypto.randomUUID(),
+          id: createUuid(),
           type: "stage_changed",
           title: `${applicationStageLabel(item.application)} → ${selectedStageLabel(nextStage, item.application.closedReason, item.application.interviewRound)}`,
           occurredAt: now
@@ -236,7 +237,7 @@ export function ApplicationsPage() {
       events: [
         ...item.application.events,
         {
-          id: crypto.randomUUID(),
+          id: createUuid(),
           type: "stage_changed",
           title: `结束原因更新为：${closedReason ? CLOSED_STAGE_REASON_LABELS[closedReason] : "未标注"}`,
           occurredAt: now
@@ -257,7 +258,7 @@ export function ApplicationsPage() {
       events: [
         ...item.application.events,
         {
-          id: crypto.randomUUID(),
+          id: createUuid(),
           type: "stage_changed",
           title: `面试轮次更新为：${interviewRound ? INTERVIEW_ROUND_LABELS[interviewRound] : "未标注"}`,
           occurredAt: now
@@ -559,48 +560,48 @@ function ApplicationDialog({
       return;
     }
     setBusy(true);
-    const now = new Date().toISOString();
-    const providedSourceUrl = sourceUrl.trim();
-    const url = providedSourceUrl || "offerflow://manual";
-    const application: JobApplication = item
-      ? {
-          ...item.application,
-          company: company.trim(),
-          position: position.trim(),
-          city: city.trim() || undefined,
-          recruitmentType: recruitmentType || undefined,
-          stage,
-          closedReason: stage === "closed" ? closedReason || undefined : undefined,
-          interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
-          appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
-          sourceUrl: url,
-          sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
-          updatedAt: now,
-          events: [
-            ...item.application.events,
-            { id: crypto.randomUUID(), type: "updated", title: "在 Web 端更新投递信息", occurredAt: now }
-          ]
-        }
-      : {
-          id: crypto.randomUUID(),
-          company: company.trim(),
-          position: position.trim(),
-          city: city.trim() || undefined,
-          recruitmentType: recruitmentType || undefined,
-          stage,
-          closedReason: stage === "closed" ? closedReason || undefined : undefined,
-          interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
-          appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
-          sourceUrl: url,
-          sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
-          responsibilities: [],
-          requirements: [],
-          createdAt: now,
-          updatedAt: now,
-          events: [{ id: crypto.randomUUID(), type: "created", title: "创建投递记录", occurredAt: now }]
-        };
-
     try {
+      const now = new Date().toISOString();
+      const providedSourceUrl = sourceUrl.trim();
+      const url = providedSourceUrl || "offerflow://manual";
+      const application: JobApplication = item
+        ? {
+            ...item.application,
+            company: company.trim(),
+            position: position.trim(),
+            city: city.trim() || undefined,
+            recruitmentType: recruitmentType || undefined,
+            stage,
+            closedReason: stage === "closed" ? closedReason || undefined : undefined,
+            interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
+            appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
+            sourceUrl: url,
+            sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
+            updatedAt: now,
+            events: [
+              ...item.application.events,
+              { id: createUuid(), type: "updated", title: "在 Web 端更新投递信息", occurredAt: now }
+            ]
+          }
+        : {
+            id: createUuid(),
+            company: company.trim(),
+            position: position.trim(),
+            city: city.trim() || undefined,
+            recruitmentType: recruitmentType || undefined,
+            stage,
+            closedReason: stage === "closed" ? closedReason || undefined : undefined,
+            interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
+            appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
+            sourceUrl: url,
+            sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
+            responsibilities: [],
+            requirements: [],
+            createdAt: now,
+            updatedAt: now,
+            events: [{ id: createUuid(), type: "created", title: "创建投递记录", occurredAt: now }]
+          };
+
       const result = item
         ? await api.applications.update(application.id, { application, expectedRevision: item.revision })
         : await api.applications.create({ application });

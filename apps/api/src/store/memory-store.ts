@@ -1,4 +1,4 @@
-import { randomInt, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type {
@@ -29,6 +29,14 @@ import {
   type TailorTask
 } from "@offerflow/domain";
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
+import {
+  StoreError,
+  type InterviewRecordInput,
+  type IssuedStoreSession,
+  type OfferFlowStore,
+  type SessionRecord,
+  type SessionScope
+} from "./store.ts";
 
 interface StoredUser extends SessionUser {
   passwordHash: string;
@@ -61,6 +69,10 @@ interface HandoffCode {
   userId: string;
   targetPath: string;
   expiresAt: string;
+}
+
+interface StoredSession extends SessionRecord {
+  tokenHash: string;
 }
 
 interface StoredResumeVersion {
@@ -101,18 +113,19 @@ interface PersistedStoreState {
   syncLog: SyncLogEntry[];
   sequence: number;
   opportunityFeed?: OpportunityFeedSnapshot;
+  sessions?: StoredSession[];
 }
 
 const DEFAULT_DATA_FILE = join(process.cwd(), ".offerflow-data", "state.json");
 
-export class MemoryStoreError extends Error {
+export class MemoryStoreError extends StoreError {
   constructor(
-    readonly code: string,
+    code: string,
     message: string,
-    readonly status = 400,
-    readonly details?: Record<string, unknown>
+    status = 400,
+    details?: Record<string, unknown>
   ) {
-    super(message);
+    super(code, message, status, details);
     this.name = "MemoryStoreError";
   }
 }
@@ -129,12 +142,16 @@ function normalizeDeviceCode(code: string): string {
   return code.trim().replace(/[\s-]/g, "");
 }
 
+function hashSecret(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
 function titleFromMessage(content: string): string {
   const title = content.trim().replace(/\s+/g, " ");
   return title.length > 24 ? `${title.slice(0, 24)}…` : title || "新的求职对话";
 }
 
-export class MemoryStore {
+export class MemoryStore implements OfferFlowStore {
   private readonly users = new Map<string, StoredUser>();
   private readonly usersByEmail = new Map<string, string>();
   private readonly conversations = new Map<string, StoredConversation>();
@@ -145,6 +162,8 @@ export class MemoryStore {
   private readonly interviewRecords = new Map<string, StoredInterviewRecord>();
   private readonly deviceCodes = new Map<string, DeviceCode>();
   private readonly handoffCodes = new Map<string, HandoffCode>();
+  private readonly sessionsByHash = new Map<string, StoredSession>();
+  private readonly sessionHashById = new Map<string, string>();
   private readonly appliedChanges = new Map<string, number>();
   private readonly syncLog: SyncLogEntry[] = [];
   private opportunityFeed?: OpportunityFeedSnapshot;
@@ -211,6 +230,10 @@ export class MemoryStore {
       ) {
         this.opportunityFeed = parsed.opportunityFeed;
       }
+      for (const session of parsed.sessions ?? []) {
+        this.sessionsByHash.set(session.tokenHash, session);
+        this.sessionHashById.set(session.id, session.tokenHash);
+      }
     } catch {
       // A corrupt or partial state file must not prevent the API from starting.
     }
@@ -231,7 +254,8 @@ export class MemoryStore {
       appliedChanges: Object.fromEntries(this.appliedChanges),
       syncLog: this.syncLog,
       sequence: this.sequence,
-      opportunityFeed: this.opportunityFeed
+      opportunityFeed: this.opportunityFeed,
+      sessions: [...this.sessionsByHash.values()]
     };
     const temporary = `${this.dataFile}.tmp`;
     mkdirSync(dirname(this.dataFile), { recursive: true });
@@ -274,6 +298,113 @@ export class MemoryStore {
     return this.publicUser(this.users.get("demo-user")!);
   }
 
+  recordConsent(_userId: string, _consentType: string, _policyVersion: string): void {
+    // The development store intentionally carries no compliance guarantees;
+    // production uses PostgreSQL, where consent is append-only and audited.
+  }
+
+  deleteUser(userId: string): boolean {
+    const user = this.users.get(userId);
+    if (!user) return false;
+    this.users.delete(userId);
+    this.usersByEmail.delete(normalizeEmail(user.email));
+    for (const [id, value] of this.conversations) if (value.userId === userId) { this.conversations.delete(id); this.messages.delete(id); }
+    for (const [key, value] of this.applications) if (value.userId === userId) this.applications.delete(key);
+    for (const [key, value] of this.resumeVersions) if (value.userId === userId) this.resumeVersions.delete(key);
+    for (const [key, value] of this.tailorTasks) if (value.userId === userId) this.tailorTasks.delete(key);
+    for (const [key, value] of this.interviewRecords) if (value.userId === userId) this.interviewRecords.delete(key);
+    for (const [hash, value] of this.sessionsByHash) if (value.userId === userId) { this.sessionsByHash.delete(hash); this.sessionHashById.delete(value.id); }
+    for (const [hash, value] of this.deviceCodes) if (value.userId === userId) this.deviceCodes.delete(hash);
+    for (const [hash, value] of this.handoffCodes) if (value.userId === userId) this.handoffCodes.delete(hash);
+    for (const key of this.appliedChanges.keys()) if (key.startsWith(`${userId}:`)) this.appliedChanges.delete(key);
+    for (let index = this.syncLog.length - 1; index >= 0; index -= 1) if (this.syncLog[index].userId === userId) this.syncLog.splice(index, 1);
+    this.persist();
+    return true;
+  }
+
+  createSession(
+    userId: string,
+    scope: SessionScope,
+    expiresAt: string,
+    deviceId?: string,
+    deviceName?: string
+  ): IssuedStoreSession {
+    if (!this.users.has(userId)) {
+      throw new MemoryStoreError("USER_NOT_FOUND", "账号不存在或已经停用", 404);
+    }
+    const accessToken = randomBytes(32).toString("base64url");
+    const tokenHash = hashSecret(accessToken);
+    const now = new Date().toISOString();
+    const session: StoredSession = {
+      id: randomUUID(),
+      userId,
+      scope,
+      deviceId,
+      deviceName,
+      createdAt: now,
+      lastSeenAt: now,
+      expiresAt,
+      tokenHash
+    };
+    this.sessionsByHash.set(tokenHash, session);
+    this.sessionHashById.set(session.id, tokenHash);
+    this.persist();
+    const { tokenHash: _tokenHash, ...publicSession } = session;
+    return { accessToken, session: clone(publicSession) };
+  }
+
+  resolveSession(accessToken: string): SessionRecord | undefined {
+    const stored = this.sessionsByHash.get(hashSecret(accessToken));
+    if (!stored || stored.revokedAt || Date.parse(stored.expiresAt) <= Date.now()) return undefined;
+    stored.lastSeenAt = new Date().toISOString();
+    const { tokenHash: _tokenHash, ...session } = stored;
+    return clone(session);
+  }
+
+  rotateSession(accessToken: string, expiresAt: string): IssuedStoreSession | undefined {
+    const oldHash = hashSecret(accessToken);
+    const stored = this.sessionsByHash.get(oldHash);
+    if (!stored || stored.revokedAt || Date.parse(stored.expiresAt) <= Date.now()) return undefined;
+    const nextToken = randomBytes(32).toString("base64url");
+    const nextHash = hashSecret(nextToken);
+    const next: StoredSession = {
+      ...stored,
+      tokenHash: nextHash,
+      expiresAt,
+      lastSeenAt: new Date().toISOString()
+    };
+    this.sessionsByHash.delete(oldHash);
+    this.sessionsByHash.set(nextHash, next);
+    this.sessionHashById.set(next.id, nextHash);
+    this.persist();
+    const { tokenHash: _tokenHash, ...session } = next;
+    return { accessToken: nextToken, session: clone(session) };
+  }
+
+  revokeSession(accessToken: string): boolean {
+    const stored = this.sessionsByHash.get(hashSecret(accessToken));
+    if (!stored || stored.revokedAt) return false;
+    stored.revokedAt = new Date().toISOString();
+    this.persist();
+    return true;
+  }
+
+  listSessions(userId: string): SessionRecord[] {
+    return [...this.sessionsByHash.values()]
+      .filter((session) => session.userId === userId && !session.revokedAt && Date.parse(session.expiresAt) > Date.now())
+      .map(({ tokenHash: _tokenHash, ...session }) => clone(session))
+      .sort((left, right) => right.lastSeenAt.localeCompare(left.lastSeenAt));
+  }
+
+  revokeUserSession(userId: string, sessionId: string): boolean {
+    const tokenHash = this.sessionHashById.get(sessionId);
+    const stored = tokenHash ? this.sessionsByHash.get(tokenHash) : undefined;
+    if (!stored || stored.userId !== userId || stored.revokedAt) return false;
+    stored.revokedAt = new Date().toISOString();
+    this.persist();
+    return true;
+  }
+
   private publicUser(user: StoredUser): SessionUser {
     return { id: user.id, email: user.email, displayName: user.displayName };
   }
@@ -282,14 +413,14 @@ export class MemoryStore {
     let code = "";
     do {
       code = `${randomInt(1000, 10000)}-${randomInt(1000, 10000)}`;
-    } while (this.deviceCodes.has(code));
+    } while (this.deviceCodes.has(hashSecret(normalizeDeviceCode(code))));
     const expiresAt = new Date(now + 10 * 60 * 1000).toISOString();
-    this.deviceCodes.set(normalizeDeviceCode(code), { userId, expiresAt });
+    this.deviceCodes.set(hashSecret(normalizeDeviceCode(code)), { userId, expiresAt });
     return { code, expiresAt };
   }
 
   exchangeDeviceCode(code: string, now = Date.now()): SessionUser | undefined {
-    const normalized = normalizeDeviceCode(code);
+    const normalized = hashSecret(normalizeDeviceCode(code));
     const record = this.deviceCodes.get(normalized);
     if (!record || Date.parse(record.expiresAt) <= now) {
       this.deviceCodes.delete(normalized);
@@ -490,14 +621,7 @@ export class MemoryStore {
   createInterviewRecord(
     userId: string,
     applicationId: string,
-    input: {
-      title?: string;
-      sourceType: InterviewRecordSourceType;
-      transcript?: string;
-      qaPairs?: InterviewQaPair[];
-      status?: InterviewRecord["status"];
-      error?: string;
-    }
+    input: InterviewRecordInput
   ): InterviewRecord {
     const application = this.getApplication(userId, applicationId);
     if (!application) {
@@ -644,7 +768,8 @@ export class MemoryStore {
           message: current?.deletedAt
             ? "这条投递已在其他设备删除"
             : "这条投递已在其他设备更新",
-          server: current
+          server: current,
+          local: clone(change)
         });
         continue;
       }
@@ -836,12 +961,12 @@ export class MemoryStore {
   createHandoffCode(userId: string, targetPath: string): { code: string; expiresAt: string } {
     const code = randomUUID().replace(/-/g, "");
     const expiresAt = new Date(Date.now() + 2 * 60 * 1000).toISOString();
-    this.handoffCodes.set(code, { userId, targetPath, expiresAt });
+    this.handoffCodes.set(hashSecret(code), { userId, targetPath, expiresAt });
     return { code, expiresAt };
   }
 
   exchangeHandoffCode(code: string): { user: SessionUser; targetPath: string } | undefined {
-    const normalized = code.trim();
+    const normalized = hashSecret(code.trim());
     const stored = this.handoffCodes.get(normalized);
     this.handoffCodes.delete(normalized);
     if (!stored || new Date(stored.expiresAt).getTime() <= Date.now()) return undefined;

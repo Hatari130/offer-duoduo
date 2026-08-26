@@ -4,6 +4,7 @@ import { CAREER_CHAT_SUGGESTIONS } from "@offerflow/domain";
 import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
+import { createUuid } from "../app/id";
 import { navigate } from "../app/router";
 import { ChatComposer } from "../features/chat/ChatComposer";
 import { MessageList } from "../features/chat/MessageList";
@@ -147,7 +148,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       }
 
       const clientMessage: ChatMessage = {
-        id: crypto.randomUUID(),
+        id: createUuid(),
         conversationId: activeConversation.id,
         role: "user",
         content,
@@ -189,7 +190,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         api.chat.retryMessage(
           conversation.id,
           message.id,
-          { clientMessageId: crypto.randomUUID() },
+          { clientMessageId: createUuid() },
           controller.signal
         ),
         controller

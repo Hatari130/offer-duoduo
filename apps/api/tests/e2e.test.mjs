@@ -29,7 +29,7 @@ async function startTestServer() {
     host: "127.0.0.1",
     port: 0,
     demoStreamDelayMs: 0,
-    tokenSecret: "offerflow-e2e-secret"
+    opportunityIngestKey: "offerflow-e2e-ingest-key-long-enough"
   };
   const assistant = {
     model: "test-assistant",
@@ -78,10 +78,13 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     body: JSON.stringify({
       displayName: "测试用户",
       email: "candidate@example.com",
-      password: "strong-pass-2026"
+      password: "strong-pass-2026",
+      acceptPrivacy: true
     })
   });
   assert.equal(registered.response.status, 201);
+  assert.match(registered.response.headers.get("set-cookie"), /HttpOnly/i);
+  assert.match(registered.response.headers.get("set-cookie"), /SameSite=Lax/i);
   const loggedIn = await jsonRequest(app.baseUrl, "/v1/auth/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -96,7 +99,8 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     body: JSON.stringify({
       displayName: "重复用户",
       email: "candidate@example.com",
-      password: "strong-pass-2026"
+      password: "strong-pass-2026",
+      acceptPrivacy: true
     })
   });
   assert.equal(duplicateRegistration.response.status, 409);
@@ -183,7 +187,7 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   assert.equal(reused.response.status, 401);
 });
 
-test("opportunity catalogue is public and accepts extension snapshots", async (t) => {
+test("opportunity catalogue is public and only accepts trusted importer snapshots", async (t) => {
   const app = await startTestServer();
   t.after(async () => {
     app.server.close();
@@ -197,6 +201,13 @@ test("opportunity catalogue is public and accepts extension snapshots", async (t
   const initial = await jsonRequest(app.baseUrl, "/v1/opportunities");
   assert.equal(initial.response.status, 200);
   assert.deepEqual(initial.payload.data.opportunities, []);
+
+  const forbidden = await jsonRequest(app.baseUrl, "/v1/opportunities/sync", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ opportunities: [] })
+  });
+  assert.equal(forbidden.response.status, 403);
 
   const opportunity = {
     id: "opp_e2e",
@@ -213,7 +224,7 @@ test("opportunity catalogue is public and accepts extension snapshots", async (t
   };
   const synced = await jsonRequest(app.baseUrl, "/v1/opportunities/sync", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "X-OfferFlow-Ingest-Key": "offerflow-e2e-ingest-key-long-enough" },
     body: JSON.stringify({
       opportunities: [opportunity],
       fetchedAt: "2026-08-08T10:00:00.000Z",
@@ -237,7 +248,7 @@ test("opportunity catalogue is public and accepts extension snapshots", async (t
 
   const invalid = await jsonRequest(app.baseUrl, "/v1/opportunities/sync", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", "X-OfferFlow-Ingest-Key": "offerflow-e2e-ingest-key-long-enough" },
     body: JSON.stringify({ opportunities: [{ id: "broken" }] })
   });
   assert.equal(invalid.response.status, 400);

@@ -45,12 +45,13 @@ import {
   UserRound
 } from "lucide-react";
 import { api } from "../app/api";
+import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
 
 type StudioTab = "preview" | "editor";
 type SaveState = "idle" | "saving" | "saved" | "error";
 
-const makeId = (prefix: string) => `${prefix}_${crypto.randomUUID()}`;
+const makeId = (prefix: string) => `${prefix}_${createUuid()}`;
 
 function displayDate(value?: string): string {
   return value?.replace(/年|月/g, ".").replace(/\.$/, "") || "";
@@ -71,7 +72,7 @@ function TextField({
   wide?: boolean;
   multiline?: boolean;
 }) {
-  const id = useMemo(() => `field_${crypto.randomUUID()}`, []);
+  const id = useMemo(() => `field_${createUuid()}`, []);
   return (
     <label className={wide ? "resume-field resume-field--wide" : "resume-field"} htmlFor={id}>
       <span>{label}</span>

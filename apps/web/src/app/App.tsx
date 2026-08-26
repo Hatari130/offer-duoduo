@@ -15,6 +15,7 @@ import { ResumeStudioPage } from "../pages/ResumeStudioPage";
 import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
 import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
 import { Logo } from "../components/Logo";
+import { LegalPage } from "../pages/LegalPage";
 
 const titles: Array<[RegExp, string]> = [
   [/^\/app\/chat/, "求职助手"],
@@ -25,7 +26,9 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/resumes/, "简历中心"],
   [/^\/app\/upgrade/, "升级至 Pro"],
   [/^\/app\/settings/, "设置与设备同步"],
-  [/^\/browser-extension/, "浏览器插件"]
+  [/^\/browser-extension/, "浏览器插件"],
+  [/^\/privacy$/, "隐私政策"],
+  [/^\/terms$/, "用户协议"]
 ];
 
 export function App() {
@@ -33,9 +36,10 @@ export function App() {
   const { status } = useAuth();
   const extensionConnect = pathname.startsWith("/extension/connect");
   const extensionLanding = pathname.startsWith("/browser-extension");
+  const legalPage = pathname === "/privacy" || pathname === "/terms";
 
   useEffect(() => {
-    if (status === "anonymous" && pathname !== "/login" && !extensionConnect && !extensionLanding) navigate("/login", { replace: true });
+    if (status === "anonymous" && pathname !== "/login" && !extensionConnect && !extensionLanding && !legalPage) navigate("/login", { replace: true });
     if (status === "authenticated" && pathname === "/login") navigate("/app/chat", { replace: true });
     if (
       (status === "authenticated" || status === "guest")
@@ -43,10 +47,11 @@ export function App() {
       && !pathname.startsWith("/app")
       && !extensionConnect
       && !extensionLanding
+      && !legalPage
     ) {
       navigate("/app/chat", { replace: true });
     }
-  }, [extensionConnect, extensionLanding, pathname, status]);
+  }, [extensionConnect, extensionLanding, legalPage, pathname, status]);
 
   useEffect(() => {
     const section = titles.find(([pattern]) => pattern.test(pathname))?.[1];
@@ -68,6 +73,7 @@ export function App() {
   }, []);
 
   if (extensionLanding) return <BrowserExtensionPage />;
+  if (legalPage) return <LegalPage kind={pathname === "/privacy" ? "privacy" : "terms"} />;
 
   if (status === "loading") {
     return (

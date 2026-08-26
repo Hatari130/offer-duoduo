@@ -8,14 +8,17 @@ import type { JobApplication } from "@offerflow/domain";
 import { loadJobs, saveJobs } from "@/infrastructure/storage/storage";
 import {
   clearCloudSyncStorage,
+  clearCloudDataOwner,
   enqueueApplicationChanges,
   getOrCreateCloudDeviceId,
   loadCloudConnection,
+  loadCloudDataOwner,
   loadCloudSyncMetadata,
   loadCloudSyncOutbox,
   loadCloudSyncState,
   resetCloudSyncState,
   saveCloudConnection,
+  saveCloudDataOwner,
   saveCloudSyncMetadata,
   saveCloudSyncOutbox,
   saveCloudSyncState,
@@ -23,8 +26,9 @@ import {
   type CloudSyncState
 } from "./syncState";
 
-export const DEFAULT_CLOUD_API_URL = "http://127.0.0.1:8787";
-export const DEFAULT_CLOUD_WEB_URL = "http://127.0.0.1:5173";
+const localBuild = import.meta.env.DEV || import.meta.env.MODE === "development-build";
+export const DEFAULT_CLOUD_API_URL = import.meta.env.VITE_OFFERFLOW_API_URL?.replace(/\/$/, "") || (localBuild ? "http://127.0.0.1:8787" : "");
+export const DEFAULT_CLOUD_WEB_URL = import.meta.env.VITE_OFFERFLOW_WEB_URL?.replace(/\/$/, "") || (localBuild ? "http://127.0.0.1:5173" : "");
 
 export interface CloudSyncOverview {
   connection?: CloudConnection;
@@ -80,6 +84,9 @@ function normalizeApiBaseUrl(value: string): string {
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw new Error("API 地址必须使用 http 或 https");
   }
+  if (url.protocol === "http:" && !["127.0.0.1", "localhost", "::1"].includes(url.hostname)) {
+    throw new Error("非本机 API 必须使用 HTTPS");
+  }
   url.pathname = url.pathname.replace(/\/$/, "");
   url.search = "";
   url.hash = "";
@@ -103,12 +110,21 @@ export async function getCloudSyncOverview(): Promise<CloudSyncOverview> {
 export async function pairCloudDevice(
   code: string,
   apiBaseUrl = DEFAULT_CLOUD_API_URL,
-  deviceName = defaultDeviceName()
+  deviceName = defaultDeviceName(),
+  options: { allowInitialUpload?: boolean } = {}
 ): Promise<CloudSyncOverview> {
   const normalizedCode = code.replace(/\s/g, "").toUpperCase();
   if (!normalizedCode) throw new Error("请输入 Web 端生成的配对码");
 
-  const normalizedUrl = normalizeApiBaseUrl(apiBaseUrl);
+  const [normalizedUrl, ownerUserId, previousConnection, localJobs] = await Promise.all([
+    Promise.resolve(normalizeApiBaseUrl(apiBaseUrl)),
+    loadCloudDataOwner(),
+    loadCloudConnection(),
+    loadJobs()
+  ]);
+  if (!ownerUserId && localJobs.length && !options.allowInitialUpload) {
+    throw new Error("首次连接会把本地投递绑定到登录账号，请确认后再继续");
+  }
   const deviceId = await getOrCreateCloudDeviceId();
   const client = createApiClient({ baseUrl: normalizedUrl });
   const session = await client.auth.exchangeDeviceCode({
@@ -116,6 +132,10 @@ export async function pairCloudDevice(
     deviceId,
     deviceName
   });
+
+  if (ownerUserId && ownerUserId !== session.user.id) {
+    throw new Error(`这些本地投递属于 ${previousConnection?.user.email || "另一个账号"}，已阻止跨账号上传`);
+  }
 
   await clearCloudSyncStorage();
   await saveCloudConnection({
@@ -128,7 +148,7 @@ export async function pairCloudDevice(
     connectedAt: new Date().toISOString()
   });
 
-  const localJobs = await loadJobs();
+  if (!ownerUserId) await saveCloudDataOwner(session.user.id);
   await enqueueApplicationChanges([], localJobs);
   return runCloudSync();
 }
@@ -136,7 +156,8 @@ export async function pairCloudDevice(
 export async function loginAndSync(
   webBaseUrl = DEFAULT_CLOUD_WEB_URL,
   apiBaseUrl = DEFAULT_CLOUD_API_URL,
-  deviceName = defaultDeviceName()
+  deviceName = defaultDeviceName(),
+  options: { allowInitialUpload?: boolean } = {}
 ): Promise<CloudSyncOverview> {
   if (typeof chrome === "undefined" || !chrome.identity?.launchWebAuthFlow) {
     throw new Error("当前浏览器不支持一键登录，请使用 Chrome 或 Edge");
@@ -160,11 +181,25 @@ export async function loginAndSync(
   }
   const code = callback.searchParams.get("code");
   if (!code) throw new Error("登录没有完成，请重新尝试");
-  return pairCloudDevice(code, apiBaseUrl, deviceName);
+  return pairCloudDevice(code, apiBaseUrl, deviceName, options);
 }
 
 export async function disconnectCloud(): Promise<void> {
+  const connection = await loadCloudConnection();
+  if (connection) {
+    const client = createApiClient({
+      baseUrl: connection.apiBaseUrl,
+      getAccessToken: () => connection.accessToken
+    });
+    await client.auth.logout().catch(() => undefined);
+  }
   await clearCloudSyncStorage();
+}
+
+export async function deleteLocalApplicationsAndForgetOwner(): Promise<void> {
+  await disconnectCloud();
+  await saveJobs([], { origin: "cloud" });
+  await clearCloudDataOwner();
 }
 
 /**
@@ -210,6 +245,17 @@ function applyRemoteChanges(
   );
 }
 
+function preserveLocalConflicts(
+  responseConflicts: ApplicationSyncConflict[],
+  sent: ApplicationSyncChange[]
+): ApplicationSyncConflict[] {
+  const sentById = new Map(sent.map((change) => [change.changeId, change]));
+  return responseConflicts.map((conflict) => ({
+    ...conflict,
+    local: conflict.local ?? sentById.get(conflict.changeId)
+  }));
+}
+
 async function performCloudSync(): Promise<CloudSyncOverview> {
   const connection = await loadConnectionWithFreshToken();
   if (!connection) return getCloudSyncOverview();
@@ -232,7 +278,9 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
       changes: outbox
     });
     const acceptedIds = new Set(response.acceptedChangeIds);
-    const conflictedIds = new Set(response.conflicts.map((conflict) => conflict.changeId));
+    const responseConflicts = preserveLocalConflicts(response.conflicts, outbox);
+    const conflictedIds = new Set(responseConflicts.map((conflict) => conflict.changeId));
+    const conflictedEntities = new Set(responseConflicts.map((conflict) => conflict.entityId));
     const acceptedEntities = new Set(
       outbox
         .filter((change) => acceptedIds.has(change.changeId))
@@ -241,12 +289,12 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
     const remainingOutbox = outbox.filter(
       (change) => !acceptedIds.has(change.changeId) && !conflictedIds.has(change.changeId)
     );
-    const nextJobs = applyRemoteChanges(jobs, response.changes);
+    const nextJobs = applyRemoteChanges(jobs, response.changes.filter((item) => !conflictedEntities.has(item.application.id)));
     const nextRevisions = { ...metadata.revisions };
     for (const item of response.changes) {
       nextRevisions[item.application.id] = item.revision;
     }
-    for (const conflict of response.conflicts) {
+    for (const conflict of responseConflicts) {
       if (conflict.server) {
         nextRevisions[conflict.entityId] = conflict.server.revision;
       }
@@ -261,7 +309,7 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
       saveCloudSyncState({
         cursor: response.cursor,
         lastSyncedAt: new Date().toISOString(),
-        conflicts: mergeConflicts(state.conflicts, response.conflicts, acceptedEntities),
+        conflicts: mergeConflicts(state.conflicts, responseConflicts, acceptedEntities),
         lastUploadedCount: response.acceptedChangeIds.length,
         lastReceivedCount: response.changes.length
       })
@@ -331,21 +379,23 @@ async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
       receivedCount += response.changes.length;
 
       const acceptedIds = new Set(response.acceptedChangeIds);
-      const conflictedIds = new Set(response.conflicts.map((conflict) => conflict.changeId));
+      const responseConflicts = preserveLocalConflicts(response.conflicts, batch);
+      const conflictedIds = new Set(responseConflicts.map((conflict) => conflict.changeId));
+      const conflictedEntities = new Set(responseConflicts.map((conflict) => conflict.entityId));
       for (const change of batch) {
         if (acceptedIds.has(change.changeId)) acceptedEntities.add(change.application.id);
       }
       outbox = outbox.filter(
         (change) => !acceptedIds.has(change.changeId) && !conflictedIds.has(change.changeId)
       );
-      nextJobs = applyRemoteChanges(nextJobs, response.changes);
+      nextJobs = applyRemoteChanges(nextJobs, response.changes.filter((item) => !conflictedEntities.has(item.application.id)));
       for (const item of response.changes) {
         nextRevisions[item.application.id] = item.revision;
       }
-      for (const conflict of response.conflicts) {
+      for (const conflict of responseConflicts) {
         if (conflict.server) nextRevisions[conflict.entityId] = conflict.server.revision;
       }
-      conflicts = mergeConflicts(conflicts, response.conflicts, acceptedEntities);
+      conflicts = mergeConflicts(conflicts, responseConflicts, acceptedEntities);
 
       if (!batch.length) break;
     } while (outbox.length);
@@ -378,6 +428,39 @@ export function runCloudSync(): Promise<CloudSyncOverview> {
     activeSync = undefined;
   });
   return activeSync;
+}
+
+export async function resolveCloudConflict(
+  entityId: string,
+  choice: "local" | "server"
+): Promise<CloudSyncOverview> {
+  const [state, jobs, outbox, metadata] = await Promise.all([
+    loadCloudSyncState(), loadJobs(), loadCloudSyncOutbox(), loadCloudSyncMetadata()
+  ]);
+  const conflict = state.conflicts.find((item) => item.entityId === entityId);
+  if (!conflict) return getCloudSyncOverview();
+  const remainingConflicts = state.conflicts.filter((item) => item.entityId !== entityId);
+  if (choice === "server") {
+    const nextJobs = conflict.server ? applyRemoteChanges(jobs, [conflict.server]) : jobs;
+    await Promise.all([
+      saveJobs(nextJobs, { origin: "cloud" }),
+      saveCloudSyncOutbox(outbox.filter((change) => change.application.id !== entityId)),
+      saveCloudSyncState({ ...state, conflicts: remainingConflicts }),
+      saveCloudSyncMetadata({ revisions: { ...metadata.revisions, ...(conflict.server ? { [entityId]: conflict.server.revision } : {}) } })
+    ]);
+    return getCloudSyncOverview();
+  }
+  if (!conflict.local) throw new Error("本地冲突副本不可用，请选择云端版本");
+  const localChange: ApplicationSyncChange = {
+    ...conflict.local,
+    changeId: `extension:${Date.now().toString(36)}:${globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)}`,
+    baseRevision: conflict.server?.revision ?? metadata.revisions[entityId] ?? 0
+  };
+  await Promise.all([
+    saveCloudSyncOutbox([...outbox.filter((change) => change.application.id !== entityId), localChange]),
+    saveCloudSyncState({ ...state, conflicts: remainingConflicts })
+  ]);
+  return runCloudSync();
 }
 
 export type { ApplicationSyncChange };

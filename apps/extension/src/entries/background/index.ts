@@ -1,6 +1,5 @@
 import { loadSettings } from "@/infrastructure/storage/storage";
 import { runCloudSync } from "@/infrastructure/sync/cloudSync";
-import { publishOpportunityFeed } from "@/infrastructure/sync/opportunitySync";
 import { CLOUD_SYNC_OUTBOX_KEY } from "@/infrastructure/sync/syncState";
 import {
   DEFAULT_OPPORTUNITY_FEED_URL,
@@ -36,7 +35,6 @@ async function syncOpportunityFeedInBackground(): Promise<void> {
     );
 
     await writeOpportunityCache(snapshot);
-    await publishOpportunityFeed(snapshot);
   } catch (error) {
     console.warn("JobKoI opportunity feed sync failed", error);
   }

@@ -17,10 +17,11 @@ test("auth contracts accept complete payloads and reject ambiguous input", () =>
   assert.equal(isLoginRequest({ email: "user@example.com", password: "secret123" }), true);
   assert.equal(isLoginRequest({ email: "user@example.com" }), false);
   assert.equal(
-    isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin" }),
+    isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", acceptPrivacy: true }),
     true
   );
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123" }), false);
+  assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", acceptPrivacy: false }), false);
   assert.equal(
     isExchangeDeviceCodeRequest({ code: "1234-5678", deviceId: "browser-1" }),
     true

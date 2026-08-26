@@ -62,6 +62,7 @@ test("sync is idempotent and reports stale revisions without overwriting", () =>
   assert.equal(stale.acceptedChangeIds.length, 0);
   assert.equal(stale.conflicts[0].code, "revision_conflict");
   assert.equal(stale.conflicts[0].server.revision, 2);
+  assert.equal(stale.conflicts[0].local.application.stage, "assessment");
   assert.equal(store.getApplication(userId, "application-1").application.stage, "interview");
 });
 

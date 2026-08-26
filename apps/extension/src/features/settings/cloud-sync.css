@@ -197,6 +197,29 @@
 .cloud-conflict-list strong { font-size: 0.8125rem; }
 .cloud-conflict-list span { color: var(--of-text-muted); font-size: 0.75rem; }
 
+.cloud-conflict-item {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.4rem !important;
+  margin-top: 0.35rem;
+  padding-top: 0.45rem;
+  border-top: 1px solid color-mix(in oklch, var(--of-warning) 22%, transparent);
+}
+
+.cloud-conflict-item button {
+  min-height: 2.25rem;
+  padding: 0 0.55rem;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border: 1px solid var(--of-line);
+  border-radius: 0.5rem;
+  font: inherit;
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.cloud-conflict-item button:focus-visible { outline: 2px solid var(--of-focus); outline-offset: 2px; }
+
 .cloud-sync-feedback {
   display: flex;
   align-items: center;

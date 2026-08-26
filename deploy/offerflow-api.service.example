@@ -1,0 +1,19 @@
+[Unit]
+Description=OfferFlow API
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=offerflow
+WorkingDirectory=/srv/offerflow
+EnvironmentFile=/etc/offerflow/api.env
+ExecStart=/usr/bin/pnpm --filter @offerflow/api start
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/srv/offerflow
+
+[Install]
+WantedBy=multi-user.target

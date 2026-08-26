@@ -5,6 +5,7 @@ offerflow-*-preview.png
 .env
 .env.*
 !.env.example
+!**/.env.production.example
 coverage/
 .workbuddy/
 .offerflow-data/

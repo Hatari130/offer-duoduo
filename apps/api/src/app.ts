@@ -4,6 +4,7 @@ import type {
   ApiError,
   ApiResponse,
   AuthSession,
+  AuthDeviceSession,
   ChatStreamEvent,
   CreateApplicationRequest,
   CreateInterviewRecordFromTranscriptRequest,
@@ -30,9 +31,8 @@ import {
   normalizeMimeType,
   isUpdateResumeVersionRequest
 } from "@offerflow/contracts";
-import type { JobApplication, KnowledgeCitation } from "@offerflow/domain";
+import type { ChatMessage, JobApplication, KnowledgeCitation } from "@offerflow/domain";
 import { opportunityStatus, RECRUITMENT_TYPES } from "@offerflow/domain";
-import { createAccessToken, verifyAccessToken, type AccessTokenClaims } from "./auth/crypto.ts";
 import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
@@ -45,11 +45,13 @@ import {
   type InterviewTranscriptionProvider
 } from "./interviews/transcription.ts";
 import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
-import { MemoryStore, MemoryStoreError } from "./store/memory-store.ts";
+import { MemoryStore } from "./store/memory-store.ts";
+import { PostgresStore } from "./store/postgres-store.ts";
+import { StoreError, type OfferFlowStore, type SessionRecord } from "./store/store.ts";
 
 export interface OfferFlowAppOptions {
   config?: ApiConfig;
-  store?: MemoryStore;
+  store?: OfferFlowStore;
   assistant?: AssistantProvider;
   resumeTailor?: ResumeTailorProvider;
   knowledge?: KnowledgeService;
@@ -144,6 +146,33 @@ function bearerToken(request: IncomingMessage): string | undefined {
   return authorization.slice(7).trim();
 }
 
+function cookieToken(request: IncomingMessage, name: string): string | undefined {
+  for (const part of (request.headers.cookie || "").split(";")) {
+    const [key, ...value] = part.trim().split("=");
+    if (key === name) {
+      try { return decodeURIComponent(value.join("=")); } catch { return undefined; }
+    }
+  }
+  return undefined;
+}
+
+function requestToken(request: IncomingMessage, cookieName: string): string | undefined {
+  return bearerToken(request) || cookieToken(request, cookieName);
+}
+
+function setSessionCookie(response: ServerResponse, config: ApiConfig, token: string, expiresAt: string): void {
+  const secure = config.requireHttps ? "; Secure" : "";
+  response.setHeader(
+    "set-cookie",
+    `${config.cookieName}=${encodeURIComponent(token)}; Path=/; HttpOnly; SameSite=Lax; Expires=${new Date(expiresAt).toUTCString()}${secure}`
+  );
+}
+
+function clearSessionCookie(response: ServerResponse, config: ApiConfig): void {
+  const secure = config.requireHttps ? "; Secure" : "";
+  response.setHeader("set-cookie", `${config.cookieName}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0${secure}`);
+}
+
 function decodePath(value: string): string {
   try {
     return decodeURIComponent(value);
@@ -156,10 +185,14 @@ function isJobApplication(value: unknown): value is JobApplication {
   return (
     isRecord(value) &&
     typeof value.id === "string" &&
+    value.id.length > 0 && value.id.length <= 128 &&
     typeof value.company === "string" &&
+    value.company.length <= 200 &&
     typeof value.position === "string" &&
+    value.position.length <= 200 &&
     typeof value.stage === "string" &&
     typeof value.sourceUrl === "string" &&
+    value.sourceUrl.length <= 2_000 &&
     typeof value.sourceHost === "string" &&
     typeof value.createdAt === "string" &&
     typeof value.updatedAt === "string" &&
@@ -178,28 +211,61 @@ async function writeSse(response: ServerResponse, event: ChatStreamEvent): Promi
   }
 }
 
+function isOriginAllowed(origin: string, config: ApiConfig): boolean {
+  return config.allowedOrigins.includes(origin)
+    || (origin.startsWith("chrome-extension://") && config.allowedOrigins.includes("chrome-extension://*"));
+}
+
 function setCors(request: IncomingMessage, response: ServerResponse, config: ApiConfig): void {
   const origin = request.headers.origin;
-  const extensionOriginAllowed =
-    Boolean(origin?.startsWith("chrome-extension://")) &&
-    config.allowedOrigins.includes("chrome-extension://*");
-  if (origin && (config.allowedOrigins.includes(origin) || extensionOriginAllowed)) {
+  if (origin && isOriginAllowed(origin, config)) {
     response.setHeader("access-control-allow-origin", origin);
+    response.setHeader("access-control-allow-credentials", "true");
     response.setHeader("vary", "Origin");
   }
   response.setHeader("access-control-allow-methods", "GET,POST,PATCH,DELETE,OPTIONS");
-  response.setHeader("access-control-allow-headers", "Authorization,Content-Type");
+  response.setHeader("access-control-allow-headers", "Authorization,Content-Type,X-OfferFlow-Ingest-Key");
   response.setHeader("access-control-max-age", "86400");
+}
+
+function setSecurityHeaders(response: ServerResponse, secure: boolean): void {
+  response.setHeader("x-content-type-options", "nosniff");
+  response.setHeader("x-frame-options", "DENY");
+  response.setHeader("referrer-policy", "no-referrer");
+  response.setHeader("permissions-policy", "camera=(), microphone=(), geolocation=()");
+  response.setHeader("content-security-policy", "default-src 'none'; frame-ancestors 'none'");
+  response.setHeader("cache-control", "no-store");
+  if (secure) response.setHeader("strict-transport-security", "max-age=31536000; includeSubDomains");
 }
 
 export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const config = options.config ?? loadApiConfig();
-  const store = options.store ?? new MemoryStore();
+  const store: OfferFlowStore = options.store ?? (config.databaseUrl
+    ? new PostgresStore({ connectionString: config.databaseUrl, allowDemoAuth: config.allowDemoAuth })
+    : new MemoryStore());
   const assistant = options.assistant ?? createAssistantProvider(config);
   const resumeTailor = options.resumeTailor ?? createResumeTailorProvider(config);
   const knowledge = options.knowledge ?? new KnowledgeService();
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
+  const authAttempts = new Map<string, { count: number; resetAt: number }>();
+
+  function enforceAuthRateLimit(request: IncomingMessage): void {
+    const forwarded = request.headers["x-forwarded-for"];
+    const address = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim()
+      || request.socket.remoteAddress
+      || "unknown";
+    const now = Date.now();
+    const current = authAttempts.get(address);
+    if (!current || current.resetAt <= now) {
+      authAttempts.set(address, { count: 1, resetAt: now + 15 * 60 * 1000 });
+      return;
+    }
+    current.count += 1;
+    if (current.count > 20) {
+      throw new HttpError(429, "RATE_LIMITED", "尝试次数过多，请 15 分钟后再试");
+    }
+  }
 
   function transcriptChunks(transcript: string, maximumCharacters = 1_200): string[] {
     const paragraphs = transcript
@@ -216,12 +282,16 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return chunks.filter(Boolean);
   }
 
-  function privateInterviewKnowledge(userId: string): KnowledgeEntry[] {
+  async function privateInterviewKnowledge(userId: string): Promise<KnowledgeEntry[]> {
     // Both lookups are user-scoped before content is materialised. Never put
     // raw audio or another user's interview records into retrieval candidates.
-    return store.listApplications(userId).flatMap(({ application }) =>
-      store
-        .listInterviewRecords(userId, application.id)
+    const applications = await store.listApplications(userId);
+    const recordGroups = await Promise.all(applications.map(async ({ application }) => ({
+      application,
+      records: await store.listInterviewRecords(userId, application.id)
+    })));
+    return recordGroups.flatMap(({ application, records }) =>
+      records
         .filter((record) => record.status === "ready")
         .flatMap((record) => {
           const sourceId = `interview-record:${record.id}`;
@@ -243,26 +313,31 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     );
   }
 
-  function requireClaims(request: IncomingMessage): AccessTokenClaims {
-    const token = bearerToken(request);
-    const claims = token ? verifyAccessToken(token, config.tokenSecret) : undefined;
-    if (!claims || !store.getUser(claims.sub)) {
+  async function requireSession(request: IncomingMessage): Promise<SessionRecord> {
+    const token = requestToken(request, config.cookieName);
+    const session = token ? await store.resolveSession(token) : undefined;
+    if (!session || !(await store.getUser(session.userId))) {
       throw new HttpError(401, "UNAUTHORIZED", "登录状态已失效，请重新登录");
     }
-    return claims;
+    return session;
   }
 
-  function issueSession(
+  async function issueSession(
     user: { id: string; email: string; displayName: string },
     scope: "user" | "device" = "user",
-    deviceId?: string
-  ): AuthSession {
-    const issued = createAccessToken(
-      { sub: user.id, email: user.email, scope, deviceId },
-      config.tokenSecret,
-      config.tokenTtlSeconds
+    deviceId?: string,
+    deviceName?: string
+  ): Promise<AuthSession> {
+    const ttl = scope === "device" ? config.deviceSessionTtlSeconds : config.webSessionTtlSeconds;
+    const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
+    const issued = await store.createSession(
+      user.id,
+      scope,
+      expiresAt,
+      deviceId,
+      deviceName
     );
-    return { user, accessToken: issued.token, expiresAt: issued.expiresAt };
+    return { user, accessToken: issued.accessToken, expiresAt };
   }
 
   async function streamAnswer(
@@ -271,10 +346,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     userId: string,
     conversationId: string,
     prompt: string,
-    history: ReturnType<MemoryStore["getConversationHistory"]>
+    history: ChatMessage[]
   ): Promise<void> {
-    const citations = knowledge.search(prompt, 3, privateInterviewKnowledge(userId));
-    const assistantMessage = store.beginAssistantMessage(userId, conversationId);
+    const citations = knowledge.search(prompt, 3, await privateInterviewKnowledge(userId));
+    const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
     const abortController = new AbortController();
     response.on("close", () => {
       if (!response.writableEnded) abortController.abort();
@@ -311,7 +386,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           delta
         });
       }
-      const completed = store.completeAssistantMessage(
+      const completed = await store.completeAssistantMessage(
         userId,
         conversationId,
         assistantMessage.id,
@@ -322,7 +397,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       await writeSse(response, { type: "done" });
     } catch (error) {
       const aborted = abortController.signal.aborted;
-      store.completeAssistantMessage(
+      await store.completeAssistantMessage(
         userId,
         conversationId,
         assistantMessage.id,
@@ -346,6 +421,9 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
 
   async function handler(request: IncomingMessage, response: ServerResponse): Promise<void> {
     setCors(request, response, config);
+    const forwardedProtocol = request.headers["x-forwarded-proto"];
+    const secure = (Array.isArray(forwardedProtocol) ? forwardedProtocol[0] : forwardedProtocol) === "https";
+    setSecurityHeaders(response, secure);
     if (request.method === "OPTIONS") {
       response.statusCode = 204;
       response.end();
@@ -357,6 +435,15 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     const method = request.method || "GET";
 
     try {
+      if (config.requireHttps && !secure) {
+        throw new HttpError(426, "HTTPS_REQUIRED", "此服务只接受 HTTPS 请求");
+      }
+      if (["POST", "PATCH", "DELETE"].includes(method) && cookieToken(request, config.cookieName)) {
+        const origin = request.headers.origin;
+        if (origin && !isOriginAllowed(origin, config)) {
+          throw new HttpError(403, "ORIGIN_FORBIDDEN", "请求来源不受信任");
+        }
+      }
       if (method === "GET" && path === "/health") {
         success(response, {
           service: "offerflow-api" as const,
@@ -366,18 +453,33 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      if (method === "GET" && path === "/v1/auth/capabilities") {
+        success(response, {
+          registrationMode: config.registrationMode,
+          demoEnabled: config.allowDemoAuth
+        });
+        return;
+      }
+
       if (method === "POST" && path === "/v1/auth/login") {
+        enforceAuthRateLimit(request);
         const body = await readJson(request);
         if (!isLoginRequest(body)) {
           throw new HttpError(400, "INVALID_LOGIN", "请输入邮箱和密码");
         }
-        const user = store.authenticate(body.email, body.password);
+        if (body.email.length > 254 || body.password.length > 256) {
+          throw new HttpError(400, "INVALID_LOGIN", "邮箱或密码格式不正确");
+        }
+        const user = await store.authenticate(body.email, body.password);
         if (!user) throw new HttpError(401, "INVALID_CREDENTIALS", "邮箱或密码不正确");
-        success(response, issueSession(user));
+        const session = await issueSession(user);
+        setSessionCookie(response, config, session.accessToken, session.expiresAt);
+        success(response, session);
         return;
       }
 
       if (method === "POST" && path === "/v1/auth/register") {
+        enforceAuthRateLimit(request);
         const body = await readJson(request);
         if (!isRegisterRequest(body)) {
           throw new HttpError(400, "INVALID_REGISTRATION", "请完整填写姓名、邮箱和密码");
@@ -385,16 +487,33 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (body.password.length < 8) {
           throw new HttpError(400, "WEAK_PASSWORD", "密码至少需要 8 个字符");
         }
-        const user = store.createUser(body.email, body.displayName, body.password);
-        success(response, issueSession(user), 201);
+        if (!/^\S+@\S+\.\S+$/.test(body.email.trim()) || body.email.length > 254 || body.password.length > 256 || body.displayName.trim().length > 80) {
+          throw new HttpError(400, "INVALID_REGISTRATION", "姓名、邮箱或密码格式不正确");
+        }
+        if (config.registrationMode === "closed") {
+          throw new HttpError(403, "REGISTRATION_CLOSED", "当前仅限受邀用户注册");
+        }
+        if (config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.includes(body.email.trim().toLowerCase())) {
+          throw new HttpError(403, "REGISTRATION_NOT_ALLOWED", "这个邮箱尚未获得注册权限");
+        }
+        const user = await store.createUser(body.email, body.displayName, body.password);
+        await store.recordConsent(user.id, "privacy_and_terms", "2026-08-26");
+        const session = await issueSession(user);
+        setSessionCookie(response, config, session.accessToken, session.expiresAt);
+        success(response, session, 201);
         return;
       }
 
       if (method === "POST" && path === "/v1/auth/demo") {
+        enforceAuthRateLimit(request);
         if (!config.allowDemoAuth) {
           throw new HttpError(404, "NOT_FOUND", "体验账号没有开启");
         }
-        success(response, issueSession(store.getDemoUser()));
+        const user = await store.getDemoUser();
+        if (!user) throw new HttpError(404, "NOT_FOUND", "体验账号没有开启");
+        const session = await issueSession(user);
+        setSessionCookie(response, config, session.accessToken, session.expiresAt);
+        success(response, session);
         return;
       }
 
@@ -403,12 +522,15 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!isExchangeDeviceCodeRequest(body)) {
           throw new HttpError(400, "INVALID_DEVICE_CODE", "请输入有效的设备配对码");
         }
-        const user = store.exchangeDeviceCode(body.code);
+        if (body.deviceId.length > 128 || (body.deviceName?.length ?? 0) > 120) {
+          throw new HttpError(400, "INVALID_DEVICE", "设备标识或名称过长");
+        }
+        const user = await store.exchangeDeviceCode(body.code);
         if (!user) {
           throw new HttpError(401, "DEVICE_CODE_EXPIRED", "配对码无效或已经过期");
         }
         success(response, {
-          ...issueSession(user, "device", body.deviceId),
+          ...await issueSession(user, "device", body.deviceId, body.deviceName),
           deviceId: body.deviceId
         });
         return;
@@ -419,12 +541,14 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!isExchangeHandoffRequest(body)) {
           throw new HttpError(400, "INVALID_HANDOFF", "交接码无效");
         }
-        const exchanged = store.exchangeHandoffCode(body.code);
+        const exchanged = await store.exchangeHandoffCode(body.code);
         if (!exchanged) {
           throw new HttpError(401, "HANDOFF_EXPIRED", "交接码无效或已经过期");
         }
+        const handoffSession = await issueSession(exchanged.user);
+        setSessionCookie(response, config, handoffSession.accessToken, handoffSession.expiresAt);
         success(response, {
-          ...issueSession(exchanged.user),
+          ...handoffSession,
           targetPath: exchanged.targetPath
         });
         return;
@@ -434,17 +558,24 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       // refresh endpoint lets them renew before expiry so background syncs
       // never silently stop after the token TTL elapses.
       if (method === "POST" && path === "/v1/auth/refresh") {
-        const claims = requireClaims(request);
-        const user = store.getUser(claims.sub);
+        const token = requestToken(request, config.cookieName);
+        const sessionRecord = await requireSession(request);
+        const user = await store.getUser(sessionRecord.userId);
         if (!user) throw new HttpError(401, "UNAUTHORIZED", "登录状态已失效，请重新登录");
-        success(
-          response,
-          issueSession(
-            user,
-            claims.scope === "device" ? "device" : "user",
-            claims.deviceId
-          )
-        );
+        const ttl = sessionRecord.scope === "device" ? config.deviceSessionTtlSeconds : config.webSessionTtlSeconds;
+        const expiresAt = new Date(Date.now() + ttl * 1000).toISOString();
+        const rotated = token ? await store.rotateSession(token, expiresAt) : undefined;
+        if (!rotated) throw new HttpError(401, "UNAUTHORIZED", "登录状态已失效，请重新登录");
+        if (sessionRecord.scope === "user") setSessionCookie(response, config, rotated.accessToken, expiresAt);
+        success(response, { user, accessToken: rotated.accessToken, expiresAt });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/logout") {
+        const token = requestToken(request, config.cookieName);
+        if (token) await store.revokeSession(token);
+        clearSessionCookie(response, config);
+        success(response, { loggedOut: true as const });
         return;
       }
 
@@ -452,7 +583,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       // ingest routes live before the authentication gate so the website and
       // the extension can exchange snapshots without a user session.
       if (method === "GET" && path === "/v1/opportunities") {
-        const feed = store.getOpportunityFeed();
+        const feed = await store.getOpportunityFeed();
         success(response, {
           opportunities: feed.opportunities.map((opportunity) => ({
             ...opportunity,
@@ -466,7 +597,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       }
 
       if (method === "GET" && path === "/v1/imports/opportunities/status") {
-        const feed = store.getOpportunityFeed();
+        const feed = await store.getOpportunityFeed();
         success(
           response,
           feed.opportunities.length
@@ -483,11 +614,15 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       }
 
       if (method === "POST" && path === "/v1/opportunities/sync") {
+        const ingestKey = request.headers["x-offerflow-ingest-key"];
+        if (!config.opportunityIngestKey || ingestKey !== config.opportunityIngestKey) {
+          throw new HttpError(403, "INGEST_FORBIDDEN", "没有机会数据写入权限");
+        }
         const body = await readJson(request);
         if (!isOpportunitySyncRequest(body)) {
           throw new HttpError(400, "INVALID_OPPORTUNITY_SYNC", "机会数据格式不正确");
         }
-        const feed = store.replaceOpportunityFeed({
+        const feed = await store.replaceOpportunityFeed({
           opportunities: body.opportunities,
           fetchedAt: body.fetchedAt,
           sourceUpdatedAt: body.sourceUpdatedAt,
@@ -502,7 +637,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
 
       const opportunityMatch = path.match(/^\/v1\/opportunities\/([^/]+)$/);
       if (method === "GET" && opportunityMatch) {
-        const opportunity = store.getOpportunity(decodePath(opportunityMatch[1]));
+        const opportunity = await store.getOpportunity(decodePath(opportunityMatch[1]));
         if (!opportunity) throw new HttpError(404, "OPPORTUNITY_NOT_FOUND", "没有找到这条校招信息");
         success(response, {
           opportunity: { ...opportunity, status: opportunityStatus(opportunity) }
@@ -510,16 +645,67 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
-      const claims = requireClaims(request);
-      const userId = claims.sub;
+      const authenticatedSession = await requireSession(request);
+      const userId = authenticatedSession.userId;
 
       if (method === "GET" && path === "/v1/session") {
-        success(response, { user: store.getUser(userId)! });
+        success(response, { user: (await store.getUser(userId))! });
+        return;
+      }
+
+      if (method === "GET" && path === "/v1/account/export") {
+        const user = (await store.getUser(userId))!;
+        const applications = await store.listApplications(userId);
+        const conversations = await store.listConversations(userId);
+        const conversationData = await Promise.all(conversations.map((item) => store.getConversation(userId, item.id)));
+        const interviewRecords = (await Promise.all(applications.map((item) => store.listInterviewRecords(userId, item.application.id)))).flat();
+        success(response, {
+          exportedAt: new Date().toISOString(),
+          user,
+          applications,
+          conversations: conversationData.filter(Boolean),
+          interviewRecords,
+          resumeVersions: await store.listResumeVersions(userId),
+          sessions: (await store.listSessions(userId)).map(({ userId: _userId, revokedAt: _revokedAt, ...session }) => session)
+        });
+        return;
+      }
+
+      if (method === "DELETE" && path === "/v1/account") {
+        const body = await readJson(request);
+        const user = (await store.getUser(userId))!;
+        if (!isRecord(body) || body.confirmation !== "DELETE" || typeof body.password !== "string") {
+          throw new HttpError(400, "DELETE_CONFIRMATION_REQUIRED", "请输入当前密码并确认删除账号");
+        }
+        if (user.email === "demo@offerflow.cn") throw new HttpError(403, "DEMO_ACCOUNT", "体验账号不能删除");
+        if (!(await store.authenticate(user.email, body.password))) {
+          throw new HttpError(401, "INVALID_CREDENTIALS", "当前密码不正确");
+        }
+        await store.deleteUser(userId);
+        clearSessionCookie(response, config);
+        success(response, { deleted: true as const });
         return;
       }
 
       if (method === "POST" && path === "/v1/auth/device-codes") {
-        success(response, store.createDeviceCode(userId), 201);
+        success(response, await store.createDeviceCode(userId), 201);
+        return;
+      }
+
+      if (method === "GET" && path === "/v1/auth/sessions") {
+        const sessions = (await store.listSessions(userId)).map(({ userId: _userId, revokedAt: _revokedAt, ...session }) => session satisfies AuthDeviceSession);
+        success(response, { sessions, currentSessionId: authenticatedSession.id });
+        return;
+      }
+
+      const sessionMatch = path.match(/^\/v1\/auth\/sessions\/([^/]+)$/);
+      if (method === "DELETE" && sessionMatch) {
+        const sessionId = decodePath(sessionMatch[1]);
+        if (!(await store.revokeUserSession(userId, sessionId))) {
+          throw new HttpError(404, "SESSION_NOT_FOUND", "没有找到这个登录设备");
+        }
+        if (sessionId === authenticatedSession.id) clearSessionCookie(response, config);
+        success(response, { revoked: true as const });
         return;
       }
 
@@ -528,11 +714,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!isCreateTailorTaskRequest(body)) {
           throw new HttpError(400, "INVALID_TAILOR_TASK", "岗位或简历资料不完整");
         }
-        const created = store.createTailorTask(userId, body);
+        const created = await store.createTailorTask(userId, body);
         const targetPath = `/app/resumes/tailor/${encodeURIComponent(created.task.id)}`;
         success(response, {
           ...created,
-          handoff: store.createHandoffCode(userId, targetPath)
+          handoff: await store.createHandoffCode(userId, targetPath)
         }, 201);
         return;
       }
@@ -540,7 +726,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       const tailorTaskMatch = path.match(/^\/v1\/tailor-tasks\/([^/]+)$/);
       if (tailorTaskMatch) {
         const taskId = decodePath(tailorTaskMatch[1]);
-        const task = store.getTailorTask(userId, taskId);
+        const task = await store.getTailorTask(userId, taskId);
         if (!task) throw new HttpError(404, "TAILOR_TASK_NOT_FOUND", "没有找到这次定制任务");
         if (method === "GET") {
           success(response, task);
@@ -563,13 +749,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
 
       const resumeVersionMatch = path.match(/^\/v1\/resume-versions\/([^/]+)$/);
       if (method === "GET" && path === "/v1/resume-versions") {
-        success(response, { versions: store.listResumeVersions(userId) });
+        success(response, { versions: await store.listResumeVersions(userId) });
         return;
       }
       if (resumeVersionMatch) {
         const versionId = decodePath(resumeVersionMatch[1]);
         if (method === "GET") {
-          const item = store.getResumeVersion(userId, versionId);
+          const item = await store.getResumeVersion(userId, versionId);
           if (!item) throw new HttpError(404, "RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本");
           success(response, { item });
           return;
@@ -580,20 +766,20 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
             throw new HttpError(400, "INVALID_RESUME_VERSION", "简历保存内容不完整");
           }
           success(response, {
-            item: store.updateResumeVersion(userId, versionId, body.document, body.expectedRevision)
+            item: await store.updateResumeVersion(userId, versionId, body.document, body.expectedRevision)
           });
           return;
         }
       }
 
       if (method === "GET" && path === "/v1/conversations") {
-        success(response, { conversations: store.listConversations(userId) });
+        success(response, { conversations: await store.listConversations(userId) });
         return;
       }
 
       if (method === "POST" && path === "/v1/conversations") {
         const body = (await readJson(request)) as CreateConversationRequest;
-        const conversation = store.createConversation(
+        const conversation = await store.createConversation(
           userId,
           typeof body.title === "string" ? body.title : undefined
         );
@@ -609,9 +795,9 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         }
         const conversationId = decodePath(retryMatch[1]);
         const messageId = decodePath(retryMatch[2]);
-        const prompt = store.findRetryPrompt(userId, conversationId, messageId);
+        const prompt = await store.findRetryPrompt(userId, conversationId, messageId);
         if (!prompt) throw new HttpError(404, "MESSAGE_NOT_FOUND", "没有找到可重试的问题");
-        const history = store.getConversationHistory(userId, conversationId);
+        const history = await store.getConversationHistory(userId, conversationId);
         await streamAnswer(request, response, userId, conversationId, prompt, history);
         return;
       }
@@ -623,8 +809,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           throw new HttpError(400, "EMPTY_MESSAGE", "输入问题后再发送");
         }
         const conversationId = decodePath(sendMatch[1]);
-        const history = store.getConversationHistory(userId, conversationId);
-        store.appendUserMessage(
+        const history = await store.getConversationHistory(userId, conversationId);
+        await store.appendUserMessage(
           userId,
           conversationId,
           body.clientMessageId,
@@ -639,13 +825,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       if (conversationMatch) {
         const conversationId = decodePath(conversationMatch[1]);
         if (method === "GET") {
-          const result = store.getConversation(userId, conversationId);
+          const result = await store.getConversation(userId, conversationId);
           if (!result) throw new HttpError(404, "CONVERSATION_NOT_FOUND", "没有找到这段对话");
           success(response, result);
           return;
         }
         if (method === "DELETE") {
-          if (!store.deleteConversation(userId, conversationId)) {
+          if (!(await store.deleteConversation(userId, conversationId))) {
             throw new HttpError(404, "CONVERSATION_NOT_FOUND", "没有找到这段对话");
           }
           success(response, { deleted: true as const });
@@ -654,7 +840,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       }
 
       if (method === "GET" && path === "/v1/applications") {
-        success(response, { applications: store.listApplications(userId) });
+        success(response, { applications: await store.listApplications(userId) });
         return;
       }
 
@@ -663,7 +849,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!isRecord(body) || !isJobApplication(body.application)) {
           throw new HttpError(400, "INVALID_APPLICATION", "投递信息不完整");
         }
-        success(response, { item: store.createApplication(userId, body.application) }, 201);
+        success(response, { item: await store.createApplication(userId, body.application) }, 201);
         return;
       }
 
@@ -672,7 +858,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!isApplicationSyncRequest(body)) {
           throw new HttpError(400, "INVALID_SYNC_REQUEST", "同步请求格式不正确");
         }
-        success(response, store.syncApplications(userId, body));
+        if (authenticatedSession.scope === "device" && authenticatedSession.deviceId !== body.deviceId) {
+          throw new HttpError(403, "DEVICE_MISMATCH", "设备身份与同步请求不一致");
+        }
+        success(response, await store.syncApplications(userId, body));
         return;
       }
 
@@ -681,11 +870,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       );
       if (interviewRecordsMatch) {
         const applicationId = decodePath(interviewRecordsMatch[1]);
-        if (!store.getApplication(userId, applicationId)) {
+        if (!(await store.getApplication(userId, applicationId))) {
           throw new HttpError(404, "APPLICATION_NOT_FOUND", "没有找到这条投递");
         }
         if (method === "GET") {
-          success(response, { records: store.listInterviewRecords(userId, applicationId) });
+          success(response, { records: await store.listInterviewRecords(userId, applicationId) });
           return;
         }
         if (method === "POST") {
@@ -696,7 +885,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           if (body.title !== undefined && body.title.trim().length > 120) {
             throw new HttpError(400, "TITLE_TOO_LONG", "面试记录标题不能超过 120 个字符");
           }
-          const processing = store.createInterviewRecord(userId, applicationId, {
+          const processing = await store.createInterviewRecord(userId, applicationId, {
             title: body.title,
             sourceType: "transcript",
             status: "processing",
@@ -705,7 +894,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           try {
             const qaPairs = await interviewQaParser.parse(body.transcript);
             success(response, {
-              record: store.completeInterviewRecord(
+              record: await store.completeInterviewRecord(
                 userId,
                 processing.id,
                 body.transcript,
@@ -714,7 +903,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
             }, 201);
           } catch (error) {
             success(response, {
-              record: store.failInterviewRecord(
+              record: await store.failInterviewRecord(
                 userId,
                 processing.id,
                 error instanceof Error
@@ -732,7 +921,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       );
       if (method === "POST" && interviewAudioMatch) {
         const applicationId = decodePath(interviewAudioMatch[1]);
-        if (!store.getApplication(userId, applicationId)) {
+        if (!(await store.getApplication(userId, applicationId))) {
           throw new HttpError(404, "APPLICATION_NOT_FOUND", "没有找到这条投递");
         }
         const title = url.searchParams.get("title")?.trim() || undefined;
@@ -752,7 +941,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           );
         }
         const audio = await readBinary(request, MAX_INTERVIEW_AUDIO_BYTES);
-        const record = store.createInterviewRecord(userId, applicationId, {
+        const record = await store.createInterviewRecord(userId, applicationId, {
           title,
           sourceType: "audio",
           status: "processing"
@@ -768,14 +957,14 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
                 mimeType
               })).trim();
               if (!transcript) throw new Error("语音转写服务没有返回文字稿");
-              store.completeInterviewRecord(
+              await store.completeInterviewRecord(
                 userId,
                 record.id,
                 transcript,
                 await interviewQaParser.parse(transcript)
               );
             } catch (error) {
-              store.failInterviewRecord(
+              await store.failInterviewRecord(
                 userId,
                 record.id,
                 error instanceof Error ? error.message : "录音转写失败，请重试或上传文字稿。"
@@ -794,7 +983,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       if (applicationMatch) {
         const applicationId = decodePath(applicationMatch[1]);
         if (method === "GET") {
-          const item = store.getApplication(userId, applicationId);
+          const item = await store.getApplication(userId, applicationId);
           if (!item) throw new HttpError(404, "APPLICATION_NOT_FOUND", "没有找到这条投递");
           success(response, { item });
           return;
@@ -810,7 +999,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
             throw new HttpError(400, "INVALID_APPLICATION", "投递更新格式不正确");
           }
           success(response, {
-            item: store.updateApplication(userId, body.application, body.expectedRevision)
+            item: await store.updateApplication(userId, body.application, body.expectedRevision)
           });
           return;
         }
@@ -820,7 +1009,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
             throw new HttpError(400, "INVALID_REVISION", "缺少要删除的投递版本");
           }
           success(response, {
-            item: store.deleteApplication(userId, applicationId, expectedRevision)
+            item: await store.deleteApplication(userId, applicationId, expectedRevision)
           });
           return;
         }
@@ -832,7 +1021,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!response.writableEnded) response.end();
         return;
       }
-      if (error instanceof HttpError || error instanceof MemoryStoreError) {
+      if (error instanceof HttpError || error instanceof StoreError) {
         failure(response, error.status, error.code, error.message, error.details);
         return;
       }

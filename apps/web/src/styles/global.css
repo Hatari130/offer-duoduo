@@ -496,3 +496,11 @@ img {
     border-color: ButtonText;
   }
 }
+/* Public legal pages remain readable without an authenticated app shell. */
+.legal-page { min-height: 100vh; padding: clamp(1.25rem, 4vw, 3.5rem); background: var(--of-surface, #faf8f4); color: var(--of-text, #2d2925); }
+.legal-logo { display: inline-flex; margin-bottom: 2rem; }
+.legal-logo:focus-visible { outline: 2px solid var(--of-accent); outline-offset: 5px; }
+.legal-page article { max-width: 760px; margin: 0 auto; padding: clamp(1.5rem, 4vw, 3rem); border: 1px solid var(--of-border, #ded8ce); border-radius: 20px; background: white; box-shadow: 0 16px 48px rgb(40 30 20 / 8%); }
+.legal-page h1 { margin: 0.35rem 0 1.5rem; font-size: clamp(2rem, 5vw, 3rem); }
+.legal-page h2 { margin: 2rem 0 0.55rem; font-size: 1.15rem; }
+.legal-page p { color: var(--of-text-muted, #625c54); line-height: 1.85; }

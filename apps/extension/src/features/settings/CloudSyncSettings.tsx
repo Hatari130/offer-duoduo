@@ -3,6 +3,7 @@ import {
   AlertTriangle,
   CheckCircle2,
   Cloud,
+  Trash2,
   Link2,
   RefreshCw,
   Upload,
@@ -11,9 +12,11 @@ import {
 import {
   DEFAULT_CLOUD_API_URL,
   disconnectCloud,
+  deleteLocalApplicationsAndForgetOwner,
   getCloudSyncOverview,
   loginAndSync as loginAndSyncCloud,
   pairCloudDevice,
+  resolveCloudConflict,
   resyncAllCloud,
   runCloudSync,
   type CloudSyncOverview
@@ -61,7 +64,8 @@ export default function CloudSyncSettings() {
     setError("");
     setMessage("");
     try {
-      const next = await pairCloudDevice(pairingCode, apiBaseUrl);
+      if (!window.confirm("首次连接会把当前本地投递绑定到即将登录的账号。确认继续？")) return;
+      const next = await pairCloudDevice(pairingCode, apiBaseUrl, undefined, { allowInitialUpload: true });
       setOverview(next);
       setPairingCode("");
       setMessage("设备已配对，投递记录已完成首轮同步。");
@@ -73,11 +77,12 @@ export default function CloudSyncSettings() {
   };
 
   const loginAndSync = async () => {
+    if (!window.confirm("首次连接会把当前本地投递绑定到即将登录的账号。确认继续？")) return;
     setBusy(true);
     setError("");
     setMessage("");
     try {
-      const next = await loginAndSyncCloud();
+      const next = await loginAndSyncCloud(undefined, undefined, undefined, { allowInitialUpload: true });
       setOverview(next);
       setMessage(`已登录并同步 ${next.state.lastUploadedCount ?? 0} 条投递记录`);
     } catch (cause) {
@@ -137,8 +142,32 @@ export default function CloudSyncSettings() {
     }
   };
 
+  const deleteLocalData = async () => {
+    if (!window.confirm("永久删除插件中的全部本地投递并解除账号绑定？此操作不能撤销，请先确认数据已同步或导出。")) return;
+    setBusy(true);
+    setError("");
+    try {
+      await deleteLocalApplicationsAndForgetOwner();
+      await refresh();
+      setMessage("本地投递已清除，现在可以连接另一个账号。");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "无法清除本地投递");
+    } finally { setBusy(false); }
+  };
+
   const connection = overview?.connection;
   const conflicts = overview?.state.conflicts ?? [];
+
+  const resolveConflict = async (entityId: string, choice: "local" | "server") => {
+    setBusy(true);
+    setError("");
+    try {
+      setOverview(await resolveCloudConflict(entityId, choice));
+      setMessage(choice === "local" ? "已保留本地版本并重新同步" : "已采用云端版本");
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : "冲突处理失败");
+    } finally { setBusy(false); }
+  };
 
   return (
     <section className="settings-card cloud-sync-card" aria-labelledby="cloud-sync-title">
@@ -202,7 +231,14 @@ export default function CloudSyncSettings() {
             <AlertTriangle size={15} aria-hidden="true" />
             <div>
               <strong>有 {conflicts.length} 条记录需要确认</strong>
-              <span>请在 Web 工作台处理后再同步。</span>
+              <span>本地草稿已保留，请逐条选择。</span>
+              {conflicts.map((conflict) => (
+                <div className="cloud-conflict-item" key={conflict.entityId}>
+                  <span>{conflict.local?.application.company || conflict.server?.application.company || "投递记录"} · {conflict.local?.application.position || conflict.server?.application.position || conflict.entityId}</span>
+                  <button type="button" disabled={busy} onClick={() => void resolveConflict(conflict.entityId, "local")}>保留本地</button>
+                  <button type="button" disabled={busy} onClick={() => void resolveConflict(conflict.entityId, "server")}>使用云端</button>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -211,6 +247,11 @@ export default function CloudSyncSettings() {
         )}
         {error && <p className="cloud-sync-feedback is-error" role="alert">{error}</p>}
         {message && <p className="cloud-sync-feedback is-success" role="status"><CheckCircle2 size={13} />{message}</p>}
+        {!connection && (
+          <button className="cloud-disconnect-button" type="button" onClick={() => void deleteLocalData()} disabled={busy}>
+            <Trash2 size={14} />清除本地投递并解除旧账号绑定
+          </button>
+        )}
       </div>
 
       {connection && (
@@ -228,6 +269,9 @@ export default function CloudSyncSettings() {
               </button>
               <button className="cloud-disconnect-button" type="button" onClick={() => void disconnect()} disabled={busy}>
                 <Unplug size={14} />断开连接
+              </button>
+              <button className="cloud-disconnect-button" type="button" onClick={() => void deleteLocalData()} disabled={busy}>
+                <Trash2 size={14} />清除本地投递并换号
               </button>
             </div>
           </details>

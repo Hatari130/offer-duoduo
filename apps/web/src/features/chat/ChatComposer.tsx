@@ -1,6 +1,7 @@
 import { useRef, type ChangeEvent, type KeyboardEvent } from "react";
 import type { ChatAttachment } from "@offerflow/domain";
 import { ArrowUp, FileText, Paperclip, Square, X } from "lucide-react";
+import { createUuid } from "../../app/id";
 
 interface ChatComposerProps {
   value: string;
@@ -27,7 +28,7 @@ export function ChatComposer({
 
   const addFiles = (event: ChangeEvent<HTMLInputElement>) => {
     const next = [...(event.target.files ?? [])].slice(0, 4 - attachments.length).map((file) => ({
-      id: crypto.randomUUID(),
+      id: createUuid(),
       name: file.name,
       mimeType: file.type || "application/octet-stream",
       size: file.size

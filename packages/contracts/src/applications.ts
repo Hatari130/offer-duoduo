@@ -43,6 +43,8 @@ export interface ApplicationSyncConflict {
   code: "revision_conflict" | "deleted_on_server";
   message: string;
   server?: ApplicationSyncItem;
+  /** The rejected local change is returned so clients never lose a draft. */
+  local?: ApplicationSyncChange;
 }
 
 export interface ApplicationSyncResponse {

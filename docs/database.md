@@ -1,6 +1,6 @@
 # Database ownership
 
-JobKoI uses PostgreSQL as the planned cloud source of truth. Browser storage
+JobKoI uses PostgreSQL as the production cloud source of truth. Browser storage
 is an extension offline cache, not a replacement for authenticated cloud data.
 
 ## Data groups
@@ -21,11 +21,16 @@ is an extension offline cache, not a replacement for authenticated cloud data.
 | Table | Purpose |
 | --- | --- |
 | `users` | identity link to the chosen authentication provider |
+| `auth_credentials` / `auth_sessions` | scrypt password material and hashed revocable sessions |
 | `profiles` | sensitive candidate profile document and revision |
 | `applications` | private application state plus immutable job snapshots |
 | `application_events` | assessment/interview/offer timeline |
 | `sync_devices` | extension devices and acknowledged cursor |
 | `sync_changes` | ordered incremental synchronization log |
+| `conversations` / `messages` | private chat history and citations |
+| `resume_versions` / `tailor_tasks` | versioned resume tailoring work |
+| `interview_records` | private transcripts and extracted Q&A; no original audio |
+| `consent_records` / `audit_logs` | policy acceptance and minimal security events |
 
 ### Operational data
 
@@ -47,3 +52,5 @@ browser bundles or committed files.
 Migrations live in `packages/db/migrations` and are forward-only after deployment.
 Create separate databases for local development, staging and production. Apply
 migrations from the API deployment pipeline, never from the extension or website.
+The API migration runner records each file atomically in `schema_migrations` and
+uses a PostgreSQL advisory lock so concurrent deployments cannot race.
