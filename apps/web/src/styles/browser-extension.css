@@ -268,8 +268,10 @@ html[data-extension-landing="true"] body {
   border-radius: 0.9rem;
   font-size: 0.88rem;
   font-weight: 740;
+  font-family: inherit;
   text-decoration: none;
   box-shadow: none;
+  cursor: pointer;
 }
 
 .extension-button--primary {
@@ -279,10 +281,52 @@ html[data-extension-landing="true"] body {
   box-shadow: 0 0.7rem 1.8rem rgb(64 88 199 / 0.2);
 }
 
-.extension-button--primary:hover { background: var(--ext-blue-deep); border-color: var(--ext-blue-deep); transform: translateY(-0.12rem); }
+.extension-button--primary:hover:not(:disabled) { background: var(--ext-blue-deep); border-color: var(--ext-blue-deep); transform: translateY(-0.12rem); }
 .extension-button--secondary { color: var(--ext-ink); background: rgb(255 255 255 / 0.78); border-color: var(--ext-line); }
 .extension-button--secondary:hover { color: var(--ext-blue-deep); border-color: #b9c5eb; background: white; }
 .extension-button--secondary:hover svg { transform: translateX(0.18rem); }
+
+.extension-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
+  filter: saturate(0.7);
+  box-shadow: none;
+}
+
+.extension-store-button .extension-browser-mark {
+  width: 1.35rem;
+  height: 1.35rem;
+  color: transparent;
+  border-width: 0.18rem;
+  box-shadow: 0 0 0 1px rgb(16 21 33 / 0.08);
+}
+
+.extension-store-button .extension-browser-mark::after {
+  width: 0.42rem;
+  height: 0.42rem;
+  content: "";
+  background: #4285f4;
+  border: 0.08rem solid white;
+  border-radius: 50%;
+}
+
+.extension-store-button__badge {
+  margin-inline-start: 0.15rem;
+  padding: 0.16rem 0.38rem;
+  color: var(--ext-blue-deep);
+  background: rgb(255 255 255 / 0.88);
+  border-radius: 999px;
+  font-size: 0.56rem;
+  line-height: 1.2;
+}
+
+.extension-store-status {
+  max-width: 35rem;
+  margin: 0.72rem 0 0;
+  color: var(--ext-muted);
+  font-size: 0.7rem;
+  line-height: 1.55;
+}
 
 .extension-browser-support {
   display: flex;
@@ -688,6 +732,7 @@ html[data-extension-landing="true"] body {
 .extension-install__download dl div { display: grid; min-width: 0; flex: 1; gap: 0.15rem; }
 .extension-install__download dt { color: var(--ext-muted); font-size: 0.58rem; }
 .extension-install__download dd { margin: 0; font-size: 0.67rem; font-weight: 720; }
+.extension-install__actions { display: grid; width: 100%; gap: 0.65rem; }
 .extension-install__download .extension-button { width: 100%; }
 .extension-install__help { margin-block-start: 0.75rem; color: var(--ext-muted); font-size: 0.6rem; line-height: 1.55; }
 
@@ -713,6 +758,8 @@ html[data-extension-landing="true"] body {
 .extension-final-cta > div > div { display: flex; flex-wrap: wrap; justify-content: center; gap: 1rem; margin-block-start: 2rem; }
 .extension-button--light { color: var(--ext-blue-deep); background: white; border-color: white; box-shadow: 0 0.9rem 2.2rem rgb(10 18 56 / 0.22); }
 .extension-button--light:hover { transform: translateY(-0.12rem); }
+.extension-final-cta__download { color: white; background: rgb(255 255 255 / 0.08); border-color: rgb(255 255 255 / 0.3); }
+.extension-final-cta__download:hover { background: rgb(255 255 255 / 0.15); }
 .extension-final-cta__workspace { display: inline-flex; min-height: 3.25rem; align-items: center; gap: 0.42rem; padding-inline: 1.25rem; color: white; border: 1px solid rgb(255 255 255 / 0.3); border-radius: 0.9rem; font-size: 0.82rem; font-weight: 680; text-decoration: none; }
 .extension-final-cta__workspace:hover { background: rgb(255 255 255 / 0.09); }
 .extension-final-cta__workspace:hover svg { transform: translate(0.1rem, -0.1rem); }
@@ -779,6 +826,7 @@ html[data-extension-landing="true"] body {
   .extension-hero { min-height: auto; grid-template-columns: 1fr; padding-block-start: 8.5rem; }
   .extension-hero__copy { max-width: 45rem; text-align: center; justify-self: center; }
   .extension-eyebrow, .extension-browser-support, .extension-hero__actions { justify-content: center; }
+  .extension-store-status { margin-inline: auto; }
   .extension-hero h1 { margin-inline: auto; }
   .extension-hero__visual { width: min(100%, 48rem); justify-self: center; }
   .extension-product-demo { min-height: 38rem; }

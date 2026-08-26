@@ -27,6 +27,7 @@ import {
 } from "./syncState";
 
 const localBuild = import.meta.env.DEV || import.meta.env.MODE === "development-build";
+const allowConfiguredInsecureHttp = import.meta.env.VITE_OFFERFLOW_ALLOW_INSECURE_HTTP === "true";
 export const DEFAULT_CLOUD_API_URL = import.meta.env.VITE_OFFERFLOW_API_URL?.replace(/\/$/, "") || (localBuild ? "http://127.0.0.1:8787" : "");
 export const DEFAULT_CLOUD_WEB_URL = import.meta.env.VITE_OFFERFLOW_WEB_URL?.replace(/\/$/, "") || (localBuild ? "http://127.0.0.1:5173" : "");
 
@@ -84,7 +85,11 @@ function normalizeApiBaseUrl(value: string): string {
   if (url.protocol !== "http:" && url.protocol !== "https:") {
     throw new Error("API 地址必须使用 http 或 https");
   }
-  if (url.protocol === "http:" && !["127.0.0.1", "localhost", "::1"].includes(url.hostname)) {
+  if (
+    url.protocol === "http:" &&
+    !["127.0.0.1", "localhost", "::1"].includes(url.hostname) &&
+    !allowConfiguredInsecureHttp
+  ) {
     throw new Error("非本机 API 必须使用 HTTPS");
   }
   url.pathname = url.pathname.replace(/\/$/, "");

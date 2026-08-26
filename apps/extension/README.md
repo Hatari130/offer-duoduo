@@ -62,8 +62,9 @@ In the extension settings, use “登录 JobKoI 并同步投递” for the norma
 It opens the Web login page and returns to the extension automatically. Existing
 local applications are uploaded in batches after the first login. The one-time
 pairing code remains available under the developer connection details.
-Local application edits are coalesced into an idempotent outbox, uploaded in the
-background every five minutes, and pulled back with a server cursor. Revision
+Local application edits are coalesced into an idempotent outbox, uploaded as
+soon as they change, refreshed whenever the workspace opens, polled in the
+background every two minutes, and pulled back with a server cursor. Revision
 conflicts preserve the local record and are shown in settings.
 
 The "为当前岗位定制简历" action now creates a short-lived handoff and opens the

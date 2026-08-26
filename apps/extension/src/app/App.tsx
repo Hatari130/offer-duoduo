@@ -89,6 +89,14 @@ import {
   type View
 } from "@/features/workspace/WorkspaceViews";
 
+async function requestCloudSync(): Promise<void> {
+  if (typeof chrome === "undefined" || !chrome.runtime?.sendMessage) return;
+  const response = await chrome.runtime.sendMessage({ type: "OFFERFLOW_CLOUD_SYNC_NOW" });
+  if (response && response.ok === false) {
+    throw new Error(response.error || "云端同步失败");
+  }
+}
+
 export default function App({ overlay = false }: { overlay?: boolean }) {
   const [jobs, setJobs] = useState<JobApplication[]>([]);
   const [settings, setSettings] = useState<OfferFlowSettings>({});
@@ -197,6 +205,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     };
 
     chrome.storage.onChanged.addListener(handleStorageChange);
+    void requestCloudSync().catch(() => undefined);
     chrome.tabs
       ?.query({ active: true, currentWindow: true })
       .then(([tab]) => {
@@ -750,7 +759,10 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               void toggleFavorite(job);
             }}
             onRefresh={() => {
-              void loadJobs().then(setJobs);
+              void requestCloudSync()
+                .catch(() => undefined)
+                .then(() => loadJobs())
+                .then(setJobs);
               void refreshOpportunities().catch(() => undefined);
             }}
             onOpenResumeManager={openResumeManager}

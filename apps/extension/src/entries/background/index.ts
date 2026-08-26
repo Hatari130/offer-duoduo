@@ -9,7 +9,7 @@ import {
 import type { OpportunityFeedSnapshot } from "@/shared/types";
 
 const CLOUD_SYNC_ALARM_NAME = "offerflow-cloud-sync";
-const CLOUD_SYNC_PERIOD_MINUTES = 5;
+const CLOUD_SYNC_PERIOD_MINUTES = 2;
 const OPPORTUNITY_FEED_ALARM_NAME = "offerflow-opportunity-feed";
 const OPPORTUNITY_FEED_PERIOD_MINUTES = 15;
 

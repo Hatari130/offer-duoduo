@@ -27,22 +27,34 @@ interface BrowserGuide {
   note: string;
 }
 
-const DOWNLOAD_URL = "/downloads/jobkoi-browser-extension-0.1.0.zip";
+interface ExtensionRelease {
+  version: string;
+  downloadUrl: string;
+  chromeWebStoreUrl: string;
+  storeStatus: "pending" | "published";
+}
+
+const DEFAULT_RELEASE: ExtensionRelease = {
+  version: "0.1.1",
+  downloadUrl: "/downloads/jobkoi-browser-extension-0.1.1.zip",
+  chromeWebStoreUrl: import.meta.env.VITE_CHROME_WEB_STORE_URL?.trim() || "",
+  storeStatus: import.meta.env.VITE_CHROME_WEB_STORE_URL?.trim() ? "published" : "pending"
+};
 
 const browsers: BrowserGuide[] = [
-  {
-    key: "edge",
-    label: "Microsoft Edge",
-    shortLabel: "Edge",
-    address: "edge://extensions",
-    note: "Windows 电脑推荐使用，兼容性与安装体验更稳定。"
-  },
   {
     key: "chrome",
     label: "Google Chrome",
     shortLabel: "Chrome",
     address: "chrome://extensions",
     note: "适用于已经安装 Chrome，并可使用开发者模式的用户。"
+  },
+  {
+    key: "edge",
+    label: "Microsoft Edge",
+    shortLabel: "Edge",
+    address: "edge://extensions",
+    note: "Windows 电脑推荐使用，兼容性与安装体验更稳定。"
   },
   {
     key: "browser360",
@@ -200,8 +212,29 @@ function BrowserMark({ browser }: { browser: BrowserKey }) {
   return <span className={`extension-browser-mark is-${browser}`} aria-hidden="true">{browser === "browser360" ? "360" : browser.slice(0, 1).toUpperCase()}</span>;
 }
 
+function StoreButton({ release, className = "" }: { release: ExtensionRelease; className?: string }) {
+  const classes = `extension-button extension-store-button ${className}`.trim();
+  if (!release.chromeWebStoreUrl) {
+    return (
+      <button className={classes} type="button" disabled aria-describedby="extension-store-status">
+        <BrowserMark browser="chrome" />
+        前往商店
+        <span className="extension-store-button__badge">审核中</span>
+      </button>
+    );
+  }
+  return (
+    <a className={classes} href={release.chromeWebStoreUrl} target="_blank" rel="noreferrer">
+      <BrowserMark browser="chrome" />
+      前往商店
+      <ExternalLink size={15} aria-hidden="true" />
+    </a>
+  );
+}
+
 export function BrowserExtensionPage() {
   const [activeBrowser, setActiveBrowser] = useState<BrowserKey>(detectBrowser);
+  const [release, setRelease] = useState<ExtensionRelease>(DEFAULT_RELEASE);
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   const selected = browsers.find((browser) => browser.key === activeBrowser) ?? browsers[0];
 
@@ -210,6 +243,27 @@ export function BrowserExtensionPage() {
     return () => {
       delete document.documentElement.dataset.extensionLanding;
     };
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+    fetch("/extension-release.json", { cache: "no-store" })
+      .then((response) => {
+        if (!response.ok) throw new Error("extension release metadata unavailable");
+        return response.json() as Promise<Partial<ExtensionRelease>>;
+      })
+      .then((value) => {
+        if (!active) return;
+        const chromeWebStoreUrl = value.chromeWebStoreUrl?.trim() || DEFAULT_RELEASE.chromeWebStoreUrl;
+        setRelease({
+          version: value.version?.trim() || DEFAULT_RELEASE.version,
+          downloadUrl: value.downloadUrl?.trim() || DEFAULT_RELEASE.downloadUrl,
+          chromeWebStoreUrl,
+          storeStatus: chromeWebStoreUrl ? "published" : "pending"
+        });
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
   }, []);
 
   const moveTabFocus = (event: KeyboardEvent<HTMLButtonElement>, index: number) => {
@@ -247,9 +301,14 @@ export function BrowserExtensionPage() {
             <h1 id="extension-hero-title">一次填写，<br /><em>投递不再重复</em></h1>
             <p className="extension-hero__lede">智能识别招聘官网表单，用你的 JobKoI 简历一键补全。岗位和投递进度自动回到工作台，所有内容都由你确认后再提交。</p>
             <div className="extension-hero__actions">
-              <a className="extension-button extension-button--primary" href="#install"><Download size={17} aria-hidden="true" />立即获取插件</a>
-              <a className="extension-button extension-button--secondary" href="#features">看看它怎么工作<ArrowRight size={16} aria-hidden="true" /></a>
+              <StoreButton release={release} className="extension-button--primary" />
+              <a className="extension-button extension-button--secondary" href={release.downloadUrl} download><Download size={17} aria-hidden="true" />立即下载<ArrowRight size={16} aria-hidden="true" /></a>
             </div>
+            <p className="extension-store-status" id="extension-store-status" role="status">
+              {release.storeStatus === "published"
+                ? "推荐从 Chrome 商店安装，后续版本将自动更新。"
+                : `Chrome 商店不公开版本正在审核；现在可下载 v${release.version} 手动安装包。`}
+            </p>
             <div className="extension-browser-support" aria-label="支持的浏览器">
               {browsers.map((browser) => <span key={browser.key}><BrowserMark browser={browser.key} />{browser.shortLabel}</span>)}
               <small>Windows · Chromium 内核浏览器</small>
@@ -331,9 +390,9 @@ export function BrowserExtensionPage() {
 
         <section className="extension-install" id="install" aria-labelledby="install-title">
           <div className="extension-install__heading">
-            <p className="extension-section-kicker">三步完成安装</p>
-            <h2 id="install-title">选择你的浏览器，马上开始</h2>
-            <p>页面已优先选中当前浏览器。下载后按照对应步骤安装，整个过程通常不超过两分钟。</p>
+            <p className="extension-section-kicker">商店安装或立即下载</p>
+            <h2 id="install-title">选择适合你的安装方式</h2>
+            <p>Chrome 商店版安装一次即可自动更新；ZIP 是商店审核期间及其他 Chromium 浏览器的手动安装备用包。</p>
           </div>
 
           <div className="extension-install__browser-tabs" role="tablist" aria-label="选择浏览器">
@@ -374,8 +433,11 @@ export function BrowserExtensionPage() {
             <aside className="extension-install__download">
               <BrowserMark browser={selected.key} />
               <div><small>{selected.label} 安装包</small><strong>JobKoI 浏览器插件</strong><p>{selected.note}</p></div>
-              <dl><div><dt>版本</dt><dd>v0.1.0</dd></div><div><dt>系统</dt><dd>Windows</dd></div><div><dt>费用</dt><dd>免费</dd></div></dl>
-              <a className="extension-button extension-button--primary" href={DOWNLOAD_URL} download><Download size={17} />下载浏览器通用版</a>
+              <dl><div><dt>版本</dt><dd>v{release.version}</dd></div><div><dt>系统</dt><dd>Windows</dd></div><div><dt>费用</dt><dd>免费</dd></div></dl>
+              <div className="extension-install__actions">
+                <StoreButton release={release} className="extension-button--primary" />
+                <a className="extension-button extension-button--secondary" href={release.downloadUrl} download><Download size={17} aria-hidden="true" />立即下载 ZIP</a>
+              </div>
               <small className="extension-install__help">安装后打开任意招聘页面，点击工具栏中的 JobKoI 图标即可使用。</small>
             </aside>
           </div>
@@ -387,7 +449,8 @@ export function BrowserExtensionPage() {
             <p className="extension-section-kicker">下一份申请，从容一点</p>
             <h2 id="final-cta-title">把重复填写交给 JobKoI，<br />把时间留给真正重要的准备</h2>
             <div>
-              <a className="extension-button extension-button--light" href="#install"><Download size={17} />立即获取插件</a>
+              <StoreButton release={release} className="extension-button--light" />
+              <a className="extension-button extension-final-cta__download" href={release.downloadUrl} download><Download size={17} aria-hidden="true" />立即下载</a>
               <a className="extension-final-cta__workspace" href="/app/chat">返回求职工作台<ExternalLink size={15} /></a>
             </div>
           </div>

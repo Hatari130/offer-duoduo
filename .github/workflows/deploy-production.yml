@@ -39,9 +39,31 @@ jobs:
       - name: Run automated tests
         run: pnpm test && pnpm --filter @offerflow/web test
 
+      - name: Build the production browser extension
+        env:
+          VITE_OFFERFLOW_API_URL: http://139.196.197.112/api
+          VITE_OFFERFLOW_WEB_URL: http://139.196.197.112
+          VITE_OFFERFLOW_ALLOW_INSECURE_HTTP: "true"
+        run: pnpm --filter @offerflow/extension build:production
+
+      - name: Package the browser extension download
+        run: |
+          extension_version="$(node -p "require('./apps/extension/public/manifest.json').version")"
+          metadata_version="$(node -p "require('./apps/web/public/extension-release.json').version")"
+          if [ "$extension_version" != "$metadata_version" ]; then
+            echo "Extension manifest and download metadata versions differ" >&2
+            exit 1
+          fi
+          rm -f apps/web/public/downloads/jobkoi-browser-extension-*.zip
+          (
+            cd apps/extension/dist
+            zip -qr "../../web/public/downloads/jobkoi-browser-extension-${extension_version}.zip" .
+          )
+
       - name: Build the production website
         env:
           VITE_API_BASE_URL: /api
+          VITE_CHROME_WEB_STORE_URL: ${{ vars.JOBKOI_CHROME_WEB_STORE_URL }}
         run: pnpm --filter @offerflow/web build:production
 
       - name: Package the immutable release
