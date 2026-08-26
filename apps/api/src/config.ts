@@ -12,6 +12,7 @@ export interface ApiConfig {
   interviewAsrProvider: "bcut" | "disabled";
   ffmpegPath: string;
   ffprobePath: string;
+  databaseUrl?: string;
 }
 
 function positiveNumber(value: string | undefined, fallback: number): number {
@@ -40,6 +41,7 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     interviewAsrProvider:
       env.INTERVIEW_ASR_PROVIDER?.trim().toLowerCase() === "disabled" ? "disabled" : "bcut",
     ffmpegPath: env.FFMPEG_PATH || "ffmpeg",
-    ffprobePath: env.FFPROBE_PATH || "ffprobe"
+    ffprobePath: env.FFPROBE_PATH || "ffprobe",
+    databaseUrl: env.DATABASE_URL || undefined
   };
 }

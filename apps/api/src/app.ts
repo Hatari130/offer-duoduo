@@ -46,6 +46,7 @@ import {
 } from "./interviews/transcription.ts";
 import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
 import { MemoryStore, MemoryStoreError } from "./store/memory-store.ts";
+import { createPostgresStore } from "./store/postgres-store.ts";
 import type { OfferFlowStore } from "./store/store.ts";
 
 export interface OfferFlowAppOptions {
@@ -195,7 +196,11 @@ function setCors(request: IncomingMessage, response: ServerResponse, config: Api
 
 export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const config = options.config ?? loadApiConfig();
-  const store = options.store ?? new MemoryStore();
+  const store =
+    options.store ??
+    (config.databaseUrl
+      ? createPostgresStore(config.databaseUrl)
+      : new MemoryStore());
   const assistant = options.assistant ?? createAssistantProvider(config);
   const resumeTailor = options.resumeTailor ?? createResumeTailorProvider(config);
   const knowledge = options.knowledge ?? new KnowledgeService();

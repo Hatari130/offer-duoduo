@@ -30,7 +30,7 @@ import {
 } from "@offerflow/domain";
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
 
-interface StoredUser extends SessionUser {
+export interface StoredUser extends SessionUser {
   passwordHash: string;
   passwordSalt: string;
 }
@@ -85,9 +85,10 @@ export interface MemoryStoreOptions {
    */
   persistence?: boolean;
   dataFile?: string;
+  initialState?: PersistedStoreState;
 }
 
-interface PersistedStoreState {
+export interface PersistedStoreState {
   version: 1;
   users: StoredUser[];
   usersByEmail: Record<string, string>;
@@ -156,63 +157,122 @@ export class MemoryStore {
     this.dataFile = persistenceEnabled
       ? options.dataFile ?? process.env.OFFERFLOW_DATA_FILE ?? DEFAULT_DATA_FILE
       : undefined;
-    this.loadPersistedState();
+    if (options.initialState) {
+      this.replaceState(options.initialState);
+    } else {
+      this.loadPersistedState();
+    }
     if (!this.usersByEmail.has("demo@offerflow.cn")) {
       this.createUser("demo@offerflow.cn", "林知夏", "offerflow2026", "demo-user");
     }
   }
 
+  snapshot(): PersistedStoreState {
+    return clone({
+      version: 1,
+      users: [...this.users.values()],
+      usersByEmail: Object.fromEntries(this.usersByEmail),
+      conversations: [...this.conversations.values()],
+      messages: Object.fromEntries(this.messages),
+      applications: [...this.applications.values()],
+      resumeVersions: [...this.resumeVersions.values()],
+      tailorTasks: [...this.tailorTasks.values()],
+      interviewRecords: [...this.interviewRecords.values()],
+      appliedChanges: Object.fromEntries(this.appliedChanges),
+      syncLog: this.syncLog,
+      sequence: this.sequence,
+      opportunityFeed: this.opportunityFeed
+    });
+  }
+
+  replaceState(state: PersistedStoreState): void {
+    this.users.clear();
+    this.usersByEmail.clear();
+    this.conversations.clear();
+    this.messages.clear();
+    this.applications.clear();
+    this.resumeVersions.clear();
+    this.tailorTasks.clear();
+    this.interviewRecords.clear();
+    this.deviceCodes.clear();
+    this.handoffCodes.clear();
+    this.appliedChanges.clear();
+    this.syncLog.splice(0, this.syncLog.length);
+    this.sequence = 0;
+    this.opportunityFeed = undefined;
+
+    this.loadState(clone(state));
+  }
+
+  private loadState(parsed: PersistedStoreState): void {
+    if (!parsed || parsed.version !== 1) return;
+
+    for (const user of parsed.users ?? []) {
+      this.users.set(user.id, user);
+      this.usersByEmail.set(normalizeEmail(user.email), user.id);
+    }
+
+    for (const stored of parsed.conversations ?? []) {
+      this.conversations.set(stored.conversation.id, stored);
+    }
+
+    for (const [conversationId, list] of Object.entries(parsed.messages ?? {})) {
+      this.messages.set(conversationId, list);
+    }
+
+    for (const stored of parsed.applications ?? []) {
+      this.applications.set(`${stored.userId}:${stored.item.application.id}`, stored);
+    }
+
+    for (const stored of parsed.resumeVersions ?? []) {
+      this.resumeVersions.set(`${stored.userId}:${stored.item.version.id}`, stored);
+    }
+
+    for (const stored of parsed.tailorTasks ?? []) {
+      this.tailorTasks.set(`${stored.userId}:${stored.task.id}`, stored);
+    }
+
+    for (const stored of parsed.interviewRecords ?? []) {
+      const record = clone(stored.record);
+
+      if (record.status === "processing") {
+        record.status = "failed";
+        record.error = "转写任务因服务重启而中断，请重新上传录音或直接上传文字稿。";
+        record.updatedAt = new Date().toISOString();
+      }
+
+      this.interviewRecords.set(`${stored.userId}:${record.id}`, {
+        userId: stored.userId,
+        record
+      });
+    }
+
+    for (const [key, revision] of Object.entries(parsed.appliedChanges ?? {})) {
+      this.appliedChanges.set(key, revision);
+    }
+
+    this.syncLog.push(...(parsed.syncLog ?? []));
+    this.sequence = parsed.sequence ?? 0;
+
+    if (
+      parsed.opportunityFeed &&
+      Array.isArray(parsed.opportunityFeed.opportunities)
+    ) {
+      this.opportunityFeed = parsed.opportunityFeed;
+    }
+  }
+
   private loadPersistedState(): void {
     if (!this.dataFile || !existsSync(this.dataFile)) return;
+
     try {
-      const parsed = JSON.parse(readFileSync(this.dataFile, "utf8")) as PersistedStoreState;
-      if (!parsed || parsed.version !== 1) return;
-      for (const user of parsed.users ?? []) {
-        this.users.set(user.id, user);
-        this.usersByEmail.set(normalizeEmail(user.email), user.id);
-      }
-      for (const stored of parsed.conversations ?? []) {
-        this.conversations.set(stored.conversation.id, stored);
-      }
-      for (const [conversationId, list] of Object.entries(parsed.messages ?? {})) {
-        this.messages.set(conversationId, list);
-      }
-      for (const stored of parsed.applications ?? []) {
-        this.applications.set(`${stored.userId}:${stored.item.application.id}`, stored);
-      }
-      for (const stored of parsed.resumeVersions ?? []) {
-        this.resumeVersions.set(`${stored.userId}:${stored.item.version.id}`, stored);
-      }
-      for (const stored of parsed.tailorTasks ?? []) {
-        this.tailorTasks.set(`${stored.userId}:${stored.task.id}`, stored);
-      }
-      for (const stored of parsed.interviewRecords ?? []) {
-        const record = clone(stored.record);
-        // Raw audio is deliberately never persisted. A process that was
-        // interrupted by a restart therefore cannot safely resume the job.
-        if (record.status === "processing") {
-          record.status = "failed";
-          record.error = "转写任务因服务重启而中断，请重新上传录音或直接上传文字稿。";
-          record.updatedAt = new Date().toISOString();
-        }
-        this.interviewRecords.set(`${stored.userId}:${record.id}`, {
-          userId: stored.userId,
-          record
-        });
-      }
-      for (const [key, revision] of Object.entries(parsed.appliedChanges ?? {})) {
-        this.appliedChanges.set(key, revision);
-      }
-      this.syncLog.push(...(parsed.syncLog ?? []));
-      this.sequence = parsed.sequence ?? 0;
-      if (
-        parsed.opportunityFeed &&
-        Array.isArray(parsed.opportunityFeed.opportunities)
-      ) {
-        this.opportunityFeed = parsed.opportunityFeed;
-      }
+      const parsed = JSON.parse(
+        readFileSync(this.dataFile, "utf8")
+      ) as PersistedStoreState;
+
+      this.replaceState(parsed);
     } catch {
-      // A corrupt or partial state file must not prevent the API from starting.
+      // Corrupt local fallback state must not prevent API startup.
     }
   }
 
