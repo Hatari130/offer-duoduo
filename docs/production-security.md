@@ -38,7 +38,7 @@
 - `main` 是生产代码的唯一来源，禁止直接编辑或手工覆盖服务器工作目录。
 - 推送 `main` 后，GitHub Actions 会安装锁定依赖、运行类型检查与测试、构建 Web，再上传以 Git commit SHA 命名的不可变 release。
 - 服务器只保留 `/etc/jobkoi-api.env`、数据库、日志和备份等运行时状态；这些内容不进入 release，也不进入 GitHub。
-- `/www/wwwroot/jobkoi` 是指向当前 release 的符号链接。激活脚本先执行前向数据库迁移，再原子切换链接、重启 API 并检查健康状态；失败时恢复上一个 release。
+- `/www/wwwroot/jobkoi` 是指向当前 release 的符号链接。激活脚本使用仅保存在服务器的 `MIGRATION_DATABASE_URL` 执行前向数据库迁移；API 运行时继续使用低权限 `DATABASE_URL`。随后脚本原子切换链接、重启 API 并检查健康状态；失败时恢复上一个 release。
 - GitHub 使用专用的 `admin` 部署密钥，并只能通过受限 sudo 命令激活已经上传且校验过结构的 release。
 
 ## 运维底线

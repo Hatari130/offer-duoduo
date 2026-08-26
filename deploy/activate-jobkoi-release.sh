@@ -117,13 +117,14 @@ set -a
 # shellcheck disable=SC1090
 source "$environment_file"
 set +a
-if [[ -z "${DATABASE_URL:-}" ]]; then
-  echo "DATABASE_URL is required for migrations" >&2
+migration_database_url="${MIGRATION_DATABASE_URL:-${DATABASE_URL:-}}"
+if [[ -z "$migration_database_url" ]]; then
+  echo "MIGRATION_DATABASE_URL or DATABASE_URL is required for migrations" >&2
   false
 fi
 (
   cd "$staging_path"
-  runuser -u admin -- env HOME=/home/admin DATABASE_URL="$DATABASE_URL" \
+  runuser -u admin -- env HOME=/home/admin DATABASE_URL="$migration_database_url" \
     /usr/bin/pnpm --filter @offerflow/api db:migrate
 )
 
