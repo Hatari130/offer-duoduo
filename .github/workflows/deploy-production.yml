@@ -56,14 +56,13 @@ jobs:
             --exclude='*/.env' \
             --exclude='.env.*' \
             --exclude='*/.env.*' \
-            --exclude=release.tar.gz \
-            -czf release.tar.gz .
+            -czf "$RUNNER_TEMP/release.tar.gz" .
 
       - name: Store the release for the deploy job
         uses: actions/upload-artifact@v7
         with:
           name: jobkoi-${{ github.sha }}
-          path: release.tar.gz
+          path: ${{ runner.temp }}/release.tar.gz
           if-no-files-found: error
           retention-days: 7
 
