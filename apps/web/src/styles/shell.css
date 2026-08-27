@@ -259,6 +259,42 @@
   margin-block-start: 0.45rem;
 }
 
+.thread-search {
+  display: grid;
+  min-height: 2.25rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.4rem;
+  margin: 0.5rem 0.35rem 0;
+  padding-inline: 0.55rem;
+  color: var(--of-text-subtle);
+  background: var(--of-surface-muted);
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+}
+
+.thread-search:focus-within { border-color: var(--of-focus); }
+
+.thread-search input {
+  min-width: 0;
+  color: var(--of-text);
+  background: transparent;
+  border: 0;
+  font: inherit;
+  font-size: 0.75rem;
+}
+
+.thread-link-row {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border-radius: 0.62rem;
+}
+
+.thread-link-row:hover,
+.thread-link-row.is-active { background: var(--of-surface-muted); }
+
 .thread-link {
   display: block;
   padding: 0.55rem 0.65rem;
@@ -273,9 +309,57 @@
 }
 
 .thread-link:hover,
-.thread-link.is-active {
+.thread-link-row.is-active .thread-link {
   color: var(--of-text);
-  background: var(--of-surface-muted);
+}
+
+.thread-row-actions {
+  display: flex;
+  padding-inline-end: 0.25rem;
+  opacity: 0;
+}
+
+.thread-link-row:is(:hover, :focus-within) .thread-row-actions { opacity: 1; }
+
+@media (hover: none) {
+  .thread-row-actions { opacity: 1; }
+}
+
+.thread-row-actions button,
+.thread-link-row form button {
+  display: grid;
+  width: 1.9rem;
+  height: 1.9rem;
+  place-items: center;
+  color: var(--of-text-subtle);
+  background: transparent;
+  border: 0;
+  border-radius: 0.45rem;
+}
+
+.thread-row-actions button:hover,
+.thread-link-row form button:hover { color: var(--of-text); background: var(--of-surface); }
+
+.thread-row-actions button:last-child:hover { color: var(--of-danger); }
+
+.thread-link-row form {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  padding: 0.2rem;
+}
+
+.thread-link-row form input {
+  min-width: 0;
+  height: 2rem;
+  padding-inline: 0.45rem;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border: 1px solid var(--of-focus);
+  border-radius: 0.45rem;
+  font: inherit;
+  font-size: 0.75rem;
 }
 
 .thread-empty {
@@ -285,6 +369,16 @@
   font-size: 0.75rem;
   line-height: 1.55;
 }
+
+.thread-error {
+  min-height: 1rem;
+  margin: 0.25rem 0.65rem 0;
+  color: var(--of-danger);
+  font-size: 0.7rem;
+  line-height: 1.4;
+}
+
+.thread-error:empty { display: none; }
 
 .sidebar-footer {
   display: grid;
@@ -722,6 +816,8 @@
 .sidebar-collapse-toggle:focus-visible,
 .nav-link:focus-visible,
 .thread-link:focus-visible,
+.thread-row-actions button:focus-visible,
+.thread-link-row form button:focus-visible,
 .extension-entry-button:focus-visible,
 .upgrade-pro-button:focus-visible,
 .account-trigger:focus-visible,

@@ -5,10 +5,12 @@ import {
   isCreateInterviewRecordFromTranscriptRequest,
   isExchangeDeviceCodeRequest,
   isLoginRequest,
+  isMessageFeedbackRequest,
   isOpportunitySyncRequest,
   isRegisterRequest,
   isRetryMessageRequest,
   isSendMessageRequest,
+  isUpdateConversationRequest,
   isSupportedInterviewAudioMimeType,
   normalizeMimeType
 } from "../src/index.ts";
@@ -33,6 +35,21 @@ test("chat contracts require a stable client message id", () => {
   assert.equal(isSendMessageRequest({ content: "如何准备秋招？" }), false);
   assert.equal(isRetryMessageRequest({ clientMessageId: "retry-1" }), true);
   assert.equal(isRetryMessageRequest({ clientMessageId: 1 }), false);
+  assert.equal(isSendMessageRequest({
+    content: "结合材料分析岗位",
+    clientMessageId: "msg-2",
+    attachments: [{ id: "file-1", name: "notes.txt", mimeType: "text/plain", size: 12, content: "项目复盘" }],
+    context: [{ kind: "application", id: "app-1", label: "星河科技 · 产品经理" }]
+  }), true);
+  assert.equal(isSendMessageRequest({
+    content: "读取材料",
+    clientMessageId: "msg-3",
+    attachments: [{ id: "file-2", name: "resume.pdf", mimeType: "application/pdf", size: 12, content: "伪造文本" }]
+  }), false);
+  assert.equal(isUpdateConversationRequest({ title: "字节产品岗准备" }), true);
+  assert.equal(isUpdateConversationRequest({ title: "" }), false);
+  assert.equal(isMessageFeedbackRequest({ feedback: "positive" }), true);
+  assert.equal(isMessageFeedbackRequest({ feedback: "maybe" }), false);
 });
 
 test("application sync contract validates the incremental envelope", () => {

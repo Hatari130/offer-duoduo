@@ -5,13 +5,16 @@ import type {
   ApiResponse,
   AuthSession,
   AuthDeviceSession,
+  ChatContextResponse,
   ChatStreamEvent,
   CreateApplicationRequest,
   CreateInterviewRecordFromTranscriptRequest,
   CreateTailorTaskRequest,
   CreateConversationRequest,
+  MessageFeedbackRequest,
   RetryMessageRequest,
   SendMessageRequest,
+  UpdateConversationRequest,
   UpdateApplicationRequest
 } from "@offerflow/contracts";
 import {
@@ -25,14 +28,24 @@ import {
   isRecord,
   isRegisterRequest,
   isOpportunitySyncRequest,
+  isMessageFeedbackRequest,
   isRetryMessageRequest,
   isSendMessageRequest,
   isSupportedInterviewAudioMimeType,
   normalizeMimeType,
+  isUpdateConversationRequest,
   isUpdateResumeVersionRequest
 } from "@offerflow/contracts";
-import type { ChatMessage, JobApplication, KnowledgeCitation } from "@offerflow/domain";
-import { opportunityStatus, RECRUITMENT_TYPES } from "@offerflow/domain";
+import type {
+  ChatAttachment,
+  ChatContextOption,
+  ChatContextReference,
+  ChatMessage,
+  JobApplication,
+  KnowledgeCitation,
+  PersonalProfile
+} from "@offerflow/domain";
+import { opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
 import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
@@ -285,7 +298,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   async function privateInterviewKnowledge(userId: string): Promise<KnowledgeEntry[]> {
     // Both lookups are user-scoped before content is materialised. Never put
     // raw audio or another user's interview records into retrieval candidates.
-    const applications = await store.listApplications(userId);
+    const applications = (await store.listApplications(userId)).filter((item) => !item.deletedAt);
     const recordGroups = await Promise.all(applications.map(async ({ application }) => ({
       application,
       records: await store.listInterviewRecords(userId, application.id)
@@ -311,6 +324,159 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           return [...qaEntries, ...transcriptEntries];
         })
     );
+  }
+
+  function profileKnowledge(profile: PersonalProfile): string {
+    const education = profile.education.map((item) =>
+      `${item.school}｜${item.degree} ${item.major}｜${item.startDate}—${item.endDate}`
+    );
+    const experiences = profile.experiences.map((item) =>
+      `${item.organization}｜${item.title}\n${item.description}${item.achievements ? `\n成果：${item.achievements}` : ""}`
+    );
+    const projects = profile.projects.map((item) =>
+      `${item.name}｜${item.role}\n${item.description}${item.achievement ? `\n成果：${item.achievement}` : ""}`
+    );
+    return [
+      profile.targetRole && `目标岗位：${profile.targetRole}`,
+      profile.targetCities && `目标城市：${profile.targetCities}`,
+      profile.graduationDate && `毕业时间：${profile.graduationDate}`,
+      education.length && `教育经历：\n${education.join("\n")}`,
+      experiences.length && `工作与实习：\n${experiences.join("\n\n")}`,
+      projects.length && `项目经历：\n${projects.join("\n\n")}`,
+      profile.strengths && `优势：${profile.strengths}`,
+      profile.selfIntroduction && `自我介绍：${profile.selfIntroduction}`,
+      profile.careerPlan && `职业规划：${profile.careerPlan}`
+    ].filter(Boolean).join("\n\n").slice(0, 12_000);
+  }
+
+  function applicationKnowledge(application: JobApplication): string {
+    return [
+      `公司：${application.company}`,
+      `岗位：${application.position}`,
+      application.city && `城市：${application.city}`,
+      `投递阶段：${STAGE_LABELS[application.stage]}`,
+      application.deadline && `截止时间：${application.deadline}`,
+      application.nextAction && `下一步：${application.nextAction}`,
+      application.summary && `岗位摘要：${application.summary}`,
+      application.responsibilities.length && `岗位职责：\n${application.responsibilities.join("\n")}`,
+      application.requirements.length && `岗位要求：\n${application.requirements.join("\n")}`,
+      application.rawExcerpt && `岗位原文：\n${application.rawExcerpt}`
+    ].filter(Boolean).join("\n\n").slice(0, 10_000);
+  }
+
+  async function chatContextCatalog(userId: string): Promise<ChatContextResponse> {
+    const applications = (await store.listApplications(userId)).filter((item) => !item.deletedAt);
+    const versions = await store.listResumeVersions(userId);
+    const interviewGroups = await Promise.all(applications.map(async ({ application }) => ({
+      application,
+      records: await store.listInterviewRecords(userId, application.id)
+    })));
+    const contexts: ChatContextOption[] = [
+      ...applications.map(({ application }) => ({
+        kind: "application" as const,
+        id: application.id,
+        label: `${application.company} · ${application.position}`,
+        description: `${STAGE_LABELS[application.stage]}${application.nextAction ? `｜${application.nextAction}` : ""}`,
+        updatedAt: application.updatedAt,
+        selectable: true
+      })),
+      ...versions.map(({ version }) => ({
+        kind: "resume" as const,
+        id: version.id,
+        label: version.sourceResumeName || version.document.title,
+        description: `${version.company} · ${version.position}`,
+        updatedAt: version.updatedAt,
+        selectable: true
+      })),
+      ...interviewGroups.flatMap(({ application, records }) => records
+        .filter((record) => record.status === "ready")
+        .map((record) => ({
+          kind: "interview" as const,
+          id: record.id,
+          label: record.title,
+          description: `${application.company} · ${application.position}`,
+          updatedAt: record.updatedAt,
+          selectable: true
+        })))
+    ].sort((left, right) => (right.updatedAt || "").localeCompare(left.updatedAt || ""));
+    return { contexts: contexts.slice(0, 60) };
+  }
+
+  async function canonicalContextReferences(
+    userId: string,
+    references: ChatContextReference[] = []
+  ): Promise<ChatContextReference[]> {
+    if (!references.length) return [];
+    const { contexts } = await chatContextCatalog(userId);
+    return references.flatMap((reference) => {
+      const option = contexts.find((item) => item.kind === reference.kind && item.id === reference.id);
+      return option ? [{
+        kind: option.kind,
+        id: option.id,
+        label: option.label,
+        description: option.description,
+        updatedAt: option.updatedAt
+      }] : [];
+    });
+  }
+
+  async function selectedContextKnowledge(
+    userId: string,
+    references: ChatContextReference[] = []
+  ): Promise<KnowledgeEntry[]> {
+    if (!references.length) return [];
+    const applications = await store.listApplications(userId);
+    const versions = await store.listResumeVersions(userId);
+    const interviewEntries = references.some((item) => item.kind === "interview")
+      ? await privateInterviewKnowledge(userId)
+      : [];
+    return references.flatMap((reference) => {
+      if (reference.kind === "application") {
+        const application = applications.find((item) => !item.deletedAt && item.application.id === reference.id)?.application;
+        return application ? [{
+          id: `application:${application.id}`,
+          sourceId: `application:${application.id}`,
+          title: `投递记录｜${application.company} · ${application.position}`,
+          content: applicationKnowledge(application),
+          url: application.sourceUrl
+        }] : [];
+      }
+      if (reference.kind === "resume") {
+        const version = versions.find((item) => item.version.id === reference.id)?.version;
+        return version ? [{
+          id: `resume:${version.id}`,
+          sourceId: `resume:${version.id}`,
+          title: `简历｜${version.sourceResumeName || version.document.title}`,
+          content: profileKnowledge(version.document.profile)
+        }] : [];
+      }
+      return interviewEntries.filter((entry) => entry.sourceId === `interview-record:${reference.id}`);
+    });
+  }
+
+  function attachmentKnowledge(attachments: ChatAttachment[] = []): KnowledgeEntry[] {
+    return attachments.flatMap((attachment) => transcriptChunks(attachment.content || "").map((content, index) => ({
+      id: `attachment:${attachment.id}:${index}`,
+      sourceId: `attachment:${attachment.id}`,
+      title: `本次资料｜${attachment.name}`,
+      content
+    })));
+  }
+
+  function explicitCitations(entries: KnowledgeEntry[]): KnowledgeCitation[] {
+    const seen = new Set<string>();
+    return entries.flatMap((entry) => {
+      if (seen.has(entry.sourceId)) return [];
+      seen.add(entry.sourceId);
+      return [{
+        id: entry.id,
+        sourceId: entry.sourceId,
+        title: entry.title,
+        excerpt: entry.content.slice(0, 1_800),
+        url: entry.url,
+        score: 100
+      }];
+    }).slice(0, 4);
   }
 
   async function requireSession(request: IncomingMessage): Promise<SessionRecord> {
@@ -346,9 +512,17 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     userId: string,
     conversationId: string,
     prompt: string,
-    history: ChatMessage[]
+    history: ChatMessage[],
+    attachments: ChatAttachment[] = [],
+    context: ChatContextReference[] = []
   ): Promise<void> {
-    const citations = knowledge.search(prompt, 3, await privateInterviewKnowledge(userId));
+    const selectedEntries = await selectedContextKnowledge(userId, context);
+    const attachmentEntries = attachmentKnowledge(attachments);
+    const contextualEntries = [...selectedEntries, ...attachmentEntries];
+    const explicitlySelectedEntries = [...(context.length ? selectedEntries : []), ...attachmentEntries];
+    const citations = [...explicitCitations(explicitlySelectedEntries), ...knowledge.search(prompt, 4, contextualEntries)]
+      .filter((citation, index, items) => items.findIndex((item) => item.id === citation.id) === index)
+      .slice(0, 6);
     const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
     const abortController = new AbortController();
     response.on("close", () => {
@@ -403,7 +577,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         assistantMessage.id,
         content,
         citations,
-        aborted ? "complete" : "error"
+        aborted ? "stopped" : "error"
       );
       if (!aborted) {
         await writeSse(response, {
@@ -772,6 +946,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         }
       }
 
+      if (method === "GET" && path === "/v1/chat-context") {
+        success(response, await chatContextCatalog(userId));
+        return;
+      }
+
       if (method === "GET" && path === "/v1/conversations") {
         success(response, { conversations: await store.listConversations(userId) });
         return;
@@ -787,6 +966,23 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      const feedbackMatch = path.match(/^\/v1\/conversations\/([^/]+)\/messages\/([^/]+)\/feedback$/);
+      if (method === "PATCH" && feedbackMatch) {
+        const body = (await readJson(request)) as MessageFeedbackRequest;
+        if (!isMessageFeedbackRequest(body)) {
+          throw new HttpError(400, "INVALID_FEEDBACK", "请选择有帮助或没帮助");
+        }
+        const message = await store.setMessageFeedback(
+          userId,
+          decodePath(feedbackMatch[1]),
+          decodePath(feedbackMatch[2]),
+          body.feedback
+        );
+        if (!message) throw new HttpError(404, "MESSAGE_NOT_FOUND", "没有找到这条回答");
+        success(response, { message });
+        return;
+      }
+
       const retryMatch = path.match(/^\/v1\/conversations\/([^/]+)\/messages\/([^/]+)\/retry$/);
       if (method === "POST" && retryMatch) {
         const body = await readJson(request);
@@ -798,7 +994,18 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         const prompt = await store.findRetryPrompt(userId, conversationId, messageId);
         if (!prompt) throw new HttpError(404, "MESSAGE_NOT_FOUND", "没有找到可重试的问题");
         const history = await store.getConversationHistory(userId, conversationId);
-        await streamAnswer(request, response, userId, conversationId, prompt, history);
+        const messageIndex = history.findIndex((message) => message.id === messageId);
+        const sourceMessage = history.slice(0, messageIndex).reverse().find((message) => message.role === "user");
+        await streamAnswer(
+          request,
+          response,
+          userId,
+          conversationId,
+          prompt,
+          history,
+          sourceMessage?.attachments,
+          sourceMessage?.context
+        );
         return;
       }
 
@@ -809,15 +1016,20 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           throw new HttpError(400, "EMPTY_MESSAGE", "输入问题后再发送");
         }
         const conversationId = decodePath(sendMatch[1]);
+        const context = await canonicalContextReferences(userId, body.context);
+        if (context.length !== (body.context?.length || 0)) {
+          throw new HttpError(400, "CHAT_CONTEXT_NOT_FOUND", "选中的个人材料已不可用，请重新选择");
+        }
         const history = await store.getConversationHistory(userId, conversationId);
         await store.appendUserMessage(
           userId,
           conversationId,
           body.clientMessageId,
           body.content,
-          body.attachments
+          body.attachments,
+          context
         );
-        await streamAnswer(request, response, userId, conversationId, body.content, history);
+        await streamAnswer(request, response, userId, conversationId, body.content, history, body.attachments, context);
         return;
       }
 
@@ -828,6 +1040,17 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           const result = await store.getConversation(userId, conversationId);
           if (!result) throw new HttpError(404, "CONVERSATION_NOT_FOUND", "没有找到这段对话");
           success(response, result);
+          return;
+        }
+        if (method === "PATCH") {
+          const body = (await readJson(request)) as UpdateConversationRequest;
+          if (!isUpdateConversationRequest(body)) {
+            throw new HttpError(400, "INVALID_CONVERSATION_TITLE", "请输入 1—80 个字符的对话名称");
+          }
+          const conversation = await store.updateConversation(userId, conversationId, body.title);
+          if (!conversation) throw new HttpError(404, "CONVERSATION_NOT_FOUND", "没有找到这段对话");
+          const result = await store.getConversation(userId, conversationId);
+          success(response, result!);
           return;
         }
         if (method === "DELETE") {

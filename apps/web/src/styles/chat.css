@@ -91,6 +91,175 @@
   margin-inline: auto;
 }
 
+.chat-welcome > .chat-context {
+  width: min(100%, clamp(48rem, 62vw, 74rem));
+  margin: 0 auto 0.65rem;
+}
+
+.chat-context {
+  position: relative;
+  width: 100%;
+  text-align: start;
+}
+
+.chat-context-row {
+  display: flex;
+  min-height: 2.35rem;
+  align-items: center;
+  gap: 0.55rem;
+  padding-inline: 0.15rem;
+}
+
+.chat-context-label {
+  flex: 0 0 auto;
+  color: var(--of-text-subtle);
+  font-size: 0.75rem;
+  font-weight: 680;
+}
+
+.chat-context-chips {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  gap: 0.35rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.chat-context-chips::-webkit-scrollbar { display: none; }
+
+.chat-context-chip {
+  display: inline-flex;
+  min-height: 1.9rem;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.2rem 0.2rem 0.2rem 0.55rem;
+  color: var(--of-brand-700);
+  background: color-mix(in oklch, var(--of-brand-50) 72%, white);
+  border: 1px solid color-mix(in oklch, var(--of-brand-600) 18%, var(--of-line));
+  border-radius: 999px;
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.chat-context-chip button {
+  display: grid;
+  width: 1.55rem;
+  height: 1.55rem;
+  place-items: center;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 50%;
+}
+
+.chat-context-chip button:hover { background: color-mix(in oklch, var(--of-brand-100) 70%, transparent); }
+
+.chat-context-empty {
+  align-self: center;
+  color: var(--of-text-subtle);
+  font-size: 0.75rem;
+}
+
+.chat-context-trigger {
+  display: inline-flex;
+  min-height: 2rem;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.3rem;
+  padding-inline: 0.55rem;
+  color: var(--of-link);
+  background: transparent;
+  border: 0;
+  border-radius: 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 680;
+}
+
+.chat-context-trigger:hover { background: var(--of-info-soft); }
+
+.chat-context-popover {
+  position: absolute;
+  inset: calc(100% + 0.45rem) 0 auto auto;
+  z-index: 20;
+  width: min(31rem, calc(100vw - 2rem));
+  max-height: min(34rem, 70vh);
+  overflow: auto;
+  padding: 1rem;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border: 1px solid var(--of-line-strong);
+  border-radius: 1rem;
+  box-shadow: 0 1.4rem 4rem -1.8rem rgb(31 42 75 / 0.35);
+  overscroll-behavior: contain;
+}
+
+.chat-context-popover > header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-block-end: 0.8rem;
+  border-block-end: 1px solid var(--of-line);
+}
+
+.chat-context-popover h2,
+.chat-context-popover h3,
+.citation-dialog h2 { margin: 0; }
+
+.chat-context-popover h2 { font-size: 0.95rem; }
+.chat-context-popover header p { margin: 0.25rem 0 0; color: var(--of-text-subtle); font-size: 0.75rem; line-height: 1.5; }
+.chat-context-popover header > button,
+.citation-dialog header > button { display: grid; width: 2.25rem; height: 2.25rem; flex: 0 0 auto; place-items: center; color: var(--of-text-muted); background: transparent; border: 0; border-radius: 50%; }
+.chat-context-popover header > button:hover,
+.citation-dialog header > button:hover { color: var(--of-text); background: var(--of-surface-muted); }
+
+.chat-context-search {
+  display: grid;
+  min-height: 2.5rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.45rem;
+  margin-block-start: 0.8rem;
+  padding-inline: 0.65rem;
+  color: var(--of-text-subtle);
+  background: var(--of-surface-muted);
+  border: 1px solid transparent;
+  border-radius: 0.65rem;
+}
+
+.chat-context-search:focus-within { border-color: var(--of-focus); }
+.chat-context-search input { min-width: 0; color: var(--of-text); background: transparent; border: 0; font: inherit; font-size: 0.78rem; }
+
+.chat-context-options { display: grid; gap: 1rem; padding-block-start: 0.9rem; }
+.chat-context-options section { display: grid; gap: 0.45rem; }
+.chat-context-options h3 { display: flex; align-items: center; gap: 0.35rem; color: var(--of-text-subtle); font-size: 0.72rem; font-weight: 720; }
+.chat-context-options section > div { display: grid; gap: 0.35rem; }
+
+.chat-context-option {
+  display: grid;
+  min-height: 3.25rem;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--of-line);
+  border-radius: 0.7rem;
+  cursor: pointer;
+}
+
+.chat-context-option:hover { background: var(--of-surface-muted); }
+.chat-context-option:has(input:checked) { background: var(--of-brand-50); border-color: color-mix(in oklch, var(--of-brand-600) 28%, var(--of-line)); }
+.chat-context-option:has(input:disabled) { cursor: not-allowed; opacity: 0.55; }
+.chat-context-option input { width: 1rem; height: 1rem; accent-color: var(--of-brand-600); }
+.chat-context-option span { display: grid; min-width: 0; gap: 0.12rem; }
+.chat-context-option strong { overflow: hidden; font-size: 0.78rem; font-weight: 680; text-overflow: ellipsis; white-space: nowrap; }
+.chat-context-option small { overflow: hidden; color: var(--of-text-subtle); font-size: 0.7rem; text-overflow: ellipsis; white-space: nowrap; }
+
+.chat-context-state { display: grid; gap: 0.25rem; margin: 0; padding: 1.2rem 0.5rem 0.4rem; color: var(--of-text-subtle); font-size: 0.78rem; line-height: 1.5; text-align: center; }
+.chat-context-state strong { color: var(--of-text); }
+
 .chat-welcome > .composer-shell textarea {
   height: 4.15rem;
   min-height: 4.15rem;
@@ -533,12 +702,43 @@
 }
 
 .message-attachments span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.35rem 0.55rem;
   background: var(--of-surface-muted);
   border: 1px solid var(--of-line);
   border-radius: 0.55rem;
   font-size: 0.75rem;
 }
+
+.message-context {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-block-end: 0.55rem;
+  color: var(--of-text-subtle);
+  font-size: 0.7rem;
+}
+
+.message-context span:not(:first-child) {
+  padding: 0.18rem 0.45rem;
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-radius: 999px;
+}
+
+.message-generation-state {
+  margin: 0.75rem 0 0;
+  padding: 0.65rem 0.75rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border-radius: 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.message-generation-state.is-error { color: var(--of-danger); background: var(--of-danger-soft); }
 
 .thinking-indicator {
   display: inline-flex;
@@ -572,8 +772,7 @@
   padding-block: 1px 0.3rem;
 }
 
-.citation-card,
-.citation-list a {
+.citation-list button {
   display: inline-flex;
   max-width: 16rem;
   min-height: 2.75rem;
@@ -587,12 +786,12 @@
   border-radius: 0.75rem;
   font-size: 0.8125rem;
   text-decoration: none;
+  text-align: start;
 }
 
-.citation-list a { color: var(--of-link, #315f8c); }
+.citation-list button:hover { color: var(--of-link); border-color: color-mix(in oklch, var(--of-link) 28%, var(--of-line)); }
 
-.citation-card i,
-.citation-list a i {
+.citation-list button i {
   display: grid;
   width: 1.3rem;
   height: 1.3rem;
@@ -606,15 +805,37 @@
   font-weight: 750;
 }
 
-.citation-card > span,
-.citation-list a > span {
+.citation-list button > span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
+.citation-dialog {
+  width: min(38rem, calc(100vw - 2rem));
+  max-height: min(42rem, calc(100vh - 2rem));
+  padding: 0;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border: 1px solid var(--of-line-strong);
+  border-radius: 1.1rem;
+  box-shadow: 0 2rem 5rem -2rem rgb(31 42 75 / 0.4);
+  overscroll-behavior: contain;
+}
+
+.citation-dialog::backdrop { background: rgb(27 33 49 / 0.32); backdrop-filter: blur(3px); }
+.citation-dialog > div { display: grid; max-height: inherit; grid-template-rows: auto minmax(0, 1fr) auto; }
+.citation-dialog header { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.1rem 0.9rem; border-block-end: 1px solid var(--of-line); }
+.citation-dialog header span { color: var(--of-brand-700); font-size: 0.7rem; font-weight: 720; }
+.citation-dialog h2 { margin-block-start: 0.22rem; font-size: 1rem; line-height: 1.4; }
+.citation-dialog blockquote { margin: 0; padding: 1.2rem; overflow: auto; color: var(--of-text); font-size: 0.9rem; line-height: 1.75; white-space: pre-wrap; }
+.citation-dialog footer { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 0.8rem 1.1rem; background: var(--of-surface-muted); border-block-start: 1px solid var(--of-line); }
+.citation-dialog footer code { overflow: hidden; color: var(--of-text-subtle); font-size: 0.68rem; text-overflow: ellipsis; white-space: nowrap; }
+.citation-dialog footer a { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 0.3rem; color: var(--of-link); font-size: 0.75rem; font-weight: 680; text-decoration: none; }
+
 .message-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.3rem;
   margin-block-start: 0.75rem;
 }
@@ -634,10 +855,37 @@
 
 .message-actions button:hover { color: var(--of-text); background: var(--of-surface-muted); }
 
+.message-actions button[aria-pressed="true"] { color: var(--of-brand-700); background: var(--of-brand-50); }
+.message-action-divider { width: 1px; height: 1.1rem; align-self: center; margin-inline: 0.2rem; background: var(--of-line); }
+
+.answer-next-steps {
+  display: grid;
+  gap: 0.55rem;
+  margin-block-start: 1rem;
+  padding-block-start: 0.9rem;
+  border-block-start: 1px solid var(--of-line);
+}
+
+.answer-next-steps > span { color: var(--of-text-subtle); font-size: 0.72rem; font-weight: 680; }
+.answer-next-steps > div { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+.answer-next-steps button { min-height: 2.25rem; padding: 0.4rem 0.65rem; color: var(--of-text-muted); background: var(--of-surface); border: 1px solid var(--of-line); border-radius: 0.65rem; font-size: 0.75rem; line-height: 1.35; text-align: start; }
+.answer-next-steps button:hover { color: var(--of-text); background: var(--of-surface-muted); border-color: var(--of-line-strong); }
+.answer-workspace-actions { padding-block-start: 0.2rem; }
+.answer-workspace-actions button { display: inline-flex; align-items: center; gap: 0.3rem; color: var(--of-link); background: var(--of-info-soft); border-color: transparent; font-weight: 680; }
+
 .thread-composer {
   padding: 0.55rem clamp(1rem, 4vw, 2rem) calc(0.55rem + env(safe-area-inset-bottom));
   background: var(--of-surface, #fffdfb);
   border-block-start: 1px solid color-mix(in oklch, var(--of-line) 60%, transparent);
+}
+
+.thread-composer > .chat-context {
+  width: min(100%, 50rem);
+  margin-inline: auto;
+}
+
+.thread-composer .chat-context-popover {
+  inset-block: auto calc(100% + 0.45rem);
 }
 
 .thread-composer .composer-shell {
@@ -685,6 +933,10 @@
   transform: translateX(-50%);
 }
 
+.chat-status:not(:empty) { display: flex; align-items: center; gap: 0.75rem; }
+.chat-status button { display: grid; width: 1.75rem; height: 1.75rem; flex: 0 0 auto; place-items: center; color: inherit; background: transparent; border: 0; border-radius: 50%; }
+.chat-status button:hover { background: color-mix(in oklch, var(--of-danger) 10%, transparent); }
+
 .chat-status:empty { display: none; }
 
 @media (hover: hover) and (prefers-reduced-motion: no-preference) {
@@ -714,6 +966,12 @@
   .chat-welcome::before { inset-inline: -10%; inset-block-start: 1rem; }
   .chat-welcome h1 { font-size: clamp(2.35rem, 11vw, 2.75rem); }
   .chat-welcome > p { margin-block-end: 1.5rem; font-size: 0.95rem; }
+  .chat-context-row { flex-wrap: wrap; gap: 0.35rem; }
+  .chat-context-label { width: 100%; }
+  .chat-context-chips { order: 3; flex-basis: 100%; }
+  .chat-context-trigger { margin-inline-start: auto; }
+  .chat-context-popover { inset-inline: 0 auto; width: 100%; max-height: 58vh; }
+  .thread-composer .chat-context-popover { inset-inline: 0 auto; }
   .composer-shell { border-radius: 1.35rem; }
   .composer-shell textarea { min-height: 6rem; font-size: 1rem; }
   .recommendation-section { margin-block-start: 1.75rem; }
@@ -729,6 +987,9 @@
   .message { gap: 0.6rem; margin-block-end: 1.5rem; }
   .message--user .message-body { max-width: 90%; }
   .message-actions button { min-width: 2.75rem; min-height: 2.75rem; justify-content: center; }
+  .message-action-divider { display: none; }
+  .answer-next-steps button { min-height: 2.75rem; }
+  .citation-dialog footer { align-items: start; flex-direction: column; }
   .thread-composer { padding-inline: 0.75rem; }
   .thread-composer .composer-shell textarea { font-size: 1rem; }
 }

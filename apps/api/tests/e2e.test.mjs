@@ -120,17 +120,30 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     headers,
     body: JSON.stringify({})
   });
+  const emptyContext = await jsonRequest(app.baseUrl, "/v1/chat-context", { headers });
+  assert.deepEqual(emptyContext.payload.data.contexts, []);
   const conversationId = createdConversation.payload.data.conversation.id;
   const stream = await fetch(`${app.baseUrl}/v1/conversations/${conversationId}/messages`, {
     method: "POST",
     headers,
-    body: JSON.stringify({ content: "如何准备秋招？", clientMessageId: "e2e-user-message" })
+    body: JSON.stringify({
+      content: "如何准备秋招？",
+      clientMessageId: "e2e-user-message",
+      attachments: [{
+        id: "attachment-1",
+        name: "个人复盘.txt",
+        mimeType: "text/plain",
+        size: 18,
+        content: "我每周可以投入十五小时，目标是产品实习。"
+      }]
+    })
   });
   assert.equal(stream.headers.get("content-type").startsWith("text/event-stream"), true);
   const streamBody = await stream.text();
   assert.match(streamBody, /"type":"message\.started"/);
   assert.match(streamBody, /"type":"message\.delta"/);
   assert.match(streamBody, /"type":"citation"/);
+  assert.match(streamBody, /本次资料｜个人复盘\.txt/);
   assert.match(streamBody, /"type":"message\.completed"/);
   assert.match(streamBody, /"type":"done"/);
 
@@ -138,6 +151,20 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   assert.equal(conversation.payload.data.messages.length, 2);
   assert.equal(conversation.payload.data.messages[1].status, "complete");
   assert.match(conversation.payload.data.messages[1].content, /按周复盘/);
+  assert.equal(conversation.payload.data.messages[0].attachments[0].content, "我每周可以投入十五小时，目标是产品实习。");
+
+  const renamedConversation = await jsonRequest(app.baseUrl, `/v1/conversations/${conversationId}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ title: "产品实习准备" })
+  });
+  assert.equal(renamedConversation.payload.data.conversation.title, "产品实习准备");
+  const feedback = await jsonRequest(
+    app.baseUrl,
+    `/v1/conversations/${conversationId}/messages/${conversation.payload.data.messages[1].id}/feedback`,
+    { method: "PATCH", headers, body: JSON.stringify({ feedback: "positive" }) }
+  );
+  assert.equal(feedback.payload.data.message.feedback, "positive");
 
   const opportunities = await jsonRequest(app.baseUrl, "/v1/opportunities", { headers });
   assert.deepEqual(opportunities.payload.data.opportunities, []);
@@ -151,6 +178,21 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   });
   assert.equal(createdApplication.response.status, 201);
   assert.equal(createdApplication.payload.data.item.revision, 1);
+  const applicationContext = await jsonRequest(app.baseUrl, "/v1/chat-context", { headers });
+  assert.equal(applicationContext.payload.data.contexts[0].kind, "application");
+  assert.match(applicationContext.payload.data.contexts[0].label, /远航智能/);
+  const contextualStream = await fetch(`${app.baseUrl}/v1/conversations/${conversationId}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      content: "根据这条投递告诉我下一步",
+      clientMessageId: "e2e-context-message",
+      context: [{ ...applicationContext.payload.data.contexts[0], label: "伪造的材料名称" }]
+    })
+  });
+  assert.match(await contextualStream.text(), /投递记录｜远航智能 · 产品实习生/);
+  const canonicalConversation = await jsonRequest(app.baseUrl, `/v1/conversations/${conversationId}`, { headers });
+  assert.equal(canonicalConversation.payload.data.messages.at(-2).context[0].label, "远航智能 · 产品实习生");
 
   const updatedApplication = await jsonRequest(app.baseUrl, "/v1/applications/e2e-application", {
     method: "PATCH",

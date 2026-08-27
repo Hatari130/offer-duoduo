@@ -8,6 +8,7 @@ import type {
 } from "@offerflow/contracts";
 import type {
   ChatAttachment,
+  ChatContextReference,
   ChatConversation,
   ChatMessage,
   InterviewQaPair,
@@ -93,6 +94,7 @@ export interface OfferFlowStore {
 
   listConversations(userId: string): Awaitable<ChatConversation[]>;
   createConversation(userId: string, title?: string): Awaitable<ChatConversation>;
+  updateConversation(userId: string, conversationId: string, title: string): Awaitable<ChatConversation | undefined>;
   getConversation(
     userId: string,
     conversationId: string
@@ -103,7 +105,8 @@ export interface OfferFlowStore {
     conversationId: string,
     messageId: string,
     content: string,
-    attachments?: ChatAttachment[]
+    attachments?: ChatAttachment[],
+    context?: ChatContextReference[]
   ): Awaitable<ChatMessage>;
   beginAssistantMessage(userId: string, conversationId: string): Awaitable<ChatMessage>;
   completeAssistantMessage(
@@ -115,6 +118,12 @@ export interface OfferFlowStore {
     status?: ChatMessage["status"]
   ): Awaitable<ChatMessage>;
   findRetryPrompt(userId: string, conversationId: string, messageId: string): Awaitable<string | undefined>;
+  setMessageFeedback(
+    userId: string,
+    conversationId: string,
+    messageId: string,
+    feedback: "positive" | "negative"
+  ): Awaitable<ChatMessage | undefined>;
   getConversationHistory(userId: string, conversationId: string): Awaitable<ChatMessage[]>;
 
   listOpportunities(): Awaitable<RecruitmentOpportunity[]>;

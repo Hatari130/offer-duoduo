@@ -1,12 +1,19 @@
 import { useEffect, useRef, useState } from "react";
-import type { ChatAttachment, ChatConversation, ChatMessage } from "@offerflow/domain";
+import type {
+  ChatAttachment,
+  ChatContextOption,
+  ChatContextReference,
+  ChatConversation,
+  ChatMessage
+} from "@offerflow/domain";
 import { CAREER_CHAT_SUGGESTIONS } from "@offerflow/domain";
-import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch } from "lucide-react";
+import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { createUuid } from "../app/id";
 import { navigate } from "../app/router";
 import { ChatComposer } from "../features/chat/ChatComposer";
+import { ChatContextPicker } from "../features/chat/ChatContextPicker";
 import { MessageList } from "../features/chat/MessageList";
 
 const recommendationCards = [
@@ -50,6 +57,9 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
+  const [contextOptions, setContextOptions] = useState<ChatContextOption[]>([]);
+  const [selectedContext, setSelectedContext] = useState<ChatContextReference[]>([]);
+  const [contextLoading, setContextLoading] = useState(false);
   const [loading, setLoading] = useState(Boolean(conversationId));
   const [streaming, setStreaming] = useState(false);
   const [error, setError] = useState("");
@@ -77,6 +87,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         if (!active) return;
         setConversation(result.conversation);
         setMessages(result.messages);
+        const latestContext = [...result.messages].reverse().find((message) => message.role === "user")?.context;
+        setSelectedContext(latestContext || []);
       })
       .catch((requestError) => {
         if (active) setError(requestError instanceof Error ? requestError.message : "无法载入对话");
@@ -90,6 +102,40 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   }, [conversationId]);
 
   useEffect(() => () => abortRef.current?.abort(), []);
+
+  useEffect(() => {
+    const renamed = (event: Event) => {
+      const updated = (event as CustomEvent<ChatConversation>).detail;
+      if (updated?.id === conversation?.id) setConversation(updated);
+    };
+    window.addEventListener("offerflow:conversation-renamed", renamed);
+    return () => window.removeEventListener("offerflow:conversation-renamed", renamed);
+  }, [conversation?.id]);
+
+  useEffect(() => {
+    if (status === "anonymous") {
+      setContextOptions([]);
+      setSelectedContext([]);
+      return;
+    }
+    let active = true;
+    setContextLoading(true);
+    api.chat.listContext()
+      .then((result) => {
+        if (!active) return;
+        setContextOptions(result.contexts);
+        setSelectedContext((current) => current.filter((selected) =>
+          result.contexts.some((option) => option.kind === selected.kind && option.id === selected.id)
+        ));
+      })
+      .catch(() => {
+        if (active) setError("暂时无法读取个人材料，你仍然可以继续提问。");
+      })
+      .finally(() => {
+        if (active) setContextLoading(false);
+      });
+    return () => { active = false; };
+  }, [status]);
 
   const requireChatLogin = () => {
     if (status !== "anonymous") return true;
@@ -126,11 +172,14 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         );
       } else if (event.type === "error") {
         setError(event.error.message);
+        setMessages((current) => current.map((message) =>
+          message.status === "streaming" ? { ...message, status: "error" } : message
+        ));
       }
     }
     if (controller.signal.aborted) {
       setMessages((current) => current.map((message) =>
-        message.status === "streaming" ? { ...message, status: "complete" } : message
+        message.status === "streaming" ? { ...message, status: "stopped" } : message
       ));
     }
   };
@@ -138,7 +187,10 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const send = async (suggested?: string) => {
     const content = (suggested ?? draft).trim();
     if (!content || streaming) return;
-    if (!requireChatLogin()) return;
+    if (!requireChatLogin()) {
+      if (suggested) setDraft(content);
+      return;
+    }
     setError("");
     setStreaming(true);
     const controller = new AbortController();
@@ -162,6 +214,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         status: "complete",
         createdAt: new Date().toISOString(),
         attachments,
+        context: selectedContext,
         citations: []
       };
       setMessages((current) => [...current, clientMessage]);
@@ -170,13 +223,23 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       await consumeStream(
         api.chat.sendMessage(
           activeConversation.id,
-          { content, clientMessageId: clientMessage.id, attachments: clientMessage.attachments },
+          {
+            content,
+            clientMessageId: clientMessage.id,
+            attachments: clientMessage.attachments,
+            context: clientMessage.context
+          },
           controller.signal
         ),
         controller
       );
       window.dispatchEvent(new Event("offerflow:conversation-updated"));
     } catch (requestError) {
+      setMessages((current) => current.map((message) =>
+        message.status === "streaming"
+          ? { ...message, status: controller.signal.aborted ? "stopped" : "error" }
+          : message
+      ));
       if (!controller.signal.aborted) {
         setError(requestError instanceof Error ? requestError.message : "回答生成失败，请重试");
       }
@@ -204,6 +267,11 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         controller
       );
     } catch (requestError) {
+      setMessages((current) => current.map((item) =>
+        item.status === "streaming"
+          ? { ...item, status: controller.signal.aborted ? "stopped" : "error" }
+          : item
+      ));
       if (!controller.signal.aborted) {
         setError(requestError instanceof Error ? requestError.message : "暂时无法重新生成");
       }
@@ -214,10 +282,33 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   };
 
   const copy = async (message: ChatMessage) => {
-    await navigator.clipboard.writeText(message.content);
-    setCopiedMessageId(message.id);
-    window.setTimeout(() => setCopiedMessageId(undefined), 1600);
+    try {
+      await navigator.clipboard.writeText(message.content);
+      setCopiedMessageId(message.id);
+      window.setTimeout(() => setCopiedMessageId(undefined), 1600);
+    } catch {
+      setError("无法复制回答，请手动选择文本。");
+    }
   };
+
+  const feedback = async (message: ChatMessage, value: "positive" | "negative") => {
+    if (!conversation) return;
+    try {
+      const result = await api.chat.setMessageFeedback(conversation.id, message.id, { feedback: value });
+      setMessages((current) => current.map((item) => item.id === message.id ? result.message : item));
+    } catch (requestError) {
+      setError(requestError instanceof Error ? requestError.message : "暂时无法保存反馈");
+    }
+  };
+
+  const contextPicker = status !== "anonymous" && (
+    <ChatContextPicker
+      options={contextOptions}
+      selected={selectedContext}
+      loading={contextLoading}
+      onChange={setSelectedContext}
+    />
+  );
 
   if (loading) {
     return <div className="page-loading" role="status"><span className="loading-orbit" /><span>正在载入对话…</span></div>;
@@ -229,7 +320,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       {isEmpty ? (
         <div className="chat-welcome">
           <h1 tabIndex={-1}>今天想先解决哪一步？</h1>
-          <p>聊岗位、改经历、做规划。回答会优先检索你的求职知识库，并标出参考来源。</p>
+          <p>选择一份简历、投递或面试记录，让每条建议都有依据，也能落到下一步行动。</p>
+          {contextPicker}
           <ChatComposer
             value={draft}
             attachments={attachments}
@@ -238,6 +330,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onChange={setDraft}
             onAttachmentsChange={setAttachments}
             onAttachmentRequest={requireChatLogin}
+            onAttachmentError={setError}
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
@@ -283,9 +376,18 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             <button type="button" onClick={() => navigate("/app/chat")}>开始新对话</button>
           </header>
           <div className="thread-scroll">
-            <MessageList messages={messages} copiedMessageId={copiedMessageId} onCopy={copy} onRetry={retry} />
+            <MessageList
+              messages={messages}
+              copiedMessageId={copiedMessageId}
+              onCopy={copy}
+              onRetry={retry}
+              onFeedback={feedback}
+              onFollowUp={(prompt) => void send(prompt)}
+              onOpenWorkspace={(kind) => navigate(kind === "resume" ? "/app/resumes" : "/app/applications")}
+            />
           </div>
           <div className="thread-composer">
+            {contextPicker}
             <ChatComposer
               value={draft}
               attachments={attachments}
@@ -293,14 +395,17 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               onChange={setDraft}
               onAttachmentsChange={setAttachments}
               onAttachmentRequest={requireChatLogin}
+              onAttachmentError={setError}
               onSubmit={() => void send()}
               onStop={() => abortRef.current?.abort()}
             />
-            <small>AI 回答可能不完整，请核对重要信息。</small>
+            <small>回答会标出使用过的资料；重要招聘信息仍请以企业官方公告为准。</small>
           </div>
         </>
       )}
-      <div className="chat-status" role={error ? "alert" : "status"}>{error}</div>
+      <div className="chat-status" role="alert" aria-atomic="true">
+        {error && <><span>{error}</span><button type="button" aria-label="关闭提示" onClick={() => setError("")}><X aria-hidden="true" size={14} /></button></>}
+      </div>
     </section>
   );
 }

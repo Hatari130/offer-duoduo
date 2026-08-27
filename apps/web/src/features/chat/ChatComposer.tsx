@@ -11,6 +11,7 @@ interface ChatComposerProps {
   onChange: (value: string) => void;
   onAttachmentsChange: (attachments: ChatAttachment[]) => void;
   onAttachmentRequest?: () => boolean;
+  onAttachmentError?: (message: string) => void;
   onSubmit: () => void;
   onStop: () => void;
 }
@@ -23,25 +24,34 @@ export function ChatComposer({
   onChange,
   onAttachmentsChange,
   onAttachmentRequest,
+  onAttachmentError,
   onSubmit,
   onStop
 }: ChatComposerProps) {
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const addFiles = (event: ChangeEvent<HTMLInputElement>) => {
-    const next = [...(event.target.files ?? [])].slice(0, 4 - attachments.length).map((file) => ({
+  const addFiles = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = [...(event.target.files ?? [])].slice(0, 2 - attachments.length);
+    event.target.value = "";
+    const invalid = files.find((file) => !/\.(?:txt|md)$/i.test(file.name) || file.size > 200_000);
+    if (invalid) {
+      onAttachmentError?.("请选择不超过 200 KB 的 TXT 或 Markdown 文件。");
+      return;
+    }
+    const next = await Promise.all(files.map(async (file) => ({
       id: createUuid(),
       name: file.name,
-      mimeType: file.type || "application/octet-stream",
-      size: file.size
-    }));
+      mimeType: /\.md$/i.test(file.name) ? "text/markdown" : "text/plain",
+      size: file.size,
+      content: await file.text()
+    })));
+    onAttachmentError?.("");
     onAttachmentsChange([...attachments, ...next]);
-    event.target.value = "";
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.nativeEvent.isComposing) return;
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (event.key === "Enter" && (event.metaKey || event.ctrlKey)) {
       event.preventDefault();
       if (value.trim() && !streaming) onSubmit();
     }
@@ -83,22 +93,24 @@ export function ChatComposer({
             className="sr-only"
             type="file"
             multiple
-            accept=".pdf,.doc,.docx,.txt,image/*"
-            onChange={addFiles}
+            accept=".txt,.md,text/plain,text/markdown"
+            onChange={(event) => void addFiles(event)}
           />
           <button
             className="composer-icon-button"
             type="button"
-            aria-label="添加附件"
+            aria-label="添加 TXT 或 Markdown 资料"
+            title="添加 TXT 或 Markdown 资料（每份不超过 200 KB）"
             onClick={() => {
               if (onAttachmentRequest && !onAttachmentRequest()) return;
               fileRef.current?.click();
             }}
-            disabled={attachments.length >= 4}
+            disabled={attachments.length >= 2}
           >
             <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />
           </button>
         </div>
+        <span className="composer-hint">⌘/Ctrl + Enter 发送</span>
         {streaming ? (
           <button className="composer-send is-stop" type="button" onClick={onStop} aria-label="停止生成">
             <Square aria-hidden="true" size={13} fill="currentColor" />

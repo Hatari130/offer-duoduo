@@ -231,8 +231,28 @@ test("transcript and audio create private interview records and feed chat retrie
     }
   );
   const streamBody = await stream.text();
-  assert.match(streamBody, /interview-record:/);
-  assert.match(streamBody, /个人面试记录/);
+  assert.doesNotMatch(streamBody, /interview-record:/);
+
+  const contextCatalog = await requestJson(baseUrl, "/v1/chat-context", { headers });
+  const interviewContext = contextCatalog.payload.data.contexts.find(
+    (item) => item.kind === "interview" && item.id === created.payload.data.record.id
+  );
+  assert.ok(interviewContext);
+  const contextualStream = await fetch(
+    `${baseUrl}/v1/conversations/${conversation.payload.data.conversation.id}/messages`,
+    {
+      method: "POST",
+      headers,
+      body: JSON.stringify({
+        content: "只根据一面复盘告诉我之前问了什么？",
+        clientMessageId: "selected-private-qa",
+        context: [interviewContext]
+      })
+    }
+  );
+  const contextualStreamBody = await contextualStream.text();
+  assert.match(contextualStreamBody, /interview-record:/);
+  assert.match(contextualStreamBody, /个人面试记录/);
 
   const second = await requestJson(baseUrl, "/v1/auth/register", {
     method: "POST",

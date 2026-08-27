@@ -1,6 +1,16 @@
 export type ChatRole = "user" | "assistant" | "system";
 
-export type ChatMessageStatus = "streaming" | "complete" | "error";
+export type ChatMessageStatus = "streaming" | "complete" | "error" | "stopped";
+
+export type ChatContextKind = "application" | "resume" | "interview";
+
+export interface ChatContextReference {
+  kind: ChatContextKind;
+  id: string;
+  label: string;
+  description?: string;
+  updatedAt?: string;
+}
 
 export interface ChatAttachment {
   id: string;
@@ -8,6 +18,9 @@ export interface ChatAttachment {
   mimeType: string;
   size: number;
   url?: string;
+  /** Plain text extracted in the browser. Binary files are deliberately not
+   * accepted until the product has a trustworthy parser for them. */
+  content?: string;
 }
 
 export interface KnowledgeCitation {
@@ -27,7 +40,9 @@ export interface ChatMessage {
   status: ChatMessageStatus;
   createdAt: string;
   attachments: ChatAttachment[];
+  context?: ChatContextReference[];
   citations: KnowledgeCitation[];
+  feedback?: "positive" | "negative";
 }
 
 export interface ChatConversation {
@@ -36,6 +51,10 @@ export interface ChatConversation {
   createdAt: string;
   updatedAt: string;
   lastMessagePreview?: string;
+}
+
+export interface ChatContextOption extends ChatContextReference {
+  selectable: boolean;
 }
 
 export const CAREER_CHAT_SUGGESTIONS = [

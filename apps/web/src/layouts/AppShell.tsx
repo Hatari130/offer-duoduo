@@ -3,6 +3,7 @@ import type { ChatConversation } from "@offerflow/domain";
 import {
   BriefcaseBusiness,
   Building2,
+  Check,
   ChevronDown,
   Clock3,
   Cloud,
@@ -18,9 +19,12 @@ import {
   Newspaper,
   PanelLeftClose,
   PanelLeftOpen,
+  Pencil,
   Plus,
   Puzzle,
   Settings,
+  Search,
+  Trash2,
   X
 } from "lucide-react";
 import { api } from "../app/api";
@@ -67,6 +71,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     return window.localStorage.getItem("offerflow:sidebar-collapsed") === "true";
   });
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
+  const [threadQuery, setThreadQuery] = useState("");
+  const [renamingConversationId, setRenamingConversationId] = useState<string>();
+  const [renameDraft, setRenameDraft] = useState("");
+  const [threadError, setThreadError] = useState("");
   const [accountOpen, setAccountOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
@@ -111,7 +119,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       api.chat
         .listConversations()
         .then((result) => {
-          if (active) setConversations(result.conversations.slice(0, 8));
+          if (active) setConversations(result.conversations);
         })
         .catch(() => undefined);
     };
@@ -145,6 +153,41 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     closeMobile();
     requestLogin(reason);
     return false;
+  };
+  const visibleConversations = conversations.filter((conversation) =>
+    `${conversation.title} ${conversation.lastMessagePreview || ""}`.toLowerCase().includes(threadQuery.trim().toLowerCase())
+  );
+  const beginRename = (conversation: ChatConversation) => {
+    setRenamingConversationId(conversation.id);
+    setRenameDraft(conversation.title);
+    setThreadError("");
+  };
+  const saveRename = async (conversationId: string) => {
+    const title = renameDraft.trim();
+    if (!title) {
+      setThreadError("请输入对话名称。");
+      return;
+    }
+    try {
+      const result = await api.chat.updateConversation(conversationId, { title });
+      setConversations((current) => current.map((item) => item.id === conversationId ? result.conversation : item));
+      setRenamingConversationId(undefined);
+      setThreadError("");
+      window.dispatchEvent(new CustomEvent("offerflow:conversation-renamed", { detail: result.conversation }));
+    } catch (requestError) {
+      setThreadError(requestError instanceof Error ? requestError.message : "暂时无法重命名对话");
+    }
+  };
+  const removeConversation = async (conversation: ChatConversation) => {
+    if (!window.confirm(`删除“${conversation.title}”？这段对话将无法恢复。`)) return;
+    try {
+      await api.chat.deleteConversation(conversation.id);
+      setConversations((current) => current.filter((item) => item.id !== conversation.id));
+      setThreadError("");
+      if (pathname === `/app/chat/${encodeURIComponent(conversation.id)}`) navigate("/app/chat");
+    } catch (requestError) {
+      setThreadError(requestError instanceof Error ? requestError.message : "暂时无法删除对话");
+    }
   };
 
   return (
@@ -235,24 +278,63 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
             <span id="recent-thread-title">最近对话</span>
             <Clock3 aria-hidden="true" size={14} />
           </div>
+          {conversations.length > 4 && (
+            <label className="thread-search">
+              <span className="sr-only">搜索历史对话</span>
+              <Search aria-hidden="true" size={14} />
+              <input
+                type="search"
+                value={threadQuery}
+                placeholder="搜索对话"
+                onChange={(event) => setThreadQuery(event.target.value)}
+              />
+            </label>
+          )}
           <div className="thread-links">
-            {conversations.map((conversation) => {
+            {visibleConversations.map((conversation) => {
               const href = `/app/chat/${encodeURIComponent(conversation.id)}`;
               return (
-                <AppLink
-                  key={conversation.id}
-                  href={href}
-                  className={`thread-link${pathname === href ? " is-active" : ""}`}
-                  onNavigate={closeMobile}
-                >
-                  <span>{conversation.title}</span>
-                </AppLink>
+                <div className={`thread-link-row${pathname === href ? " is-active" : ""}`} key={conversation.id}>
+                  {renamingConversationId === conversation.id ? (
+                    <form onSubmit={(event) => { event.preventDefault(); void saveRename(conversation.id); }}>
+                      <label className="sr-only" htmlFor={`conversation-${conversation.id}`}>对话名称</label>
+                      <input
+                        id={`conversation-${conversation.id}`}
+                        autoFocus
+                        maxLength={80}
+                        value={renameDraft}
+                        onChange={(event) => setRenameDraft(event.target.value)}
+                        onKeyDown={(event) => { if (event.key === "Escape") setRenamingConversationId(undefined); }}
+                      />
+                      <button type="submit" aria-label="保存对话名称"><Check aria-hidden="true" size={14} /></button>
+                    </form>
+                  ) : (
+                    <>
+                      <AppLink
+                        href={href}
+                        className="thread-link"
+                        ariaCurrent={pathname === href ? "page" : undefined}
+                        onNavigate={closeMobile}
+                      >
+                        <span>{conversation.title}</span>
+                      </AppLink>
+                      <span className="thread-row-actions">
+                        <button type="button" aria-label={`重命名 ${conversation.title}`} onClick={() => beginRename(conversation)}><Pencil aria-hidden="true" size={13} /></button>
+                        <button type="button" aria-label={`删除 ${conversation.title}`} onClick={() => void removeConversation(conversation)}><Trash2 aria-hidden="true" size={13} /></button>
+                      </span>
+                    </>
+                  )}
+                </div>
               );
             })}
             {!conversations.length && (
               <p className="thread-empty">你的求职问题会保存在这里。</p>
             )}
+            {conversations.length > 0 && !visibleConversations.length && (
+              <p className="thread-empty">没有匹配的对话。换个关键词试试。</p>
+            )}
           </div>
+          <p className="thread-error" role="alert">{threadError}</p>
         </section>
 
         <div className="sidebar-footer">

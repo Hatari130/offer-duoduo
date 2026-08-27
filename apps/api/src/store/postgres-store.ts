@@ -15,6 +15,7 @@ import {
   decideApplicationRevision,
   mergeAcceptedApplication,
   type ChatAttachment,
+  type ChatContextReference,
   type ChatConversation,
   type ChatMessage,
   type InterviewQaPair,
@@ -321,6 +322,17 @@ export class PostgresStore implements OfferFlowStore {
     return conversation;
   }
 
+  async updateConversation(userId: string, conversationId: string, title: string): Promise<ChatConversation | undefined> {
+    const current = await this.getConversation(userId, conversationId);
+    if (!current) return undefined;
+    const conversation = { ...current.conversation, title: title.trim().slice(0, 80), updatedAt: new Date().toISOString() };
+    await this.pool.query(
+      "UPDATE conversations SET title = $3, payload = $4::jsonb, updated_at = $5 WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
+      [conversationId, userId, conversation.title, json(conversation), conversation.updatedAt]
+    );
+    return conversation;
+  }
+
   async getConversation(userId: string, conversationId: string): Promise<{ conversation: ChatConversation; messages: ChatMessage[] } | undefined> {
     const conversation = await this.pool.query(
       "SELECT payload FROM conversations WHERE id = $1 AND user_id = $2 AND deleted_at IS NULL",
@@ -351,12 +363,19 @@ export class PostgresStore implements OfferFlowStore {
     );
   }
 
-  async appendUserMessage(userId: string, conversationId: string, messageId: string, content: string, attachments: ChatAttachment[] = []): Promise<ChatMessage> {
+  async appendUserMessage(
+    userId: string,
+    conversationId: string,
+    messageId: string,
+    content: string,
+    attachments: ChatAttachment[] = [],
+    context: ChatContextReference[] = []
+  ): Promise<ChatMessage> {
     const existing = await this.pool.query("SELECT payload FROM messages WHERE id = $1 AND user_id = $2", [messageId, userId]);
     if (existing.rows[0]) return existing.rows[0].payload;
     const current = await this.getConversation(userId, conversationId);
     if (!current) throw new StoreError("CONVERSATION_NOT_FOUND", "没有找到这段对话", 404);
-    const message: ChatMessage = { id: messageId, conversationId, role: "user", content: content.trim(), status: "complete", createdAt: new Date().toISOString(), attachments, citations: [] };
+    const message: ChatMessage = { id: messageId, conversationId, role: "user", content: content.trim(), status: "complete", createdAt: new Date().toISOString(), attachments, context, citations: [] };
     await this.saveMessage(userId, message);
     const conversation: ChatConversation = {
       ...current.conversation,
@@ -393,6 +412,23 @@ export class PostgresStore implements OfferFlowStore {
     const index = history.findIndex((message) => message.id === messageId);
     for (let cursor = index - 1; cursor >= 0; cursor -= 1) if (history[cursor].role === "user") return history[cursor].content;
     return undefined;
+  }
+
+  async setMessageFeedback(
+    userId: string,
+    conversationId: string,
+    messageId: string,
+    feedback: "positive" | "negative"
+  ): Promise<ChatMessage | undefined> {
+    const result = await this.pool.query(
+      "SELECT payload FROM messages WHERE id = $1 AND conversation_id = $2 AND user_id = $3",
+      [messageId, conversationId, userId]
+    );
+    const current = result.rows[0]?.payload as ChatMessage | undefined;
+    if (!current || current.role !== "assistant") return undefined;
+    const message = { ...current, feedback };
+    await this.saveMessage(userId, message);
+    return message;
   }
 
   async getConversationHistory(userId: string, conversationId: string): Promise<ChatMessage[]> {

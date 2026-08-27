@@ -7,6 +7,7 @@ import type {
   AuthCapabilities,
   AuthDeviceSession,
   AuthSession,
+  ChatContextResponse,
   ChatStreamEvent,
   ConversationListResponse,
   ConversationResponse,
@@ -24,6 +25,8 @@ import type {
   InterviewRecordListResponse,
   InterviewRecordResponse,
   LoginRequest,
+  MessageFeedbackRequest,
+  MessageFeedbackResponse,
   OpportunityDetailResponse,
   OpportunityImportStatusResponse,
   OpportunityListResponse,
@@ -35,6 +38,7 @@ import type {
   SendMessageRequest,
   SessionResponse,
   TailorTaskDetailResponse,
+  UpdateConversationRequest,
   UpdateApplicationRequest,
   UpdateResumeVersionRequest
 } from "@offerflow/contracts";
@@ -205,6 +209,7 @@ export function createApiClient(options: ApiClientOptions) {
   const chat = {
     listConversations: () =>
       request<ConversationListResponse>("/v1/conversations"),
+    listContext: () => request<ChatContextResponse>("/v1/chat-context"),
     createConversation: (body: CreateConversationRequest = {}) =>
       request<ConversationResponse>("/v1/conversations", {
         method: "POST",
@@ -212,6 +217,11 @@ export function createApiClient(options: ApiClientOptions) {
       }),
     getConversation: (conversationId: string) =>
       request<ConversationResponse>(`/v1/conversations/${encodeURIComponent(conversationId)}`),
+    updateConversation: (conversationId: string, body: UpdateConversationRequest) =>
+      request<ConversationResponse>(`/v1/conversations/${encodeURIComponent(conversationId)}`, {
+        method: "PATCH",
+        body: JSON.stringify(body)
+      }),
     deleteConversation: (conversationId: string) =>
       request<{ deleted: true }>(`/v1/conversations/${encodeURIComponent(conversationId)}`, {
         method: "DELETE"
@@ -232,7 +242,15 @@ export function createApiClient(options: ApiClientOptions) {
         `/v1/conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/retry`,
         body,
         signal
-      )
+      ),
+    setMessageFeedback: (
+      conversationId: string,
+      messageId: string,
+      body: MessageFeedbackRequest
+    ) => request<MessageFeedbackResponse>(
+      `/v1/conversations/${encodeURIComponent(conversationId)}/messages/${encodeURIComponent(messageId)}/feedback`,
+      { method: "PATCH", body: JSON.stringify(body) }
+    )
   };
 
   const opportunities = {

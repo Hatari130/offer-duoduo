@@ -16,6 +16,7 @@ import {
   mergeAcceptedApplication,
   createResumeDocument,
   type ChatAttachment,
+  type ChatContextReference,
   type ChatConversation,
   type ChatMessage,
   type InterviewQaPair,
@@ -451,6 +452,15 @@ export class MemoryStore implements OfferFlowStore {
     return clone(conversation);
   }
 
+  updateConversation(userId: string, conversationId: string, title: string): ChatConversation | undefined {
+    const stored = this.conversations.get(conversationId);
+    if (!stored || stored.userId !== userId || stored.deletedAt) return undefined;
+    stored.conversation.title = title.trim().slice(0, 80);
+    stored.conversation.updatedAt = new Date().toISOString();
+    this.persist();
+    return clone(stored.conversation);
+  }
+
   getConversation(
     userId: string,
     conversationId: string
@@ -476,7 +486,8 @@ export class MemoryStore implements OfferFlowStore {
     conversationId: string,
     messageId: string,
     content: string,
-    attachments: ChatAttachment[] = []
+    attachments: ChatAttachment[] = [],
+    context: ChatContextReference[] = []
   ): ChatMessage {
     const stored = this.conversations.get(conversationId);
     if (!stored || stored.userId !== userId || stored.deletedAt) {
@@ -494,6 +505,7 @@ export class MemoryStore implements OfferFlowStore {
       status: "complete",
       createdAt: new Date().toISOString(),
       attachments: clone(attachments),
+      context: clone(context),
       citations: []
     };
     list.push(message);
@@ -562,6 +574,20 @@ export class MemoryStore implements OfferFlowStore {
       if (list[cursor].role === "user") return list[cursor].content;
     }
     return undefined;
+  }
+
+  setMessageFeedback(
+    userId: string,
+    conversationId: string,
+    messageId: string,
+    feedback: "positive" | "negative"
+  ): ChatMessage | undefined {
+    const stored = this.conversations.get(conversationId);
+    const message = this.messages.get(conversationId)?.find((item) => item.id === messageId);
+    if (!stored || stored.userId !== userId || stored.deletedAt || message?.role !== "assistant") return undefined;
+    message.feedback = feedback;
+    this.persist();
+    return clone(message);
   }
 
   getConversationHistory(userId: string, conversationId: string): ChatMessage[] {
