@@ -60,6 +60,28 @@ const primaryNavigation = [
   { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness, requiresAuth: true }
 ];
 
+function formatConversationTime(value: string, now: number): string {
+  const timestamp = Date.parse(value);
+  if (!Number.isFinite(timestamp)) return "";
+  const elapsed = Math.max(0, now - timestamp);
+  if (elapsed < 10 * 60_000) return "刚刚";
+
+  const current = new Date(now);
+  const updated = new Date(timestamp);
+  const currentDay = new Date(current.getFullYear(), current.getMonth(), current.getDate()).getTime();
+  const updatedDay = new Date(updated.getFullYear(), updated.getMonth(), updated.getDate()).getTime();
+  const dayDifference = Math.round((currentDay - updatedDay) / 86_400_000);
+
+  if (dayDifference <= 0) return "今天";
+  if (dayDifference === 1) return "昨天";
+  if (dayDifference < 7) return `${dayDifference}天前`;
+  return updated.toLocaleDateString("zh-CN", {
+    month: "numeric",
+    day: "numeric",
+    ...(updated.getFullYear() === current.getFullYear() ? {} : { year: "numeric" })
+  });
+}
+
 export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: string }>) {
   const { status, user, logout, requestLogin } = useAuth();
   const isGuest = status === "guest";
@@ -75,6 +97,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const [renamingConversationId, setRenamingConversationId] = useState<string>();
   const [renameDraft, setRenameDraft] = useState("");
   const [threadError, setThreadError] = useState("");
+  const [clockNow, setClockNow] = useState(() => Date.now());
   const [accountOpen, setAccountOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
@@ -130,6 +153,12 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       window.removeEventListener("offerflow:conversation-updated", load);
     };
   }, [isAnonymous, user?.id]);
+
+  useEffect(() => {
+    if (!conversations.length) return undefined;
+    const timer = window.setInterval(() => setClockNow(Date.now()), 60_000);
+    return () => window.clearInterval(timer);
+  }, [conversations.length]);
 
   const closeMobile = () => {
     setMobileOpen(false);
@@ -317,6 +346,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                         onNavigate={closeMobile}
                       >
                         <span>{conversation.title}</span>
+                        <time dateTime={conversation.updatedAt}>{formatConversationTime(conversation.updatedAt, clockNow)}</time>
                       </AppLink>
                       <span className="thread-row-actions">
                         <button type="button" aria-label={`重命名 ${conversation.title}`} onClick={() => beginRename(conversation)}><Pencil aria-hidden="true" size={13} /></button>
@@ -338,18 +368,17 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </section>
 
         <div className="sidebar-footer">
-          <a
-            href="/browser-extension"
-            className="extension-entry-button"
-            title={sidebarCollapsed ? "获取浏览器插件" : undefined}
-            target="_blank"
-            rel="noreferrer"
-            onClick={closeMobile}
+          <AppLink
+            href="/app/upgrade"
+            className="invite-benefit-card"
+            title={sidebarCollapsed ? "邀请好友领权益" : undefined}
+            guard={() => requireLogin("登录后即可查看邀请计划和会员权益。")}
+            onNavigate={closeMobile}
           >
-            <Puzzle aria-hidden="true" size={16} />
-            <span>获取浏览器插件</span>
-            <em>免费</em>
-          </a>
+            <span className="invite-benefit-icon" aria-hidden="true"><Gift size={17} /></span>
+            <span><strong>邀请好友 领权益</strong><small>一起解锁更多求职能力</small></span>
+            <span className="invite-benefit-arrow" aria-hidden="true">→</span>
+          </AppLink>
 
           <div className={`sidebar-account-row${isVisitor ? " is-guest" : ""}`}>
             {isVisitor ? (
@@ -398,6 +427,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                   </section>
 
                   <div className="account-popover-links">
+                    <a href="/browser-extension" target="_blank" rel="noreferrer" onClick={closeMobile}>
+                      <Puzzle aria-hidden="true" size={16} />获取浏览器插件<span>免费</span>
+                    </a>
                     <AppLink href="/app/settings" onNavigate={closeMobile}>
                       <Settings aria-hidden="true" size={16} />设置与设备同步
                     </AppLink>

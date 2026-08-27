@@ -159,11 +159,10 @@ img {
 
 .brand-symbol {
   display: grid;
-  width: 2.125rem;
+  width: 2.375rem;
   height: 2.125rem;
   flex: 0 0 auto;
   place-items: center;
-  color: var(--of-accent);
 }
 
 .brand-symbol__mark {
@@ -172,28 +171,41 @@ img {
   overflow: visible;
 }
 
-.brand-symbol__route,
+.brand-symbol__orbit,
 .brand-symbol__arrow {
   fill: none;
-  stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.brand-symbol__route {
-  stroke-width: 2.35;
+.brand-symbol__orbit {
+  stroke-width: 4.15;
+}
+
+.brand-symbol__orbit--back {
+  stroke: #86c8ff;
+  opacity: 0.72;
+}
+
+.brand-symbol__orbit--front {
+  stroke: #4b83ed;
 }
 
 .brand-symbol__arrow {
+  stroke: #4b83ed;
   stroke-width: 2.5;
 }
 
-.brand-symbol__node {
-  fill: currentColor;
+.brand-symbol__sun {
+  fill: #ff824f;
 }
 
-.brand-symbol__node-core {
-  fill: var(--of-surface);
+.brand-symbol__sun-core {
+  fill: #ffc083;
+}
+
+.brand-symbol__spark {
+  fill: #8a79f2;
 }
 
 .brand-lockup--compact .brand-symbol {
@@ -202,12 +214,16 @@ img {
 }
 
 .brand-wordmark {
-  color: var(--of-accent);
+  color: #3e71d5;
+  background: linear-gradient(112deg, #367bd9 5%, #5d72e4 58%, #3f9dd8 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
   font-family: var(--of-font-sans);
   font-size: 1.28rem;
   font-weight: var(--of-font-weight-bold);
   letter-spacing: -0.035em;
   line-height: 1;
+  -webkit-text-fill-color: transparent;
   white-space: nowrap;
 }
 
@@ -477,17 +493,15 @@ img {
     outline-color: Highlight;
   }
 
-  .brand-symbol__route,
+  .brand-symbol__orbit,
   .brand-symbol__arrow {
     stroke: CanvasText;
   }
 
-  .brand-symbol__node {
+  .brand-symbol__sun,
+  .brand-symbol__sun-core,
+  .brand-symbol__spark {
     fill: CanvasText;
-  }
-
-  .brand-symbol__node-core {
-    fill: Canvas;
   }
 
   .primary-button,

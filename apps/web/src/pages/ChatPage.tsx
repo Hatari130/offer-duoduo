@@ -7,7 +7,7 @@ import type {
   ChatMessage
 } from "@offerflow/domain";
 import { CAREER_CHAT_SUGGESTIONS } from "@offerflow/domain";
-import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, X } from "lucide-react";
+import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, Sparkles, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { createUuid } from "../app/id";
@@ -319,8 +319,14 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     <section className={`chat-page${isEmpty ? " chat-page--empty" : ""}`}>
       {isEmpty ? (
         <div className="chat-welcome">
+          <div className="chat-atmosphere" aria-hidden="true">
+            <i /><i /><i /><i /><i /><i />
+          </div>
           <h1 tabIndex={-1}>今天想先解决哪一步？</h1>
-          <p>选择一份简历、投递或面试记录，让每条建议都有依据，也能落到下一步行动。</p>
+          <p>
+            聊岗位、改简历、做规划，优先检索你的求职知识库，帮你更快拿到 offer
+            <Sparkles className="welcome-subtitle-spark" aria-hidden="true" size={17} />
+          </p>
           {contextPicker}
           <ChatComposer
             value={draft}

@@ -84,7 +84,7 @@
   height: 100vh;
   height: 100dvh;
   min-height: 0;
-  grid-template-columns: 17rem minmax(0, 1fr);
+  grid-template-columns: clamp(17rem, 20vw, 21rem) minmax(0, 1fr);
   overflow: hidden;
   color: var(--of-text);
   background: var(--of-canvas);
@@ -106,8 +106,10 @@
   padding: 1.1rem 0.85rem 0.8rem;
   overflow: visible;
   overflow-anchor: none;
-  background: var(--of-sidebar, var(--of-canvas));
-  border-inline-end: 1px solid var(--of-line);
+  background: rgb(255 255 255 / 0.9);
+  border-inline-end: 1px solid rgb(167 180 216 / 0.3);
+  backdrop-filter: blur(1.4rem) saturate(120%);
+  box-shadow: 0.8rem 0 3rem -2.5rem rgb(54 72 125 / 0.24);
 }
 
 .sidebar-brand-row {
@@ -158,8 +160,8 @@
   margin-block: 1.2rem 0.65rem;
   padding-inline: 0.85rem;
   color: var(--of-text-strong);
-  background: var(--of-surface-raised);
-  border: 1px solid var(--of-line);
+  background: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(153 172 222 / 0.32);
   border-radius: 0.85rem;
   font-size: 0.86rem;
   font-weight: 650;
@@ -224,7 +226,8 @@
 
 .nav-link.is-active {
   color: var(--of-brand-700);
-  background: var(--of-brand-50);
+  background: linear-gradient(105deg, rgb(229 236 255 / 0.94), rgb(237 232 255 / 0.72));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.76);
 }
 
 .nav-link em {
@@ -296,7 +299,10 @@
 .thread-link-row.is-active { background: var(--of-surface-muted); }
 
 .thread-link {
-  display: block;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.6rem;
   padding: 0.55rem 0.65rem;
   overflow: hidden;
   color: var(--of-text-muted);
@@ -304,7 +310,18 @@
   font-size: 0.75rem;
   line-height: 1.3;
   text-decoration: none;
+}
+
+.thread-link > span {
+  overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.thread-link > time {
+  color: var(--of-text-subtle);
+  font-size: 0.68rem;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
@@ -387,40 +404,62 @@
   padding-block-start: 0.8rem;
 }
 
-.extension-entry-button {
-  display: flex;
-  min-height: 2.7rem;
+.invite-benefit-card {
+  position: relative;
+  display: grid;
+  min-height: 5.15rem;
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.5rem;
-  padding-inline: 0.8rem;
-  color: var(--of-brand-700);
-  background: linear-gradient(110deg, var(--of-brand-50), color-mix(in srgb, var(--of-brand-50) 40%, white));
-  border: 1px solid var(--of-brand-100);
-  border-radius: 0.85rem;
-  font-size: 0.77rem;
-  font-weight: 680;
+  gap: 0.65rem;
+  overflow: hidden;
+  padding: 0.75rem;
+  color: #18346f;
+  background:
+    radial-gradient(circle at 92% 0%, rgb(255 255 255 / 0.92), transparent 34%),
+    linear-gradient(132deg, rgb(231 239 255 / 0.98), rgb(239 234 255 / 0.94));
+  border: 1px solid rgb(142 164 224 / 0.28);
+  border-radius: 1rem;
   text-decoration: none;
-  box-shadow: 0 0.35rem 0.9rem rgb(63 86 184 / 0.08);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8), 0 0.85rem 2rem -1.45rem rgb(73 91 157 / 0.35);
 }
 
-.extension-entry-button > span { min-width: 0; }
-
-.extension-entry-button > em {
-  margin-inline-start: auto;
-  padding: 0.18rem 0.4rem;
-  color: var(--of-success);
-  background: color-mix(in srgb, var(--of-success) 11%, white);
-  border-radius: 999px;
-  font-size: 0.62rem;
-  font-style: normal;
-  font-weight: 720;
+.invite-benefit-card::after {
+  position: absolute;
+  inset: auto -0.9rem -1.2rem auto;
+  width: 4.2rem;
+  aspect-ratio: 1;
+  content: "";
+  background: radial-gradient(circle, rgb(111 129 225 / 0.16), transparent 68%);
+  border-radius: 50%;
+  pointer-events: none;
 }
 
-.extension-entry-button:hover {
-  color: var(--of-brand-800);
-  background: var(--of-brand-100);
-  border-color: var(--of-brand-200);
-  box-shadow: 0 0.55rem 1.2rem rgb(63 86 184 / 0.12);
+.invite-benefit-icon {
+  display: grid;
+  width: 2.25rem;
+  aspect-ratio: 1;
+  place-items: center;
+  color: #4f6dd0;
+  background: rgb(255 255 255 / 0.7);
+  border: 1px solid rgb(122 145 211 / 0.2);
+  border-radius: 0.75rem;
+  box-shadow: 0 0.55rem 1.2rem -0.75rem rgb(64 87 158 / 0.4);
+}
+
+.invite-benefit-card > span:nth-child(2) {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.invite-benefit-card strong { font-size: 0.78rem; font-weight: 720; }
+.invite-benefit-card small { overflow: hidden; color: #6577a1; font-size: 0.67rem; text-overflow: ellipsis; white-space: nowrap; }
+.invite-benefit-arrow { position: relative; z-index: 1; color: #5874d1; font-size: 1rem; }
+
+.invite-benefit-card:hover {
+  color: #122c66;
+  border-color: rgb(107 132 205 / 0.45);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.84), 0 1.05rem 2.4rem -1.4rem rgb(73 91 157 / 0.44);
 }
 
 /* Retained for the account plan upgrade action. */
@@ -818,7 +857,7 @@
 .thread-link:focus-visible,
 .thread-row-actions button:focus-visible,
 .thread-link-row form button:focus-visible,
-.extension-entry-button:focus-visible,
+.invite-benefit-card:focus-visible,
 .upgrade-pro-button:focus-visible,
 .account-trigger:focus-visible,
 .sidebar-footer-icon:focus-visible,
@@ -834,7 +873,7 @@
 }
 
 .new-chat-button:active,
-.extension-entry-button:active,
+.invite-benefit-card:active,
 .upgrade-pro-button:active,
 .account-trigger:active,
 .sidebar-footer-icon:active,
@@ -860,8 +899,7 @@
   .app-frame.is-sidebar-collapsed .new-chat-button > span,
   .app-frame.is-sidebar-collapsed .nav-link > span,
   .app-frame.is-sidebar-collapsed .nav-link > em,
-  .app-frame.is-sidebar-collapsed .extension-entry-button > span,
-  .app-frame.is-sidebar-collapsed .extension-entry-button > em,
+  .app-frame.is-sidebar-collapsed .invite-benefit-card > span,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button > span {
     position: absolute;
     width: 1px;
@@ -875,7 +913,7 @@
 
   .app-frame.is-sidebar-collapsed .new-chat-button,
   .app-frame.is-sidebar-collapsed .nav-link,
-  .app-frame.is-sidebar-collapsed .extension-entry-button,
+  .app-frame.is-sidebar-collapsed .invite-benefit-card,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button,
   .app-frame.is-sidebar-collapsed .account-trigger {
     justify-content: center;
@@ -901,11 +939,7 @@
     border-radius: 0.85rem;
   }
 
-  .app-frame.is-sidebar-collapsed .extension-entry-button {
-    width: 2.75rem;
-    justify-content: center;
-    padding-inline: 0;
-  }
+  .app-frame.is-sidebar-collapsed .invite-benefit-card { display: none; }
 
   .app-frame.is-sidebar-collapsed .sidebar-account-row {
     grid-template-columns: 2.75rem;
@@ -957,8 +991,9 @@
     align-items: center;
     padding-block-start: env(safe-area-inset-top);
     padding-inline: 0.8rem;
-    background: var(--of-sidebar, var(--of-canvas));
-    border-block-end: 1px solid var(--of-line);
+    background: rgb(255 255 255 / 0.88);
+    border-block-end: 1px solid rgb(157 174 217 / 0.28);
+    backdrop-filter: blur(1.25rem) saturate(120%);
   }
 
   .mobile-header.is-guest { grid-template-columns: 2.75rem 1fr auto; }
@@ -988,6 +1023,18 @@
     border-radius: 0.7rem;
   }
 
+  .mobile-header > .mobile-login-link {
+    width: auto;
+    min-width: 3.7rem;
+    padding-inline: 0.85rem;
+    color: var(--of-text-inverse);
+    background: var(--of-brand-600);
+    font-weight: 680;
+    white-space: nowrap;
+  }
+
+  .mobile-header > .mobile-login-link:hover { background: var(--of-brand-700); }
+
   .mobile-header .brand-lockup { justify-self: center; }
   .mobile-avatar { width: 2.1rem; height: 2.1rem; }
 
@@ -998,14 +1045,21 @@
     width: min(19rem, calc(100vw - 3rem));
     padding-block-start: calc(1.1rem + env(safe-area-inset-top));
     padding-block-end: calc(0.8rem + env(safe-area-inset-bottom));
-    background: var(--of-sidebar, var(--of-canvas));
-    border-inline-end: 1px solid var(--of-line-strong);
+    background: rgb(255 255 255 / 0.95);
+    border-inline-end: 1px solid rgb(151 169 214 / 0.34);
     box-shadow: var(--of-shadow-float);
+    visibility: hidden;
+    pointer-events: none;
     transform: translateX(-105%);
-    transition: transform 180ms ease-out;
+    transition: transform 180ms ease-out, visibility 0s linear 180ms;
   }
 
-  .app-sidebar.is-open { transform: translateX(0); }
+  .app-sidebar.is-open {
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(0);
+    transition-delay: 0s;
+  }
   .sidebar-close { display: grid; }
   .app-sidebar .primary-nav { display: none; }
 
