@@ -41,8 +41,8 @@ jobs:
 
       - name: Build the production browser extension
         env:
-          VITE_OFFERFLOW_API_URL: http://139.196.197.112/api
-          VITE_OFFERFLOW_WEB_URL: http://139.196.197.112
+          VITE_OFFERFLOW_API_URL: ${{ vars.JOBKOI_API_URL || 'http://139.196.197.112/api' }}
+          VITE_OFFERFLOW_WEB_URL: ${{ vars.JOBKOI_PUBLIC_ORIGIN || 'http://139.196.197.112' }}
           VITE_OFFERFLOW_ALLOW_INSECURE_HTTP: "true"
         run: pnpm --filter @offerflow/extension build:production
 

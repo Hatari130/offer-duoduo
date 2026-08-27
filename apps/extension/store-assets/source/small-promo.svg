@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="280" viewBox="0 0 440 280">
+  <defs>
+    <linearGradient id="promo-bg" x1="34" y1="22" x2="404" y2="258" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#101936"/>
+      <stop offset="1" stop-color="#253E92"/>
+    </linearGradient>
+    <radialGradient id="promo-glow" cx="0" cy="0" r="1" gradientTransform="translate(362 64) rotate(132) scale(202 183)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8FA8FF" stop-opacity=".58"/>
+      <stop offset="1" stop-color="#8FA8FF" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="440" height="280" rx="24" fill="url(#promo-bg)"/>
+  <rect width="440" height="280" rx="24" fill="url(#promo-glow)"/>
+  <circle cx="390" cy="28" r="92" fill="none" stroke="#AFC0FF" stroke-opacity=".15" stroke-width="22"/>
+  <g transform="translate(28 25) scale(.62)">
+    <rect x="16" y="16" width="96" height="96" rx="28" fill="#FFFFFF" fill-opacity=".12"/>
+    <g transform="translate(24 24) scale(2.5)" fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M9.25 23.25a10.5 10.5 0 1 1 14.5-3.15" stroke-width="2.35"/>
+      <path d="m20.55 19.05 3.3 1.15.5-3.45" stroke-width="2.5"/>
+    </g>
+    <circle cx="47.125" cy="82.125" r="5.875" fill="#FFFFFF"/>
+    <circle cx="47.125" cy="82.125" r="1.875" fill="#405DE2"/>
+  </g>
+  <text x="118" y="78" fill="#FFFFFF" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="31" font-weight="700" letter-spacing="-.4">JobKoI</text>
+  <text x="32" y="150" fill="#FFFFFF" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="27" font-weight="700">一次填写，投递不再重复</text>
+  <text x="32" y="184" fill="#D8E0FF" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="15">识别招聘表单 · 一键补全 · 同账号同步进度</text>
+  <g transform="translate(32 215)">
+    <rect width="122" height="34" rx="17" fill="#FFFFFF"/>
+    <path d="M19 11a6 6 0 1 0 5.15 9.08" fill="none" stroke="#4564E9" stroke-linecap="round" stroke-width="1.8"/>
+    <path d="m22.2 18.9 2.1.75.35-2.2" fill="none" stroke="#4564E9" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"/>
+    <circle cx="13" cy="21" r="1.7" fill="#4564E9"/>
+    <text x="36" y="22" fill="#152048" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="13" font-weight="700">网申助手</text>
+  </g>
+  <g transform="translate(166 215)">
+    <rect width="116" height="34" rx="17" fill="#8EE0BB" fill-opacity=".16" stroke="#8EE0BB" stroke-opacity=".42"/>
+    <circle cx="18" cy="17" r="4" fill="#8EE0BB"/>
+    <text x="31" y="22" fill="#C6F5DF" font-family="Microsoft YaHei, Noto Sans CJK SC, sans-serif" font-size="13" font-weight="700">自动同步</text>
+  </g>
+</svg>

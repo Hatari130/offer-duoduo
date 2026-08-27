@@ -1,0 +1,58 @@
+name: Server HTTPS preflight
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: production
+    steps:
+      - name: Configure the dedicated deploy key
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.JOBKOI_DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.JOBKOI_DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/jobkoi_deploy
+          chmod 600 ~/.ssh/jobkoi_deploy
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Inspect HTTPS prerequisites
+        env:
+          DEPLOY_HOST: ${{ secrets.JOBKOI_DEPLOY_HOST }}
+          DEPLOY_USER: ${{ secrets.JOBKOI_DEPLOY_USER }}
+        run: |
+          target="${DEPLOY_USER}@${DEPLOY_HOST}"
+          ssh_options=(-i ~/.ssh/jobkoi_deploy -o BatchMode=yes -o StrictHostKeyChecking=yes)
+          ssh "${ssh_options[@]}" "$target" 'bash -se' <<'REMOTE'
+          set -eu
+          . /etc/os-release
+          printf 'os=%s %s\n' "$ID" "$VERSION_ID"
+          printf 'user=%s\n' "$(id -un)"
+          printf 'nginx='; nginx -v 2>&1 || true
+          printf 'certbot='; certbot --version 2>&1 || true
+          printf 'python='; python3 --version 2>&1 || true
+          if sudo -n true 2>/dev/null; then
+            echo 'passwordless_sudo=yes'
+          else
+            echo 'passwordless_sudo=no'
+          fi
+          if command -v apt-get >/dev/null; then echo 'package_manager=apt'; fi
+          if command -v dnf >/dev/null; then echo 'package_manager=dnf'; fi
+          if command -v yum >/dev/null; then echo 'package_manager=yum'; fi
+          printf 'nginx_active='; systemctl is-active nginx 2>/dev/null || true
+          printf 'port_80='; ss -ltn '( sport = :80 )' | tail -n +2 | wc -l
+          printf 'port_443='; ss -ltn '( sport = :443 )' | tail -n +2 | wc -l
+          if sudo -n nginx -T >/tmp/jobkoi-nginx.txt 2>/dev/null; then
+            grep -E '^[[:space:]]*(listen|server_name|root|proxy_pass)[[:space:]]' /tmp/jobkoi-nginx.txt | sed -E 's/[[:space:]]+/ /g' | head -n 40
+            rm -f /tmp/jobkoi-nginx.txt
+          else
+            echo 'nginx_config_readable=no'
+          fi
+          REMOTE

@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1",
+    "assets:store": "node scripts/generate-store-assets.mjs",
     "build": "pnpm run typecheck && vite build --mode development-build && pnpm run validate:build",
     "build:production": "node scripts/validate-production-env.mjs && pnpm run typecheck && vite build && node scripts/validate-build.mjs --production",
     "test:capture": "node --test tests/adapter-registry.test.mjs tests/capture-matching.test.mjs tests/deepseek-sanitize.test.mjs && node --experimental-transform-types --test tests/repeatable-form-fields.test.mts && node tests/run-dom-fixture.mjs",
@@ -23,14 +24,15 @@
     "lucide-react": "^0.468.0",
     "pdfjs-dist": "^5.6.205",
     "react": "^18.3.1",
-    "simple-icons": "16.21.0",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "simple-icons": "16.21.0"
   },
   "devDependencies": {
     "@types/chrome": "^0.0.287",
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "sharp": "^0.35.3",
     "vite": "^6.0.5"
   }
 }
