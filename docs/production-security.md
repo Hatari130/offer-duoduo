@@ -25,12 +25,12 @@
 
 ## 上线步骤
 
-1. 准备域名，备案（如适用），将域名解析到服务器；先签发 TLS 证书，不再向用户开放 IP 的 HTTP 地址。
+1. 准备域名并备案（如适用），或为固定公网 IP 签发支持 IP SAN 的短期 TLS 证书；启用自动续期后，将 HTTP 全部重定向到 HTTPS。
 2. 创建独立 PostgreSQL 账号和数据库，启用云盘/磁盘加密；从 `apps/api/.env.production.example` 生成 `/etc/offerflow/api.env`，权限设为仅服务账号可读。
 3. 执行 `pnpm --filter @offerflow/api db:migrate`。旧状态文件迁移使用 `pnpm --filter @offerflow/api db:import-state -- /绝对路径/state.json`，迁移后所有用户需重新登录。
 4. Web 构建时设置 `VITE_API_BASE_URL=https://app.example.com/api`，执行 `pnpm --filter @offerflow/web build:production`。
 5. 安装 `deploy/nginx.offerflow.conf.example` 与 systemd 服务，替换域名、证书路径和目录；确认 API 只监听 `127.0.0.1`。
-6. 插件发布构建必须设置 `VITE_OFFERFLOW_API_URL=https://app.example.com/api`、`VITE_OFFERFLOW_WEB_URL=https://app.example.com`，再执行 `pnpm --filter @offerflow/extension build:production`。将商店分配的扩展 ID 写入 API 的精确 CORS 白名单。当前 IP 站点过渡包可显式设置 `VITE_OFFERFLOW_ALLOW_INSECURE_HTTP=true`，但提交 Chrome Web Store 前必须完成域名与 HTTPS，并删除该临时开关。
+6. 插件发布构建必须设置 `VITE_OFFERFLOW_API_URL=https://app.example.com/api`、`VITE_OFFERFLOW_WEB_URL=https://app.example.com`，再执行 `pnpm --filter @offerflow/extension build:production`。将商店分配的扩展 ID 写入 API 的精确 CORS 白名单。当前 IP 站点过渡包可显式设置 `VITE_OFFERFLOW_ALLOW_INSECURE_HTTP=true`，但提交 Chrome Web Store 前必须完成 HTTPS，并删除该临时开关。
 7. 做验收：注册开关、登录/退出、Cookie 标志、设备撤销、跨账号阻断、冲突选择、数据导出、账号删除、恢复备份、限流和安全响应头。
 
 ## GitHub 单一发布源

@@ -1,0 +1,93 @@
+name: Package Chrome Web Store release
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - name: Check out the exact commit
+        uses: actions/checkout@v7
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v6
+
+      - name: Install Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Require HTTPS production endpoints
+        env:
+          JOBKOI_PUBLIC_ORIGIN: ${{ vars.JOBKOI_PUBLIC_ORIGIN }}
+          JOBKOI_API_URL: ${{ vars.JOBKOI_API_URL }}
+        run: |
+          node <<'NODE'
+          for (const name of ["JOBKOI_PUBLIC_ORIGIN", "JOBKOI_API_URL"]) {
+            const value = process.env[name];
+            if (!value) throw new Error(`${name} is not configured in the production environment`);
+            const url = new URL(value);
+            if (url.protocol !== "https:") throw new Error(`${name} must use HTTPS`);
+            if (["localhost", "127.0.0.1", "::1"].includes(url.hostname)) {
+              throw new Error(`${name} must not use a local address`);
+            }
+          }
+          NODE
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run release checks
+        run: pnpm typecheck && pnpm test && pnpm --filter @offerflow/web test
+
+      - name: Build HTTPS-only extension
+        env:
+          VITE_OFFERFLOW_API_URL: ${{ vars.JOBKOI_API_URL }}
+          VITE_OFFERFLOW_WEB_URL: ${{ vars.JOBKOI_PUBLIC_ORIGIN }}
+        run: pnpm --filter @offerflow/extension build:production
+
+      - name: Generate and verify Store assets
+        run: |
+          pnpm --filter @offerflow/extension assets:store
+          node <<'NODE'
+          const { existsSync, readFileSync } = require("node:fs");
+          const manifest = JSON.parse(readFileSync("apps/extension/dist/manifest.json", "utf8"));
+          for (const size of ["16", "32", "48", "128"]) {
+            const icon = manifest.icons?.[size];
+            if (!icon || !existsSync(`apps/extension/dist/${icon}`)) {
+              throw new Error(`Missing packaged ${size}px extension icon`);
+            }
+          }
+          if (manifest.permissions?.includes("activeTab")) {
+            throw new Error("The redundant activeTab permission must not return");
+          }
+          NODE
+
+      - name: Create submission bundle
+        run: |
+          version="$(node -p "require('./apps/extension/dist/manifest.json').version")"
+          zip_name="jobkoi-browser-extension-${version}-chrome-web-store.zip"
+          (
+            cd apps/extension/dist
+            zip -qr "$RUNNER_TEMP/$zip_name" .
+          )
+          mkdir -p "$RUNNER_TEMP/jobkoi-store-submission/assets"
+          cp "$RUNNER_TEMP/$zip_name" "$RUNNER_TEMP/jobkoi-store-submission/"
+          cp apps/extension/store-assets/*.png "$RUNNER_TEMP/jobkoi-store-submission/assets/"
+          cp docs/chrome-web-store-submission.md "$RUNNER_TEMP/jobkoi-store-submission/"
+          printf '%s\n' "$GITHUB_SHA" > "$RUNNER_TEMP/jobkoi-store-submission/REVISION"
+
+      - name: Upload submission bundle
+        uses: actions/upload-artifact@v7
+        with:
+          name: jobkoi-chrome-web-store-${{ github.sha }}
+          path: ${{ runner.temp }}/jobkoi-store-submission
+          if-no-files-found: error
+          retention-days: 30
