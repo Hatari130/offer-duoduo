@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FocusEvent, type MouseEvent, type PropsWithChildren } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PropsWithChildren } from "react";
 import type { ChatConversation } from "@offerflow/domain";
 import {
   BriefcaseBusiness,
@@ -20,7 +20,6 @@ import {
   MoreHorizontal,
   Newspaper,
   PanelLeftClose,
-  PanelLeftOpen,
   Pencil,
   Pin,
   Plus,
@@ -32,7 +31,7 @@ import {
 } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
-import { navigate, startUiTransition } from "../app/router";
+import { navigate } from "../app/router";
 import { Logo } from "../components/Logo";
 
 interface AppLinkProps extends PropsWithChildren {
@@ -112,6 +111,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const threadMenuRef = useRef<HTMLDivElement>(null);
   const threadMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const threadMenuOpenedByKeyboardRef = useRef(false);
+  const compactSidebarToggleRef = useRef<HTMLButtonElement>(null);
+  const collapseSidebarToggleRef = useRef<HTMLButtonElement>(null);
+  const sidebarToggleRequestedFocusRef = useRef(false);
   const pinnedStorageKey = `offerflow:pinned-conversations:${user?.id || "visitor"}`;
   const activeNavigationIndex = primaryNavigation.findIndex(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
@@ -217,6 +219,13 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     window.requestAnimationFrame(() => threadMenuRef.current?.querySelector<HTMLButtonElement>("button")?.focus());
   }, [activeThreadMenuId]);
 
+  useLayoutEffect(() => {
+    if (!sidebarToggleRequestedFocusRef.current) return;
+    sidebarToggleRequestedFocusRef.current = false;
+    if (sidebarCollapsed) compactSidebarToggleRef.current?.focus();
+    else collapseSidebarToggleRef.current?.focus();
+  }, [sidebarCollapsed]);
+
   const closeMobile = () => {
     setMobileOpen(false);
     setAccountOpen(false);
@@ -229,14 +238,13 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   };
   const toggleSidebar = () => {
     const next = !sidebarCollapsed;
-    startUiTransition(() => {
-      window.localStorage.setItem("offerflow:sidebar-collapsed", String(next));
-      setAccountOpen(false);
-      setContactOpen(false);
-      setActiveThreadMenuId(undefined);
-      setThreadMenuPosition(undefined);
-      setSidebarCollapsed(next);
-    }, "sidebar");
+    window.localStorage.setItem("offerflow:sidebar-collapsed", String(next));
+    setAccountOpen(false);
+    setContactOpen(false);
+    setActiveThreadMenuId(undefined);
+    setThreadMenuPosition(undefined);
+    sidebarToggleRequestedFocusRef.current = true;
+    setSidebarCollapsed(next);
   };
   const requireLogin = (reason: string) => {
     if (!isAnonymous) return true;
@@ -377,19 +385,30 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
 
       <aside id="app-sidebar" className={`app-sidebar${mobileOpen ? " is-open" : ""}`} aria-label="更多功能与账户">
         <div className="sidebar-brand-row">
-          <AppLink href="/app/chat" onNavigate={closeMobile}><Logo /></AppLink>
+          <AppLink href="/app/chat" className="sidebar-brand-link" onNavigate={closeMobile}><Logo /></AppLink>
           <button
-            className="sidebar-collapse-toggle"
+            ref={compactSidebarToggleRef}
+            className="sidebar-compact-toggle"
             type="button"
-            aria-label={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
-            aria-expanded={!sidebarCollapsed}
+            aria-label="展开侧边栏"
+            aria-expanded={false}
             aria-controls="app-sidebar"
-            title={sidebarCollapsed ? "展开侧边栏" : "收起侧边栏"}
+            title="展开侧边栏"
             onClick={toggleSidebar}
           >
-            {sidebarCollapsed
-              ? <PanelLeftOpen aria-hidden="true" size={19} strokeWidth={1.8} />
-              : <PanelLeftClose aria-hidden="true" size={19} strokeWidth={1.8} />}
+            <Logo compact />
+          </button>
+          <button
+            ref={collapseSidebarToggleRef}
+            className="sidebar-collapse-toggle"
+            type="button"
+            aria-label="收起侧边栏"
+            aria-expanded={true}
+            aria-controls="app-sidebar"
+            title="收起侧边栏"
+            onClick={toggleSidebar}
+          >
+            <PanelLeftClose aria-hidden="true" size={19} strokeWidth={1.8} />
           </button>
           <button className="sidebar-close" type="button" aria-label="关闭导航" onClick={closeMobile}>
             <X aria-hidden="true" size={19} />
@@ -404,8 +423,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           onNavigate={closeMobile}
         >
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
-          新对话
-          <span>⌘ K</span>
+          <span className="sidebar-item-label">新对话</span>
+          <span className="sidebar-shortcut">⌘ K</span>
         </AppLink>
 
         <nav className="primary-nav" aria-label="功能页" data-active-index={activeNavigationIndex}>
@@ -423,7 +442,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                 onNavigate={closeMobile}
               >
                 <Icon aria-hidden="true" size={18} strokeWidth={1.8} />
-                <span>{item.label}</span>
+                <span className="sidebar-item-label">{item.label}</span>
                 {item.href === "/app/opportunities" && <em>实时</em>}
               </AppLink>
             );

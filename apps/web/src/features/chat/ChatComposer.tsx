@@ -1,4 +1,4 @@
-import { useRef, type ChangeEvent, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, type ChangeEvent, type KeyboardEvent } from "react";
 import type { ChatAttachment } from "@offerflow/domain";
 import { ArrowUp, FileText, Paperclip, Square, X } from "lucide-react";
 import { createUuid } from "../../app/id";
@@ -16,6 +16,14 @@ interface ChatComposerProps {
   onStop: () => void;
 }
 
+function fitTextarea(textarea: HTMLTextAreaElement) {
+  textarea.style.height = "auto";
+  const maxHeight = Number.parseFloat(window.getComputedStyle(textarea).maxHeight);
+  const availableHeight = Number.isFinite(maxHeight) ? maxHeight : textarea.scrollHeight;
+  textarea.style.height = `${Math.min(textarea.scrollHeight, availableHeight)}px`;
+  textarea.style.overflowY = textarea.scrollHeight > availableHeight ? "auto" : "hidden";
+}
+
 export function ChatComposer({
   value,
   attachments,
@@ -29,6 +37,11 @@ export function ChatComposer({
   onStop
 }: ChatComposerProps) {
   const fileRef = useRef<HTMLInputElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  useLayoutEffect(() => {
+    if (textareaRef.current) fitTextarea(textareaRef.current);
+  }, [value]);
 
   const addFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = [...(event.target.files ?? [])].slice(0, 2 - attachments.length);
@@ -78,11 +91,15 @@ export function ChatComposer({
       )}
       <label className="sr-only" htmlFor="career-question">输入求职问题</label>
       <textarea
+        ref={textareaRef}
         id="career-question"
         autoFocus={autoFocus}
-        rows={3}
+        rows={1}
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onChange={(event) => {
+          fitTextarea(event.target);
+          onChange(event.target.value);
+        }}
         onKeyDown={handleKeyDown}
         placeholder="描述你的目标、经历或正在卡住的问题…"
       />
