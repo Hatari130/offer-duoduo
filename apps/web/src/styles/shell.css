@@ -404,62 +404,40 @@
   padding-block-start: 0.8rem;
 }
 
-.invite-benefit-card {
-  position: relative;
-  display: grid;
-  min-height: 5.15rem;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+.extension-entry-button {
+  display: flex;
+  min-height: 2.7rem;
   align-items: center;
-  gap: 0.65rem;
-  overflow: hidden;
-  padding: 0.75rem;
-  color: #18346f;
-  background:
-    radial-gradient(circle at 92% 0%, rgb(255 255 255 / 0.92), transparent 34%),
-    linear-gradient(132deg, rgb(231 239 255 / 0.98), rgb(239 234 255 / 0.94));
-  border: 1px solid rgb(142 164 224 / 0.28);
-  border-radius: 1rem;
+  gap: 0.5rem;
+  padding-inline: 0.8rem;
+  color: var(--of-brand-700);
+  background: linear-gradient(110deg, var(--of-brand-50), color-mix(in srgb, var(--of-brand-50) 40%, white));
+  border: 1px solid var(--of-brand-100);
+  border-radius: 0.85rem;
+  font-size: 0.77rem;
+  font-weight: 680;
   text-decoration: none;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.8), 0 0.85rem 2rem -1.45rem rgb(73 91 157 / 0.35);
+  box-shadow: 0 0.35rem 0.9rem rgb(63 86 184 / 0.08);
 }
 
-.invite-benefit-card::after {
-  position: absolute;
-  inset: auto -0.9rem -1.2rem auto;
-  width: 4.2rem;
-  aspect-ratio: 1;
-  content: "";
-  background: radial-gradient(circle, rgb(111 129 225 / 0.16), transparent 68%);
-  border-radius: 50%;
-  pointer-events: none;
+.extension-entry-button > span { min-width: 0; }
+
+.extension-entry-button > em {
+  margin-inline-start: auto;
+  padding: 0.18rem 0.4rem;
+  color: var(--of-success);
+  background: color-mix(in srgb, var(--of-success) 11%, white);
+  border-radius: 999px;
+  font-size: 0.62rem;
+  font-style: normal;
+  font-weight: 720;
 }
 
-.invite-benefit-icon {
-  display: grid;
-  width: 2.25rem;
-  aspect-ratio: 1;
-  place-items: center;
-  color: #4f6dd0;
-  background: rgb(255 255 255 / 0.7);
-  border: 1px solid rgb(122 145 211 / 0.2);
-  border-radius: 0.75rem;
-  box-shadow: 0 0.55rem 1.2rem -0.75rem rgb(64 87 158 / 0.4);
-}
-
-.invite-benefit-card > span:nth-child(2) {
-  display: grid;
-  min-width: 0;
-  gap: 0.1rem;
-}
-
-.invite-benefit-card strong { font-size: 0.78rem; font-weight: 720; }
-.invite-benefit-card small { overflow: hidden; color: #6577a1; font-size: 0.67rem; text-overflow: ellipsis; white-space: nowrap; }
-.invite-benefit-arrow { position: relative; z-index: 1; color: #5874d1; font-size: 1rem; }
-
-.invite-benefit-card:hover {
-  color: #122c66;
-  border-color: rgb(107 132 205 / 0.45);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.84), 0 1.05rem 2.4rem -1.4rem rgb(73 91 157 / 0.44);
+.extension-entry-button:hover {
+  color: var(--of-brand-800);
+  background: var(--of-brand-100);
+  border-color: var(--of-brand-200);
+  box-shadow: 0 0.55rem 1.2rem rgb(63 86 184 / 0.12);
 }
 
 /* Retained for the account plan upgrade action. */
@@ -857,7 +835,7 @@
 .thread-link:focus-visible,
 .thread-row-actions button:focus-visible,
 .thread-link-row form button:focus-visible,
-.invite-benefit-card:focus-visible,
+.extension-entry-button:focus-visible,
 .upgrade-pro-button:focus-visible,
 .account-trigger:focus-visible,
 .sidebar-footer-icon:focus-visible,
@@ -873,7 +851,7 @@
 }
 
 .new-chat-button:active,
-.invite-benefit-card:active,
+.extension-entry-button:active,
 .upgrade-pro-button:active,
 .account-trigger:active,
 .sidebar-footer-icon:active,
@@ -899,7 +877,8 @@
   .app-frame.is-sidebar-collapsed .new-chat-button > span,
   .app-frame.is-sidebar-collapsed .nav-link > span,
   .app-frame.is-sidebar-collapsed .nav-link > em,
-  .app-frame.is-sidebar-collapsed .invite-benefit-card > span,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > span,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > em,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button > span {
     position: absolute;
     width: 1px;
@@ -913,7 +892,7 @@
 
   .app-frame.is-sidebar-collapsed .new-chat-button,
   .app-frame.is-sidebar-collapsed .nav-link,
-  .app-frame.is-sidebar-collapsed .invite-benefit-card,
+  .app-frame.is-sidebar-collapsed .extension-entry-button,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button,
   .app-frame.is-sidebar-collapsed .account-trigger {
     justify-content: center;
@@ -939,7 +918,9 @@
     border-radius: 0.85rem;
   }
 
-  .app-frame.is-sidebar-collapsed .invite-benefit-card { display: none; }
+  .app-frame.is-sidebar-collapsed .extension-entry-button {
+    width: 2.75rem;
+  }
 
   .app-frame.is-sidebar-collapsed .sidebar-account-row {
     grid-template-columns: 2.75rem;

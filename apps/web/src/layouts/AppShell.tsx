@@ -368,17 +368,18 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </section>
 
         <div className="sidebar-footer">
-          <AppLink
-            href="/app/upgrade"
-            className="invite-benefit-card"
-            title={sidebarCollapsed ? "邀请好友领权益" : undefined}
-            guard={() => requireLogin("登录后即可查看邀请计划和会员权益。")}
-            onNavigate={closeMobile}
+          <a
+            href="/browser-extension"
+            className="extension-entry-button"
+            title={sidebarCollapsed ? "获取浏览器插件" : undefined}
+            target="_blank"
+            rel="noreferrer"
+            onClick={closeMobile}
           >
-            <span className="invite-benefit-icon" aria-hidden="true"><Gift size={17} /></span>
-            <span><strong>邀请好友 领权益</strong><small>一起解锁更多求职能力</small></span>
-            <span className="invite-benefit-arrow" aria-hidden="true">→</span>
-          </AppLink>
+            <Puzzle aria-hidden="true" size={16} />
+            <span>获取浏览器插件</span>
+            <em>免费</em>
+          </a>
 
           <div className={`sidebar-account-row${isVisitor ? " is-guest" : ""}`}>
             {isVisitor ? (
@@ -427,9 +428,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                   </section>
 
                   <div className="account-popover-links">
-                    <a href="/browser-extension" target="_blank" rel="noreferrer" onClick={closeMobile}>
-                      <Puzzle aria-hidden="true" size={16} />获取浏览器插件<span>免费</span>
-                    </a>
                     <AppLink href="/app/settings" onNavigate={closeMobile}>
                       <Settings aria-hidden="true" size={16} />设置与设备同步
                     </AppLink>
