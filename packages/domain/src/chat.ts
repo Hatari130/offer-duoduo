@@ -39,6 +39,7 @@ export interface ChatOpportunityResults {
   total: number;
   items: RecruitmentOpportunity[];
   sourceAvailable: boolean;
+  isBroadSearch: boolean;
   fetchedAt?: string;
   sourceUpdatedAt?: string;
 }

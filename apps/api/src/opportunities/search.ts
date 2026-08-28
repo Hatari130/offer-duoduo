@@ -123,8 +123,10 @@ export function isOpportunitySearchPrompt(prompt: string): boolean {
   const asksAboutOwnApplications = /(?:我的|我已|我投|投过|投了).*(?:投递|申请|岗位|职位).*(?:记录|进度|状态|结果)|(?:投递|申请)(?:记录|进度|状态)/.test(value);
   if (asksAboutOwnApplications) return false;
   const opportunityNoun = /岗位|职位|招聘(?:信息|机会)?|工作机会|实习机会|校招机会/.test(value);
-  const listingCue = /哪些|有什么|有没有|找(?:一下|一找)?|搜索|查询|推荐|列出|看看|可投|能投|在招|开放|投递链接|申请链接/.test(value);
-  return opportunityNoun && listingCue;
+  const listingCue = /哪些|有什么|有没有|找(?:一下|一找)?|搜索|查询|推荐|列出|看看|适合|可投|能投|在招|开放|投递链接|申请链接/.test(value);
+  const campusContext = /应届生?|毕业生|校招生?|校招|春招|秋招/.test(value);
+  const campusSearchCue = /推荐|找|看看|哪些|有什么|有没有|适合|可投|能投|在招|机会/.test(value);
+  return (opportunityNoun && listingCue) || (campusContext && campusSearchCue);
 }
 
 export function searchOpportunitySnapshot(
@@ -135,6 +137,11 @@ export function searchOpportunitySnapshot(
   const limit = Math.max(1, Math.min(options.limit ?? 5, 5));
   const now = options.now ?? new Date();
   const filters = filtersFor(prompt, snapshot.opportunities);
+  const isBroadSearch = !filters.roleGroups.length
+    && !filters.cities.length
+    && !filters.graduationYears.length
+    && !filters.batches.length
+    && !filters.companies.length;
   const deduplicated = new Map<string, RecruitmentOpportunity>();
 
   for (const opportunity of snapshot.opportunities) {
@@ -160,6 +167,7 @@ export function searchOpportunitySnapshot(
     total: matches.length,
     items: matches.slice(0, limit),
     sourceAvailable: options.sourceAvailable ?? true,
+    isBroadSearch,
     fetchedAt: snapshot.fetchedAt,
     sourceUpdatedAt: snapshot.sourceUpdatedAt
   };
@@ -170,9 +178,14 @@ export function opportunitySearchAnswer(results: ChatOpportunityResults): string
     return "岗位库暂时无法连接，因此我没有返回可能失真的投递链接。稍后重试即可；你的其他求职问题仍然可以继续问我。";
   }
   if (!results.total) {
-    return "当前岗位库里没有找到符合这些条件且仍可投递的岗位。你可以放宽城市、届别或岗位方向后再查一次。";
+    return results.isBroadSearch
+      ? "当前岗位库暂时没有仍可投递的校招岗位。你可以稍后再查，或告诉我目标方向和城市，我会在岗位库更新后按这些条件筛选。"
+      : "当前岗位库里没有找到符合这些条件且仍可投递的岗位。你可以放宽城市、届别或岗位方向后再查一次。";
   }
   const shown = results.items.length;
+  if (results.isBroadSearch) {
+    return `先给你展示 ${shown} 条当前可投递的校招岗位，岗位库里共有 ${results.total} 条。因为你还没指定方向和城市，这一轮优先展示近期更新的机会；告诉我专业、想做的方向或目标城市中的任意一项，我可以继续缩小范围。`;
+  }
   return `找到 ${results.total} 条当前可投递的匹配岗位，先展示匹配度最高的 ${shown} 条。投递状态和截止时间可能变化，打开招聘页面后请再确认一次。`;
 }
 
