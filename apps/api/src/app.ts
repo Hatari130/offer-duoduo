@@ -41,6 +41,7 @@ import type {
   ChatContextOption,
   ChatContextReference,
   ChatMessage,
+  ChatOpportunityResults,
   JobApplication,
   KnowledgeCitation,
   PersonalProfile
@@ -58,6 +59,12 @@ import {
   type InterviewTranscriptionProvider
 } from "./interviews/transcription.ts";
 import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
+import {
+  fetchCampusHiringSnapshot,
+  isOpportunitySearchPrompt,
+  opportunitySearchAnswer,
+  searchOpportunitySnapshot
+} from "./opportunities/search.ts";
 import { MemoryStore } from "./store/memory-store.ts";
 import { PostgresStore } from "./store/postgres-store.ts";
 import { StoreError, type OfferFlowStore, type SessionRecord } from "./store/store.ts";
@@ -262,6 +269,36 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
+  let opportunityRefresh: Promise<Awaited<ReturnType<OfferFlowStore["getOpportunityFeed"]>>> | undefined;
+
+  async function searchChatOpportunities(prompt: string): Promise<ChatOpportunityResults | undefined> {
+    if (!isOpportunitySearchPrompt(prompt)) return undefined;
+    let snapshot = await store.getOpportunityFeed();
+    let sourceAvailable = snapshot.opportunities.length > 0 || !config.opportunitySourceUrl;
+    const fetchedAt = snapshot.fetchedAt ? Date.parse(snapshot.fetchedAt) : Number.NaN;
+    const stale = !Number.isFinite(fetchedAt)
+      || Date.now() - fetchedAt >= config.opportunityRefreshSeconds * 1_000;
+
+    if (config.opportunitySourceUrl && (snapshot.opportunities.length === 0 || stale)) {
+      opportunityRefresh ??= fetchCampusHiringSnapshot(
+        config.opportunitySourceUrl,
+        AbortSignal.timeout(8_000)
+      )
+        .then((fresh) => store.replaceOpportunityFeed(fresh))
+        .finally(() => { opportunityRefresh = undefined; });
+      try {
+        snapshot = await opportunityRefresh;
+        sourceAvailable = true;
+      } catch (error) {
+        console.warn("[opportunities] refresh failed; using the last stored snapshot", error);
+      }
+    }
+
+    return searchOpportunitySnapshot(snapshot, prompt, {
+      limit: 5,
+      sourceAvailable
+    });
+  }
 
   function enforceAuthRateLimit(request: IncomingMessage): void {
     const forwarded = request.headers["x-forwarded-for"];
@@ -516,13 +553,16 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     attachments: ChatAttachment[] = [],
     context: ChatContextReference[] = []
   ): Promise<void> {
+    const opportunityResults = await searchChatOpportunities(prompt);
     const selectedEntries = await selectedContextKnowledge(userId, context);
     const attachmentEntries = attachmentKnowledge(attachments);
     const contextualEntries = [...selectedEntries, ...attachmentEntries];
     const explicitlySelectedEntries = [...(context.length ? selectedEntries : []), ...attachmentEntries];
-    const citations = [...explicitCitations(explicitlySelectedEntries), ...knowledge.search(prompt, 4, contextualEntries)]
-      .filter((citation, index, items) => items.findIndex((item) => item.id === citation.id) === index)
-      .slice(0, 6);
+    const citations = opportunityResults
+      ? []
+      : [...explicitCitations(explicitlySelectedEntries), ...knowledge.search(prompt, 4, contextualEntries)]
+        .filter((citation, index, items) => items.findIndex((item) => item.id === citation.id) === index)
+        .slice(0, 6);
     const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
     const abortController = new AbortController();
     response.on("close", () => {
@@ -547,25 +587,36 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
 
     let content = "";
     try {
-      for await (const delta of assistant.generate({
-        prompt,
-        history,
-        citations,
-        signal: abortController.signal
-      })) {
-        content += delta;
+      if (opportunityResults) {
+        content = opportunitySearchAnswer(opportunityResults);
         await writeSse(response, {
           type: "message.delta",
           messageId: assistantMessage.id,
-          delta
+          delta: content
         });
+      } else {
+        for await (const delta of assistant.generate({
+          prompt,
+          history,
+          citations,
+          signal: abortController.signal
+        })) {
+          content += delta;
+          await writeSse(response, {
+            type: "message.delta",
+            messageId: assistantMessage.id,
+            delta
+          });
+        }
       }
       const completed = await store.completeAssistantMessage(
         userId,
         conversationId,
         assistantMessage.id,
         content,
-        citations
+        citations,
+        "complete",
+        opportunityResults
       );
       await writeSse(response, { type: "message.completed", message: completed });
       await writeSse(response, { type: "done" });
@@ -577,7 +628,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         assistantMessage.id,
         content,
         citations,
-        aborted ? "stopped" : "error"
+        aborted ? "stopped" : "error",
+        opportunityResults
       );
       if (!aborted) {
         await writeSse(response, {

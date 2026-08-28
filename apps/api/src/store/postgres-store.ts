@@ -18,6 +18,7 @@ import {
   type ChatContextReference,
   type ChatConversation,
   type ChatMessage,
+  type ChatOpportunityResults,
   type InterviewQaPair,
   type InterviewRecord,
   type JobApplication,
@@ -394,10 +395,10 @@ export class PostgresStore implements OfferFlowStore {
     return message;
   }
 
-  async completeAssistantMessage(userId: string, conversationId: string, messageId: string, content: string, citations: KnowledgeCitation[], status: ChatMessage["status"] = "complete"): Promise<ChatMessage> {
+  async completeAssistantMessage(userId: string, conversationId: string, messageId: string, content: string, citations: KnowledgeCitation[], status: ChatMessage["status"] = "complete", opportunityResults?: ChatOpportunityResults): Promise<ChatMessage> {
     const result = await this.pool.query("SELECT payload FROM messages WHERE id = $1 AND conversation_id = $2 AND user_id = $3", [messageId, conversationId, userId]);
     if (!result.rows[0]) throw new StoreError("MESSAGE_NOT_FOUND", "没有找到这条消息", 404);
-    const message: ChatMessage = { ...result.rows[0].payload, content, citations, status };
+    const message: ChatMessage = { ...result.rows[0].payload, content, citations, status, opportunityResults };
     await this.saveMessage(userId, message);
     const current = await this.getConversation(userId, conversationId);
     if (current) {

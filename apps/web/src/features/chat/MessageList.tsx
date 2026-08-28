@@ -1,10 +1,20 @@
 import { useEffect, useId, useRef, useState } from "react";
-import type { ChatContextKind, ChatMessage, KnowledgeCitation } from "@offerflow/domain";
+import type {
+  ChatContextKind,
+  ChatMessage,
+  ChatOpportunityResults,
+  KnowledgeCitation,
+  OpportunityStatus,
+  RecruitmentOpportunity
+} from "@offerflow/domain";
 import {
   ArrowUpRight,
+  Building2,
+  CalendarClock,
   Check,
   Copy,
   FileText,
+  MapPin,
   RefreshCw,
   ThumbsDown,
   ThumbsUp,
@@ -107,6 +117,10 @@ export function MessageList({
                 ) : message.status === "streaming" ? <ThinkingIndicator /> : null}
               </div>
 
+              {message.opportunityResults && (
+                <OpportunityResultCards results={message.opportunityResults} />
+              )}
+
               {message.status === "error" && (
                 <p className="message-generation-state is-error">回答没有生成完成。检查网络后再生成一版。</p>
               )}
@@ -173,6 +187,88 @@ export function MessageList({
       })}
       <div ref={endRef} />
     </div>
+  );
+}
+
+const opportunityStatusLabel: Record<OpportunityStatus, string> = {
+  upcoming: "即将开放",
+  open: "正在招聘",
+  closing: "即将截止",
+  closed: "已截止",
+  ongoing: "长期招聘"
+};
+
+function displayOpportunityTitle(opportunity: RecruitmentOpportunity): string {
+  const genericTitle = opportunity.title === "校园招聘" || /20\d{2}\s*届/.test(opportunity.title);
+  return genericTitle && opportunity.roleTags.length
+    ? opportunity.roleTags.slice(0, 2).join(" / ")
+    : opportunity.title;
+}
+
+function displayDate(value?: string): string | undefined {
+  if (!value) return undefined;
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? `${Number(match[2])} 月 ${Number(match[3])} 日` : value;
+}
+
+function OpportunityResultCards({ results }: { results: ChatOpportunityResults }) {
+  const titleId = useId();
+  const items = results.items.slice(0, 5);
+  if (!items.length) return null;
+
+  return (
+    <section className="opportunity-results" aria-labelledby={titleId}>
+      <header className="opportunity-results__header">
+        <div>
+          <span>JOBKOI 岗位库</span>
+          <h3 id={titleId}>匹配岗位</h3>
+        </div>
+        <p>展示 {items.length} 条，共 {results.total} 条</p>
+      </header>
+      <ul className="opportunity-results__grid">
+        {items.map((opportunity) => {
+          const applyUrl = webSourceUrl(opportunity.officialUrl);
+          const status = opportunity.status || "ongoing";
+          const deadline = displayDate(opportunity.deadline);
+          return (
+            <li key={opportunity.id}>
+              <article className="opportunity-card">
+                <div className="opportunity-card__company">
+                  <span aria-hidden="true"><Building2 size={15} /></span>
+                  <strong>{opportunity.company}</strong>
+                  <i data-status={status}>{opportunityStatusLabel[status]}</i>
+                </div>
+                <h4>{displayOpportunityTitle(opportunity)}</h4>
+                <div className="opportunity-card__meta">
+                  {opportunity.cities.length > 0 && (
+                    <span><MapPin aria-hidden="true" size={14} />{opportunity.cities.slice(0, 2).join("、")}</span>
+                  )}
+                  {deadline && (
+                    <span><CalendarClock aria-hidden="true" size={14} />{deadline}截止</span>
+                  )}
+                </div>
+                <div className="opportunity-card__tags" aria-label="招聘批次与届别">
+                  {opportunity.batch && <span>{opportunity.batch}</span>}
+                  {opportunity.graduationYears.slice(0, 2).map((year) => <span key={year}>{year}</span>)}
+                </div>
+                {applyUrl && (
+                  <a href={applyUrl} target="_blank" rel="noreferrer">
+                    前往投递
+                    <ArrowUpRight aria-hidden="true" size={15} />
+                    <span className="sr-only">（在新标签页打开 {opportunity.company} 的招聘页面）</span>
+                  </a>
+                )}
+              </article>
+            </li>
+          );
+        })}
+      </ul>
+      {(results.sourceUpdatedAt || results.fetchedAt) && (
+        <p className="opportunity-results__freshness">
+          岗位库更新于 {displayDate(results.sourceUpdatedAt || results.fetchedAt)}，投递前请以招聘官网为准
+        </p>
+      )}
+    </section>
   );
 }
 

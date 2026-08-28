@@ -1,3 +1,5 @@
+import type { RecruitmentOpportunity } from "./opportunities.ts";
+
 export type ChatRole = "user" | "assistant" | "system";
 
 export type ChatMessageStatus = "streaming" | "complete" | "error" | "stopped";
@@ -32,6 +34,15 @@ export interface KnowledgeCitation {
   score?: number;
 }
 
+export interface ChatOpportunityResults {
+  query: string;
+  total: number;
+  items: RecruitmentOpportunity[];
+  sourceAvailable: boolean;
+  fetchedAt?: string;
+  sourceUpdatedAt?: string;
+}
+
 export interface ChatMessage {
   id: string;
   conversationId: string;
@@ -42,6 +53,7 @@ export interface ChatMessage {
   attachments: ChatAttachment[];
   context?: ChatContextReference[];
   citations: KnowledgeCitation[];
+  opportunityResults?: ChatOpportunityResults;
   feedback?: "positive" | "negative";
 }
 

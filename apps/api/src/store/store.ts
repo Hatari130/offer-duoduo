@@ -11,6 +11,7 @@ import type {
   ChatContextReference,
   ChatConversation,
   ChatMessage,
+  ChatOpportunityResults,
   InterviewQaPair,
   InterviewRecord,
   InterviewRecordSourceType,
@@ -115,7 +116,8 @@ export interface OfferFlowStore {
     messageId: string,
     content: string,
     citations: KnowledgeCitation[],
-    status?: ChatMessage["status"]
+    status?: ChatMessage["status"],
+    opportunityResults?: ChatOpportunityResults
   ): Awaitable<ChatMessage>;
   findRetryPrompt(userId: string, conversationId: string, messageId: string): Awaitable<string | undefined>;
   setMessageFeedback(

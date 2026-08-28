@@ -763,6 +763,174 @@
   font-weight: 680;
 }
 
+.opportunity-results {
+  margin-block-start: 1.1rem;
+  padding: 0.9rem;
+  background: color-mix(in oklch, var(--of-surface-muted) 64%, var(--of-surface, #fffdfb));
+  border: 1px solid var(--of-line);
+  border-radius: 1rem;
+}
+
+.opportunity-results__header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.15rem 0.2rem 0.8rem;
+}
+
+.opportunity-results__header > div > span {
+  display: block;
+  margin-block-end: 0.18rem;
+  color: var(--of-brand-700, #8f4d35);
+  font-size: 0.68rem;
+  font-weight: 760;
+  letter-spacing: 0.08em;
+}
+
+.opportunity-results__header h3 {
+  margin: 0;
+  color: var(--of-text-strong, #171714);
+  font-size: 1rem;
+  line-height: 1.35;
+}
+
+.opportunity-results__header p {
+  margin: 0;
+  color: var(--of-text-subtle);
+  font-size: 0.76rem;
+}
+
+.opportunity-results__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.opportunity-results__grid > li { min-width: 0; }
+
+.opportunity-card {
+  display: flex;
+  min-height: 12.25rem;
+  height: 100%;
+  flex-direction: column;
+  padding: 0.9rem;
+  background: var(--of-surface, #fffdfb);
+  border: 1px solid color-mix(in oklch, var(--of-line) 86%, var(--of-brand-200));
+  border-radius: 0.8rem;
+  box-shadow: 0 1px 1px color-mix(in oklch, var(--of-text) 4%, transparent);
+}
+
+.opportunity-card__company {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.42rem;
+}
+
+.opportunity-card__company > span {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--of-brand-700, #8f4d35);
+  background: var(--of-brand-50);
+  border-radius: 0.5rem;
+}
+
+.opportunity-card__company strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--of-text-strong, #171714);
+  font-size: 0.8rem;
+  font-weight: 680;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.opportunity-card__company i {
+  margin-inline-start: auto;
+  padding: 0.18rem 0.4rem;
+  flex: 0 0 auto;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border-radius: 999px;
+  font-size: 0.64rem;
+  font-style: normal;
+  font-weight: 700;
+}
+
+.opportunity-card__company i[data-status="closing"] {
+  color: #9a4b2f;
+  background: #fff0e8;
+}
+
+.opportunity-card h4 {
+  margin: 0.8rem 0 0.55rem;
+  color: var(--of-text-strong, #171714);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  text-wrap: pretty;
+}
+
+.opportunity-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  color: var(--of-text-muted);
+  font-size: 0.75rem;
+}
+
+.opportunity-card__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.opportunity-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-block: 0.65rem 0.8rem;
+}
+
+.opportunity-card__tags span {
+  padding: 0.2rem 0.42rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border: 1px solid var(--of-line);
+  border-radius: 0.35rem;
+  font-size: 0.68rem;
+}
+
+.opportunity-card > a {
+  display: inline-flex;
+  min-height: 2.75rem;
+  margin-block-start: auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  color: white;
+  background: var(--of-brand-600, #ad6042);
+  border-radius: 0.65rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.opportunity-card > a:hover { background: var(--of-brand-700, #8f4d35); }
+
+.opportunity-results__freshness {
+  margin: 0.65rem 0.2rem 0;
+  color: var(--of-text-subtle);
+  font-size: 0.7rem;
+  line-height: 1.5;
+}
+
 .message-attachments span {
   display: inline-flex;
   align-items: center;
@@ -1066,6 +1234,8 @@
   .thread-header > button { width: 2.75rem; padding: 0; font-size: 0; }
   .thread-header > button::before { content: "+"; font-size: 1.25rem; }
   .message-list { padding: 1.5rem 0.9rem 1.25rem; }
+  .opportunity-results { padding: 0.7rem; }
+  .opportunity-results__grid { grid-template-columns: 1fr; }
   .message { gap: 0.6rem; margin-block-end: 1.5rem; }
   .message--user .message-body { max-width: 90%; }
   .message-actions button { min-width: 2.75rem; min-height: 2.75rem; justify-content: center; }

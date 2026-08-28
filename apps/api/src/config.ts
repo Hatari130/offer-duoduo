@@ -14,6 +14,8 @@ export interface ApiConfig {
   cookieName: string;
   requireHttps: boolean;
   opportunityIngestKey?: string;
+  opportunitySourceUrl?: string;
+  opportunityRefreshSeconds: number;
   aiApiKey?: string;
   aiBaseUrl: string;
   aiModel: string;
@@ -64,6 +66,10 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     cookieName: env.AUTH_COOKIE_NAME?.trim() || "offerflow_session",
     requireHttps: booleanValue(env.REQUIRE_HTTPS, production),
     opportunityIngestKey: env.OPPORTUNITY_INGEST_KEY?.trim() || undefined,
+    opportunitySourceUrl:
+      env.OPPORTUNITY_SOURCE_URL?.trim()
+      || "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json",
+    opportunityRefreshSeconds: positiveNumber(env.OPPORTUNITY_REFRESH_SECONDS, 60 * 10),
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,
     aiBaseUrl: (env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
     aiModel: env.AI_MODEL || "deepseek-chat",

@@ -29,7 +29,8 @@ async function startTestServer() {
     host: "127.0.0.1",
     port: 0,
     demoStreamDelayMs: 0,
-    opportunityIngestKey: "offerflow-e2e-ingest-key-long-enough"
+    opportunityIngestKey: "offerflow-e2e-ingest-key-long-enough",
+    opportunitySourceUrl: undefined
   };
   const assistant = {
     model: "test-assistant",
@@ -284,6 +285,29 @@ test("opportunity catalogue is public and only accepts trusted importer snapshot
   const detail = await jsonRequest(app.baseUrl, "/v1/opportunities/opp_e2e");
   assert.equal(detail.response.status, 200);
   assert.equal(detail.payload.data.opportunity.company, "蜀道集团");
+
+  const auth = await jsonRequest(app.baseUrl, "/v1/auth/demo", { method: "POST" });
+  const headers = {
+    Authorization: `Bearer ${auth.payload.data.accessToken}`,
+    "Content-Type": "application/json"
+  };
+  const conversation = await jsonRequest(app.baseUrl, "/v1/conversations", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({})
+  });
+  const chat = await fetch(`${app.baseUrl}/v1/conversations/${conversation.payload.data.conversation.id}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      content: "目前有哪些岗位能投递？",
+      clientMessageId: "opportunity-search-message"
+    })
+  });
+  const chatStream = await chat.text();
+  assert.match(chatStream, /找到 1 条当前可投递的匹配岗位/);
+  assert.match(chatStream, /"opportunityResults"/);
+  assert.match(chatStream, /https:\/\/example\.com\/apply/);
 
   const importStatus = await jsonRequest(app.baseUrl, "/v1/imports/opportunities/status");
   assert.equal(importStatus.payload.data.status, "ready");
