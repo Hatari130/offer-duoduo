@@ -797,12 +797,21 @@
   letter-spacing: 0.1em;
 }
 
-.opportunity-company-cell > strong,
+.opportunity-company-cell > .opportunity-company-heading,
 .opportunity-company-cell > span {
   display: block;
 }
 
-.opportunity-company-cell > strong {
+.opportunity-company-heading,
+.opportunity-card-heading {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+}
+
+.opportunity-company-cell > .opportunity-company-heading > strong {
   max-width: 100%;
   overflow: hidden;
   color: var(--of-text-strong);
@@ -812,6 +821,35 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+.company-signal-list {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 0.28rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.company-signal {
+  display: inline-flex;
+  min-height: 1.35rem;
+  align-items: center;
+  gap: 0.2rem;
+  padding-inline: 0.4rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 720;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.company-signal--hot { color: #bb3a16; background: #fff0e9; box-shadow: inset 0 0 0 1px #ffd7c9; }
+.company-signal--hc { color: #99600b; background: #fff6df; box-shadow: inset 0 0 0 1px #ffe1a0; }
+.company-signal--unicorn { color: #6650a5; background: #f4efff; box-shadow: inset 0 0 0 1px #e4d8fc; }
+.company-signal--leader { color: #2d6497; background: #eef7ff; box-shadow: inset 0 0 0 1px #d5eafb; }
+.company-signal--default { color: var(--of-text-muted); background: var(--of-surface-muted); box-shadow: inset 0 0 0 1px var(--of-line); }
 
 .opportunity-company-cell > span {
   margin-block-start: 0.2rem;
@@ -1096,6 +1134,8 @@
   font-weight: 720;
   line-height: 1.35;
 }
+
+.opportunity-card-heading h2 { max-width: 100%; }
 
 .opportunity-card header p {
   margin: 0.25rem 0 0;

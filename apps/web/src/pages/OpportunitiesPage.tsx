@@ -15,6 +15,8 @@ import {
   RefreshCw,
   Search,
   Sparkles,
+  Flame,
+  UsersRound,
   X
 } from "lucide-react";
 import {
@@ -144,6 +146,29 @@ function OpportunityTags({ company, tags }: { company: string; tags: string[] })
   );
 }
 
+const companyTagPresentation: Record<string, { label: string; tone: string; icon: "flame" | "people" | "sparkles" }> = {
+  hot: { label: "热门", tone: "hot", icon: "flame" },
+  "超多hc": { label: "HC充足", tone: "hc", icon: "people" },
+  "行业独角兽": { label: "行业独角兽", tone: "unicorn", icon: "sparkles" },
+  "垂直赛道头部": { label: "赛道头部", tone: "leader", icon: "sparkles" },
+  "知名大厂": { label: "知名大厂", tone: "leader", icon: "sparkles" },
+  "头部大厂": { label: "头部大厂", tone: "leader", icon: "sparkles" }
+};
+
+function CompanySignals({ company, tags }: { company: string; tags: string[] }) {
+  const visibleTags = tags.slice(0, 2);
+  if (!visibleTags.length) return null;
+  return (
+    <ul className="company-signal-list" aria-label={`${company} 的企业标签`}>
+      {visibleTags.map((tag) => {
+        const presentation = companyTagPresentation[tag] || { label: tag, tone: "default", icon: "sparkles" as const };
+        const Icon = presentation.icon === "flame" ? Flame : presentation.icon === "people" ? UsersRound : Sparkles;
+        return <li className={`company-signal company-signal--${presentation.tone}`} key={tag} title={tag}><Icon aria-hidden="true" size={12} strokeWidth={2} /><span>{presentation.label}</span></li>;
+      })}
+    </ul>
+  );
+}
+
 function OpportunityDeadline({ opportunity }: { opportunity: CampusHiringOpportunity }) {
   const deadline = deadlineCopy(opportunity);
   return (
@@ -234,7 +259,8 @@ export function OpportunitiesPage() {
         opportunity.companyType,
         opportunity.industry,
         ...opportunity.cities,
-        ...opportunity.roleTags
+        ...opportunity.roleTags,
+        ...opportunity.companyTags
       ].filter(Boolean).join(" ").toLowerCase();
       const matchesQuery = !normalized || searchable.includes(normalized);
       const matchesStatus = status === "all" || opportunity.status === status;
@@ -520,7 +546,7 @@ export function OpportunitiesPage() {
                   return (
                     <tr key={opportunity.id}>
                       <td className="opportunity-company-cell">
-                        <strong title={opportunity.company}>{opportunity.company}</strong>
+                        <div className="opportunity-company-heading"><strong title={opportunity.company}>{opportunity.company}</strong><CompanySignals company={opportunity.company} tags={opportunity.companyTags} /></div>
                         <span>{opportunity.graduationYears.join("、") || "届次不限"}</span>
                         <OpportunityTags company={opportunity.company} tags={opportunity.roleTags} />
                       </td>
@@ -568,7 +594,7 @@ export function OpportunitiesPage() {
                     <article className="opportunity-card">
                       <header>
                         <div>
-                          <h2>{opportunity.company}</h2>
+                          <div className="opportunity-card-heading"><h2>{opportunity.company}</h2><CompanySignals company={opportunity.company} tags={opportunity.companyTags} /></div>
                           <p>{opportunity.graduationYears.join("、") || "届次不限"}</p>
                         </div>
                         <span className={`status-badge status-badge--${opportunityStatus}`}>{statusLabels[opportunityStatus]}</span>

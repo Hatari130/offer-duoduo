@@ -5,13 +5,14 @@ import {
 } from "@offerflow/domain";
 
 export const CAMPUS_HIRING_FEED_URL =
-  import.meta.env.VITE_CAMPUS_HIRING_FEED_URL ||
+  import.meta.env?.VITE_CAMPUS_HIRING_FEED_URL ||
   "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json";
 
 export interface CampusHiringOpportunity extends RecruitmentOpportunity {
   deadlineLabel?: string;
   industry?: string;
   companyType?: string;
+  companyTags: string[];
 }
 
 interface CampusHiringPayload {
@@ -23,10 +24,22 @@ interface CampusHiringPayload {
 const text = (value: unknown) => (typeof value === "string" ? value.trim() : "");
 
 function list(value: unknown): string[] {
+  if (Array.isArray(value)) return value.flatMap((item) => list(item));
   return text(value)
     .split(/[,，、;；/|]+/)
     .map((item) => item.trim())
     .filter(Boolean);
+}
+
+function normalizedCompanyTag(value: string): string {
+  const compact = value.replace(/\s+/g, "");
+  if (compact.toLowerCase() === "hot") return "hot";
+  if (compact === "超多hc" || compact === "��多hc") return "超多hc";
+  return value;
+}
+
+function companyTags(value: unknown): string[] {
+  return Array.from(new Set(list(value).map(normalizedCompanyTag)));
 }
 
 function validHttpUrl(value: string): boolean {
@@ -89,6 +102,7 @@ function normalizeItem(value: unknown): CampusHiringOpportunity | undefined {
     deadlineLabel,
     graduationYears: list(targetCohort),
     roleTags: usesShiftedFields ? [] : positions,
+    companyTags: companyTags(item.tags),
     cities: usesShiftedFields ? positions : list(cityValue),
     officialUrl,
     sourceUrl: cityUrl || announcementUrl || undefined,
