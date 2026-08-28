@@ -1044,7 +1044,18 @@
   .app-frame.is-sidebar-collapsed .extension-entry-button,
   .app-frame.is-sidebar-collapsed .upgrade-pro-button,
   .app-frame.is-sidebar-collapsed .account-trigger {
+    gap: 0;
     justify-content: center;
+    padding-inline: 0;
+  }
+
+  .app-frame.is-sidebar-collapsed .sidebar-shortcut,
+  .app-frame.is-sidebar-collapsed .nav-link > em,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > em {
+    margin-inline-start: 0;
+  }
+
+  .app-frame.is-sidebar-collapsed .extension-entry-button > em {
     padding-inline: 0;
   }
 
