@@ -11,15 +11,18 @@ import {
   Gift,
   Home,
   Info,
+  Link2,
   LogIn,
   LogOut,
   Menu,
   MessageCircleMore,
   MonitorSmartphone,
+  MoreHorizontal,
   Newspaper,
   PanelLeftClose,
   PanelLeftOpen,
   Pencil,
+  Pin,
   Plus,
   Puzzle,
   Settings,
@@ -97,11 +100,19 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const [renamingConversationId, setRenamingConversationId] = useState<string>();
   const [renameDraft, setRenameDraft] = useState("");
   const [threadError, setThreadError] = useState("");
+  const [threadStatus, setThreadStatus] = useState("");
+  const [activeThreadMenuId, setActiveThreadMenuId] = useState<string>();
+  const [threadMenuPosition, setThreadMenuPosition] = useState<{ top: number; left: number }>();
+  const [pinnedConversationIds, setPinnedConversationIds] = useState<string[]>([]);
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [accountOpen, setAccountOpen] = useState(false);
   const [contactOpen, setContactOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const contactMenuRef = useRef<HTMLDivElement>(null);
+  const threadMenuRef = useRef<HTMLDivElement>(null);
+  const threadMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
+  const threadMenuOpenedByKeyboardRef = useRef(false);
+  const pinnedStorageKey = `offerflow:pinned-conversations:${user?.id || "visitor"}`;
   const activeNavigationIndex = primaryNavigation.findIndex(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   );
@@ -110,6 +121,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     setMobileOpen(false);
     setAccountOpen(false);
     setContactOpen(false);
+    setActiveThreadMenuId(undefined);
+    setThreadMenuPosition(undefined);
   }, [pathname]);
 
   useEffect(() => {
@@ -117,12 +130,22 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       const target = event.target as Node;
       if (!accountMenuRef.current?.contains(target)) setAccountOpen(false);
       if (!contactMenuRef.current?.contains(target)) setContactOpen(false);
+      if (!threadMenuRef.current?.contains(target) && !threadMenuTriggerRef.current?.contains(target)) {
+        setActiveThreadMenuId(undefined);
+        setThreadMenuPosition(undefined);
+      }
     };
     const closeOnEscape = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
       setMobileOpen(false);
       setAccountOpen(false);
       setContactOpen(false);
+      if (threadMenuRef.current) {
+        const trigger = threadMenuTriggerRef.current;
+        setActiveThreadMenuId(undefined);
+        setThreadMenuPosition(undefined);
+        window.requestAnimationFrame(() => trigger?.focus());
+      }
     };
     document.addEventListener("pointerdown", closePopovers);
     document.addEventListener("keydown", closeOnEscape);
@@ -160,10 +183,46 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     return () => window.clearInterval(timer);
   }, [conversations.length]);
 
+  useEffect(() => {
+    try {
+      const stored = JSON.parse(window.localStorage.getItem(pinnedStorageKey) || "[]") as unknown;
+      setPinnedConversationIds(Array.isArray(stored) ? stored.filter((value): value is string => typeof value === "string") : []);
+    } catch {
+      setPinnedConversationIds([]);
+    }
+  }, [pinnedStorageKey]);
+
+  useEffect(() => {
+    if (!threadStatus) return undefined;
+    const timer = window.setTimeout(() => setThreadStatus(""), 2600);
+    return () => window.clearTimeout(timer);
+  }, [threadStatus]);
+
+  useEffect(() => {
+    if (!activeThreadMenuId) return undefined;
+    const closeOnViewportChange = () => {
+      setActiveThreadMenuId(undefined);
+      setThreadMenuPosition(undefined);
+    };
+    window.addEventListener("resize", closeOnViewportChange);
+    document.addEventListener("scroll", closeOnViewportChange, true);
+    return () => {
+      window.removeEventListener("resize", closeOnViewportChange);
+      document.removeEventListener("scroll", closeOnViewportChange, true);
+    };
+  }, [activeThreadMenuId]);
+
+  useEffect(() => {
+    if (!activeThreadMenuId || !threadMenuOpenedByKeyboardRef.current) return;
+    window.requestAnimationFrame(() => threadMenuRef.current?.querySelector<HTMLButtonElement>("button")?.focus());
+  }, [activeThreadMenuId]);
+
   const closeMobile = () => {
     setMobileOpen(false);
     setAccountOpen(false);
     setContactOpen(false);
+    setActiveThreadMenuId(undefined);
+    setThreadMenuPosition(undefined);
   };
   const closeWhenFocusLeaves = (event: FocusEvent<HTMLDivElement>, close: () => void) => {
     if (!event.currentTarget.contains(event.relatedTarget as Node | null)) close();
@@ -174,6 +233,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       window.localStorage.setItem("offerflow:sidebar-collapsed", String(next));
       setAccountOpen(false);
       setContactOpen(false);
+      setActiveThreadMenuId(undefined);
+      setThreadMenuPosition(undefined);
       setSidebarCollapsed(next);
     }, "sidebar");
   };
@@ -183,9 +244,76 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     requestLogin(reason);
     return false;
   };
-  const visibleConversations = conversations.filter((conversation) =>
-    `${conversation.title} ${conversation.lastMessagePreview || ""}`.toLowerCase().includes(threadQuery.trim().toLowerCase())
-  );
+  const pinnedConversationIdSet = new Set(pinnedConversationIds);
+  const visibleConversations = conversations
+    .filter((conversation) =>
+      `${conversation.title} ${conversation.lastMessagePreview || ""}`.toLowerCase().includes(threadQuery.trim().toLowerCase())
+    )
+    .sort((first, second) => Number(pinnedConversationIdSet.has(second.id)) - Number(pinnedConversationIdSet.has(first.id)));
+  const activeThreadMenuConversation = conversations.find((conversation) => conversation.id === activeThreadMenuId);
+  const closeThreadMenu = () => {
+    setActiveThreadMenuId(undefined);
+    setThreadMenuPosition(undefined);
+  };
+  const toggleThreadMenu = (event: MouseEvent<HTMLButtonElement>, conversationId: string) => {
+    if (activeThreadMenuId === conversationId) {
+      closeThreadMenu();
+      return;
+    }
+    const trigger = event.currentTarget;
+    const triggerRect = trigger.getBoundingClientRect();
+    const menuWidth = 208;
+    const menuHeight = 190;
+    const viewportGutter = 10;
+    const opensBelow = triggerRect.bottom + 6 + menuHeight <= window.innerHeight - viewportGutter;
+    threadMenuTriggerRef.current = trigger;
+    threadMenuOpenedByKeyboardRef.current = event.detail === 0;
+    setThreadMenuPosition({
+      top: opensBelow ? triggerRect.bottom + 6 : Math.max(viewportGutter, triggerRect.top - menuHeight - 6),
+      left: Math.min(
+        window.innerWidth - menuWidth - viewportGutter,
+        Math.max(viewportGutter, triggerRect.right - menuWidth)
+      )
+    });
+    setActiveThreadMenuId(conversationId);
+  };
+  const togglePinnedConversation = (conversation: ChatConversation) => {
+    const willPin = !pinnedConversationIdSet.has(conversation.id);
+    setPinnedConversationIds((current) => {
+      const next = willPin
+        ? [conversation.id, ...current.filter((id) => id !== conversation.id)]
+        : current.filter((id) => id !== conversation.id);
+      try {
+        window.localStorage.setItem(pinnedStorageKey, JSON.stringify(next));
+      } catch {
+        // Keep the interaction working when storage is unavailable.
+      }
+      return next;
+    });
+    setThreadStatus(willPin ? `已置顶“${conversation.title}”。` : `已取消置顶“${conversation.title}”。`);
+    closeThreadMenu();
+  };
+  const copyConversationLink = async (conversation: ChatConversation) => {
+    const url = `${window.location.origin}/app/chat/${encodeURIComponent(conversation.id)}`;
+    closeThreadMenu();
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        const copyTarget = document.createElement("textarea");
+        copyTarget.value = url;
+        copyTarget.style.position = "fixed";
+        copyTarget.style.opacity = "0";
+        document.body.append(copyTarget);
+        copyTarget.select();
+        document.execCommand("copy");
+        copyTarget.remove();
+      }
+      setThreadStatus("对话链接已复制。");
+    } catch {
+      setThreadError("暂时无法复制链接。打开该对话后，再从浏览器地址栏复制。");
+    }
+  };
   const beginRename = (conversation: ChatConversation) => {
     setRenamingConversationId(conversation.id);
     setRenameDraft(conversation.title);
@@ -323,7 +451,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
             {visibleConversations.map((conversation) => {
               const href = `/app/chat/${encodeURIComponent(conversation.id)}`;
               return (
-                <div className={`thread-link-row${pathname === href ? " is-active" : ""}`} key={conversation.id}>
+                <div
+                  className={`thread-link-row${pathname === href ? " is-active" : ""}${pinnedConversationIdSet.has(conversation.id) ? " is-pinned" : ""}${activeThreadMenuId === conversation.id ? " is-menu-open" : ""}`}
+                  key={conversation.id}
+                >
                   {renamingConversationId === conversation.id ? (
                     <form onSubmit={(event) => { event.preventDefault(); void saveRename(conversation.id); }}>
                       <label className="sr-only" htmlFor={`conversation-${conversation.id}`}>对话名称</label>
@@ -343,14 +474,35 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                         href={href}
                         className="thread-link"
                         ariaCurrent={pathname === href ? "page" : undefined}
+                        title={conversation.title}
                         onNavigate={closeMobile}
                       >
-                        <span>{conversation.title}</span>
-                        <time dateTime={conversation.updatedAt}>{formatConversationTime(conversation.updatedAt, clockNow)}</time>
+                        <span className="thread-link-copy">
+                          <span className="thread-link-title">{conversation.title}</span>
+                          <time dateTime={conversation.updatedAt}>{formatConversationTime(conversation.updatedAt, clockNow)}</time>
+                        </span>
                       </AppLink>
                       <span className="thread-row-actions">
-                        <button type="button" aria-label={`重命名 ${conversation.title}`} onClick={() => beginRename(conversation)}><Pencil aria-hidden="true" size={13} /></button>
-                        <button type="button" aria-label={`删除 ${conversation.title}`} onClick={() => void removeConversation(conversation)}><Trash2 aria-hidden="true" size={13} /></button>
+                        <button
+                          type="button"
+                          className="thread-pin-button"
+                          aria-label={`${pinnedConversationIdSet.has(conversation.id) ? "取消置顶" : "置顶"} ${conversation.title}`}
+                          aria-pressed={pinnedConversationIdSet.has(conversation.id)}
+                          title={pinnedConversationIdSet.has(conversation.id) ? "取消置顶" : "置顶对话"}
+                          onClick={() => togglePinnedConversation(conversation)}
+                        >
+                          <Pin aria-hidden="true" size={14} fill={pinnedConversationIdSet.has(conversation.id) ? "currentColor" : "none"} />
+                        </button>
+                        <button
+                          type="button"
+                          className="thread-more-button"
+                          aria-label={`更多对话操作：${conversation.title}`}
+                          aria-expanded={activeThreadMenuId === conversation.id}
+                          aria-controls={activeThreadMenuId === conversation.id ? `thread-actions-${conversation.id}` : undefined}
+                          onClick={(event) => toggleThreadMenu(event, conversation.id)}
+                        >
+                          <MoreHorizontal aria-hidden="true" size={16} />
+                        </button>
                       </span>
                     </>
                   )}
@@ -364,6 +516,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               <p className="thread-empty">没有匹配的对话。换个关键词试试。</p>
             )}
           </div>
+          <p className="sr-only" role="status" aria-live="polite">{threadStatus}</p>
           <p className="thread-error" role="alert">{threadError}</p>
         </section>
 
@@ -500,6 +653,32 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           </div>
         </div>
       </aside>
+
+      {activeThreadMenuConversation && threadMenuPosition && (
+        <div
+          className="thread-action-popover"
+          id={`thread-actions-${activeThreadMenuConversation.id}`}
+          ref={threadMenuRef}
+          style={threadMenuPosition}
+          role="group"
+          aria-label={`“${activeThreadMenuConversation.title}”的对话操作`}
+        >
+          <button type="button" onClick={() => void copyConversationLink(activeThreadMenuConversation)}>
+            <Link2 aria-hidden="true" size={16} />复制对话链接
+          </button>
+          <button type="button" onClick={() => { closeThreadMenu(); beginRename(activeThreadMenuConversation); }}>
+            <Pencil aria-hidden="true" size={16} />重命名
+          </button>
+          <span className="thread-action-divider" aria-hidden="true" />
+          <button type="button" onClick={() => togglePinnedConversation(activeThreadMenuConversation)}>
+            <Pin aria-hidden="true" size={16} fill={pinnedConversationIdSet.has(activeThreadMenuConversation.id) ? "currentColor" : "none"} />
+            {pinnedConversationIdSet.has(activeThreadMenuConversation.id) ? "取消置顶" : "置顶对话"}
+          </button>
+          <button className="is-danger" type="button" onClick={() => { closeThreadMenu(); void removeConversation(activeThreadMenuConversation); }}>
+            <Trash2 aria-hidden="true" size={16} />删除
+          </button>
+        </div>
+      )}
 
       <div className={`workspace-shell${isGuest ? " workspace-shell--guest" : ""}`}>
         {isGuest && (

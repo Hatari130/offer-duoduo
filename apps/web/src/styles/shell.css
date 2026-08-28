@@ -288,40 +288,51 @@
 }
 
 .thread-link-row {
+  position: relative;
   display: grid;
   min-width: 0;
+  min-height: 3.05rem;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
-  border-radius: 0.62rem;
+  border-radius: 0.72rem;
 }
 
 .thread-link-row:hover,
-.thread-link-row.is-active { background: var(--of-surface-muted); }
+.thread-link-row.is-active,
+.thread-link-row.is-menu-open { background: var(--of-surface-muted); }
 
 .thread-link {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.55rem 0.65rem;
+  display: block;
+  min-width: 0;
+  padding: 0.45rem 0.3rem 0.45rem 0.65rem;
   overflow: hidden;
   color: var(--of-text-muted);
-  border-radius: 0.62rem;
+  border-radius: 0.72rem;
   font-size: 0.75rem;
   line-height: 1.3;
   text-decoration: none;
 }
 
-.thread-link > span {
+.thread-link-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.14rem;
+}
+
+.thread-link-title {
   overflow: hidden;
+  color: inherit;
+  font-size: 0.76rem;
+  font-weight: 560;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.thread-link > time {
+.thread-link time {
   color: var(--of-text-subtle);
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-variant-numeric: tabular-nums;
+  line-height: 1.2;
   white-space: nowrap;
 }
 
@@ -332,32 +343,101 @@
 
 .thread-row-actions {
   display: flex;
-  padding-inline-end: 0.25rem;
+  gap: 0.05rem;
+  padding-inline-end: 0.3rem;
   opacity: 0;
+  transform: translateX(0.2rem);
+  transition-property: opacity, transform;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
 }
 
-.thread-link-row:is(:hover, :focus-within) .thread-row-actions { opacity: 1; }
+.thread-link-row:is(:hover, :focus-within, .is-menu-open, .is-pinned) .thread-row-actions {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.thread-link-row.is-pinned:not(:hover, :focus-within, .is-menu-open) .thread-more-button {
+  opacity: 0;
+  pointer-events: none;
+}
 
 @media (hover: none) {
-  .thread-row-actions { opacity: 1; }
+  .thread-row-actions {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }
 
 .thread-row-actions button,
 .thread-link-row form button {
   display: grid;
-  width: 1.9rem;
-  height: 1.9rem;
+  width: 2rem;
+  height: 2rem;
   place-items: center;
   color: var(--of-text-subtle);
   background: transparent;
   border: 0;
-  border-radius: 0.45rem;
+  border-radius: 0.55rem;
+  transition-property: color, background-color, opacity;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
 }
 
 .thread-row-actions button:hover,
 .thread-link-row form button:hover { color: var(--of-text); background: var(--of-surface); }
 
-.thread-row-actions button:last-child:hover { color: var(--of-danger); }
+.thread-row-actions .thread-pin-button[aria-pressed="true"] { color: var(--of-brand-600); }
+
+.thread-row-actions button:active { transform: scale(0.96); }
+
+.thread-action-popover {
+  position: fixed;
+  z-index: 70;
+  display: grid;
+  width: 13rem;
+  padding: 0.45rem;
+  color: var(--of-text-muted);
+  background: color-mix(in srgb, var(--of-surface-raised) 96%, var(--of-brand-50));
+  border: 1px solid var(--of-line);
+  border-radius: 0.95rem;
+  box-shadow:
+    0 0 0 1px rgb(44 58 102 / 0.025),
+    0 1.25rem 3rem -1.35rem rgb(38 50 91 / 0.38);
+}
+
+.thread-action-popover button {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.65rem;
+  padding-inline: 0.7rem;
+  color: inherit;
+  background: transparent;
+  border: 0;
+  border-radius: 0.62rem;
+  font-size: 0.76rem;
+  font-weight: 560;
+  text-align: start;
+  transition-property: color, background-color;
+  transition-duration: 120ms;
+  transition-timing-function: ease-out;
+}
+
+.thread-action-popover button:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface-muted);
+}
+
+.thread-action-popover button.is-danger { color: var(--of-danger); }
+.thread-action-popover button.is-danger:hover { background: var(--of-danger-soft); }
+.thread-action-popover button:active { transform: scale(0.96); }
+
+.thread-action-divider {
+  height: 1px;
+  margin: 0.32rem 0.55rem;
+  background: var(--of-line);
+}
 
 .thread-link-row form {
   display: grid;
@@ -835,6 +915,7 @@
 .thread-link:focus-visible,
 .thread-row-actions button:focus-visible,
 .thread-link-row form button:focus-visible,
+.thread-action-popover button:focus-visible,
 .extension-entry-button:focus-visible,
 .upgrade-pro-button:focus-visible,
 .account-trigger:focus-visible,
@@ -1140,5 +1221,8 @@
   .app-sidebar,
   .sidebar-scrim,
   .account-popover,
-  .contact-popover { transition-duration: 0.01ms; }
+  .contact-popover,
+  .thread-row-actions,
+  .thread-row-actions button,
+  .thread-action-popover button { transition-duration: 0.01ms; }
 }
