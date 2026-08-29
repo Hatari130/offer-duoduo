@@ -39,6 +39,14 @@ jobs:
       - name: Run automated tests
         run: pnpm test && pnpm --filter @offerflow/web test
 
+      - name: Bundle the latest campus hiring snapshot
+        run: |
+          mkdir -p apps/api/data
+          curl --fail --location --retry 3 --retry-delay 2 \
+            --output apps/api/data/campus-hiring.json \
+            https://shouna12358-png.github.io/campus-hiring/campus-hiring.json
+          node -e "const fs=require('node:fs'); const feed=JSON.parse(fs.readFileSync('apps/api/data/campus-hiring.json','utf8')); if(!Array.isArray(feed.items)||feed.items.length===0) throw new Error('Campus hiring snapshot is empty or invalid'); console.log('Bundled '+feed.items.length+' campus hiring records')"
+
       - name: Build the production browser extension
         env:
           VITE_OFFERFLOW_API_URL: ${{ vars.JOBKOI_API_URL || 'http://139.196.197.112/api' }}

@@ -1,6 +1,9 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
+import { mkdtemp, rm, writeFile } from "node:fs/promises";
 import { createServer } from "node:http";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
 import test from "node:test";
 import { createOfferFlowServer } from "../src/server.ts";
 import { loadApiConfig } from "../src/config.ts";
@@ -32,6 +35,7 @@ async function startTestServer(configOverrides = {}) {
     demoStreamDelayMs: 0,
     opportunityIngestKey: "offerflow-e2e-ingest-key-long-enough",
     opportunitySourceUrl: undefined,
+    opportunitySeedPath: undefined,
     ...configOverrides
   };
   const assistant = {
@@ -271,6 +275,38 @@ test("public opportunity catalogue hydrates an empty store from the configured J
   const second = await jsonRequest(app.baseUrl, "/v1/opportunities");
   assert.equal(second.payload.data.opportunities.length, 1);
   assert.equal(sourceRequests, 1);
+});
+
+test("public opportunity catalogue hydrates from the bundled snapshot without a remote request", async (t) => {
+  const seedDirectory = await mkdtemp(join(tmpdir(), "offerflow-opportunity-seed-"));
+  const seedPath = join(seedDirectory, "campus-hiring.json");
+  await writeFile(seedPath, JSON.stringify({
+    updatedAt: "2026-08-29T08:00:00+08:00",
+    items: [{
+      id: "bundled-product-role",
+      company: "随包数据科技",
+      positions: "产品经理",
+      city: "杭州",
+      targetCohort: "2027届",
+      type: "秋招",
+      applyUrl: "https://jobs.example.com/bundled-product-role"
+    }]
+  }), "utf8");
+  const app = await startTestServer({
+    opportunitySourceUrl: "https://unreachable.invalid/campus-hiring.json",
+    opportunitySeedPath: seedPath
+  });
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+    await rm(seedDirectory, { recursive: true, force: true });
+  });
+
+  const response = await jsonRequest(app.baseUrl, "/v1/opportunities");
+  assert.equal(response.response.status, 200);
+  assert.equal(response.payload.data.opportunities.length, 1);
+  assert.equal(response.payload.data.opportunities[0].company, "随包数据科技");
+  assert.equal(response.payload.data.opportunities[0].officialUrl, "https://jobs.example.com/bundled-product-role");
 });
 
 test("opportunity catalogue is public and only accepts trusted importer snapshots", async (t) => {

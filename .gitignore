@@ -14,4 +14,5 @@ coverage/
 .offerflow-*.restart*.log
 .pnpm-store/
 .tmp/
+apps/api/data/campus-hiring.json
 web-preview*.log

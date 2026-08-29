@@ -63,6 +63,7 @@ import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
 import {
   fetchCampusHiringSnapshot,
   isOpportunitySearchPrompt,
+  loadCampusHiringSnapshot,
   opportunitySearchAnswer,
   searchOpportunitySnapshot
 } from "./opportunities/search.ts";
@@ -272,6 +273,38 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
   let opportunityRefresh: Promise<Awaited<ReturnType<OfferFlowStore["getOpportunityFeed"]>>> | undefined;
 
+  async function refreshOpportunitySnapshot(preferSeed: boolean): Promise<OpportunityFeedSnapshot> {
+    let seedError: unknown;
+    if (preferSeed && config.opportunitySeedPath) {
+      try {
+        return await loadCampusHiringSnapshot(config.opportunitySeedPath, config.opportunitySourceUrl);
+      } catch (error) {
+        seedError = error;
+      }
+    }
+
+    let sourceError: unknown;
+    if (config.opportunitySourceUrl) {
+      try {
+        return await fetchCampusHiringSnapshot(
+          config.opportunitySourceUrl,
+          AbortSignal.timeout(config.opportunityFetchTimeoutSeconds * 1_000)
+        );
+      } catch (error) {
+        sourceError = error;
+      }
+    }
+
+    if (!preferSeed && config.opportunitySeedPath) {
+      try {
+        return await loadCampusHiringSnapshot(config.opportunitySeedPath, config.opportunitySourceUrl);
+      } catch (error) {
+        seedError = error;
+      }
+    }
+    throw sourceError ?? seedError ?? new Error("没有配置可用的岗位数据源");
+  }
+
   async function freshOpportunitySnapshot(): Promise<{
     snapshot: OpportunityFeedSnapshot;
     sourceAvailable: boolean;
@@ -282,11 +315,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     const stale = !Number.isFinite(fetchedAt)
       || Date.now() - fetchedAt >= config.opportunityRefreshSeconds * 1_000;
 
-    if (config.opportunitySourceUrl && (snapshot.opportunities.length === 0 || stale)) {
-      opportunityRefresh ??= fetchCampusHiringSnapshot(
-        config.opportunitySourceUrl,
-        AbortSignal.timeout(config.opportunityFetchTimeoutSeconds * 1_000)
-      )
+    if ((config.opportunitySourceUrl || config.opportunitySeedPath) && (snapshot.opportunities.length === 0 || stale)) {
+      opportunityRefresh ??= refreshOpportunitySnapshot(snapshot.opportunities.length === 0)
         .then((fresh) => store.replaceOpportunityFeed(fresh))
         .finally(() => { opportunityRefresh = undefined; });
       try {

@@ -15,6 +15,7 @@ export interface ApiConfig {
   requireHttps: boolean;
   opportunityIngestKey?: string;
   opportunitySourceUrl?: string;
+  opportunitySeedPath?: string;
   opportunityRefreshSeconds: number;
   opportunityFetchTimeoutSeconds: number;
   aiApiKey?: string;
@@ -70,6 +71,7 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     opportunitySourceUrl:
       env.OPPORTUNITY_SOURCE_URL?.trim()
       || "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json",
+    opportunitySeedPath: env.OPPORTUNITY_SEED_PATH?.trim() || "apps/api/data/campus-hiring.json",
     opportunityRefreshSeconds: positiveNumber(env.OPPORTUNITY_REFRESH_SECONDS, 60 * 10),
     opportunityFetchTimeoutSeconds: positiveNumber(env.OPPORTUNITY_FETCH_TIMEOUT_SECONDS, 25),
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,

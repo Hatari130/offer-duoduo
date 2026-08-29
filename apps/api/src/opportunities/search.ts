@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import {
   normalizeCampusHiringFeed,
   opportunityStatus,
@@ -199,4 +200,12 @@ export async function fetchCampusHiringSnapshot(
   });
   if (!response.ok) throw new Error(`岗位数据源请求失败（${response.status}）`);
   return normalizeCampusHiringFeed(await response.json(), sourceUrl);
+}
+
+export async function loadCampusHiringSnapshot(
+  seedPath: string,
+  sourceUrl?: string
+): Promise<OpportunityFeedSnapshot> {
+  const payload = JSON.parse(await readFile(seedPath, "utf8")) as unknown;
+  return normalizeCampusHiringFeed(payload, sourceUrl);
 }
