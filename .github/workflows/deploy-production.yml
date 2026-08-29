@@ -87,6 +87,8 @@ jobs:
             --exclude='.env.*' \
             --exclude='*/.env.*' \
             -czf "$RUNNER_TEMP/release.tar.gz" .
+          tar -tzf "$RUNNER_TEMP/release.tar.gz" \
+            | grep -Fx './apps/api/data/campus-hiring.json'
 
       - name: Store the release for the deploy job
         uses: actions/upload-artifact@v7

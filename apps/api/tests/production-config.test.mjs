@@ -19,4 +19,5 @@ test("production refuses unsafe auth, transport and storage defaults", () => {
     OPPORTUNITY_INGEST_KEY: "a-very-long-random-import-key-2026"
   });
   assert.doesNotThrow(() => validateProductionConfig(safe));
+  assert.match(safe.opportunitySeedPath, /apps[\\/]api[\\/]data[\\/]campus-hiring\.json$/);
 });

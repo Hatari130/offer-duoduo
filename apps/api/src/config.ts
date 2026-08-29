@@ -1,4 +1,10 @@
+import { fileURLToPath } from "node:url";
+
 export type RegistrationMode = "open" | "allowlist" | "closed";
+
+const bundledOpportunitySeedPath = fileURLToPath(
+  new URL("../data/campus-hiring.json", import.meta.url)
+);
 
 export interface ApiConfig {
   host: string;
@@ -71,7 +77,7 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     opportunitySourceUrl:
       env.OPPORTUNITY_SOURCE_URL?.trim()
       || "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json",
-    opportunitySeedPath: env.OPPORTUNITY_SEED_PATH?.trim() || "apps/api/data/campus-hiring.json",
+    opportunitySeedPath: env.OPPORTUNITY_SEED_PATH?.trim() || bundledOpportunitySeedPath,
     opportunityRefreshSeconds: positiveNumber(env.OPPORTUNITY_REFRESH_SECONDS, 60 * 10),
     opportunityFetchTimeoutSeconds: positiveNumber(env.OPPORTUNITY_FETCH_TIMEOUT_SECONDS, 25),
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,
