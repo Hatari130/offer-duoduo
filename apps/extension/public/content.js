@@ -5013,12 +5013,66 @@
     };
   };
 
+  const prefersReducedMotion = () =>
+    Boolean(window.matchMedia?.("(prefers-reduced-motion: reduce)").matches);
+
+  const animateOverlayEntrance = (host) => {
+    if (prefersReducedMotion()) return;
+    host.style.opacity = "0";
+    host.style.transform = "translateY(-8px) scale(0.985)";
+    host.style.transformOrigin = "top right";
+    host.style.transition = "none";
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        host.style.transition =
+          "opacity 200ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 200ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+        host.style.opacity = "1";
+        host.style.transform = "none";
+      });
+    });
+  };
+
+  const animateOverlayExit = (host) => {
+    if (!host) return;
+    if (host.dataset.offerflowExiting === "1" || prefersReducedMotion()) {
+      host.remove();
+      return;
+    }
+    host.dataset.offerflowExiting = "1";
+    host.style.pointerEvents = "none";
+    host.style.transition =
+      "opacity 180ms cubic-bezier(0.4, 0, 1, 1), transform 180ms cubic-bezier(0.4, 0, 1, 1)";
+    host.style.opacity = "0";
+    host.style.transform = "translateY(-6px) scale(0.99)";
+    const removeWhenStillExiting = () => {
+      if (host.dataset.offerflowExiting === "1") host.remove();
+    };
+    setTimeout(removeWhenStillExiting, 240);
+    host.addEventListener("transitionend", (event) => {
+      if (event.target === host && event.propertyName === "opacity") removeWhenStillExiting();
+    }, { once: true });
+  };
+
+  const cancelOverlayExit = (host) => {
+    delete host.dataset.offerflowExiting;
+    host.style.pointerEvents = "";
+    host.style.transition =
+      "opacity 160ms cubic-bezier(0.2, 0.8, 0.2, 1), transform 160ms cubic-bezier(0.2, 0.8, 0.2, 1)";
+    host.style.opacity = "1";
+    host.style.transform = "none";
+  };
+
   const handleRuntimeMessage = (message, _sender, sendResponse) => {
     if (!message) return;
     if (message.type === "OFFERFLOW_TOGGLE_OVERLAY") {
       const existing = document.getElementById("offerflow-overlay-host");
       if (existing) {
-        existing.remove();
+        if (existing.dataset.offerflowExiting === "1") {
+          cancelOverlayExit(existing);
+          sendResponse({ ok: true, open: true });
+          return;
+        }
+        animateOverlayExit(existing);
         sendResponse({ ok: true, open: false });
         return;
       }
@@ -5054,6 +5108,7 @@
       });
       host.appendChild(frame);
       document.documentElement.appendChild(host);
+      animateOverlayEntrance(host);
       sendResponse({ ok: true, open: true });
       return;
     }
@@ -5122,7 +5177,7 @@
 
   const handleWindowMessage = (event) => {
     if (event.data?.type === "OFFERFLOW_CLOSE_OVERLAY") {
-      document.getElementById("offerflow-overlay-host")?.remove();
+      animateOverlayExit(document.getElementById("offerflow-overlay-host"));
     }
   };
   window.addEventListener("message", handleWindowMessage);

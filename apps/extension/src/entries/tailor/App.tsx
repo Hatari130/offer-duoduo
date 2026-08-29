@@ -429,7 +429,7 @@ export default function TailorApp() {
         ? resumeLibrary.find((resume) => resume.id === pending.sourceResumeId)
         : undefined;
       if (pending.sourceResumeId && !requestedSource) {
-        throw new Error("这份定制记录绑定的原 PDF 已不存在，请从简历库重新选择母版");
+        throw new Error("这份定制记录绑定的原 PDF 已不存在，请从简历库重新选择通用简历");
       }
       const currentSource = requestedSource
         || resumeLibrary.find((resume) => resume.id === activeResumeId)
@@ -1590,7 +1590,7 @@ function TailorResultBanner({
           <small>
             {overrideCount > 0
               ? `${bundle.context.company || "当前岗位"} · ${bundle.context.position} · 已按原坐标替换文本`
-              : "当前预览仍是母版原文，请重新生成；系统不会把零替换结果标记为成功。"}
+              : "当前预览仍是通用版原文，请重新生成；系统不会把零替换结果标记为成功。"}
           </small>
         </div>
       </div>
@@ -1714,9 +1714,9 @@ function PdfManager({
           {pdfSnapshot
             ? `已保存：${pdfSnapshot.fileName} · ${formatSize(pdfSnapshot.size)}`
             : pending && hasBundle
-              ? "原 PDF 母版已用于定制版式；打开预览可保存最终投递 PDF。"
+              ? "通用版的原 PDF 已用于定制版式；打开预览可保存最终投递 PDF。"
             : pending
-                ? "当前简历库中的原 PDF 会作为定制母版；生成后可在这里保存投递稿。"
+                ? "当前通用简历中的原 PDF 会用于定制版式；生成后可在这里保存投递稿。"
               : "先选定岗位，再生成基于原 PDF 版式的投递稿。"}
         </small>
       </div>

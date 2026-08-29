@@ -2902,6 +2902,7 @@ button {
   padding: 12px 20px;
   border-top: 1px solid #efcfcb;
   background: #fff8f7;
+  animation: confirm-in 0.18s ease-out both;
 }
 
 .drawer-delete-confirm strong,
@@ -5610,6 +5611,16 @@ textarea {
   justify-content: flex-end;
   background: rgba(23, 34, 29, 0.28);
   backdrop-filter: blur(3px);
+  animation: backdrop-in 0.2s ease-out both;
+}
+
+.drawer-backdrop.is-closing {
+  pointer-events: none;
+  animation: backdrop-out 0.18s ease-in both;
+}
+
+.drawer-backdrop.is-closing .drawer {
+  animation: drawer-out 0.18s ease-in both;
 }
 
 .drawer {
@@ -5758,6 +5769,31 @@ button:disabled {
 @keyframes drawer-in {
   from {
     transform: translateX(100%);
+  }
+}
+
+@keyframes drawer-out {
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes backdrop-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes backdrop-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes confirm-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
   }
 }
 

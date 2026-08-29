@@ -83,7 +83,20 @@ const SECTION_INDEX: Array<{ key: EditorSectionKey; label: string }> = [
   { key: "extra", label: "其他字段" }
 ];
 
-const INTERNAL_EXTRA_KEYS = new Set(["resumeSourceName", "parseMode"]);
+const PHONE_COUNTRY_CODE_KEY = "phoneCountryCode";
+const PHONE_COUNTRY_CODES = [
+  { value: "+86", label: "+86 中国" },
+  { value: "+852", label: "+852 中国香港" },
+  { value: "+853", label: "+853 中国澳门" },
+  { value: "+886", label: "+886 中国台湾" },
+  { value: "+1", label: "+1 美国/加拿大" },
+  { value: "+44", label: "+44 英国" },
+  { value: "+61", label: "+61 澳大利亚" },
+  { value: "+65", label: "+65 新加坡" },
+  { value: "+81", label: "+81 日本" },
+  { value: "+82", label: "+82 韩国" }
+] as const;
+const INTERNAL_EXTRA_KEYS = new Set(["resumeSourceName", "parseMode", PHONE_COUNTRY_CODE_KEY]);
 const DEFAULT_EXTRA_FIELDS = [
   "专业技能",
   "语言能力",
@@ -152,6 +165,7 @@ export default function ResumeEditor({
   const [draft, setDraft] = useState(resume.profile);
   const [company, setCompany] = useState(resume.company || "");
   const [position, setPosition] = useState(resume.position || "");
+  const [phoneCountryCode, setPhoneCountryCode] = useState(resume.profile.extraFields?.[PHONE_COUNTRY_CODE_KEY] || "+86");
   const [extraRows, setExtraRows] = useState<ExtraRow[]>(() => initialExtraRows(resume.profile));
   const [openSections, setOpenSections] = useState<Set<EditorSectionKey>>(
     () => new Set(["basic", "preference", "education", "internships", "work", "projects", "campus", "awards", "answers", "extra"])
@@ -164,6 +178,7 @@ export default function ResumeEditor({
     setDraft(resume.profile);
     setCompany(resume.company || "");
     setPosition(resume.position || "");
+    setPhoneCountryCode(resume.profile.extraFields?.[PHONE_COUNTRY_CODE_KEY] || "+86");
     setExtraRows(initialExtraRows(resume.profile));
     setSaved(false);
   }, [resume.id, resume.profile]);
@@ -244,7 +259,7 @@ export default function ResumeEditor({
           .map((row) => [row.key.trim(), row.value])
       );
       await onSave(
-        { ...draft, extraFields: { ...metadata, ...customFields } },
+        { ...draft, extraFields: { ...metadata, ...customFields, [PHONE_COUNTRY_CODE_KEY]: phoneCountryCode } },
         {
           company: company.trim(),
           position: position.trim(),
@@ -349,7 +364,25 @@ export default function ResumeEditor({
           <div className="resume-editor-grid">
             <EditorField label="姓名" required><input value={draft.fullName} onChange={(event) => set("fullName", event.target.value)} /></EditorField>
             <EditorField label="性别"><select value={draft.gender} onChange={(event) => set("gender", event.target.value)}><option value="">请选择</option><option>男</option><option>女</option><option>不便透露</option></select></EditorField>
-            <EditorField label="手机号" required><input type="tel" value={draft.phone} onChange={(event) => set("phone", event.target.value)} /></EditorField>
+            <EditorField label="手机号" required>
+              <div className="resume-editor-phone-field">
+                <select
+                  aria-label="手机国家或地区区号"
+                  value={phoneCountryCode}
+                  onChange={(event) => { setPhoneCountryCode(event.target.value); setSaved(false); }}
+                >
+                  {PHONE_COUNTRY_CODES.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                </select>
+                <input
+                  aria-label="手机号码"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel-national"
+                  value={draft.phone}
+                  onChange={(event) => set("phone", event.target.value)}
+                />
+              </div>
+            </EditorField>
             <EditorField label="邮箱" required><input type="email" value={draft.email} onChange={(event) => set("email", event.target.value)} /></EditorField>
             <EditorField label="出生日期"><input type="date" value={draft.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></EditorField>
             <EditorField label="毕业时间"><input type="month" value={monthInputValue(draft.graduationDate)} onChange={(event) => set("graduationDate", event.target.value)} /></EditorField>

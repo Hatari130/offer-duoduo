@@ -311,7 +311,30 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   );
 
   if (loading) {
-    return <div className="page-loading" role="status"><span className="loading-orbit" /><span>正在载入对话…</span></div>;
+    return (
+      <section className="chat-page chat-page--loading">
+        <div className="thread-scroll">
+          <div className="chat-skeleton" role="status">
+            <span className="sr-only">正在载入对话…</span>
+            <div className="chat-skeleton__row chat-skeleton__row--user">
+              <span className="skel chat-skeleton__bubble" />
+            </div>
+            <div className="chat-skeleton__row">
+              <span className="skel chat-skeleton__avatar" />
+              <span className="skel chat-skeleton__line chat-skeleton__line--long" />
+            </div>
+            <div className="chat-skeleton__row">
+              <span className="skel chat-skeleton__avatar" />
+              <div className="chat-skeleton__lines">
+                <span className="skel chat-skeleton__line" />
+                <span className="skel chat-skeleton__line" />
+                <span className="skel chat-skeleton__line chat-skeleton__line--short" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
   }
 
   const isEmpty = messages.length === 0;

@@ -544,7 +544,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
         loadActiveResumeId()
       ]);
       const sourceResume = resumeLibrary.find((resume) => resume.id === activeResumeId) || resumeLibrary[0];
-      if (!sourceResume) throw new Error("请先在简历中心选择一份母版简历");
+      if (!sourceResume) throw new Error("请先在简历中心选择一份通用简历");
       const context: TailorContext = normalizeTailorContext({
         jobKey: "",
         sourceResumeId: sourceResume.id,

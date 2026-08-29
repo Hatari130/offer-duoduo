@@ -67,20 +67,20 @@ test("field count and coverage include campus and awards", () => {
   assert.equal(calculateResumeCoverage(candidate), 1);
 });
 
-test("legacy PDF records migrate to a master with an explicit unknown parse report", () => {
+test("legacy PDF records migrate directly to a general resume with an explicit unknown parse report", () => {
   const [migrated] = migrateResumeLibrary([
     resume("legacy", {
       sourceFileName: "resume.pdf",
       sourcePdf: { fileName: "resume.pdf", size: 10, importedAt: "2026-08-10", base64: "JVBERi0=" }
     })
   ]);
-  assert.equal(migrated.kind, "master");
-  assert.equal(migrated.masterResumeId, "legacy");
+  assert.equal(migrated.kind, "base");
+  assert.equal(migrated.masterResumeId, undefined);
   assert.equal(migrated.parse.status, "unknown");
   assert.equal(migrated.source.storageStatus, "stored");
 });
 
-test("derived versions inherit the master PDF and images without duplicating binary assets", () => {
+test("legacy master/base pairs collapse and job versions inherit without duplicating binary assets", () => {
   const master = resume("master", {
     kind: "master",
     masterResumeId: "master",
@@ -89,35 +89,43 @@ test("derived versions inherit the master PDF and images without duplicating bin
     portraitAssetId: "photo"
   });
   const base = resume("base", { kind: "base", masterResumeId: "master", parentResumeId: "master" });
-  const migrated = migrateResumeLibrary([base, master]);
+  const job = resume("job", { kind: "job", masterResumeId: "master", parentResumeId: "base" });
+  const migrated = migrateResumeLibrary([job, base, master]);
+  assert.equal(migrated.length, 2);
   const hydratedBase = migrated.find((item) => item.id === "base");
   assert.equal(hydratedBase.sourcePdf.base64, "JVBERi0=");
-  assert.equal(hydratedBase.sourcePdfInherited, true);
   assert.equal(hydratedBase.assets[0].id, "photo");
   assert.equal(hydratedBase.portraitAssetId, "photo");
-  assert.equal(hydratedBase.sourceAssetsInherited, true);
+  assert.equal(hydratedBase.source.storageStatus, "stored");
+  const hydratedJob = migrated.find((item) => item.id === "job");
+  assert.equal(hydratedJob.sourcePdf.base64, "JVBERi0=");
+  assert.equal(hydratedJob.sourcePdfInherited, true);
+  assert.equal(hydratedJob.assets[0].id, "photo");
+  assert.equal(hydratedJob.sourceAssetsInherited, true);
   const persistedBase = dehydrateResumeLibrary(migrated).find((item) => item.id === "base");
-  assert.equal(persistedBase.sourcePdf, undefined);
+  assert.equal(persistedBase.sourcePdf.base64, "JVBERi0=");
   assert.equal(persistedBase.sourcePdfInherited, undefined);
-  assert.equal(persistedBase.assets, undefined);
+  assert.equal(persistedBase.assets[0].id, "photo");
   assert.equal(persistedBase.sourceAssetsInherited, undefined);
   assert.equal(persistedBase.portraitAssetId, "photo");
+  const persistedJob = dehydrateResumeLibrary(migrated).find((item) => item.id === "job");
+  assert.equal(persistedJob.sourcePdf, undefined);
+  assert.equal(persistedJob.assets, undefined);
 });
 
-test("active resume repair prefers a usable base and repairs a unique library", () => {
-  const master = resume("master", { kind: "master", masterResumeId: "master" });
-  const base = resume("base", { kind: "base", masterResumeId: "master" });
-  assert.equal(resolveActiveResumeId([master, base], "missing"), "base");
-  assert.equal(resolveActiveResumeId([master, base], "master"), "base");
-  assert.equal(resolveActiveResumeId([master], ""), "master");
+test("active resume repair prefers a usable general resume and repairs a unique library", () => {
+  const base = resume("base", { kind: "base" });
+  const job = resume("job", { kind: "job", parentResumeId: "base" });
+  assert.equal(resolveActiveResumeId([job, base], "missing"), "base");
+  assert.equal(resolveActiveResumeId([job, base], "job"), "job");
+  assert.equal(resolveActiveResumeId([base], ""), "base");
 });
 
-test("deleting a master cascades through base and job versions", () => {
+test("deleting a general resume cascades through its job versions", () => {
   const library = [
-    resume("master", { kind: "master", masterResumeId: "master" }),
-    resume("base", { kind: "base", masterResumeId: "master", parentResumeId: "master" }),
-    resume("job", { kind: "job", masterResumeId: "master", parentResumeId: "base" }),
+    resume("base", { kind: "base" }),
+    resume("job", { kind: "job", parentResumeId: "base" }),
     resume("other", { kind: "base" })
   ];
-  assert.deepEqual([...collectResumeRemovalIds(library, "master")].sort(), ["base", "job", "master"]);
+  assert.deepEqual([...collectResumeRemovalIds(library, "base")].sort(), ["base", "job"]);
 });

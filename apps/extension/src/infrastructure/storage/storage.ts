@@ -25,7 +25,7 @@ export const RESUMES_KEY = "offerflow.resumes";
 export const ACTIVE_RESUME_KEY = "offerflow.activeResumeId";
 export const RESUME_LIBRARY_UI_KEY = "offerflow.resumeLibraryUi";
 
-export type StoredResumeKind = "master" | "base" | "job";
+export type StoredResumeKind = "base" | "job";
 export type ResumeLifecycleStatus = "active" | "archived" | "invalid";
 export type ResumeParseStatus = "pending" | "ready" | "needs-review" | "failed" | "unknown";
 
@@ -60,6 +60,7 @@ export interface StoredResume {
   id: string;
   name: string;
   kind?: StoredResumeKind;
+  /** Legacy relationship key retained only while old libraries are migrated. */
   masterResumeId?: string;
   parentResumeId?: string;
   versionNumber?: number;
@@ -73,7 +74,7 @@ export interface StoredResume {
   sourcePdf?: StoredResumePdf;
   /** Runtime marker: inherited PDF blobs are never duplicated in persistent storage. */
   sourcePdfInherited?: boolean;
-  /** Extracted PDF images live on the master and are inherited by versions. */
+  /** Extracted PDF images live on the general resume and are inherited by job versions. */
   assets?: ResumeAsset[];
   portraitAssetId?: string;
   /** Runtime marker: inherited image data is not duplicated in persistent storage. */
@@ -410,15 +411,14 @@ async function upsertJobResumeVersion(entry: TailoredResumeEntry): Promise<void>
   const sourceResume = library.find((resume) => resume.id === sourceResumeId);
   if (!sourceResume) return;
   const existing = library.find((resume) => resume.kind === "job" && resume.jobKey === entry.jobKey);
-  const masterResumeId = sourceResume.kind === "master" ? sourceResume.id : sourceResume.masterResumeId;
+  const baseResumeId = sourceResume.kind === "base" ? sourceResume.id : sourceResume.parentResumeId;
   const now = entry.savedAt || new Date().toISOString();
   const profile = tailoredResumeProfile(sourceResume.profile, entry.bundle);
   const nextJob: StoredResume = {
     id: existing?.id || `resume_job_${entry.jobKey.replace(/[^a-z0-9_-]/gi, "_")}`,
     name: [entry.bundle.context.company, entry.bundle.context.position].filter(Boolean).join(" · ") || "岗位定制简历",
     kind: "job",
-    masterResumeId,
-    parentResumeId: sourceResume.id,
+    parentResumeId: baseResumeId || sourceResume.id,
     versionNumber: (existing?.versionNumber || 0) + 1,
     jobKey: entry.jobKey,
     lifecycleStatus: "active",
@@ -429,7 +429,7 @@ async function upsertJobResumeVersion(entry: TailoredResumeEntry): Promise<void>
     source: sourceResume.source
       ? {
           ...sourceResume.source,
-          storageStatus: masterResumeId ? "referenced" : sourceResume.source.storageStatus
+          storageStatus: baseResumeId ? "referenced" : sourceResume.source.storageStatus
         }
       : undefined,
     parse: sourceResume.parse
@@ -664,12 +664,12 @@ export async function updateResumeSourceLayoutMetadata(
   const library = await loadResumeLibrary();
   const owner = library.find((resume) => resume.id === resumeId);
   if (!owner) return;
-  const masterResumeId = owner.kind === "master" ? owner.id : owner.masterResumeId;
+  const baseResumeId = owner.kind === "base" ? owner.id : owner.parentResumeId;
   const linkedIds = new Set(
     library
       .filter((resume) => (
         resume.id === owner.id
-        || Boolean(masterResumeId && (resume.id === masterResumeId || resume.masterResumeId === masterResumeId))
+        || Boolean(baseResumeId && (resume.id === baseResumeId || resume.parentResumeId === baseResumeId))
       ))
       .map((resume) => resume.id)
   );
@@ -683,7 +683,7 @@ export async function updateResumeSourceLayoutMetadata(
           characterCount: patch.characterCount ?? resume.source.characterCount
         }
       : resume.source;
-    const sourcePdf = resume.kind === "master" && resume.sourcePdf
+    const sourcePdf = resume.kind === "base" && resume.sourcePdf
       ? {
           ...resume.sourcePdf,
           pageCount: patch.pageCount ?? resume.sourcePdf.pageCount,
@@ -706,12 +706,12 @@ export async function updateResumeSourceAssets(
   const library = await loadResumeLibrary();
   const owner = library.find((resume) => resume.id === resumeId);
   if (!owner) return;
-  const masterResumeId = owner.kind === "master" ? owner.id : owner.masterResumeId;
+  const baseResumeId = owner.kind === "base" ? owner.id : owner.parentResumeId;
   const linkedIds = new Set(
     library
       .filter((resume) => (
         resume.id === owner.id
-        || Boolean(masterResumeId && (resume.id === masterResumeId || resume.masterResumeId === masterResumeId))
+        || Boolean(baseResumeId && (resume.id === baseResumeId || resume.parentResumeId === baseResumeId))
       ))
       .map((resume) => resume.id)
   );
@@ -720,7 +720,7 @@ export async function updateResumeSourceAssets(
         ...resume,
         assets: structuredClone(assets),
         portraitAssetId,
-        sourceAssetsInherited: resume.kind !== "master" && Boolean(masterResumeId && assets.length)
+        sourceAssetsInherited: resume.kind === "job" && Boolean(baseResumeId && assets.length)
       }
     : resume);
   await saveResumeLibrary(next);

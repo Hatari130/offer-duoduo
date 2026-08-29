@@ -4,7 +4,6 @@ import {
   BriefcaseBusiness,
   Check,
   ChevronDown,
-  ChevronRight,
   CloudUpload,
   FileCheck2,
   FileText,
@@ -134,9 +133,8 @@ const RESUME_GROUPS: Array<{
   label: string;
   description: string;
 }> = [
-  { key: "master", label: "原始母版", description: "保留原文件与来源信息" },
-  { key: "base", label: "通用版本", description: "日常维护和网申复用" },
-  { key: "job", label: "岗位定制", description: "按公司与岗位沉淀" }
+  { key: "base", label: "通用版本", description: "上传、维护和网申复用" },
+  { key: "job", label: "岗位定制", description: "按公司与岗位归档" }
 ];
 
 function meaningfulParseWarnings(warnings: string[]): string[] {
@@ -407,7 +405,7 @@ export default function ResumeManagerApp() {
             extraFields: { resumeSourceName: file.name, parseMode: "source-pdf" }
           },
           extractedCount: 0,
-          warnings: ["字段解析未完成；原 PDF 仍会作为 HTML 母版保留"],
+          warnings: ["字段解析未完成；原 PDF 已保留，可继续手动完善"],
           textLength: 0
         };
       }
@@ -445,7 +443,6 @@ export default function ResumeManagerApp() {
         await saveBaseProfile(fixedProfile);
       }
       const parsedProfile = applyResumeFixedProfile(result.profile, fixedProfile);
-      const masterId = isPdf ? createId() : undefined;
       const sourcePdf = isPdf
         ? {
             fileName: file.name,
@@ -457,34 +454,10 @@ export default function ResumeManagerApp() {
             characterCount: result.textLength
           }
         : undefined;
-      const master: StoredResume | undefined = masterId
-        ? {
-            id: masterId,
-            name: parsedName,
-            kind: "master",
-            masterResumeId: masterId,
-            versionNumber: 1,
-            lifecycleStatus: "active",
-            company: archiveMetadata.company,
-            position: archiveMetadata.position,
-            archiveNameSource: "filename",
-            sourceFileName: file.name,
-            sourcePdf,
-            assets: structuredClone(extractedAssets.assets),
-            portraitAssetId: extractedAssets.portraitAssetId,
-            source,
-            parse,
-            profile: cloneProfile(parsedProfile),
-            createdAt: now,
-            updatedAt: now
-          }
-        : undefined;
       const created: StoredResume = {
         id: createId(),
         name: parsedName,
         kind: "base",
-        masterResumeId: masterId,
-        parentResumeId: masterId,
         versionNumber: 1,
         lifecycleStatus: "active",
         company: archiveMetadata.company,
@@ -492,17 +465,15 @@ export default function ResumeManagerApp() {
         archiveNameSource: "filename",
         sourceFileName: file.name,
         sourcePdf,
-        sourcePdfInherited: Boolean(master),
         assets: structuredClone(extractedAssets.assets),
         portraitAssetId: extractedAssets.portraitAssetId,
-        sourceAssetsInherited: Boolean(master && extractedAssets.assets.length),
-        source: { ...source, storageStatus: master ? "referenced" : source.storageStatus },
+        source,
         parse: { ...parse, warnings: [...parse.warnings] },
         profile: cloneProfile(parsedProfile),
         createdAt: now,
         updatedAt: now
       };
-      const next = [created, ...(master ? [master] : []), ...resumes];
+      const next = [created, ...resumes];
       await activate(created, next);
       notify(
         `已导入并启用《${parsedName}》通用版 · 提取 ${result.extractedCount} 个字段${parse.warnings.length ? ` · ${parse.warnings.length} 项待核对` : ""}`
@@ -674,12 +645,6 @@ export default function ResumeManagerApp() {
               </button>
             </div>
           </div>
-          <p className="resume-library-subtitle">原件、通用版和岗位版分开管理，来源和修改关系始终可追溯。</p>
-          <button className="resume-new-card" onClick={() => inputRef.current?.click()}>
-            <span><CloudUpload size={18} /></span>
-            <div><strong>上传一份新简历</strong><small>点击或拖拽 PDF / DOCX / TXT</small></div>
-            <ChevronRight size={15} />
-          </button>
           <div className="resume-list">
             {libraryGroups.map((group) => {
               const collapsed = collapsedFolders.has(group.key);
@@ -696,7 +661,7 @@ export default function ResumeManagerApp() {
                     aria-expanded={!collapsed}
                   >
                     <span className="resume-folder-icon">
-                      {group.key === "master" ? <FileCheck2 size={15} /> : group.key === "job" ? <BriefcaseBusiness size={15} /> : <Folder size={15} />}
+                      {group.key === "job" ? <BriefcaseBusiness size={15} /> : <Folder size={15} />}
                     </span>
                     <span className="resume-group-heading"><strong>{group.label}</strong><em>{group.description}</em></span>
                     <small>{group.resumes.length}</small>
@@ -716,11 +681,9 @@ export default function ResumeManagerApp() {
                     ))}
                     {!group.resumes.length && (
                       <div className="resume-group-empty">
-                        {group.key === "master"
-                          ? "上传 PDF 后在这里保留不可丢失的原件"
-                          : group.key === "base"
-                            ? "上传简历后自动建立一个通用版本"
-                            : "针对岗位生成的版本会归档在这里"}
+                        {group.key === "base"
+                          ? "上传简历后自动建立通用版本"
+                          : "针对岗位生成的版本会归档在这里"}
                       </div>
                     )}
                   </div>}
@@ -858,7 +821,7 @@ function ResumeDetail({
             <h2>{resumeName(resume)}</h2>
             <p>{resume.sourceFileName || "本地保存的结构化资料"} · 更新于 {new Date(resume.updatedAt).toLocaleString("zh-CN")}</p>
             <p className={resume.parse?.status === "ready" ? "resume-source-ready" : "resume-source-missing"}>
-              {parseHealth(resume).label} · {resume.source?.storageStatus === "stored" ? "原件已保存" : resume.masterResumeId ? "引用关联母版" : "缺少原始母版"}
+              {parseHealth(resume).label} · {resume.source?.storageStatus === "stored" ? "原文件已保存" : resume.parentResumeId ? "沿用通用版原文件" : "未保存原文件"}
             </p>
           </div>
         </div>
@@ -919,11 +882,12 @@ function ResumeInfoCard({ icon, title, items }: { icon: ReactNode; title: string
 function EmptyResumeState({ onUpload }: { onUpload: () => void }) {
   return (
     <div className="resume-empty-state">
-      <div className="resume-empty-icon"><CloudUpload size={27} /></div>
+      <div className="resume-empty-icon"><CloudUpload size={38} /></div>
       <span className="resume-eyebrow">简历档案</span>
-      <h2>先上传一份简历</h2>
-      <p>解析后保存多个版本，申请不同岗位时一键切换。</p>
-      <button className="resume-upload-button" onClick={onUpload}><Plus size={16} />上传简历</button>
+      <h2>上传你的通用简历</h2>
+      <p>支持 PDF、DOCX、TXT，上传后自动解析并进入编辑。</p>
+      <button className="resume-upload-button" onClick={onUpload}><Plus size={18} />选择简历文件</button>
+      <small>也可以将文件拖到此处</small>
     </div>
   );
 }

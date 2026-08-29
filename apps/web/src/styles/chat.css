@@ -620,6 +620,63 @@
   overscroll-behavior: contain;
 }
 
+.chat-page--loading {
+  grid-template-rows: minmax(0, 1fr);
+}
+
+.chat-skeleton {
+  display: grid;
+  gap: 2rem;
+  width: min(100%, 52rem);
+  min-height: 100%;
+  margin-inline: auto;
+  padding: 2.25rem clamp(1rem, 4vw, 2rem) 2rem;
+  align-content: start;
+}
+
+.chat-skeleton__row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.8rem;
+}
+
+.chat-skeleton__row--user {
+  justify-content: flex-end;
+}
+
+.chat-skeleton__avatar {
+  flex: 0 0 auto;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.7rem;
+}
+
+.chat-skeleton__bubble {
+  width: min(58%, 22rem);
+  height: 3.4rem;
+  border-radius: 1.15rem;
+}
+
+.chat-skeleton__lines {
+  display: grid;
+  gap: 0.65rem;
+  width: min(78%, 36rem);
+  padding-block: 0.4rem;
+}
+
+.chat-skeleton__line {
+  width: 100%;
+}
+
+.chat-skeleton__line--long {
+  width: min(66%, 30rem);
+  margin-block-start: 0.6rem;
+}
+
+.chat-skeleton__line--short {
+  width: 42%;
+}
+
 .message-list {
   width: min(100%, 52rem);
   min-height: 100%;
@@ -632,6 +689,44 @@
   align-items: flex-start;
   gap: 0.8rem;
   margin-block-end: 2rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .message { animation: message-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
+
+@keyframes message-in {
+  from { opacity: 0; transform: translateY(0.4rem); }
+  to { opacity: 1; transform: none; }
+}
+
+.scroll-bottom-fab {
+  position: sticky;
+  bottom: 1rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: fit-content;
+  margin-inline: auto;
+  padding: 0.5rem 1rem;
+  border: 1px solid color-mix(in oklch, var(--of-text) 14%, transparent);
+  border-radius: 999px;
+  background: color-mix(in oklch, var(--of-surface, #fffdfb) 88%, transparent);
+  color: var(--of-text);
+  font-size: 0.8rem;
+  box-shadow: 0 8px 24px rgb(20 24 22 / 0.14);
+  backdrop-filter: blur(8px);
+  cursor: pointer;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scroll-bottom-fab { animation: fab-in 180ms cubic-bezier(0.2, 0.8, 0.2, 1); }
+}
+
+@keyframes fab-in {
+  from { opacity: 0; transform: translateY(0.5rem); }
+  to { opacity: 1; transform: none; }
 }
 
 .message--user { justify-content: flex-end; }

@@ -352,12 +352,25 @@ export function EditDrawer({
 }) {
   const [draft, setDraft] = useState(() => ({ ...job, stage: selectableStage(job.stage) }));
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [closing, setClosing] = useState(false);
+  const closingRef = useRef(false);
 
   const set = <K extends keyof JobApplication>(key: K, value: JobApplication[K]) =>
     setDraft((current) => ({ ...current, [key]: value }));
 
+  const beginClose = () => {
+    if (closingRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onClose();
+      return;
+    }
+    closingRef.current = true;
+    setClosing(true);
+    window.setTimeout(onClose, 200);
+  };
+
   return (
-    <div className="drawer-backdrop" onClick={onClose}>
+    <div className={`drawer-backdrop${closing ? " is-closing" : ""}`} onClick={beginClose}>
       <aside className="drawer" onClick={(event) => event.stopPropagation()}>
         <div className="drawer-header">
           <div>
@@ -365,7 +378,7 @@ export function EditDrawer({
             <h2>{draft.position}</h2>
             <p>{draft.company}</p>
           </div>
-          <button className="icon-button" onClick={onClose} aria-label="关闭">
+          <button className="icon-button" onClick={beginClose} aria-label="关闭">
             <X size={19} />
           </button>
         </div>

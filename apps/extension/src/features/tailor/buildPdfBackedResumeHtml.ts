@@ -38,7 +38,7 @@ const escape = (value: string) =>
 
 export function buildPdfBackedResumeHtml({ layout, resume, sourceProfile, jd, pdfPatches = [] }: PdfBackedResumeOptions): string {
   if (!layout.pages.length) {
-    throw new Error("原 PDF 没有可用页面，请重新导入正确的 PDF 母版");
+    throw new Error("原 PDF 没有可用页面，请重新导入正确的通用简历 PDF");
   }
   const sourceCharacterCount = layout.characterCount ?? layout.pages.reduce(
     (total, page) => total + page.items.reduce((pageTotal, item) => pageTotal + [...item.text.trim()].length, 0),

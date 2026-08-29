@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import type { ResumeVersionRecord } from "@offerflow/contracts";
-import { ChevronRight, Clock3, FileCheck2, FileText, House, LoaderCircle, PencilLine } from "lucide-react";
+import { ChevronRight, Clock3, FileCheck2, FileText, House, PencilLine } from "lucide-react";
 import { api } from "../app/api";
 import { navigate } from "../app/router";
 
@@ -57,7 +57,29 @@ export function ResumeLibraryPage() {
 
       {error && <div className="data-error" role="alert">{error}</div>}
       {loading ? (
-        <div className="data-loading" role="status"><LoaderCircle className="spin" size={18} />正在同步简历版本…</div>
+        <div className="resume-library-skeleton" role="status">
+          <span className="sr-only">正在同步简历版本…</span>
+          {[0, 1].map((groupIndex) => (
+            <section className="resume-library-skeleton__group" key={groupIndex} aria-hidden="true">
+              <header className="resume-library-skeleton__header">
+                <span className="skel resume-library-skeleton__badge" />
+                <div className="resume-library-skeleton__heading">
+                  <span className="skel resume-library-skeleton__title" />
+                  <span className="skel resume-library-skeleton__subtitle" />
+                </div>
+              </header>
+              <div className="resume-library-skeleton__grid">
+                {[0, 1, 2].map((cardIndex) => (
+                  <div className="resume-library-skeleton__card" key={cardIndex}>
+                    <span className="skel resume-library-skeleton__pill" />
+                    <span className="skel resume-library-skeleton__line" />
+                    <span className="skel resume-library-skeleton__line resume-library-skeleton__line--short" />
+                  </div>
+                ))}
+              </div>
+            </section>
+          ))}
+        </div>
       ) : !versions.length ? (
         <div className="resume-library-empty"><span><FileText size={28} /></span><h2>还没有岗位定制版本</h2><p>在招聘页面点击“为这个岗位定制简历”，生成的版本会集中保存在这里。</p><button className="secondary-button" onClick={() => navigate("/app/applications")}>查看投递管理</button></div>
       ) : (

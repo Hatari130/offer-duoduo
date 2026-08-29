@@ -495,7 +495,23 @@ export function OpportunitiesPage() {
 
       <div id="opportunity-results" className="opportunity-results" aria-busy={loading}>
         {initialLoading ? (
-          <div className="data-loading" role="status"><span className="loading-orbit" />正在读取最新校招信息…</div>
+          <div className="opportunity-table-wrap">
+            <div className="opportunity-skeleton" role="status">
+              <span className="sr-only">正在读取最新校招信息…</span>
+              <div className="opportunity-skeleton__head" aria-hidden="true">
+                <span className="skel" /><span className="skel" /><span className="skel" /><span className="skel" /><span className="skel" />
+              </div>
+              {Array.from({ length: 7 }, (_item, index) => (
+                <div className="opportunity-skeleton__row" key={index} aria-hidden="true">
+                  <span className="skel opportunity-skeleton__wide" />
+                  <span className="skel" />
+                  <span className="skel" />
+                  <span className="skel opportunity-skeleton__narrow" />
+                  <span className="skel opportunity-skeleton__narrow" />
+                </div>
+              ))}
+            </div>
+          </div>
         ) : opportunities.length === 0 ? (
           <div className="integration-empty">
             <span className="page-kicker">公开数据源</span>

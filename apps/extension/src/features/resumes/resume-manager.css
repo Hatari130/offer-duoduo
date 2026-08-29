@@ -1184,7 +1184,115 @@
   }
 }
 
-/* Resume lifecycle: source master -> reusable base -> job-specific versions. */
+/* Compact application form: labels and controls share a row, matching the
+   density of the job-site forms this profile is used to complete. */
+.resume-manager-shell .resume-editor-grid {
+  gap: 4px 24px;
+}
+
+.resume-manager-shell .resume-editor-field {
+  display: grid;
+  grid-template-columns: 86px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+}
+
+.resume-manager-shell .resume-editor-field > span {
+  line-height: 1.35;
+}
+
+.resume-manager-shell .resume-editor-field > textarea,
+.resume-manager-shell .resume-editor-field > .resume-editor-input-with-icon,
+.resume-manager-shell .resume-editor-field > .resume-editor-phone-field {
+  min-width: 0;
+}
+
+.resume-manager-shell .resume-editor-field:has(textarea) {
+  align-items: start;
+}
+
+.resume-manager-shell .resume-editor-field:has(textarea) > span {
+  padding-top: 11px;
+}
+
+.resume-manager-shell .resume-editor-phone-field {
+  display: grid;
+  grid-template-columns: minmax(116px, 0.46fr) minmax(0, 1fr);
+  gap: 8px;
+}
+
+.resume-manager-shell .resume-editor-phone-field select,
+.resume-manager-shell .resume-editor-phone-field input {
+  width: 100%;
+  min-width: 0;
+}
+
+.resume-manager-shell .resume-empty-state {
+  width: min(100%, 680px);
+  min-height: 430px;
+  margin: clamp(48px, 11vh, 120px) auto 0;
+  padding: 64px clamp(28px, 7vw, 80px);
+  background: var(--of-surface);
+  border: 1px dashed var(--of-brand-300);
+  border-radius: 24px;
+  box-shadow: var(--of-shadow-card);
+}
+
+.resume-manager-shell .resume-empty-icon {
+  width: 86px;
+  height: 86px;
+  margin-bottom: 22px;
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border: 1px solid var(--of-brand-200);
+  border-radius: 24px;
+}
+
+.resume-manager-shell .resume-empty-state h2 {
+  margin-top: 12px;
+  font-size: clamp(30px, 4vw, 42px);
+}
+
+.resume-manager-shell .resume-empty-state p {
+  margin: 12px 0 28px;
+  font-size: 16px;
+}
+
+.resume-manager-shell .resume-empty-state small {
+  display: block;
+  margin-top: 14px;
+  color: var(--of-text-muted);
+  font-size: 12px;
+}
+
+.resume-manager-shell .resume-upload-button {
+  min-height: 50px;
+  padding-inline: 24px;
+  font-size: 15px;
+}
+
+@container (max-width: 560px) {
+  .resume-manager-shell .resume-editor-field {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 7px;
+    padding-block: 8px;
+  }
+
+  .resume-manager-shell .resume-editor-field:has(textarea) > span {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 650px) {
+  .resume-manager-shell .resume-empty-state {
+    min-height: 360px;
+    margin-top: 24px;
+    padding: 44px 24px;
+  }
+}
+
+/* Resume lifecycle: reusable general resume -> job-specific versions. */
 .resume-library-group + .resume-library-group {
   margin-top: 7px;
   padding-top: 7px;
@@ -1214,11 +1322,6 @@
   font-size: 12px;
   font-style: normal;
   font-weight: 400;
-}
-
-.resume-library-group.group-master .resume-folder-icon {
-  color: #55705f;
-  background: #edf3ee;
 }
 
 .resume-library-group.group-job .resume-folder-icon {
@@ -1395,7 +1498,7 @@
 
 /* The library can be tucked away while keeping the editor in focus. */
 .resume-manager-body {
-  transition: none;
+  transition: grid-template-columns 240ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .resume-manager-body.library-collapsed {
@@ -1404,6 +1507,7 @@
 
 .resume-library-sidebar {
   min-width: 0;
+  overflow: hidden;
   transition: padding 220ms ease, background-color 220ms ease;
 }
 
@@ -1416,6 +1520,10 @@
   display: none;
 }
 
+.resume-library-sidebar:not(.is-collapsed) > :not(.resume-library-collapsed-tools) {
+  animation: library-content-in 200ms ease-out 60ms both;
+}
+
 .resume-library-collapsed-tools {
   display: none;
 }
@@ -1424,6 +1532,28 @@
   display: grid;
   justify-items: center;
   gap: 16px;
+  animation: library-content-in 200ms ease-out 60ms both;
+}
+
+@keyframes library-content-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-manager-body {
+    transition: none;
+  }
+
+  .resume-library-sidebar:not(.is-collapsed) > :not(.resume-library-collapsed-tools),
+  .resume-library-sidebar.is-collapsed .resume-library-collapsed-tools {
+    animation: none;
+  }
 }
 
 .resume-library-collapsed-tools > button,

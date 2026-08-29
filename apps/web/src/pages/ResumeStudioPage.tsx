@@ -465,7 +465,31 @@ export function ResumeStudioPage({ taskId }: { taskId: string }) {
     return <main className="resume-studio-state"><FileText size={32} /><h1>无法打开简历工作台</h1><p>{error}</p><button className="primary-button" onClick={() => navigate("/app/applications")}>返回投递管理</button></main>;
   }
   if (!document) {
-    return <main className="resume-studio-state" role="status"><LoaderCircle className="spin" size={28} /><h1>正在准备简历工作台</h1><p>正在同步岗位和母版简历。</p></main>;
+    return (
+      <main className="resume-studio-state resume-studio-state--loading" role="status">
+        <span className="sr-only">正在准备简历工作台，正在同步岗位和母版简历。</span>
+        <div className="studio-skeleton" aria-hidden="true">
+          <div className="studio-skeleton__topbar">
+            <span className="skel studio-skeleton__back" />
+            <span className="skel studio-skeleton__title" />
+            <span className="skel studio-skeleton__action" />
+          </div>
+          <div className="studio-skeleton__workspace">
+            <div className="studio-skeleton__panel">
+              <span className="skel studio-skeleton__tab" />
+              <span className="skel studio-skeleton__tab" />
+              <span className="skel studio-skeleton__tab studio-skeleton__tab--short" />
+            </div>
+            <div className="studio-skeleton__preview">
+              <span className="skel studio-skeleton__preview-title" />
+              <span className="skel studio-skeleton__preview-line" />
+              <span className="skel studio-skeleton__preview-line" />
+              <span className="skel studio-skeleton__preview-line studio-skeleton__preview-line--short" />
+            </div>
+          </div>
+        </div>
+      </main>
+    );
   }
 
   const profile = document.profile;

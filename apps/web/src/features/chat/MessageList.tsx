@@ -8,6 +8,7 @@ import type {
   RecruitmentOpportunity
 } from "@offerflow/domain";
 import {
+  ArrowDown,
   ArrowUpRight,
   Building2,
   CalendarClock,
@@ -60,12 +61,47 @@ export function MessageList({
   onOpenWorkspace
 }: MessageListProps) {
   const endRef = useRef<HTMLDivElement>(null);
+  const [pinnedToBottom, setPinnedToBottom] = useState(true);
+  const pinnedRef = useRef(true);
   const lastAssistantId = [...messages].reverse().find((message) => message.role === "assistant")?.id;
 
+  const getScrollContainer = () =>
+    (endRef.current?.closest(".thread-scroll") as HTMLElement | null) ?? null;
+
   useEffect(() => {
+    const container = getScrollContainer();
+    if (!container) return;
+    const updatePin = () => {
+      const distance = container.scrollHeight - container.scrollTop - container.clientHeight;
+      const pinned = distance < 96;
+      if (pinnedRef.current !== pinned) {
+        pinnedRef.current = pinned;
+        setPinnedToBottom(pinned);
+      }
+    };
+    container.addEventListener("scroll", updatePin, { passive: true });
+    updatePin();
+    return () => container.removeEventListener("scroll", updatePin);
+  }, []);
+
+  useEffect(() => {
+    const container = getScrollContainer();
+    if (!container) return;
+    const last = messages[messages.length - 1];
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    endRef.current?.scrollIntoView({ block: "end", behavior: reducedMotion ? "auto" : "smooth" });
+    if (last?.role === "user" && !pinnedRef.current) {
+      container.scrollTo({ top: container.scrollHeight, behavior: reducedMotion ? "auto" : "smooth" });
+      return;
+    }
+    if (pinnedRef.current) container.scrollTop = container.scrollHeight;
   }, [messages]);
+
+  const jumpToBottom = () => {
+    const container = getScrollContainer();
+    if (!container) return;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    container.scrollTo({ top: container.scrollHeight, behavior: reducedMotion ? "auto" : "smooth" });
+  };
 
   const contextFor = (index: number) => {
     for (let cursor = index - 1; cursor >= 0; cursor -= 1) {
@@ -186,6 +222,11 @@ export function MessageList({
         );
       })}
       <div ref={endRef} />
+      {!pinnedToBottom && messages.length > 0 && (
+        <button type="button" className="scroll-bottom-fab" onClick={jumpToBottom}>
+          <ArrowDown aria-hidden="true" size={14} />回到底部
+        </button>
+      )}
     </div>
   );
 }

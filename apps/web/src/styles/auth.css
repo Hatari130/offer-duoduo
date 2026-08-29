@@ -448,6 +448,9 @@
 @media (prefers-reduced-motion: no-preference) {
   .auth-dialog[open] .auth-dialog-surface { animation: auth-dialog-enter 180ms ease-out both; }
   .auth-dialog[open]::backdrop { animation: auth-backdrop-enter 180ms ease-out both; }
+  .auth-dialog.is-closing { pointer-events: none; }
+  .auth-dialog.is-closing .auth-dialog-surface { animation: auth-dialog-exit 160ms ease-in both; }
+  .auth-dialog.is-closing::backdrop { animation: auth-backdrop-exit 160ms ease-in both; }
 }
 
 @keyframes auth-dialog-enter {
@@ -456,6 +459,14 @@
 
 @keyframes auth-backdrop-enter {
   from { opacity: 0; }
+}
+
+@keyframes auth-dialog-exit {
+  to { opacity: 0; transform: translateY(0.5rem) scale(0.985); }
+}
+
+@keyframes auth-backdrop-exit {
+  to { opacity: 0; }
 }
 
 .extension-connect-page {

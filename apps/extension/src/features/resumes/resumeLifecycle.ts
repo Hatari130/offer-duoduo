@@ -5,7 +5,7 @@ import type {
   StoredResumeSourceMetadata
 } from "../../infrastructure/storage/storage";
 
-const VALID_KINDS = new Set<StoredResumeKind>(["master", "base", "job"]);
+const VALID_KINDS = new Set<StoredResumeKind>(["base", "job"]);
 
 const clampCoverage = (value: number) => Math.max(0, Math.min(1, value));
 
@@ -67,7 +67,6 @@ export function calculateResumeCoverage(resume: Pick<StoredResume, "profile">): 
 
 function inferKind(resume: StoredResume): StoredResumeKind {
   if (resume.kind && VALID_KINDS.has(resume.kind)) return resume.kind;
-  if (resume.sourcePdf) return "master";
   if (resume.jobKey || resume.company?.trim() || resume.position?.trim()) return "job";
   return "base";
 }
@@ -117,53 +116,71 @@ function normalizeSourceMetadata(
     sha256: source?.sha256 || pdf?.sha256,
     pageCount: source?.pageCount || pdf?.pageCount,
     characterCount: source?.characterCount || pdf?.characterCount || resume.parse?.textLength,
-    storageStatus: source?.storageStatus || (pdf ? (kind === "master" ? "stored" : "referenced") : "missing"),
+    storageStatus: source?.storageStatus || (pdf ? (kind === "base" ? "stored" : "referenced") : "missing"),
     layoutStatus: source?.layoutStatus || "unknown"
   };
 }
 
-/** Migrates old flat records and hydrates a referenced master PDF in memory. */
+/** Collapses the retired master/base pair into one general resume, then
+ * hydrates job versions from that general resume without duplicating blobs. */
 export function migrateResumeLibrary(input: StoredResume[]): StoredResume[] {
-  const normalized = input.map((resume) => {
-    const kind = inferKind(resume);
-    const masterResumeId = kind === "master" ? resume.id : resume.masterResumeId;
-    return {
-      ...resume,
-      kind,
-      masterResumeId,
-      versionNumber: Math.max(1, resume.versionNumber || 1),
-      lifecycleStatus: resume.lifecycleStatus || "active",
-      parse: normalizeParseMetadata(resume),
-      source: normalizeSourceMetadata(resume, kind)
-    } satisfies StoredResume;
-  });
-
-  const masters = new Map(
-    normalized.filter((resume) => resume.kind === "master").map((resume) => [resume.id, resume])
+  const legacyKind = (resume: StoredResume) => String(resume.kind || "");
+  const masters = new Map(input.filter((resume) => legacyKind(resume) === "master").map((resume) => [resume.id, resume]));
+  const basesByMaster = new Map(
+    input
+      .filter((resume) => legacyKind(resume) !== "master" && inferKind(resume) === "base" && resume.masterResumeId)
+      .map((resume) => [resume.masterResumeId as string, resume.id])
   );
 
-  return normalized.map((resume) => {
-    if (resume.kind === "master" || !resume.masterResumeId) return resume;
-    const master = masters.get(resume.masterResumeId);
-    if (!master) {
+  const normalized = input
+    .filter((resume) => legacyKind(resume) !== "master" || !basesByMaster.has(resume.id))
+    .map((resume) => {
+      const wasMaster = legacyKind(resume) === "master";
+      const kind: StoredResumeKind = wasMaster ? "base" : inferKind(resume);
+      const legacyMaster = !wasMaster && resume.masterResumeId ? masters.get(resume.masterResumeId) : undefined;
+      const sourceOwner = legacyMaster || resume;
+      const sourcePdf = resume.sourcePdf || legacyMaster?.sourcePdf;
+      const assets = resume.assets || legacyMaster?.assets;
+      const parentResumeId = kind === "job"
+        ? (resume.parentResumeId && masters.has(resume.parentResumeId)
+            ? basesByMaster.get(resume.parentResumeId)
+            : resume.parentResumeId) || (resume.masterResumeId ? basesByMaster.get(resume.masterResumeId) : undefined)
+        : undefined;
+      const source = normalizeSourceMetadata(sourceOwner, kind);
       return {
         ...resume,
-        lifecycleStatus: "invalid",
-        invalidReason: resume.invalidReason || "关联的原始母版已不存在",
-        source: resume.source ? { ...resume.source, storageStatus: "missing" } : resume.source
-      };
-    }
-    const inheritedPdf = resume.sourcePdf || master.sourcePdf;
-    const inheritedAssets = resume.assets || master.assets;
+        kind,
+        masterResumeId: undefined,
+        parentResumeId,
+        versionNumber: Math.max(1, resume.versionNumber || 1),
+        lifecycleStatus: resume.lifecycleStatus === "invalid" ? "active" : resume.lifecycleStatus || "active",
+        invalidReason: undefined,
+        sourcePdf,
+        sourcePdfInherited: kind === "job" && Boolean(!resume.sourcePdf && sourcePdf),
+        assets,
+        portraitAssetId: resume.portraitAssetId || legacyMaster?.portraitAssetId,
+        sourceAssetsInherited: kind === "job" && Boolean(!resume.assets && assets?.length),
+        parse: normalizeParseMetadata(resume),
+        source: source ? { ...source, storageStatus: sourcePdf ? (kind === "base" ? "stored" : "referenced") : "missing" } : source
+      } satisfies StoredResume;
+    });
+
+  const bases = new Map(normalized.filter((resume) => resume.kind === "base").map((resume) => [resume.id, resume]));
+  return normalized.map((resume) => {
+    if (resume.kind !== "job" || !resume.parentResumeId) return resume;
+    const base = bases.get(resume.parentResumeId);
+    if (!base) return resume;
+    const inheritedPdf = resume.sourcePdf || base.sourcePdf;
+    const inheritedAssets = resume.assets || base.assets;
     return {
       ...resume,
       sourcePdf: inheritedPdf,
-      sourcePdfInherited: Boolean(!resume.sourcePdf && inheritedPdf),
+      sourcePdfInherited: Boolean(resume.sourcePdfInherited || (!resume.sourcePdf && inheritedPdf)),
       assets: inheritedAssets,
-      portraitAssetId: resume.portraitAssetId || master.portraitAssetId,
-      sourceAssetsInherited: Boolean(!resume.assets && inheritedAssets?.length),
-      source: master.source
-        ? { ...master.source, ...resume.source, storageStatus: inheritedPdf ? "referenced" : "missing" }
+      portraitAssetId: resume.portraitAssetId || base.portraitAssetId,
+      sourceAssetsInherited: Boolean(resume.sourceAssetsInherited || (!resume.assets && inheritedAssets?.length)),
+      source: base.source
+        ? { ...base.source, ...resume.source, storageStatus: inheritedPdf ? "referenced" : "missing" }
         : resume.source
     };
   });
@@ -177,7 +194,7 @@ export function dehydrateResumeLibrary(input: StoredResume[]): StoredResume[] {
       sourceAssetsInherited: _sourceAssetsInherited,
       ...persisted
     } = resume;
-    if (resume.kind !== "master" && resume.masterResumeId && resume.masterResumeId !== resume.id) {
+    if (resume.kind === "job" && resume.parentResumeId) {
       delete persisted.sourcePdf;
       delete persisted.assets;
     }
@@ -187,16 +204,14 @@ export function dehydrateResumeLibrary(input: StoredResume[]): StoredResume[] {
 
 export function resolveActiveResumeId(input: StoredResume[], preferredId?: string): string {
   const usable = input.filter((resume) => resume.lifecycleStatus !== "invalid" && resume.lifecycleStatus !== "archived");
-  const usableVersions = usable.filter((resume) => resume.kind !== "master");
-  if (preferredId && usableVersions.some((resume) => resume.id === preferredId)) return preferredId;
-  if (usableVersions.length === 1) return usableVersions[0].id;
-  return usableVersions.find((resume) => resume.kind === "base")?.id
-    || usableVersions.find((resume) => resume.kind === "job")?.id
-    || usable.find((resume) => resume.kind === "master")?.id
+  if (preferredId && usable.some((resume) => resume.id === preferredId)) return preferredId;
+  if (usable.length === 1) return usable[0].id;
+  return usable.find((resume) => resume.kind === "base")?.id
+    || usable.find((resume) => resume.kind === "job")?.id
     || "";
 }
 
-/** Cascades a master/base deletion so no derived version can point at a missing source. */
+/** Cascades a general-resume deletion so derived job versions cannot become orphaned. */
 export function collectResumeRemovalIds(input: StoredResume[], targetId: string): Set<string> {
   const target = input.find((resume) => resume.id === targetId);
   const removalIds = new Set<string>([targetId]);
@@ -207,8 +222,7 @@ export function collectResumeRemovalIds(input: StoredResume[], targetId: string)
     changed = false;
     input.forEach((resume) => {
       const linkedToRemovedParent = Boolean(resume.parentResumeId && removalIds.has(resume.parentResumeId));
-      const linkedToRemovedMaster = target.kind === "master" && resume.masterResumeId === target.id;
-      if (!removalIds.has(resume.id) && (linkedToRemovedParent || linkedToRemovedMaster)) {
+      if (!removalIds.has(resume.id) && linkedToRemovedParent) {
         removalIds.add(resume.id);
         changed = true;
       }
