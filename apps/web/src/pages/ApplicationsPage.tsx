@@ -465,6 +465,7 @@ function ApplicationDialog({
   const [sourceUrl, setSourceUrl] = useState(item?.application.sourceHost === "manual" ? "" : item?.application.sourceUrl || "");
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState("");
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [dialogPhase, setDialogPhase] = useState<"opening" | "open" | "closing">("opening");
   const companyRef = useRef<HTMLInputElement>(null);
   const closeTimerRef = useRef<number>();
@@ -617,7 +618,7 @@ function ApplicationDialog({
   };
 
   const remove = async () => {
-    if (!item || !window.confirm(`删除「${item.application.company} · ${item.application.position}」？此操作会同步到其他设备。`)) return;
+    if (!item) return;
     setBusy(true);
     try {
       await api.applications.remove(item.application.id, item.revision);
@@ -666,7 +667,13 @@ function ApplicationDialog({
           <label className="field-wide"><span>岗位来源链接</span><input type="url" inputMode="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://careers.example.com/job/123" /></label>
         </div>
         <div className="dialog-error" role={formError ? "alert" : undefined}>{formError}</div>
-        <footer>{item ? <button className="danger-button" type="button" onClick={() => void remove()} disabled={busy}>删除投递</button> : <span />}<div><button className="secondary-button" type="button" onClick={requestClose}>取消</button><button className="primary-button" type="submit" disabled={busy}>{busy ? "正在保存…" : "保存投递"}</button></div></footer>
+        <footer>{item ? <button className="danger-button" type="button" onClick={() => {
+          if (!confirmingDelete) {
+            setConfirmingDelete(true);
+            return;
+          }
+          void remove();
+        }} disabled={busy}>{busy ? "正在删除…" : confirmingDelete ? "确认删除？" : "删除投递"}</button> : <span />}<div><button className="secondary-button" type="button" onClick={requestClose}>取消</button><button className="primary-button" type="submit" disabled={busy}>{busy ? "正在保存…" : "保存投递"}</button></div></footer>
       </form>
       </div>
     </div>

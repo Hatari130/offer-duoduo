@@ -125,7 +125,40 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   const [captureCandidates, setCaptureCandidates] = useState<ExtractedJob[]>([]);
   const [editing, setEditing] = useState<JobApplication | null>(null);
   const [query, setQuery] = useState("");
-  const [notice, setNotice] = useState("");
+  const [notice, setNoticeState] = useState("");
+  const [noticeClosing, setNoticeClosing] = useState(false);
+  const noticeTimerRef = useRef<number | undefined>(undefined);
+  const noticeExitRef = useRef<number | undefined>(undefined);
+  const noticeTextRef = useRef("");
+
+  const dismissNotice = () => {
+    window.clearTimeout(noticeTimerRef.current);
+    window.clearTimeout(noticeExitRef.current);
+    if (!noticeTextRef.current) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      noticeTextRef.current = "";
+      setNoticeClosing(false);
+      setNoticeState("");
+      return;
+    }
+    setNoticeClosing(true);
+    noticeExitRef.current = window.setTimeout(() => {
+      noticeTextRef.current = "";
+      setNoticeClosing(false);
+      setNoticeState("");
+    }, 190);
+  };
+
+  const setNotice = (message: string) => {
+    window.clearTimeout(noticeTimerRef.current);
+    window.clearTimeout(noticeExitRef.current);
+    setNoticeClosing(false);
+    noticeTextRef.current = message;
+    setNoticeState(message);
+    if (message) {
+      noticeTimerRef.current = window.setTimeout(dismissNotice, 3200);
+    }
+  };
   const [busy, setBusy] = useState(false);
   const [testingAi, setTestingAi] = useState(false);
   useEffect(() => {
@@ -693,7 +726,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
     return (
       <main className="overlay-shell">
         {notice && (
-          <button className="overlay-notice" onClick={() => setNotice("")}>
+          <button className={`overlay-notice${noticeClosing ? " is-closing" : ""}`} onClick={dismissNotice}>
             <Check size={14} />
             <span>{notice}</span>
             <X size={13} />
@@ -753,6 +786,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             profile={profile}
             onSaveProfile={persistProfile}
             onCapture={capturePage}
+            capturing={busy}
             onTailor={handleTailor}
             onOpenOpportunity={(opportunity) => void openOpportunity(opportunity)}
             onOpenSource={(job) => void openJobSource(job)}
@@ -862,13 +896,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
 
       <div className="workspace">
         {notice && (
-          <button className="notice" onClick={() => setNotice("")}>
+          <button className={`notice${noticeClosing ? " is-closing" : ""}`} onClick={dismissNotice}>
             <Check size={14} />
             {notice}
             <X size={13} />
           </button>
         )}
 
+        <div className="view-enter" key={view === "capture" ? "capture" : view}>
         {view === "capture" && captureCandidates.length > 1 ? (
           <CandidatePicker
             candidates={captureCandidates}
@@ -1049,6 +1084,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             )}
           </section>
         )}
+        </div>
       </div>
 
       {editing && (

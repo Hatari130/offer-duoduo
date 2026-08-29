@@ -964,8 +964,8 @@ export default function ProfileView({
 
       <div className="profile-autofill-card">
         <span><ScanLine size={20} /></span>
-        <div><strong>填写当前网申</strong><small>识别后直接填写，缺少资料自动跳过</small></div>
-        <button onClick={scan} disabled={busy}>识别表单</button>
+        <div><strong>填写当前网申</strong><small>自动匹配并填写，缺少资料自动跳过</small></div>
+        <button onClick={scan} disabled={busy}>自动填写</button>
       </div>
 
       <ProfileSection

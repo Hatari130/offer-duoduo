@@ -88,6 +88,7 @@ export function OverlayPanel({
   profile,
   onSaveProfile,
   onCapture,
+  capturing = false,
   onTailor,
   onOpenOpportunity,
   onOpenSource,
@@ -105,6 +106,7 @@ export function OverlayPanel({
   profile: PersonalProfile;
   onSaveProfile: (profile: PersonalProfile) => Promise<void>;
   onCapture: () => void;
+  capturing?: boolean;
   onTailor?: () => void;
   onOpenOpportunity: (opportunity: RecruitmentOpportunity) => void;
   onOpenSource: (job: JobApplication) => void;
@@ -321,6 +323,7 @@ export function OverlayPanel({
         className={`overlay-scroll${tab === "opportunities" ? " overlay-scroll--opportunities" : ""}`}
         ref={overlayScrollRef}
       >
+        <div className="view-enter" key={tab}>
         {tab === "overview" && (
           <div className="overlay-action-stack">
             <section className="overlay-capture-card">
@@ -328,10 +331,19 @@ export function OverlayPanel({
                 <Target size={19} />
               </span>
               <span>
-                <strong>识别当前招聘页面</strong>
+                <strong>记录当前招聘页面</strong>
                 <small>岗位、投递记录或流程变化</small>
               </span>
-              <button onClick={onCapture}>识别</button>
+              <button onClick={onCapture} disabled={capturing}>
+                {capturing ? (
+                  <>
+                    <RefreshCw className="spin" size={13} />
+                    记录中…
+                  </>
+                ) : (
+                  "记录"
+                )}
+              </button>
             </section>
             <CloudSyncSettings compact />
           </div>
@@ -589,6 +601,7 @@ export function OverlayPanel({
             onTailor={onTailor}
           />
         )}
+        </div>
       </div>
 
       <nav className="overlay-toolbar">

@@ -142,6 +142,20 @@
   font-weight: 800;
 }
 
+.resume-upload-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 29px;
+  padding: 0 11px;
+  color: var(--blue);
+  background: #ebefff;
+  border-radius: 15px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .resume-library-subtitle {
   margin: 9px 0 20px;
   color: var(--muted);
@@ -578,9 +592,31 @@
   white-space: nowrap;
 }
 
+.resume-editor-section-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s linear 240ms;
+}
+
+.resume-editor-section.open .resume-editor-section-reveal {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows 240ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s;
+}
+
 .resume-editor-section-body {
   padding: 0 15px 16px;
   border-top: 1px solid var(--line);
+}
+
+.resume-editor-section-reveal > .resume-editor-section-body {
+  overflow: hidden;
+  min-height: 0;
 }
 
 .resume-editor-grid {
@@ -1063,6 +1099,33 @@
   box-shadow: 0 13px 30px rgba(23, 34, 29, 0.2);
   font-size: 12px;
   text-align: left;
+  animation: resume-notice-in 0.2s ease-out both;
+}
+
+.resume-manager-notice.is-closing {
+  pointer-events: none;
+  animation: resume-notice-out 0.18s ease-in both;
+}
+
+@keyframes resume-notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes resume-notice-out {
+  to {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume-manager-notice,
+  .resume-manager-notice.is-closing {
+    animation: none;
+  }
 }
 
 .resume-manager-notice svg:first-child {
@@ -1546,7 +1609,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .resume-manager-body {
+  .resume-manager-body,
+  .resume-editor-section-reveal {
     transition: none;
   }
 

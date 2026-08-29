@@ -518,7 +518,9 @@ function EditorSection({ keyName, title, description, icon: _icon, open, onToggl
       </button>
       {action && <button className="resume-editor-section-action" onClick={onAction}><Plus size={13} />{action}</button>}
     </div>
-    {open && <div className="resume-editor-section-body">{children}</div>}
+    <div className="resume-editor-section-reveal">
+      <div className="resume-editor-section-body">{children}</div>
+    </div>
   </section>;
 }
 

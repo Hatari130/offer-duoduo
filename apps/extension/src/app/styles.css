@@ -219,6 +219,10 @@ button {
 }
 
 .overlay-capture-card > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
   padding: 8px 13px;
   color: white;
   background: var(--overlay-text);
@@ -227,6 +231,11 @@ button {
   font-size: 12px;
   font-weight: 700;
   cursor: pointer;
+}
+
+.overlay-capture-card > button:disabled {
+  opacity: 0.75;
+  cursor: default;
 }
 
 .overlay-action-stack {
@@ -2117,6 +2126,13 @@ button {
   font-size: 12px;
   text-align: left;
   cursor: pointer;
+  animation: notice-in 0.2s ease-out both;
+}
+
+.notice.is-closing,
+.overlay-notice.is-closing {
+  pointer-events: none;
+  animation: notice-out 0.18s ease-in both;
 }
 
 .overlay-capture-back {
@@ -4447,6 +4463,17 @@ button {
   padding: 88px 24px 32px 78px;
 }
 
+.view-enter {
+  animation: view-enter 0.22s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@keyframes view-enter {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
 .notice {
   position: fixed;
   z-index: 80;
@@ -5794,6 +5821,20 @@ button:disabled {
   from {
     opacity: 0;
     transform: translateY(6px);
+  }
+}
+
+@keyframes notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes notice-out {
+  to {
+    opacity: 0;
+    transform: translateY(-4px);
   }
 }
 

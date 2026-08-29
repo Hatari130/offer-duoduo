@@ -227,8 +227,11 @@ export default function ResumeManagerApp() {
   const [selectedId, setSelectedId] = useState("");
   const [activeId, setActiveId] = useState("");
   const [loading, setLoading] = useState(true);
-  const [uploading, setUploading] = useState(false);
+  const [uploadPhase, setUploadPhase] = useState("");
   const [notice, setNotice] = useState("");
+  const [noticeClosing, setNoticeClosing] = useState(false);
+  const noticeTimerRef = useRef<number | undefined>(undefined);
+  const noticeExitRef = useRef<number | undefined>(undefined);
   const [resumeFixedProfile, setResumeFixedProfile] = useState<ResumeFixedProfile>();
   const [dragging, setDragging] = useState(false);
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
@@ -337,8 +340,22 @@ export default function ResumeManagerApp() {
   }, [resumes]);
 
   const notify = (message: string) => {
+    window.clearTimeout(noticeTimerRef.current);
+    window.clearTimeout(noticeExitRef.current);
+    setNoticeClosing(false);
     setNotice(message);
-    window.setTimeout(() => setNotice(""), 3000);
+    if (!message) return;
+    noticeTimerRef.current = window.setTimeout(() => {
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        setNotice("");
+        return;
+      }
+      setNoticeClosing(true);
+      noticeExitRef.current = window.setTimeout(() => {
+        setNoticeClosing(false);
+        setNotice("");
+      }, 190);
+    }, 3200);
   };
 
   const reconcileActiveProfile = async (library: StoredResume[], expectedActiveId?: string) => {
@@ -387,7 +404,7 @@ export default function ResumeManagerApp() {
   };
 
   const importResume = async (file: File) => {
-    setUploading(true);
+    setUploadPhase("正在读取文件…");
     try {
       const isPdf = file.name.toLowerCase().endsWith(".pdf");
       if (isPdf && file.size > MAX_SOURCE_PDF_BYTES) {
@@ -396,6 +413,7 @@ export default function ResumeManagerApp() {
       const sourceBuffer = await file.arrayBuffer();
       let result: Awaited<ReturnType<typeof parseResumeFile>>;
       try {
+        setUploadPhase("正在解析简历字段…");
         result = await parseResumeFile(file);
       } catch (parseError) {
         if (!isPdf) throw parseError;
@@ -409,6 +427,7 @@ export default function ResumeManagerApp() {
           textLength: 0
         };
       }
+      if (isPdf) setUploadPhase("正在提取版式与图片…");
       const extractedAssets = isPdf
         ? await extractResumePdfAssets(sourceBuffer.slice(0)).catch(() => ({
             assets: [],
@@ -474,6 +493,7 @@ export default function ResumeManagerApp() {
         updatedAt: now
       };
       const next = [created, ...resumes];
+      setUploadPhase("正在保存并启用…");
       await activate(created, next);
       notify(
         `已导入并启用《${parsedName}》通用版 · 提取 ${result.extractedCount} 个字段${parse.warnings.length ? ` · ${parse.warnings.length} 项待核对` : ""}`
@@ -481,7 +501,7 @@ export default function ResumeManagerApp() {
     } catch (error) {
       notify(error instanceof Error ? error.message : "简历解析失败，请换一个文件重试");
     } finally {
-      setUploading(false);
+      setUploadPhase("");
     }
   };
 
@@ -492,6 +512,10 @@ export default function ResumeManagerApp() {
   };
 
   const acceptResumeFile = (file: File) => {
+    if (uploadPhase) {
+      notify("正在导入上一份简历，请稍候");
+      return;
+    }
     const extension = file.name.split(".").pop()?.toLowerCase();
     if (!extension || !["pdf", "docx", "txt", "md", "html", "htm"].includes(extension)) {
       notify("请上传 PDF、DOCX、TXT 或 HTML 格式的简历");
@@ -631,7 +655,14 @@ export default function ResumeManagerApp() {
           <div className="resume-library-heading">
             <div><span className="resume-eyebrow">简历档案</span><h1>我的简历</h1></div>
             <div className="resume-library-tools">
-              <span className="resume-total">{resumes.length}</span>
+              {uploadPhase ? (
+                <span className="resume-upload-status" role="status">
+                  <RefreshCw className="spin" size={13} aria-hidden="true" />
+                  {uploadPhase}
+                </span>
+              ) : (
+                <span className="resume-total">{resumes.length}</span>
+              )}
               <button ref={collapseLibraryButtonRef} onClick={() => setLibraryVisibility(true)} aria-label="收起简历库" aria-controls="resume-library-panel" aria-expanded="true" title="收起简历库">
                 <PanelLeftClose size={16} aria-hidden="true" />
               </button>
@@ -718,7 +749,7 @@ export default function ResumeManagerApp() {
         </section>
       </div>
 
-      {notice && <button className="resume-manager-notice" onClick={() => setNotice("")}><Check size={15} />{notice}<X size={14} /></button>}
+      {notice && <button className={`resume-manager-notice${noticeClosing ? " is-closing" : ""}`} onClick={() => notify("")}><Check size={15} />{notice}<X size={14} /></button>}
     </main>
   );
 }

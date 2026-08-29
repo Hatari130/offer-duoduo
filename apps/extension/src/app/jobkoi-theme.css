@@ -809,6 +809,110 @@ body {
   background: var(--of-brand-700);
 }
 
+/* Profile / autofill ----------------------------------------------------- */
+
+.overlay-shell .profile-view {
+  padding: 2px 0 38px;
+}
+
+.overlay-shell .profile-autofill-card,
+.overlay-shell .profile-resume-switcher {
+  margin-top: 12px;
+  background:
+    radial-gradient(circle at 100% 0%, rgb(219 227 255 / 0.72), transparent 12rem),
+    rgb(255 255 255 / 0.96);
+  border: 1px solid var(--of-line);
+  border-radius: 16px;
+  box-shadow: var(--of-shadow-card);
+}
+
+.overlay-shell .profile-autofill-card { padding: 13px; }
+
+.overlay-shell .profile-autofill-card > span,
+.overlay-shell .profile-resume-switcher-copy > span {
+  color: var(--of-brand-700);
+  background: var(--of-brand-100);
+  border-radius: 11px;
+}
+
+.overlay-shell .profile-autofill-card strong,
+.overlay-shell .profile-resume-switcher-copy strong,
+.overlay-shell .profile-section-title strong {
+  color: var(--of-text-strong);
+  font-weight: 780;
+}
+
+.overlay-shell .profile-autofill-card small,
+.overlay-shell .profile-resume-switcher-copy small,
+.overlay-shell .profile-section-title small { color: var(--of-text-muted); }
+
+.overlay-shell .profile-autofill-card > button,
+.overlay-shell .profile-fill-button,
+.overlay-shell .profile-save-bar > button {
+  color: #ffffff;
+  background: var(--of-brand-600);
+  border: 1px solid var(--of-brand-600);
+  border-radius: 11px;
+  box-shadow: var(--of-shadow-button);
+}
+
+.overlay-shell .profile-autofill-card > button:hover:not(:disabled),
+.overlay-shell .profile-fill-button:hover:not(:disabled),
+.overlay-shell .profile-save-bar > button:hover:not(:disabled) {
+  color: #ffffff;
+  background: var(--of-brand-700);
+  border-color: var(--of-brand-700);
+}
+
+.overlay-shell .profile-resume-switcher select,
+.overlay-shell .profile-grid input,
+.overlay-shell .profile-grid select,
+.overlay-shell .profile-grid textarea,
+.overlay-shell .profile-long-fields textarea {
+  color: var(--of-text);
+  background: #ffffff;
+  border-color: var(--of-line);
+  border-radius: 11px;
+}
+
+.overlay-shell .profile-resume-switcher select:focus,
+.overlay-shell .profile-grid input:focus,
+.overlay-shell .profile-grid select:focus,
+.overlay-shell .profile-grid textarea:focus,
+.overlay-shell .profile-long-fields textarea:focus {
+  outline: none;
+  border-color: var(--of-brand-400);
+  box-shadow: 0 0 0 3px rgb(91 115 214 / 0.13);
+}
+
+.overlay-shell .profile-sync-state.synced {
+  color: var(--of-brand-700);
+  background: var(--of-brand-100);
+}
+
+.overlay-shell .profile-section {
+  margin-top: 22px;
+  padding-top: 18px;
+  border-color: var(--of-line);
+}
+
+.overlay-shell .profile-section-chevron,
+.overlay-shell .profile-section.is-open .profile-section-chevron,
+.overlay-shell .profile-section-toggle:hover .profile-section-chevron {
+  color: var(--of-brand-600);
+}
+
+.overlay-shell .profile-section-action {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-200);
+}
+
+.overlay-shell .profile-section-action:hover {
+  background: var(--of-brand-100);
+  border-color: var(--of-brand-300);
+}
+
 .overlay-shell .capture-hero,
 .overlay-shell .form-grid,
 .overlay-shell .summary-field,

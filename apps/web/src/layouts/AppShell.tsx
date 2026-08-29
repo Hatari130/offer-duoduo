@@ -102,6 +102,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const [threadStatus, setThreadStatus] = useState("");
   const [activeThreadMenuId, setActiveThreadMenuId] = useState<string>();
   const [threadMenuPosition, setThreadMenuPosition] = useState<{ top: number; left: number }>();
+  const [confirmingThreadDelete, setConfirmingThreadDelete] = useState(false);
+  const threadDeleteConfirmTimerRef = useRef<number | undefined>(undefined);
   const [pinnedConversationIds, setPinnedConversationIds] = useState<string[]>([]);
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [accountOpen, setAccountOpen] = useState(false);
@@ -262,6 +264,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const closeThreadMenu = () => {
     setActiveThreadMenuId(undefined);
     setThreadMenuPosition(undefined);
+    setConfirmingThreadDelete(false);
+    window.clearTimeout(threadDeleteConfirmTimerRef.current);
   };
   const toggleThreadMenu = (event: MouseEvent<HTMLButtonElement>, conversationId: string) => {
     if (activeThreadMenuId === conversationId) {
@@ -344,7 +348,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     }
   };
   const removeConversation = async (conversation: ChatConversation) => {
-    if (!window.confirm(`删除“${conversation.title}”？这段对话将无法恢复。`)) return;
     try {
       await api.chat.deleteConversation(conversation.id);
       setConversations((current) => current.filter((item) => item.id !== conversation.id));
@@ -693,8 +696,22 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
             <Pin aria-hidden="true" size={16} fill={pinnedConversationIdSet.has(activeThreadMenuConversation.id) ? "currentColor" : "none"} />
             {pinnedConversationIdSet.has(activeThreadMenuConversation.id) ? "取消置顶" : "置顶对话"}
           </button>
-          <button className="is-danger" type="button" onClick={() => { closeThreadMenu(); void removeConversation(activeThreadMenuConversation); }}>
-            <Trash2 aria-hidden="true" size={16} />删除
+          <button
+            className="is-danger"
+            type="button"
+            onClick={() => {
+              if (!confirmingThreadDelete) {
+                setConfirmingThreadDelete(true);
+                window.clearTimeout(threadDeleteConfirmTimerRef.current);
+                threadDeleteConfirmTimerRef.current = window.setTimeout(() => setConfirmingThreadDelete(false), 4000);
+                return;
+              }
+              closeThreadMenu();
+              void removeConversation(activeThreadMenuConversation);
+            }}
+          >
+            <Trash2 aria-hidden="true" size={16} />
+            {confirmingThreadDelete ? "确认删除？" : "删除"}
           </button>
         </div>
       )}

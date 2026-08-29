@@ -331,6 +331,7 @@ export function OpportunitiesPage() {
 
   const goToPage = (nextPage: number) => {
     setPage(Math.max(1, Math.min(nextPage, totalPages)));
+    document.getElementById("opportunity-results")?.scrollIntoView({ block: "start" });
   };
 
   return (
