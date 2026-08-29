@@ -26,10 +26,10 @@ import {
   type CloudSyncState
 } from "./syncState";
 
-const localBuild = import.meta.env.DEV || import.meta.env.MODE === "development-build";
+const localDevServer = import.meta.env.DEV;
 const allowConfiguredInsecureHttp = import.meta.env.VITE_OFFERFLOW_ALLOW_INSECURE_HTTP === "true";
-export const DEFAULT_CLOUD_API_URL = import.meta.env.VITE_OFFERFLOW_API_URL?.replace(/\/$/, "") || (localBuild ? "http://127.0.0.1:8787" : "");
-export const DEFAULT_CLOUD_WEB_URL = import.meta.env.VITE_OFFERFLOW_WEB_URL?.replace(/\/$/, "") || (localBuild ? "http://127.0.0.1:5173" : "");
+export const DEFAULT_CLOUD_API_URL = import.meta.env.VITE_OFFERFLOW_API_URL?.replace(/\/$/, "") || (localDevServer ? "http://127.0.0.1:8787" : "https://jobkoi.cn/api");
+export const DEFAULT_CLOUD_WEB_URL = import.meta.env.VITE_OFFERFLOW_WEB_URL?.replace(/\/$/, "") || (localDevServer ? "http://127.0.0.1:5173" : "https://jobkoi.cn");
 
 export interface CloudSyncOverview {
   connection?: CloudConnection;
@@ -42,8 +42,30 @@ export interface CloudSyncOverview {
 // once the token expires (the original cause of "sync stopped after a week").
 const TOKEN_REFRESH_MARGIN_MS = 2 * 24 * 60 * 60 * 1000;
 
+function isLoopbackUrl(value: string): boolean {
+  try {
+    return ["127.0.0.1", "localhost", "::1"].includes(new URL(value).hostname);
+  } catch {
+    return false;
+  }
+}
+
+async function migrateLegacyLocalConnection(
+  connection: CloudConnection | undefined
+): Promise<CloudConnection | undefined> {
+  if (!connection || localDevServer || !isLoopbackUrl(connection.apiBaseUrl)) return connection;
+
+  // development-build is the package loaded by users during local testing. Older
+  // builds persisted 127.0.0.1 as their cloud endpoint, which made every later
+  // sync and tailor request fail. Keep local applications, but discard the local
+  // test account ownership as well: its user id does not exist on production and
+  // would otherwise block the user from reconnecting their real website account.
+  await Promise.all([clearCloudSyncStorage(), clearCloudDataOwner()]);
+  return undefined;
+}
+
 async function loadConnectionWithFreshToken(): Promise<CloudConnection | undefined> {
-  const connection = await loadCloudConnection();
+  const connection = await migrateLegacyLocalConnection(await loadCloudConnection());
   if (!connection) return undefined;
 
   const expiresAt = Date.parse(connection.expiresAt);
@@ -71,9 +93,12 @@ async function loadConnectionWithFreshToken(): Promise<CloudConnection | undefin
   }
 }
 
-function syncErrorMessage(error: unknown, fallback: string): string {
+export function cloudErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof OfferFlowApiError && error.status === 401) {
     return "登录已过期：请在插件设置中重新登录 JobKoI 并同步";
+  }
+  if (error instanceof TypeError && /fetch/i.test(error.message)) {
+    return "无法连接 JobKoI 官网，请检查网络后重新登录并同步";
   }
   return error instanceof Error ? error.message : fallback;
 }
@@ -104,12 +129,15 @@ function defaultDeviceName(): string {
 }
 
 export async function getCloudSyncOverview(): Promise<CloudSyncOverview> {
-  const [connection, state, outbox] = await Promise.all([
-    loadCloudConnection(),
+  const connection = await migrateLegacyLocalConnection(await loadCloudConnection());
+  const [state, outbox] = await Promise.all([
     loadCloudSyncState(),
     loadCloudSyncOutbox()
   ]);
-  return { connection, state, pendingCount: outbox.length };
+  const friendlyState = state.lastError === "Failed to fetch"
+    ? { ...state, lastError: "无法连接 JobKoI 官网，请检查网络后重新登录并同步" }
+    : state;
+  return { connection, state: friendlyState, pendingCount: outbox.length };
 }
 
 export async function pairCloudDevice(
@@ -321,7 +349,7 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
     ]);
     return getCloudSyncOverview();
   } catch (error) {
-    const message = syncErrorMessage(error, "云端同步失败");
+    const message = cloudErrorMessage(error, "云端同步失败");
     await saveCloudSyncState({ ...state, lastError: message });
     throw error;
   }
@@ -421,7 +449,7 @@ async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
     ]);
     return getCloudSyncOverview();
   } catch (error) {
-    const message = syncErrorMessage(error, "Cloud sync failed");
+    const message = cloudErrorMessage(error, "云端同步失败");
     await saveCloudSyncState({ ...state, lastError: message });
     throw error;
   }

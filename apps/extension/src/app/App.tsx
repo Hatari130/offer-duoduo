@@ -16,6 +16,7 @@ import {
   LayoutDashboard,
   MapPin,
   Plus,
+  Puzzle,
   RefreshCw,
   Search,
   Settings2,
@@ -70,6 +71,7 @@ import OpportunityView from "@/features/opportunities/OpportunityView";
 import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
 import { normalizeTailorContext, type TailorContext } from "@/features/tailor/types";
 import { openWebTailorWorkspace } from "@/features/tailor/openWebTailor";
+import { openWebWorkspace } from "@/features/workspace/openWebWorkspace";
 
 import {
   CalendarView,
@@ -785,22 +787,35 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <button className="brand" onClick={() => setView("dashboard")}>
+        <button
+          className="brand"
+          onClick={() => setView("dashboard")}
+          aria-label="返回 JobKoI 岗位看板"
+        >
           <span className="brand-glyph">
-            <ArrowRight size={19} strokeWidth={3} />
+            <Puzzle size={18} strokeWidth={2} />
           </span>
-          <span>
-            OFFER<strong>FLOW</strong>
+          <span className="brand-wordmark">
+            <strong>JobKoI</strong>
+            <small>求职助手</small>
           </span>
         </button>
         <div className="topbar-actions">
+          <button
+            className="workspace-button web-workspace-button"
+            onClick={() => openWebWorkspace()}
+            title="在新标签页打开网页工作台"
+          >
+            <ExternalLink size={16} />
+            <span>网页工作台</span>
+          </button>
           <button
             className="workspace-button"
             onClick={openResumeManager}
             title="打开简历中心"
           >
             <FileText size={16} />
-            简历中心
+            <span>简历中心</span>
           </button>
           <button
             className="capture-button"
@@ -809,7 +824,8 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
             title="抓取当前招聘网页"
           >
             {busy ? <RefreshCw className="spin" size={16} /> : <Plus size={17} />}
-            抓取当前岗位
+            <span className="button-label button-label--full">抓取当前岗位</span>
+            <span className="button-label button-label--compact">抓取</span>
           </button>
         </div>
       </header>
@@ -819,6 +835,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           className={view === "dashboard" ? "active" : ""}
           onClick={() => setView("dashboard")}
           title="岗位看板"
+          aria-label="岗位看板"
         >
           <LayoutDashboard size={19} />
         </button>
@@ -826,16 +843,18 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           className={view === "calendar" ? "active" : ""}
           onClick={() => setView("calendar")}
           title="投递日历"
+          aria-label="投递日历"
         >
           <CalendarDays size={19} />
         </button>
-        <button onClick={capturePage} title="抓取岗位">
+        <button onClick={capturePage} title="抓取岗位" aria-label="抓取岗位">
           <Target size={19} />
         </button>
         <button
           className={view === "settings" ? "active" : ""}
           onClick={() => setView("settings")}
           title="设置与备份"
+          aria-label="设置与备份"
         >
           <Settings2 size={19} />
         </button>

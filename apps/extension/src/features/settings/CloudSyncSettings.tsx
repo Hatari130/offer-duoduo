@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import {
   DEFAULT_CLOUD_API_URL,
+  cloudErrorMessage,
   disconnectCloud,
   deleteLocalApplicationsAndForgetOwner,
   getCloudSyncOverview,
@@ -28,7 +29,7 @@ import {
 } from "@/infrastructure/sync/syncState";
 import "./cloud-sync.css";
 
-export default function CloudSyncSettings() {
+export default function CloudSyncSettings({ compact = false }: { compact?: boolean }) {
   const [overview, setOverview] = useState<CloudSyncOverview>();
   const [apiBaseUrl, setApiBaseUrl] = useState(DEFAULT_CLOUD_API_URL);
   const [pairingCode, setPairingCode] = useState("");
@@ -70,7 +71,7 @@ export default function CloudSyncSettings() {
       setPairingCode("");
       setMessage("设备已配对，投递记录已完成首轮同步。");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "设备配对失败");
+      setError(cloudErrorMessage(cause, "设备配对失败"));
     } finally {
       setBusy(false);
     }
@@ -86,7 +87,7 @@ export default function CloudSyncSettings() {
       setOverview(next);
       setMessage(`已登录并同步 ${next.state.lastUploadedCount ?? 0} 条投递记录`);
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "登录并同步失败");
+      setError(cloudErrorMessage(cause, "登录并同步失败"));
     } finally {
       setBusy(false);
     }
@@ -101,7 +102,7 @@ export default function CloudSyncSettings() {
       setOverview(next);
       setMessage("本地与 Web 工作台已同步。");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "同步失败，请稍后重试");
+      setError(cloudErrorMessage(cause, "同步失败，请稍后重试"));
     } finally {
       setBusy(false);
     }
@@ -168,6 +169,37 @@ export default function CloudSyncSettings() {
       setError(cause instanceof Error ? cause.message : "冲突处理失败");
     } finally { setBusy(false); }
   };
+
+  if (compact) {
+    const lastSyncedAt = overview?.state.lastSyncedAt
+      ? new Date(overview.state.lastSyncedAt).toLocaleString("zh-CN", {
+          month: "numeric",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : "尚未同步";
+    return (
+      <section className="cloud-account-card" aria-label="JobKoI 账号与同步">
+        <span className="cloud-account-icon"><Cloud size={18} aria-hidden="true" /></span>
+        <span className="cloud-account-copy">
+          <strong>{connection ? connection.user.displayName || connection.user.email : "登录 JobKoI"}</strong>
+          <small>{connection ? `网站数据已连接 · ${lastSyncedAt}` : "同步网页工作台与插件投递记录"}</small>
+          {(error || overview?.state.lastError) && (
+            <em role="alert">{error || overview?.state.lastError}</em>
+          )}
+        </span>
+        <button
+          type="button"
+          onClick={() => void (connection ? syncNow() : loginAndSync())}
+          disabled={busy}
+        >
+          {busy ? <RefreshCw className="spin" size={15} /> : connection ? <RefreshCw size={15} /> : <Link2 size={15} />}
+          {connection ? "同步" : "登录"}
+        </button>
+      </section>
+    );
+  }
 
   return (
     <section className="settings-card cloud-sync-card" aria-labelledby="cloud-sync-title">

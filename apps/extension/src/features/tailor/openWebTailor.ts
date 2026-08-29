@@ -5,14 +5,15 @@ import {
   type StoredResume
 } from "@/infrastructure/storage/storage";
 import {
+  cloudErrorMessage,
   DEFAULT_CLOUD_WEB_URL,
+  getCloudSyncOverview,
   loginAndSync
 } from "@/infrastructure/sync/cloudSync";
-import { loadCloudConnection } from "@/infrastructure/sync/syncState";
 import type { TailorContext } from "./types";
 
 function webBaseUrlForApi(apiBaseUrl: string): string {
-  const configured = import.meta.env.VITE_WEB_APP_URL?.trim();
+  const configured = import.meta.env.VITE_OFFERFLOW_WEB_URL?.trim();
   if (configured) return configured.replace(/\/$/, "");
   const api = new URL(apiBaseUrl);
   if ((api.hostname === "127.0.0.1" || api.hostname === "localhost") && api.port === "8787") {
@@ -41,7 +42,7 @@ export async function openWebTailorWorkspace(
       // The source PDF remains available; the website still offers manual photo upload.
     }
   }
-  let connection = await loadCloudConnection();
+  let connection = (await getCloudSyncOverview()).connection;
   if (!connection) {
     const connected = await loginAndSync();
     connection = connected.connection;
@@ -52,32 +53,37 @@ export async function openWebTailorWorkspace(
     baseUrl: connection.apiBaseUrl,
     getAccessToken: () => connection!.accessToken
   });
-  const created = await client.resumes.createTailorTask({
-    sourceResumeId: sourceResume.id,
-    sourceResumeName: sourceResume.name,
-    sourceProfile: sourceResume.profile,
-    sourceAssets,
-    sourcePortraitAssetId,
-    sourceEvidence: {
-      fileName: sourceResume.source?.fileName || sourceResume.sourceFileName || sourceResume.name,
-      rawText: sourceResume.parse?.sourceText,
-      unclassifiedText: sourceResume.parse?.unclassifiedText,
-      parseCoverage: sourceResume.parse?.coverage,
-      parserVersion: sourceResume.parse?.parserVersion,
-      warnings: sourceResume.parse?.warnings
-    },
-    applicationId,
-    job: {
-      company: context.company,
-      position: context.position,
-      city: context.city,
-      sourceUrl: context.sourceUrl || "",
-      summary: context.summary,
-      responsibilities: context.responsibilities || [],
-      requirements: context.requirements || [],
-      rawExcerpt: context.rawExcerpt
-    }
-  });
+  let created;
+  try {
+    created = await client.resumes.createTailorTask({
+      sourceResumeId: sourceResume.id,
+      sourceResumeName: sourceResume.name,
+      sourceProfile: sourceResume.profile,
+      sourceAssets,
+      sourcePortraitAssetId,
+      sourceEvidence: {
+        fileName: sourceResume.source?.fileName || sourceResume.sourceFileName || sourceResume.name,
+        rawText: sourceResume.parse?.sourceText,
+        unclassifiedText: sourceResume.parse?.unclassifiedText,
+        parseCoverage: sourceResume.parse?.coverage,
+        parserVersion: sourceResume.parse?.parserVersion,
+        warnings: sourceResume.parse?.warnings
+      },
+      applicationId,
+      job: {
+        company: context.company,
+        position: context.position,
+        city: context.city,
+        sourceUrl: context.sourceUrl || "",
+        summary: context.summary,
+        responsibilities: context.responsibilities || [],
+        requirements: context.requirements || [],
+        rawExcerpt: context.rawExcerpt
+      }
+    });
+  } catch (error) {
+    throw new Error(cloudErrorMessage(error, "创建简历定制任务失败，请重新登录后再试"));
+  }
   const target = new URL(
     `/app/resumes/tailor/${encodeURIComponent(created.task.id)}`,
     webBaseUrlForApi(connection.apiBaseUrl)

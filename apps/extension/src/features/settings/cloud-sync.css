@@ -11,6 +11,80 @@
   border-radius: var(--of-radius-card);
 }
 
+.cloud-account-card {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.75rem 0.8rem;
+  color: var(--of-text);
+  background: rgb(255 255 255 / 0.94);
+  border: 1px solid var(--of-line);
+  border-radius: 0.875rem;
+  box-shadow: 0 10px 28px -24px rgb(32 48 105 / 0.42);
+}
+
+.cloud-account-icon {
+  display: grid;
+  width: 2.25rem;
+  height: 2.25rem;
+  place-items: center;
+  color: var(--of-brand-700);
+  background: var(--of-brand-100);
+  border-radius: 0.7rem;
+}
+
+.cloud-account-copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.cloud-account-copy strong,
+.cloud-account-copy small,
+.cloud-account-copy em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cloud-account-copy strong {
+  color: var(--of-text-strong);
+  font-size: 0.8125rem;
+}
+
+.cloud-account-copy small {
+  color: var(--of-text-muted);
+  font-size: 0.6875rem;
+}
+
+.cloud-account-copy em {
+  color: var(--of-danger);
+  font-size: 0.6875rem;
+  font-style: normal;
+}
+
+.cloud-account-card > button {
+  display: inline-flex;
+  min-height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  padding-inline: 0.7rem;
+  color: #ffffff;
+  background: var(--of-brand-600);
+  border: 1px solid var(--of-brand-600);
+  border-radius: 0.7rem;
+  box-shadow: var(--of-shadow-button);
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.cloud-account-card > button:hover:not(:disabled) { background: var(--of-brand-700); }
+.cloud-account-card > button:disabled { cursor: wait; opacity: 0.68; }
+
 .cloud-sync-icon {
   color: var(--of-text-inverse);
   background: var(--of-rust);

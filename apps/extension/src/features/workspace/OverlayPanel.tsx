@@ -18,6 +18,7 @@ import {
   MapPin,
   Megaphone,
   Plus,
+  Puzzle,
   RefreshCw,
   Search,
   Settings2,
@@ -76,6 +77,7 @@ import {
   projectChinaPoint,
   type ChinaMapFeature
 } from "./workspaceUtils";
+import { openWebWorkspace } from "./openWebWorkspace";
 
 export function OverlayPanel({
   jobs,
@@ -288,7 +290,8 @@ export function OverlayPanel({
     <div className="overlay-app">
       <header className="overlay-header">
         <div className="overlay-identity">
-          <span className="overlay-monogram">OF</span>
+          <span className="overlay-monogram" aria-hidden="true"><Puzzle size={17} /></span>
+          <span className="overlay-wordmark">JobKoI</span>
           <span className="overlay-divider" />
           <button
             className="overlay-space"
@@ -330,6 +333,7 @@ export function OverlayPanel({
               </span>
               <button onClick={onCapture}>识别</button>
             </section>
+            <CloudSyncSettings compact />
           </div>
         )}
 
@@ -592,6 +596,15 @@ export function OverlayPanel({
         <button title="机会" aria-label="机会" className={tab === "opportunities" ? "active" : ""} onClick={() => setTab("opportunities")}><Megaphone size={19} /></button>
         <button title="日历" aria-label="日历" className={tab === "agenda" ? "active" : ""} onClick={() => setTab("agenda")}><CalendarDays size={19} /></button>
         <button title="设置" aria-label="设置" className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={19} /></button>
+        <button
+          className="overlay-web-workspace"
+          title="在新标签页打开网页工作台"
+          aria-label="在新标签页打开网页工作台"
+          onClick={() => openWebWorkspace()}
+        >
+          <span>打开工作台</span>
+          <ExternalLink size={13} />
+        </button>
       </nav>
     </div>
   );

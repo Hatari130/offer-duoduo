@@ -12,6 +12,14 @@ const CLOUD_SYNC_ALARM_NAME = "offerflow-cloud-sync";
 const CLOUD_SYNC_PERIOD_MINUTES = 2;
 const OPPORTUNITY_FEED_ALARM_NAME = "offerflow-opportunity-feed";
 const OPPORTUNITY_FEED_PERIOD_MINUTES = 15;
+const CONTENT_SCRIPT_FILES = [
+  "adapter-registry.js",
+  "extraction-rules.js",
+  "form-adapters.js",
+  "form-runtime.js",
+  "form-control-drivers.js",
+  "content.js"
+];
 
 async function syncCloudInBackground(): Promise<void> {
   try {
@@ -67,9 +75,16 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 });
 
 chrome.action.onClicked.addListener(async (tab) => {
+  const openDashboard = () =>
+    chrome.tabs.create({ url: chrome.runtime.getURL("dashboard.html") });
+
   // Chrome forbids content-script injection into chrome:// pages, the new-tab
-  // surface and the Web Store. Do nothing there rather than opening a detached window.
-  if (!tab.id || !tab.url?.startsWith("http")) return;
+  // surface and the Web Store. Keep the toolbar action responsive by opening
+  // the full workspace on those surfaces.
+  if (!tab.id || !tab.url?.startsWith("http")) {
+    await openDashboard();
+    return;
+  }
 
   const toggle = () =>
     chrome.tabs.sendMessage(tab.id!, { type: "OFFERFLOW_TOGGLE_OVERLAY" });
@@ -78,13 +93,26 @@ chrome.action.onClicked.addListener(async (tab) => {
     await toggle();
   } catch {
     try {
+      // A tab can retain globals from the previous extension runtime after an
+      // unpacked extension is reloaded. Give the reinjected content script a
+      // fresh session so it replaces the stale listener instead of returning
+      // early because the version string still matches.
+      const contentSession = `action:${Date.now()}:${Math.random().toString(36).slice(2)}`;
       await chrome.scripting.executeScript({
         target: { tabId: tab.id },
-        files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "content.js"]
+        func: (session) => {
+          Object.assign(globalThis, { __offerflowDesiredContentSession: session });
+        },
+        args: [contentSession]
+      });
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: CONTENT_SCRIPT_FILES
       });
       await toggle();
     } catch (error) {
       console.warn("JobKoI could not open the page overlay", error);
+      await openDashboard();
     }
   }
 });
