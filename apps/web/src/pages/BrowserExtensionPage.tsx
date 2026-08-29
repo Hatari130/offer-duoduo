@@ -35,8 +35,8 @@ interface ExtensionRelease {
 }
 
 const DEFAULT_RELEASE: ExtensionRelease = {
-  version: "0.1.2",
-  downloadUrl: "/downloads/jobkoi-browser-extension-0.1.2.zip",
+  version: "0.1.3",
+  downloadUrl: "/downloads/jobkoi-browser-extension-0.1.3.zip",
   chromeWebStoreUrl: import.meta.env.VITE_CHROME_WEB_STORE_URL?.trim() || "",
   storeStatus: import.meta.env.VITE_CHROME_WEB_STORE_URL?.trim() ? "published" : "pending"
 };

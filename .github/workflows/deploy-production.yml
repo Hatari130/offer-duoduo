@@ -49,9 +49,9 @@ jobs:
 
       - name: Build the production browser extension
         env:
-          VITE_OFFERFLOW_API_URL: ${{ vars.JOBKOI_API_URL || 'http://139.196.197.112/api' }}
-          VITE_OFFERFLOW_WEB_URL: ${{ vars.JOBKOI_PUBLIC_ORIGIN || 'http://139.196.197.112' }}
-          VITE_OFFERFLOW_ALLOW_INSECURE_HTTP: ${{ startsWith(vars.JOBKOI_PUBLIC_ORIGIN, 'https://') && 'false' || 'true' }}
+          VITE_OFFERFLOW_API_URL: ${{ vars.JOBKOI_API_URL || 'https://jobkoi.cn/api' }}
+          VITE_OFFERFLOW_WEB_URL: ${{ vars.JOBKOI_PUBLIC_ORIGIN || 'https://jobkoi.cn' }}
+          VITE_OFFERFLOW_ALLOW_INSECURE_HTTP: "false"
         run: pnpm --filter @offerflow/extension build:production
 
       - name: Package the browser extension download
