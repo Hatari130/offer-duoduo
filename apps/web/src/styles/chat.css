@@ -405,11 +405,6 @@
 .composer-send:disabled { color: var(--of-text-subtle); background: var(--of-surface-muted); }
 .composer-send.is-stop { color: var(--of-text); background: var(--of-surface-muted); }
 
-.composer-hint {
-  color: var(--of-text-subtle);
-  font-size: 0.75rem;
-}
-
 .composer-attachments,
 .message-attachments {
   display: flex;
@@ -1229,7 +1224,6 @@
   .recommendation-section > header p { text-align: start; }
   .recommendation-grid { display: flex; gap: 0.7rem; margin-inline-end: -1rem; padding-inline-end: 1rem; padding-block-end: 0.4rem; overflow-x: auto; scroll-padding-inline: 0; scroll-snap-type: x proximity; }
   .recommendation-card { width: min(78vw, 17.25rem); min-height: 13.25rem; flex: 0 0 auto; scroll-snap-align: start; }
-  .composer-hint { display: none; }
   .thread-header { min-height: 4.25rem; padding-inline: 0.85rem; }
   .thread-header > button { width: 2.75rem; padding: 0; font-size: 0; }
   .thread-header > button::before { content: "+"; font-size: 1.25rem; }
