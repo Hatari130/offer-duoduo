@@ -44,6 +44,7 @@ import type {
   ChatOpportunityResults,
   JobApplication,
   KnowledgeCitation,
+  OpportunityFeedSnapshot,
   PersonalProfile
 } from "@offerflow/domain";
 import { opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
@@ -271,8 +272,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
   let opportunityRefresh: Promise<Awaited<ReturnType<OfferFlowStore["getOpportunityFeed"]>>> | undefined;
 
-  async function searchChatOpportunities(prompt: string): Promise<ChatOpportunityResults | undefined> {
-    if (!isOpportunitySearchPrompt(prompt)) return undefined;
+  async function freshOpportunitySnapshot(): Promise<{
+    snapshot: OpportunityFeedSnapshot;
+    sourceAvailable: boolean;
+  }> {
     let snapshot = await store.getOpportunityFeed();
     let sourceAvailable = snapshot.opportunities.length > 0 || !config.opportunitySourceUrl;
     const fetchedAt = snapshot.fetchedAt ? Date.parse(snapshot.fetchedAt) : Number.NaN;
@@ -282,7 +285,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     if (config.opportunitySourceUrl && (snapshot.opportunities.length === 0 || stale)) {
       opportunityRefresh ??= fetchCampusHiringSnapshot(
         config.opportunitySourceUrl,
-        AbortSignal.timeout(8_000)
+        AbortSignal.timeout(config.opportunityFetchTimeoutSeconds * 1_000)
       )
         .then((fresh) => store.replaceOpportunityFeed(fresh))
         .finally(() => { opportunityRefresh = undefined; });
@@ -293,6 +296,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         console.warn("[opportunities] refresh failed; using the last stored snapshot", error);
       }
     }
+
+    return { snapshot, sourceAvailable };
+  }
+
+  async function searchChatOpportunities(prompt: string): Promise<ChatOpportunityResults | undefined> {
+    if (!isOpportunitySearchPrompt(prompt)) return undefined;
+    const { snapshot, sourceAvailable } = await freshOpportunitySnapshot();
 
     return searchOpportunitySnapshot(snapshot, prompt, {
       limit: 5,
@@ -809,7 +819,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       // ingest routes live before the authentication gate so the website and
       // the extension can exchange snapshots without a user session.
       if (method === "GET" && path === "/v1/opportunities") {
-        const feed = await store.getOpportunityFeed();
+        const { snapshot: feed } = await freshOpportunitySnapshot();
         success(response, {
           opportunities: feed.opportunities.map((opportunity) => ({
             ...opportunity,

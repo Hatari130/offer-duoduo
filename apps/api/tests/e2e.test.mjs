@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { once } from "node:events";
+import { createServer } from "node:http";
 import test from "node:test";
 import { createOfferFlowServer } from "../src/server.ts";
 import { loadApiConfig } from "../src/config.ts";
@@ -23,14 +24,15 @@ function sampleApplication(overrides = {}) {
   };
 }
 
-async function startTestServer() {
+async function startTestServer(configOverrides = {}) {
   const config = {
     ...loadApiConfig({}),
     host: "127.0.0.1",
     port: 0,
     demoStreamDelayMs: 0,
     opportunityIngestKey: "offerflow-e2e-ingest-key-long-enough",
-    opportunitySourceUrl: undefined
+    opportunitySourceUrl: undefined,
+    ...configOverrides
   };
   const assistant = {
     model: "test-assistant",
@@ -228,6 +230,47 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     body: JSON.stringify({ code: code.payload.data.code, deviceId: "extension-e2e-2" })
   });
   assert.equal(reused.response.status, 401);
+});
+
+test("public opportunity catalogue hydrates an empty store from the configured JSON source", async (t) => {
+  let sourceRequests = 0;
+  const source = createServer((_request, response) => {
+    sourceRequests += 1;
+    response.setHeader("content-type", "application/json; charset=utf-8");
+    response.end(JSON.stringify({
+      updatedAt: "2026-08-29T08:00:00+08:00",
+      items: [{
+        id: "source-product-role",
+        company: "源数据科技",
+        positions: "产品经理",
+        city: "上海",
+        targetCohort: "2027届",
+        type: "秋招",
+        applyUrl: "https://jobs.example.com/source-product-role"
+      }]
+    }));
+  });
+  source.listen(0, "127.0.0.1");
+  await once(source, "listening");
+  const sourceAddress = source.address();
+  const app = await startTestServer({
+    opportunitySourceUrl: `http://127.0.0.1:${sourceAddress.port}/campus-hiring.json`,
+    opportunityFetchTimeoutSeconds: 2
+  });
+  t.after(async () => {
+    app.server.close();
+    source.close();
+    await Promise.all([once(app.server, "close"), once(source, "close")]);
+  });
+
+  const first = await jsonRequest(app.baseUrl, "/v1/opportunities");
+  assert.equal(first.response.status, 200);
+  assert.equal(first.payload.data.opportunities.length, 1);
+  assert.equal(first.payload.data.opportunities[0].company, "源数据科技");
+
+  const second = await jsonRequest(app.baseUrl, "/v1/opportunities");
+  assert.equal(second.payload.data.opportunities.length, 1);
+  assert.equal(sourceRequests, 1);
 });
 
 test("opportunity catalogue is public and only accepts trusted importer snapshots", async (t) => {
