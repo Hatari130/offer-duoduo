@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import type { AuthDeviceSession } from "@offerflow/contracts";
+import { useRef, useState } from "react";
 import { Cloud, Download, LogOut, MonitorSmartphone, ShieldCheck, Trash2 } from "lucide-react";
 import { API_BASE_URL, api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
@@ -8,31 +7,35 @@ export function SettingsPage() {
   const { user, logout } = useAuth();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-  const [sessions, setSessions] = useState<AuthDeviceSession[]>([]);
-  const [currentSessionId, setCurrentSessionId] = useState("");
+  const [confirmOtherSessions, setConfirmOtherSessions] = useState(false);
+  const otherSessionsTriggerRef = useRef<HTMLButtonElement>(null);
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
 
-  const loadSessions = async () => {
-    try {
-      const result = await api.auth.listSessions();
-      setSessions(result.sessions);
-      setCurrentSessionId(result.currentSessionId);
-    } catch (error) {
-      setMessage(error instanceof Error ? error.message : "无法读取登录设备");
-    }
+  const closeOtherSessionsConfirmation = () => {
+    setConfirmOtherSessions(false);
+    window.requestAnimationFrame(() => otherSessionsTriggerRef.current?.focus());
   };
 
-  useEffect(() => { void loadSessions(); }, []);
-
-  const revokeSession = async (sessionId: string) => {
+  const revokeOtherSessions = async () => {
     setBusy(true);
+    setMessage("");
     try {
-      await api.auth.revokeSession(sessionId);
-      if (sessionId === currentSessionId) await logout();
-      else await loadSessions();
+      const result = await api.auth.listSessions();
+      const otherSessionIds = result.sessions
+        .filter((session) => session.id !== result.currentSessionId)
+        .map((session) => session.id);
+      if (otherSessionIds.length === 0) {
+        setMessage("当前没有其他设备需要退出");
+      } else {
+        const revocations = await Promise.allSettled(otherSessionIds.map((sessionId) => api.auth.revokeSession(sessionId)));
+        const failedCount = revocations.filter((item) => item.status === "rejected").length;
+        if (failedCount > 0) throw new Error("部分设备未能退出，请重试");
+        setMessage("其他设备已退出，当前页面继续保持登录");
+      }
+      closeOtherSessionsConfirmation();
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "无法撤销这个设备");
+      setMessage(error instanceof Error ? error.message : "无法退出其他设备，请重试");
     } finally {
       setBusy(false);
     }
@@ -72,7 +75,7 @@ export function SettingsPage() {
   return (
     <section className="data-page settings-page">
       <header className="page-header">
-        <div><span className="page-kicker"><ShieldCheck aria-hidden="true" size={14} />账号与同步</span><h1 tabIndex={-1}>设置与设备同步</h1><p>管理账号、登录设备与个人数据。</p></div>
+        <div><span className="page-kicker"><ShieldCheck aria-hidden="true" size={14} />账号与同步</span><h1 tabIndex={-1}>设置与设备同步</h1><p>管理账号、安全状态与个人数据。</p></div>
       </header>
 
       <div className="settings-grid">
@@ -87,17 +90,39 @@ export function SettingsPage() {
           <div><span className="settings-label">数据连接</span><h2>JobKoI API</h2><p><code>{API_BASE_URL}</code></p><small>模型密钥和知识库只保存在服务端，不会进入 Web 或插件包。</small></div>
         </section>
 
-        <section className="settings-card device-sessions-card">
-          <div className="settings-card-heading"><div className="settings-card-icon"><MonitorSmartphone aria-hidden="true" size={21} /></div><div><span className="settings-label">安全</span><h2>已登录设备</h2></div></div>
-          <p>发现陌生设备时可立即撤销；插件设备使用独立令牌，不影响网站登录。</p>
-          <ul className="device-session-list">
-            {sessions.map((session) => (
-              <li key={session.id}>
-                <div><strong>{session.deviceName || (session.scope === "device" ? "浏览器插件" : "网站会话")}{session.id === currentSessionId ? "（当前）" : ""}</strong><small>最近使用：{new Date(session.lastSeenAt).toLocaleString("zh-CN")} · 到期：{new Date(session.expiresAt).toLocaleDateString("zh-CN")}</small></div>
-                <button type="button" className="icon-button" aria-label={`撤销${session.deviceName || "此设备"}`} disabled={busy} onClick={() => void revokeSession(session.id)}><Trash2 aria-hidden="true" size={16} /></button>
-              </li>
-            ))}
-          </ul>
+        <section className="settings-card security-summary-card">
+          <div className="settings-card-heading"><div className="settings-card-icon"><MonitorSmartphone aria-hidden="true" size={21} /></div><div><span className="settings-label">安全</span><h2>登录安全</h2></div></div>
+          <div className="security-summary-row">
+            <div>
+              <strong>当前账号在线</strong>
+              <p>设备明细已隐藏。需要时可一次退出其他浏览器和插件，当前页面不会退出。</p>
+            </div>
+            <button
+              ref={otherSessionsTriggerRef}
+              className="secondary-button"
+              type="button"
+              aria-expanded={confirmOtherSessions}
+              aria-controls="other-sessions-confirmation"
+              disabled={busy}
+              onClick={() => setConfirmOtherSessions((current) => !current)}
+            >
+              <LogOut aria-hidden="true" size={16} />退出其他设备
+            </button>
+          </div>
+          {confirmOtherSessions && (
+            <div className="other-sessions-confirmation" id="other-sessions-confirmation" role="group" aria-labelledby="other-sessions-confirmation-title">
+              <div>
+                <strong id="other-sessions-confirmation-title">退出其他设备？</strong>
+                <p>其他浏览器和插件需要重新登录；当前页面不会退出。</p>
+              </div>
+              <div className="other-sessions-confirmation-actions">
+                <button className="secondary-button" type="button" disabled={busy} onClick={closeOtherSessionsConfirmation}>取消</button>
+                <button className="session-revoke-button" type="button" disabled={busy} onClick={() => void revokeOtherSessions()}>
+                  <LogOut aria-hidden="true" size={16} />{busy ? "正在退出" : "确认退出其他设备"}
+                </button>
+              </div>
+            </div>
+          )}
         </section>
 
         <section className="settings-card data-rights-card">
