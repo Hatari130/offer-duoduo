@@ -147,7 +147,7 @@ export async function pairCloudDevice(
   options: { allowInitialUpload?: boolean } = {}
 ): Promise<CloudSyncOverview> {
   const normalizedCode = code.replace(/\s/g, "").toUpperCase();
-  if (!normalizedCode) throw new Error("请输入 Web 端生成的配对码");
+  if (!normalizedCode) throw new Error("未收到有效的插件授权信息");
 
   const [normalizedUrl, ownerUserId, previousConnection, localJobs] = await Promise.all([
     Promise.resolve(normalizeApiBaseUrl(apiBaseUrl)),

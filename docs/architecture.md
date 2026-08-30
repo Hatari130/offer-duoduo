@@ -56,7 +56,7 @@ Owns the account experience and the three primary product areas:
 - `/app/chat`: conversation list, knowledge-grounded SSE chat, retry and attachments;
 - `/app/opportunities`: filter/table shell and empty import boundary for the collaborator-owned pipeline;
 - `/app/applications`: application CRUD, table/board views and revision-aware updates;
-- `/app/settings`: account controls and one-time extension pairing codes.
+- `/app/settings`: account controls and connected-device management.
 
 The Web UI calls the API only through `@offerflow/api-client`; it does not import
 extension screens or database code.

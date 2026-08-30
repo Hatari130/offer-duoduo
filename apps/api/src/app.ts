@@ -797,14 +797,14 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       if (method === "POST" && path === "/v1/auth/device-token") {
         const body = await readJson(request);
         if (!isExchangeDeviceCodeRequest(body)) {
-          throw new HttpError(400, "INVALID_DEVICE_CODE", "请输入有效的设备配对码");
+          throw new HttpError(400, "INVALID_DEVICE_CODE", "插件授权请求无效");
         }
         if (body.deviceId.length > 128 || (body.deviceName?.length ?? 0) > 120) {
           throw new HttpError(400, "INVALID_DEVICE", "设备标识或名称过长");
         }
         const user = await store.exchangeDeviceCode(body.code);
         if (!user) {
-          throw new HttpError(401, "DEVICE_CODE_EXPIRED", "配对码无效或已经过期");
+          throw new HttpError(401, "DEVICE_CODE_EXPIRED", "插件授权已失效，请重新登录");
         }
         success(response, {
           ...await issueSession(user, "device", body.deviceId, body.deviceName),

@@ -95,66 +95,11 @@
 
 .cloud-sync-copy h3 { margin-block-end: 0.25rem; }
 
-.cloud-pair-form {
-  display: grid;
-  grid-template-columns: minmax(11.25rem, 1fr) minmax(9.5rem, 0.65fr) auto;
-  align-items: end;
-  gap: 0.65rem;
-  margin-block-start: 0.85rem;
-}
-
 .cloud-login-button {
   width: 100%;
   min-height: 2.75rem;
   margin-block-start: 0.85rem;
   justify-content: center;
-}
-
-.cloud-advanced-pairing { margin-block-start: 0.65rem; }
-
-.cloud-advanced-pairing summary {
-  display: inline-flex;
-  min-height: 2.75rem;
-  align-items: center;
-  color: var(--of-text-muted);
-  cursor: pointer;
-  font-size: 0.75rem;
-}
-
-.cloud-advanced-pairing[open] summary { margin-block-end: 0.5rem; }
-
-.cloud-pair-form label {
-  display: grid;
-  gap: 0.35rem;
-}
-
-.cloud-pair-form label > span {
-  color: var(--of-text-muted);
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.cloud-pair-form input {
-  width: 100%;
-  min-height: 2.75rem;
-  padding: 0.65rem 0.75rem;
-  color: var(--of-text);
-  background: var(--of-surface);
-  border: 1px solid var(--of-line);
-  border-radius: var(--of-radius-control);
-  outline: none;
-  font: inherit;
-  font-size: 1rem;
-}
-
-.cloud-pair-form input:focus-visible {
-  border-color: var(--of-focus);
-  box-shadow: 0 0 0 3px var(--of-brand-100);
-}
-
-.pair-code-input {
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .cloud-sync-connected { margin-block-start: 0.1rem; }
@@ -308,7 +253,6 @@
 @media (max-width: 47.5rem) {
   .cloud-sync-card { grid-template-columns: auto minmax(0, 1fr); }
   .cloud-sync-actions { grid-column: 1 / -1; }
-  .cloud-pair-form { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 30rem) {

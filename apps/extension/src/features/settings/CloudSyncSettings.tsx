@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import {
   AlertTriangle,
   CheckCircle2,
@@ -10,13 +10,11 @@ import {
   Unplug
 } from "lucide-react";
 import {
-  DEFAULT_CLOUD_API_URL,
   cloudErrorMessage,
   disconnectCloud,
   deleteLocalApplicationsAndForgetOwner,
   getCloudSyncOverview,
   loginAndSync as loginAndSyncCloud,
-  pairCloudDevice,
   resolveCloudConflict,
   resyncAllCloud,
   runCloudSync,
@@ -31,8 +29,6 @@ import "./cloud-sync.css";
 
 export default function CloudSyncSettings({ compact = false }: { compact?: boolean }) {
   const [overview, setOverview] = useState<CloudSyncOverview>();
-  const [apiBaseUrl, setApiBaseUrl] = useState(DEFAULT_CLOUD_API_URL);
-  const [pairingCode, setPairingCode] = useState("");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
@@ -40,7 +36,6 @@ export default function CloudSyncSettings({ compact = false }: { compact?: boole
   const refresh = async () => {
     const next = await getCloudSyncOverview();
     setOverview(next);
-    if (next.connection) setApiBaseUrl(next.connection.apiBaseUrl);
   };
 
   useEffect(() => {
@@ -58,24 +53,6 @@ export default function CloudSyncSettings({ compact = false }: { compact?: boole
     chrome.storage.onChanged.addListener(listener);
     return () => chrome.storage.onChanged.removeListener(listener);
   }, []);
-
-  const pair = async (event: FormEvent) => {
-    event.preventDefault();
-    setBusy(true);
-    setError("");
-    setMessage("");
-    try {
-      if (!window.confirm("首次连接会把当前本地投递绑定到即将登录的账号。确认继续？")) return;
-      const next = await pairCloudDevice(pairingCode, apiBaseUrl, undefined, { allowInitialUpload: true });
-      setOverview(next);
-      setPairingCode("");
-      setMessage("设备已配对，投递记录已完成首轮同步。");
-    } catch (cause) {
-      setError(cloudErrorMessage(cause, "设备配对失败"));
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const loginAndSync = async () => {
     if (!window.confirm("首次连接会把当前本地投递绑定到即将登录的账号。确认继续？")) return;
@@ -218,44 +195,10 @@ export default function CloudSyncSettings({ compact = false }: { compact?: boole
             </div>
           </div>
         ) : (
-          <>
           <button className="button button--primary cloud-login-button" type="button" onClick={() => void loginAndSync()} disabled={busy}>
             {busy ? <RefreshCw className="spin" size={16} /> : <Cloud size={16} />}
             登录 JobKoI 并同步投递
           </button>
-          <details className="cloud-advanced-pairing">
-            <summary>开发者配对方式</summary>
-            <form className="cloud-pair-form" onSubmit={pair}>
-            <label>
-              <span>Web 端 API 地址</span>
-              <input
-                type="url"
-                required
-                value={apiBaseUrl}
-                onChange={(event) => setApiBaseUrl(event.target.value)}
-                placeholder={DEFAULT_CLOUD_API_URL}
-              />
-            </label>
-            <label>
-              <span>8 位设备配对码</span>
-              <input
-                className="pair-code-input"
-                inputMode="text"
-                autoComplete="one-time-code"
-                required
-                maxLength={12}
-                value={pairingCode}
-                onChange={(event) => setPairingCode(event.target.value.toUpperCase())}
-                placeholder="AB12 CD34"
-              />
-            </label>
-            <button className="button button--primary" type="submit" disabled={busy}>
-              {busy ? <RefreshCw className="spin" size={16} /> : <Link2 size={16} />}
-              连接工作台
-            </button>
-            </form>
-          </details>
-          </>
         )}
 
         {conflicts.length > 0 && (

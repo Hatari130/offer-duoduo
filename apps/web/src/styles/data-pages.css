@@ -2706,8 +2706,6 @@
   gap: 0.85rem;
 }
 
-.pairing-card { grid-row: span 2; }
-
 .settings-card-icon {
   display: grid;
   width: 2.75rem;
@@ -2771,48 +2769,6 @@
   gap: 0.8rem;
 }
 
-.pairing-card > p { margin-block: 1rem; }
-
-.pairing-placeholder,
-.pairing-code-block {
-  display: grid;
-  min-height: 8.2rem;
-  place-content: center;
-  justify-items: center;
-  gap: 0.55rem;
-  margin-block: 1rem;
-  padding: 1rem;
-  color: var(--of-text-muted);
-  background: var(--of-brand-50);
-  border: 1px dashed var(--of-brand-200);
-  border-radius: 0.9rem;
-  text-align: center;
-  font-size: 0.75rem;
-}
-
-.pairing-code-block > span { color: var(--of-text-subtle); font-size: 0.75rem; }
-
-.pairing-code-block > button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.65rem;
-  padding: 0.45rem 0.65rem;
-  color: var(--of-brand-700);
-  background: var(--of-surface-raised);
-  border: 1px solid var(--of-line);
-  border-radius: 0.7rem;
-}
-
-.pairing-code-block strong {
-  font-size: 1.55rem;
-  font-weight: 690;
-  letter-spacing: 0.12em;
-  font-variant-numeric: tabular-nums;
-}
-
-.pairing-code-block small { color: var(--of-text-subtle); font-size: 0.75rem; }
-.pairing-card > .primary-button { width: 100%; }
-
 .endpoint-card code {
   overflow-wrap: break-word;
   color: var(--of-brand-700);
@@ -2867,7 +2823,6 @@
     line-height: 1;
   }
   .settings-grid { grid-template-columns: 1fr; }
-  .pairing-card { grid-row: auto; }
 }
 
 @media (max-width: 40rem) {

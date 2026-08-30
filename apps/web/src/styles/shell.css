@@ -1036,7 +1036,7 @@
   .app-frame.is-sidebar-collapsed .account-trigger > svg {
     max-width: 0;
     opacity: 0;
-    transform: translateX(-0.35rem);
+    transform: translateX(-0.5rem);
   }
 
   .app-frame.is-sidebar-collapsed .new-chat-button,
@@ -1081,7 +1081,7 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateX(-0.45rem);
+    transform: translateX(-0.5rem);
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-footer {
@@ -1320,20 +1320,15 @@
 
 @media (min-width: 60.001rem) and (prefers-reduced-motion: no-preference) {
   .app-frame {
-    transition-property: grid-template-columns;
-    transition-duration: 220ms;
-    transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    transition: grid-template-columns 320ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .app-frame.is-sidebar-collapsed {
-    transition-duration: 180ms;
-    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    transition: grid-template-columns 260ms cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .app-sidebar {
-    transition-property: padding-inline;
-    transition-duration: 180ms;
-    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+    transition: padding-inline 260ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
   .sidebar-brand-link,
@@ -1351,15 +1346,33 @@
   .extension-entry-button > em,
   .account-trigger > span:nth-child(2),
   .account-trigger > svg {
-    transition-property: max-width, opacity, transform;
-    transition-duration: 140ms;
-    transition-timing-function: ease-out;
+    transition:
+      opacity 240ms cubic-bezier(0.22, 1, 0.36, 1) 80ms,
+      transform 240ms cubic-bezier(0.22, 1, 0.36, 1) 80ms,
+      max-width 240ms cubic-bezier(0.22, 1, 0.36, 1) 80ms;
+  }
+
+  .app-frame.is-sidebar-collapsed .sidebar-item-label,
+  .app-frame.is-sidebar-collapsed .sidebar-shortcut,
+  .app-frame.is-sidebar-collapsed .nav-link > em,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > span,
+  .app-frame.is-sidebar-collapsed .extension-entry-button > em,
+  .app-frame.is-sidebar-collapsed .account-trigger > span:nth-child(2),
+  .app-frame.is-sidebar-collapsed .account-trigger > svg {
+    transition:
+      opacity 160ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+      transform 160ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
+      max-width 160ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   }
 
   .recent-threads {
-    transition-property: max-height, margin-block-start, padding-inline, opacity, transform, visibility;
-    transition-duration: 160ms;
-    transition-timing-function: ease-out;
+    transition:
+      max-height 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      margin-block-start 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      padding-inline 260ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 180ms cubic-bezier(0.22, 1, 0.36, 1) 60ms,
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1) 60ms,
+      visibility 0s linear 240ms;
   }
 }
 
