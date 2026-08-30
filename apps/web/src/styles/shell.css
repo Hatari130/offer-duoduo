@@ -618,11 +618,11 @@
 .account-trigger {
   width: 100%;
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr) auto;
+  grid-template-columns: 2.4rem minmax(0, 1fr) auto;
   align-items: center;
-  gap: 0.48rem;
-  min-height: 2.75rem;
-  padding: 0.38rem 0.42rem;
+  gap: 0.58rem;
+  min-height: 3rem;
+  padding: 0.3rem 0.35rem;
   color: var(--of-text);
   background: transparent;
   border: 0;
@@ -647,7 +647,7 @@
   font-weight: 750;
 }
 
-.account-avatar { width: 2rem; height: 2rem; }
+.account-avatar { width: 2.4rem; height: 2.4rem; border-radius: 0.82rem; }
 .account-avatar--large { width: 3rem; height: 3rem; border-radius: 1rem; font-size: 1rem; }
 
 .account-trigger > span:nth-child(2),
@@ -666,8 +666,8 @@
   white-space: nowrap;
 }
 
-.account-trigger strong { font-size: 0.75rem; font-weight: 650; }
-.account-trigger small { color: var(--of-text-subtle); font-size: 0.75rem; }
+.account-trigger strong { font-size: 0.75rem; font-weight: 650; line-height: 1.25; }
+.account-trigger small { color: var(--of-text-subtle); font-size: 0.75rem; line-height: 1.25; }
 .account-trigger > svg { color: var(--of-text-subtle); transition: rotate 140ms ease-out; }
 .account-menu.is-open .account-trigger > svg { rotate: 180deg; }
 
@@ -970,9 +970,9 @@
 
   .app-frame.is-sidebar-collapsed .account-trigger {
     width: 2.75rem;
-    grid-template-columns: 2rem;
+    grid-template-columns: 2.4rem 0 0;
     justify-content: center;
-    padding-inline: 0.375rem;
+    padding-inline: 0.175rem;
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-footer-icon {
