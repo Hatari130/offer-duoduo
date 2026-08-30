@@ -6,10 +6,12 @@ import type {
   ApplicationSyncItem,
   ApplicationSyncRequest,
   ApplicationSyncResponse,
+  AvatarKey,
   CreateTailorTaskRequest,
   ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
+import { isAvatarKey } from "@offerflow/contracts";
 import {
   createResumeDocument,
   decideApplicationRevision,
@@ -80,7 +82,8 @@ function userFromRow(row: Record<string, unknown>): SessionUser {
   return {
     id: String(row.id),
     email: String(row.email || ""),
-    displayName: String(row.display_name || row.email || "用户")
+    displayName: String(row.display_name || row.email || "用户"),
+    avatarKey: isAvatarKey(row.avatar_key) ? row.avatar_key : "sprout"
   };
 }
 
@@ -109,7 +112,7 @@ export class PostgresStore implements OfferFlowStore {
     await this.pool.query("DELETE FROM device_pairing_codes WHERE expires_at < now() - interval '1 day' OR consumed_at < now() - interval '1 day'");
     await this.pool.query("DELETE FROM handoff_codes WHERE expires_at < now() - interval '1 day' OR consumed_at < now() - interval '1 day'");
     if (this.allowDemoAuth && !(await this.getDemoUser())) {
-      await this.createUser(DEMO_EMAIL, "林知夏", "offerflow2026");
+      await this.createUser(DEMO_EMAIL, "林知夏", "offerflow2026", "sprout");
     }
   }
 
@@ -130,7 +133,7 @@ export class PostgresStore implements OfferFlowStore {
     };
   }
 
-  async createUser(email: string, displayName: string, password: string, fixedId?: string): Promise<SessionUser> {
+  async createUser(email: string, displayName: string, password: string, avatarKey: AvatarKey = "sprout", fixedId?: string): Promise<SessionUser> {
     const normalized = normalizeEmail(email);
     const databaseId = fixedId && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(fixedId) ? fixedId : null;
     const passwordValue = hashPassword(password);
@@ -138,10 +141,10 @@ export class PostgresStore implements OfferFlowStore {
     try {
       await client.query("BEGIN");
       const result = await client.query(
-        `INSERT INTO users (id, external_auth_id, email, display_name)
-         VALUES (COALESCE($1::uuid, gen_random_uuid()), $2, $3, $4)
-         RETURNING id, email, display_name`,
-        [databaseId, `password:${normalized}`, normalized, displayName.trim() || normalized.split("@")[0]]
+        `INSERT INTO users (id, external_auth_id, email, display_name, avatar_key)
+         VALUES (COALESCE($1::uuid, gen_random_uuid()), $2, $3, $4, $5)
+         RETURNING id, email, display_name, avatar_key`,
+        [databaseId, `password:${normalized}`, normalized, displayName.trim() || normalized.split("@")[0], avatarKey]
       );
       await client.query(
         "INSERT INTO auth_credentials (user_id, password_hash, password_salt) VALUES ($1, $2, $3)",
@@ -162,7 +165,7 @@ export class PostgresStore implements OfferFlowStore {
 
   async authenticate(email: string, password: string): Promise<SessionUser | undefined> {
     const result = await this.pool.query(
-      `SELECT u.id, u.email, u.display_name, c.password_hash, c.password_salt
+      `SELECT u.id, u.email, u.display_name, u.avatar_key, c.password_hash, c.password_salt
        FROM users u JOIN auth_credentials c ON c.user_id = u.id
        WHERE u.email = $1 AND u.deleted_at IS NULL`,
       [normalizeEmail(email)]
@@ -174,7 +177,7 @@ export class PostgresStore implements OfferFlowStore {
 
   async getUser(userId: string): Promise<SessionUser | undefined> {
     const result = await this.pool.query(
-      "SELECT id, email, display_name FROM users WHERE id = $1 AND deleted_at IS NULL",
+      "SELECT id, email, display_name, avatar_key FROM users WHERE id = $1 AND deleted_at IS NULL",
       [userId]
     );
     return result.rows[0] ? userFromRow(result.rows[0]) : undefined;
@@ -182,7 +185,7 @@ export class PostgresStore implements OfferFlowStore {
 
   async getDemoUser(): Promise<SessionUser | undefined> {
     const result = await this.pool.query(
-      "SELECT id, email, display_name FROM users WHERE email = $1 AND deleted_at IS NULL",
+      "SELECT id, email, display_name, avatar_key FROM users WHERE email = $1 AND deleted_at IS NULL",
       [DEMO_EMAIL]
     );
     return result.rows[0] ? userFromRow(result.rows[0]) : undefined;
@@ -285,7 +288,7 @@ export class PostgresStore implements OfferFlowStore {
         [hashSecret(normalizeDeviceCode(code)), new Date(now).toISOString()]
       );
       const user = result.rows[0] ? await client.query(
-        "SELECT id, email, display_name FROM users WHERE id = $1 AND deleted_at IS NULL",
+        "SELECT id, email, display_name, avatar_key FROM users WHERE id = $1 AND deleted_at IS NULL",
         [result.rows[0].user_id]
       ) : undefined;
       await client.query("COMMIT");
@@ -313,7 +316,7 @@ export class PostgresStore implements OfferFlowStore {
       `UPDATE handoff_codes h SET consumed_at = now()
        FROM users u WHERE h.code_hash = $1 AND h.user_id = u.id
        AND h.consumed_at IS NULL AND h.expires_at > now() AND u.deleted_at IS NULL
-       RETURNING u.id, u.email, u.display_name, h.target_path`,
+       RETURNING u.id, u.email, u.display_name, u.avatar_key, h.target_path`,
       [hashSecret(code.trim())]
     );
     return result.rows[0] ? { user: userFromRow(result.rows[0]), targetPath: result.rows[0].target_path } : undefined;

@@ -1,9 +1,27 @@
 import { isRecord } from "./common.ts";
 
+export const avatarKeys = [
+  "sprout",
+  "sunny",
+  "peach",
+  "cloud",
+  "berry",
+  "acorn",
+  "mint",
+  "coral"
+] as const;
+
+export type AvatarKey = (typeof avatarKeys)[number];
+
+export function isAvatarKey(value: unknown): value is AvatarKey {
+  return typeof value === "string" && avatarKeys.includes(value as AvatarKey);
+}
+
 export interface SessionUser {
   id: string;
   email: string;
   displayName: string;
+  avatarKey: AvatarKey;
 }
 
 export interface AuthSession {
@@ -19,6 +37,7 @@ export interface LoginRequest {
 
 export interface RegisterRequest extends LoginRequest {
   displayName: string;
+  avatarKey: AvatarKey;
   acceptPrivacy: boolean;
 }
 
@@ -69,6 +88,7 @@ export function isRegisterRequest(value: unknown): value is RegisterRequest {
     isRecord(value) &&
     isLoginRequest(value) &&
     typeof (value as Record<string, unknown>).displayName === "string" &&
+    isAvatarKey((value as Record<string, unknown>).avatarKey) &&
     (value as Record<string, unknown>).acceptPrivacy === true
   );
 }

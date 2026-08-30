@@ -297,6 +297,110 @@
   box-shadow: 0 0 0 3px var(--of-brand-100);
 }
 
+.auth-avatar-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.auth-avatar-fieldset legend {
+  display: flex;
+  width: 100%;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-block-end: 0.55rem;
+  color: var(--of-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.auth-avatar-fieldset legend small {
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+  font-weight: 400;
+}
+
+.auth-avatar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.auth-form .auth-avatar-option {
+  position: relative;
+  display: block;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.auth-form .auth-avatar-option > input {
+  position: absolute;
+  width: 1px;
+  min-height: 0;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.auth-avatar-choice {
+  position: relative;
+  display: grid;
+  min-height: 4.35rem;
+  place-items: center;
+  align-content: center;
+  gap: 0.25rem;
+  padding: 0.38rem 0.2rem 0.32rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface-raised);
+  border: 1px solid var(--of-line);
+  border-radius: var(--of-radius-sm);
+  font-size: 0.7rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.auth-avatar-choice .user-avatar { width: 2.65rem; height: 2.65rem; border-radius: 0.86rem; }
+.auth-avatar-option:hover .auth-avatar-choice { background: var(--of-surface); border-color: var(--of-line-strong); }
+.auth-avatar-option > input:focus-visible + .auth-avatar-choice {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
+.auth-avatar-option > input:checked + .auth-avatar-choice {
+  color: var(--of-text-strong);
+  background: var(--of-accent-soft);
+  border-color: var(--of-brand-600);
+  box-shadow: inset 0 0 0 1px var(--of-brand-600);
+}
+
+.auth-avatar-check {
+  position: absolute;
+  inset-block-start: 0.3rem;
+  inset-inline-end: 0.3rem;
+  display: grid;
+  width: 1rem;
+  height: 1rem;
+  padding: 0.08rem;
+  color: var(--of-text-inverse);
+  background: var(--of-brand-700);
+  border-radius: 50%;
+  opacity: 0;
+  scale: 0.25;
+  filter: blur(4px);
+}
+
+.auth-avatar-option > input:checked + .auth-avatar-choice .auth-avatar-check {
+  opacity: 1;
+  scale: 1;
+  filter: blur(0);
+}
+
 .auth-consent {
   display: flex !important;
   flex-direction: row !important;
@@ -452,6 +556,20 @@
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  .auth-avatar-choice {
+    transition-property: scale, color, background-color, border-color, box-shadow;
+    transition-duration: 140ms;
+    transition-timing-function: var(--of-ease-standard);
+  }
+
+  .auth-avatar-option:active .auth-avatar-choice { scale: var(--of-press-scale); }
+
+  .auth-avatar-check {
+    transition-property: scale, opacity, filter;
+    transition-duration: 140ms;
+    transition-timing-function: var(--of-ease-standard);
+  }
+
   .auth-dialog[open] .auth-dialog-surface { animation: auth-dialog-enter 180ms ease-out both; }
   .auth-dialog[open]::backdrop { animation: auth-backdrop-enter 180ms ease-out both; }
   .auth-dialog.is-closing { pointer-events: none; }

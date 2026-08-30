@@ -1,6 +1,8 @@
 import { useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
+import { ArrowRight, Check, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
+import type { AvatarKey } from "@offerflow/contracts";
 import { useAuth } from "../app/AuthContext";
+import { avatarOptions, UserAvatar } from "./UserAvatar";
 
 type Mode = "login" | "register";
 
@@ -24,6 +26,7 @@ export function AuthCard({
   const { login, register, enterDemo, capabilities } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [displayName, setDisplayName] = useState("");
+  const [avatarKey, setAvatarKey] = useState<AvatarKey>("sprout");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -34,6 +37,7 @@ export function AuthCard({
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const consentRef = useRef<HTMLInputElement>(null);
+  const avatarRefs = useRef<Array<HTMLInputElement | null>>([]);
   const errorId = `${idPrefix}-error`;
 
   const submit = async (event: FormEvent) => {
@@ -63,7 +67,7 @@ export function AuthCard({
     setBusy(true);
     try {
       if (mode === "login") await login({ email: email.trim(), password });
-      else await register({ email: email.trim(), password, displayName: displayName.trim(), acceptPrivacy });
+      else await register({ email: email.trim(), password, displayName: displayName.trim(), avatarKey, acceptPrivacy });
       onSuccess?.();
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "暂时无法登录，请稍后重试");
@@ -103,20 +107,60 @@ export function AuthCard({
 
       <form className="auth-form" onSubmit={submit} noValidate>
         {mode === "register" && (
-          <label>
-            <span>你的称呼</span>
-            <input
-              ref={nameRef}
-              name="name"
-              autoComplete="name"
-              maxLength={80}
-              value={displayName}
-              onChange={(event) => setDisplayName(event.target.value)}
-              aria-invalid={Boolean(error && !displayName.trim())}
-              aria-describedby={error ? errorId : undefined}
-              placeholder="例如：知夏"
-            />
-          </label>
+          <>
+            <label>
+              <span>你的称呼</span>
+              <input
+                ref={nameRef}
+                name="name"
+                autoComplete="name"
+                maxLength={80}
+                value={displayName}
+                onChange={(event) => setDisplayName(event.target.value)}
+                aria-invalid={Boolean(error && !displayName.trim())}
+                aria-describedby={error ? errorId : undefined}
+                placeholder="例如：知夏"
+              />
+            </label>
+
+            <fieldset className="auth-avatar-fieldset">
+              <legend>
+                选择你的伙伴
+                <small>它会陪你出现在工作台</small>
+              </legend>
+              <div className="auth-avatar-grid">
+                {avatarOptions.map((option, index) => (
+                  <label className="auth-avatar-option" key={option.key}>
+                    <input
+                      ref={(element) => { avatarRefs.current[index] = element; }}
+                      type="radio"
+                      name="avatar"
+                      value={option.key}
+                      checked={avatarKey === option.key}
+                      onChange={() => setAvatarKey(option.key)}
+                      onKeyDown={(event) => {
+                        const direction = event.key === "ArrowRight" || event.key === "ArrowDown"
+                          ? 1
+                          : event.key === "ArrowLeft" || event.key === "ArrowUp"
+                            ? -1
+                            : 0;
+                        if (!direction) return;
+                        event.preventDefault();
+                        const nextIndex = (index + direction + avatarOptions.length) % avatarOptions.length;
+                        setAvatarKey(avatarOptions[nextIndex].key);
+                        requestAnimationFrame(() => avatarRefs.current[nextIndex]?.focus());
+                      }}
+                    />
+                    <span className="auth-avatar-choice">
+                      <UserAvatar avatarKey={option.key} />
+                      <span>{option.label}</span>
+                      <Check className="auth-avatar-check" aria-hidden="true" size={13} strokeWidth={2.4} />
+                    </span>
+                  </label>
+                ))}
+              </div>
+            </fieldset>
+          </>
         )}
         <label>
           <span>邮箱</span>

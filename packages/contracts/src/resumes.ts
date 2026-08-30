@@ -9,6 +9,7 @@ import type {
   TailorTask
 } from "@offerflow/domain";
 import { isRecord } from "./common.ts";
+import type { SessionUser } from "./auth.ts";
 
 export interface ResumeVersionRecord {
   version: ResumeVersion;
@@ -66,11 +67,7 @@ export interface ExchangeHandoffRequest {
 export interface ExchangeHandoffResponse {
   accessToken: string;
   expiresAt: string;
-  user: {
-    id: string;
-    email: string;
-    displayName: string;
-  };
+  user: SessionUser;
   targetPath: string;
 }
 

@@ -636,8 +636,8 @@
 .account-trigger:hover,
 .account-menu.is-open .account-trigger { background: var(--of-surface-muted); }
 
-.account-avatar,
-.mobile-avatar {
+.account-avatar:not(.user-avatar),
+.mobile-avatar:not(.user-avatar) {
   display: grid;
   place-items: center;
   color: var(--of-brand-700);

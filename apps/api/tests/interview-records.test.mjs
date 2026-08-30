@@ -259,6 +259,7 @@ test("transcript and audio create private interview records and feed chat retrie
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       displayName: "另一个用户",
+      avatarKey: "mint",
       email: "other-interview@example.com",
       password: "strong-pass-2026",
       acceptPrivacy: true

@@ -7,10 +7,12 @@ import type {
   ApplicationSyncItem,
   ApplicationSyncRequest,
   ApplicationSyncResponse,
+  AvatarKey,
   CreateTailorTaskRequest,
   ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
+import { isAvatarKey } from "@offerflow/contracts";
 import {
   decideApplicationRevision,
   mergeAcceptedApplication,
@@ -180,7 +182,7 @@ export class MemoryStore implements OfferFlowStore {
       : undefined;
     this.loadPersistedState();
     if (!this.usersByEmail.has("demo@offerflow.cn")) {
-      this.createUser("demo@offerflow.cn", "林知夏", "offerflow2026", "demo-user");
+      this.createUser("demo@offerflow.cn", "林知夏", "offerflow2026", "sprout", "demo-user");
     }
   }
 
@@ -190,7 +192,10 @@ export class MemoryStore implements OfferFlowStore {
       const parsed = JSON.parse(readFileSync(this.dataFile, "utf8")) as PersistedStoreState;
       if (!parsed || parsed.version !== 1) return;
       for (const user of parsed.users ?? []) {
-        this.users.set(user.id, user);
+        this.users.set(user.id, {
+          ...user,
+          avatarKey: isAvatarKey(user.avatarKey) ? user.avatarKey : "sprout"
+        });
         this.usersByEmail.set(normalizeEmail(user.email), user.id);
       }
       for (const stored of parsed.conversations ?? []) {
@@ -266,7 +271,7 @@ export class MemoryStore implements OfferFlowStore {
     renameSync(temporary, this.dataFile);
   }
 
-  createUser(email: string, displayName: string, password: string, fixedId?: string): SessionUser {
+  createUser(email: string, displayName: string, password: string, avatarKey: AvatarKey = "sprout", fixedId?: string): SessionUser {
     const normalizedEmail = normalizeEmail(email);
     if (this.usersByEmail.has(normalizedEmail)) {
       throw new MemoryStoreError("EMAIL_EXISTS", "这个邮箱已经注册", 409);
@@ -276,6 +281,7 @@ export class MemoryStore implements OfferFlowStore {
       id: fixedId ?? randomUUID(),
       email: normalizedEmail,
       displayName: displayName.trim() || normalizedEmail.split("@")[0],
+      avatarKey,
       passwordHash: passwordValue.hash,
       passwordSalt: passwordValue.salt
     };
@@ -413,7 +419,12 @@ export class MemoryStore implements OfferFlowStore {
   }
 
   private publicUser(user: StoredUser): SessionUser {
-    return { id: user.id, email: user.email, displayName: user.displayName };
+    return {
+      id: user.id,
+      email: user.email,
+      displayName: user.displayName,
+      avatarKey: isAvatarKey(user.avatarKey) ? user.avatarKey : "sprout"
+    };
   }
 
   createDeviceCode(userId: string, now = Date.now()): { code: string; expiresAt: string } {

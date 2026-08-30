@@ -105,6 +105,7 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       displayName: "测试用户",
+      avatarKey: "cloud",
       email: "candidate@example.com",
       password: "strong-pass-2026",
       acceptPrivacy: true
@@ -120,12 +121,14 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   });
   assert.equal(loggedIn.response.status, 200);
   assert.equal(loggedIn.payload.data.user.displayName, "测试用户");
+  assert.equal(loggedIn.payload.data.user.avatarKey, "cloud");
 
   const duplicateRegistration = await jsonRequest(app.baseUrl, "/v1/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       displayName: "重复用户",
+      avatarKey: "berry",
       email: "candidate@example.com",
       password: "strong-pass-2026",
       acceptPrivacy: true

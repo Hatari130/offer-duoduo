@@ -5,6 +5,7 @@ import { AuthProvider } from "./app/AuthContext";
 import "@offerflow/ui/tokens.css";
 import "@offerflow/ui/primitives.css";
 import "./styles/global.css";
+import "./styles/avatar.css";
 import "./styles/auth.css";
 import "./styles/shell.css";
 import "./styles/feedback.css";

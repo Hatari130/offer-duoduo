@@ -33,6 +33,7 @@ import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
 import { Logo } from "../components/Logo";
 import { FeedbackDialog } from "../components/FeedbackDialog";
+import { UserAvatar } from "../components/UserAvatar";
 
 interface AppLinkProps extends PropsWithChildren {
   href: string;
@@ -376,7 +377,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         {isVisitor ? (
           <button className="mobile-login-link" type="button" onClick={() => requestLogin("登录后即可同步并继续使用全部功能。")}>登录</button>
         ) : (
-          <span className="mobile-avatar" aria-hidden="true">{user?.displayName.slice(0, 1) || "O"}</span>
+          <UserAvatar avatarKey={user?.avatarKey} className="mobile-avatar" />
         )}
       </header>
 
@@ -587,14 +588,14 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                   aria-controls="account-popover"
                   onClick={() => setAccountOpen((current) => !current)}
                 >
-                  <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
+                  <UserAvatar avatarKey={user?.avatarKey} className="account-avatar" />
                   <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>已登录</small></span>
                   <ChevronDown aria-hidden="true" size={15} />
                 </button>
 
                 <div className="account-popover" id="account-popover" aria-label="账户菜单">
                   <header className="account-profile">
-                    <span className="account-avatar account-avatar--large">{user?.displayName.slice(0, 1) || "O"}</span>
+                    <UserAvatar avatarKey={user?.avatarKey} className="account-avatar account-avatar--large" />
                     <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>{user?.email}</small></span>
                   </header>
 

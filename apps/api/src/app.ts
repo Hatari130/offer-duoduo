@@ -14,6 +14,7 @@ import type {
   MessageFeedbackRequest,
   RetryMessageRequest,
   SendMessageRequest,
+  SessionUser,
   UpdateConversationRequest,
   UpdateApplicationRequest
 } from "@offerflow/contracts";
@@ -590,7 +591,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   }
 
   async function issueSession(
-    user: { id: string; email: string; displayName: string },
+    user: SessionUser,
     scope: "user" | "device" = "user",
     deviceId?: string,
     deviceName?: string
@@ -807,7 +808,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         enforceAuthRateLimit(request);
         const body = await readJson(request);
         if (!isRegisterRequest(body)) {
-          throw new HttpError(400, "INVALID_REGISTRATION", "请完整填写姓名、邮箱和密码");
+          throw new HttpError(400, "INVALID_REGISTRATION", "请完整填写称呼、头像、邮箱和密码");
         }
         if (body.password.length < 8) {
           throw new HttpError(400, "WEAK_PASSWORD", "密码至少需要 8 个字符");
@@ -821,7 +822,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.includes(body.email.trim().toLowerCase())) {
           throw new HttpError(403, "REGISTRATION_NOT_ALLOWED", "这个邮箱尚未获得注册权限");
         }
-        const user = await store.createUser(body.email, body.displayName, body.password);
+        const user = await store.createUser(body.email, body.displayName, body.password, body.avatarKey);
         await store.recordConsent(user.id, "privacy_and_terms", "2026-08-26");
         const session = await issueSession(user);
         setSessionCookie(response, config, session.accessToken, session.expiresAt);

@@ -1,0 +1,38 @@
+.user-avatar {
+  --avatar-fill: #88a87b;
+  --avatar-cap: #65715a;
+  --avatar-wash: #e8ede5;
+
+  display: inline-grid;
+  width: 2rem;
+  height: 2rem;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  background: var(--avatar-wash);
+  border-radius: 0.7rem;
+  outline: 1px solid oklch(0 0 0 / 0.1);
+  outline-offset: -1px;
+}
+
+.user-avatar svg { width: 100%; height: 100%; }
+.user-avatar__shape { fill: var(--avatar-fill); }
+.user-avatar__cap { fill: var(--avatar-cap); }
+.user-avatar__ink { fill: var(--of-ink); }
+.user-avatar__face,
+.user-avatar__detail {
+  fill: none;
+  stroke: var(--of-ink);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.user-avatar__face { stroke-width: 3.4; }
+.user-avatar__detail { stroke-width: 2.2; opacity: 0.72; }
+
+.user-avatar--sunny { --avatar-fill: #ddb54f; --avatar-cap: #ad7d28; --avatar-wash: #f7ebd3; }
+.user-avatar--peach { --avatar-fill: #d98d72; --avatar-cap: #ad6042; --avatar-wash: #f7e6e0; }
+.user-avatar--cloud { --avatar-fill: #7e9db5; --avatar-cap: #56778f; --avatar-wash: #e7f0f5; }
+.user-avatar--berry { --avatar-fill: #9a87b7; --avatar-cap: #65715a; --avatar-wash: #eee8f4; }
+.user-avatar--acorn { --avatar-fill: #c98a58; --avatar-cap: #87533d; --avatar-wash: #f3e3da; }
+.user-avatar--mint { --avatar-fill: #72a58c; --avatar-cap: #567c69; --avatar-wash: #e8ede5; }
+.user-avatar--coral { --avatar-fill: #ca7f83; --avatar-cap: #9d5f67; --avatar-wash: #f7e6e7; }

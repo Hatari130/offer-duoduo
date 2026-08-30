@@ -2,6 +2,7 @@ import type {
   ApplicationSyncItem,
   ApplicationSyncRequest,
   ApplicationSyncResponse,
+  AvatarKey,
   CreateTailorTaskRequest,
   ResumeVersionRecord,
   SessionUser
@@ -77,7 +78,7 @@ export interface OfferFlowStore {
   initialize?(): Awaitable<void>;
   close?(): Awaitable<void>;
 
-  createUser(email: string, displayName: string, password: string, fixedId?: string): Awaitable<SessionUser>;
+  createUser(email: string, displayName: string, password: string, avatarKey: AvatarKey, fixedId?: string): Awaitable<SessionUser>;
   authenticate(email: string, password: string): Awaitable<SessionUser | undefined>;
   getUser(userId: string): Awaitable<SessionUser | undefined>;
   getDemoUser(): Awaitable<SessionUser | undefined>;
