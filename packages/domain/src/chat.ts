@@ -20,8 +20,8 @@ export interface ChatAttachment {
   mimeType: string;
   size: number;
   url?: string;
-  /** Plain text extracted in the browser. Binary files are deliberately not
-   * accepted until the product has a trustworthy parser for them. */
+  /** Plain text extracted in the browser. PDFs are converted to text
+   * client-side with pdf.js; other binary formats are not accepted. */
   content?: string;
 }
 

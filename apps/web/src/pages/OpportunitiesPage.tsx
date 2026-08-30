@@ -3,7 +3,6 @@ import type { OpportunityStatus } from "@offerflow/domain";
 import {
   AlarmClock,
   ArrowRight,
-  ArrowUpRight,
   BriefcaseBusiness,
   CalendarClock,
   CircleAlert,
@@ -19,11 +18,7 @@ import {
   UsersRound,
   X
 } from "lucide-react";
-import {
-  CAMPUS_HIRING_FEED_URL,
-  fetchCampusHiringFeed,
-  type CampusHiringOpportunity
-} from "../features/opportunities/campusHiringFeed";
+import { fetchCampusHiringFeed, type CampusHiringOpportunity } from "../features/opportunities/campusHiringFeed";
 import { navigate } from "../app/router";
 
 const PAGE_SIZE = 20;
@@ -295,10 +290,10 @@ export function OpportunitiesPage() {
   const initialLoading = loading && opportunities.length === 0;
   const sourceState = initialLoading ? "loading" : error && opportunities.length === 0 ? "error" : "connected";
   const sourceStatusLabel = sourceState === "loading"
-    ? "公开 JSON 连接中"
+    ? "校招数据同步中"
     : sourceState === "error"
-      ? "公开 JSON 连接失败"
-      : "公开 JSON 已直连";
+      ? "校招数据同步失败"
+      : "校招数据已同步";
   const resultsAnnouncement = loading
     ? "正在刷新校招信息"
     : `找到 ${filtered.length.toLocaleString("zh-CN")} 条校招机会，当前第 ${currentPage} 页，共 ${totalPages} 页`;
@@ -354,23 +349,17 @@ export function OpportunitiesPage() {
           <p>聚合公开校招信息、投递窗口与截止提醒，帮助你快速筛选值得关注的机会。</p>
         </div>
 
-        <div className="opportunity-header-aside">
-          <div className={`opportunity-source-status opportunity-source-status--${sourceState}`} role="status" aria-live="polite">
-            <a
-              className="opportunity-source-badge"
-              href={CAMPUS_HIRING_FEED_URL}
-              target="_blank"
-              rel="noreferrer"
-              aria-label={`${sourceStatusLabel}，查看公开 JSON 数据源`}
-            >
-              {sourceState === "loading"
-                ? <RefreshCw className="spin" aria-hidden="true" size={16} strokeWidth={2} />
-                : sourceState === "error"
+          <div className="opportunity-header-aside">
+            <div className={`opportunity-source-status opportunity-source-status--${sourceState}`} role="status" aria-live="polite">
+              <div className="opportunity-source-badge">
+                {sourceState === "loading"
+                  ? <RefreshCw className="spin" aria-hidden="true" size={16} strokeWidth={2} />
+                  : sourceState === "error"
                   ? <CircleAlert aria-hidden="true" size={16} strokeWidth={2} />
                   : <CircleCheck aria-hidden="true" size={16} strokeWidth={2} />}
-              <span>{sourceStatusLabel}</span>
-              <i aria-hidden="true" />
-            </a>
+                <span>{sourceStatusLabel}</span>
+                <i aria-hidden="true" />
+              </div>
             <small>
               {sourceState === "loading"
                 ? "正在读取最新数据"
@@ -515,10 +504,9 @@ export function OpportunitiesPage() {
           </div>
         ) : opportunities.length === 0 ? (
           <div className="integration-empty">
-            <span className="page-kicker">公开数据源</span>
+            <span className="page-kicker">校招数据</span>
             <h2>暂时没有可展示的校招信息</h2>
-            <p>数据会直接从公开 JSON 接口读取，无需额外中转。</p>
-            <a className="source-link" href={CAMPUS_HIRING_FEED_URL} target="_blank" rel="noreferrer">查看原始数据源 <ArrowUpRight aria-hidden="true" size={15} /></a>
+            <p>暂时未获取到校招数据，请稍后刷新。</p>
           </div>
         ) : filtered.length === 0 ? (
           <div className="filter-empty">

@@ -1,7 +1,8 @@
-import { useLayoutEffect, useRef, type ChangeEvent, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
 import type { ChatAttachment } from "@offerflow/domain";
-import { ArrowUp, FileText, Paperclip, Square, X } from "lucide-react";
+import { ArrowUp, FileText, LoaderCircle, Paperclip, Square, X } from "lucide-react";
 import { createUuid } from "../../app/id";
+import { extractPdfAttachmentText, MAX_PDF_ATTACHMENT_BYTES } from "./pdfAttachment";
 
 interface ChatComposerProps {
   value: string;
@@ -38,6 +39,7 @@ export function ChatComposer({
 }: ChatComposerProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [parsing, setParsing] = useState(false);
 
   useLayoutEffect(() => {
     if (textareaRef.current) fitTextarea(textareaRef.current);
@@ -46,20 +48,46 @@ export function ChatComposer({
   const addFiles = async (event: ChangeEvent<HTMLInputElement>) => {
     const files = [...(event.target.files ?? [])].slice(0, 2 - attachments.length);
     event.target.value = "";
-    const invalid = files.find((file) => !/\.(?:txt|md)$/i.test(file.name) || file.size > 200_000);
+    const invalid = files.find((file) =>
+      /\.pdf$/i.test(file.name)
+        ? file.size > MAX_PDF_ATTACHMENT_BYTES
+        : !/\.(?:txt|md)$/i.test(file.name) || file.size > 200_000
+    );
     if (invalid) {
-      onAttachmentError?.("请选择不超过 200 KB 的 TXT 或 Markdown 文件。");
+      onAttachmentError?.("请选择不超过 200 KB 的 TXT / Markdown，或不超过 8 MB 的 PDF 文件。");
       return;
     }
-    const next = await Promise.all(files.map(async (file) => ({
-      id: createUuid(),
-      name: file.name,
-      mimeType: /\.md$/i.test(file.name) ? "text/markdown" : "text/plain",
-      size: file.size,
-      content: await file.text()
-    })));
-    onAttachmentError?.("");
-    onAttachmentsChange([...attachments, ...next]);
+    setParsing(true);
+    try {
+      const next = await Promise.all(
+        files.map(async (file): Promise<ChatAttachment> => {
+          if (/\.pdf$/i.test(file.name)) {
+            const content = await extractPdfAttachmentText(await file.arrayBuffer());
+            if (!content.trim()) throw new Error("empty-pdf");
+            return {
+              id: createUuid(),
+              name: file.name,
+              mimeType: "application/pdf",
+              size: file.size,
+              content
+            };
+          }
+          return {
+            id: createUuid(),
+            name: file.name,
+            mimeType: /\.md$/i.test(file.name) ? "text/markdown" : "text/plain",
+            size: file.size,
+            content: await file.text()
+          };
+        })
+      );
+      onAttachmentError?.("");
+      onAttachmentsChange([...attachments, ...next]);
+    } catch {
+      onAttachmentError?.("PDF 解析失败，请确认文件完整未加密后重试。");
+    } finally {
+      setParsing(false);
+    }
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
@@ -110,21 +138,25 @@ export function ChatComposer({
             className="sr-only"
             type="file"
             multiple
-            accept=".txt,.md,text/plain,text/markdown"
+            accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
             onChange={(event) => void addFiles(event)}
           />
           <button
             className="composer-icon-button"
             type="button"
-            aria-label="添加 TXT 或 Markdown 资料"
-            title="添加 TXT 或 Markdown 资料（每份不超过 200 KB）"
+            aria-label={parsing ? "正在解析附件" : "添加 TXT、Markdown 或 PDF 资料"}
+            title={parsing ? "正在解析附件…" : "添加 TXT / Markdown（≤200 KB）或 PDF（≤8 MB）资料"}
             onClick={() => {
               if (onAttachmentRequest && !onAttachmentRequest()) return;
               fileRef.current?.click();
             }}
-            disabled={attachments.length >= 2}
+            disabled={attachments.length >= 2 || parsing}
           >
-            <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />
+            {parsing ? (
+              <LoaderCircle className="spin" aria-hidden="true" size={18} strokeWidth={1.7} />
+            ) : (
+              <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />
+            )}
           </button>
         </div>
         {streaming ? (

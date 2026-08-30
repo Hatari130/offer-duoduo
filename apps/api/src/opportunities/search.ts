@@ -2,6 +2,7 @@ import { readFile } from "node:fs/promises";
 import {
   normalizeCampusHiringFeed,
   opportunityStatus,
+  type ChatMessage,
   type ChatOpportunityResults,
   type OpportunityFeedSnapshot,
   type RecruitmentOpportunity
@@ -42,7 +43,21 @@ interface OpportunityFilters {
   graduationYears: string[];
   batches: string[];
   companies: string[];
+  updatedRange?: {
+    start: number;
+    end: number;
+  };
 }
+
+export interface OpportunitySearchResolution {
+  prompt: string;
+  contextPrompt?: string;
+}
+
+type OpportunitySearchHistoryMessage = Pick<ChatMessage, "role" | "content" | "opportunityResults">;
+
+const SHANGHAI_OFFSET_MS = 8 * 60 * 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
 
 function normalized(value: string): string {
   return value.toLowerCase().replace(/[\s·•・—_（）()【】\[\]]+/g, "");
@@ -63,7 +78,44 @@ function companyAliases(company: string): string[] {
   return short.length >= 2 && short !== compact ? [compact, short] : [compact];
 }
 
-function filtersFor(prompt: string, opportunities: RecruitmentOpportunity[]): OpportunityFilters {
+function shanghaiDayStart(now: Date, dayOffset = 0): number {
+  const shanghai = new Date(now.getTime() + SHANGHAI_OFFSET_MS);
+  return Date.UTC(
+    shanghai.getUTCFullYear(),
+    shanghai.getUTCMonth(),
+    shanghai.getUTCDate() + dayOffset
+  ) - SHANGHAI_OFFSET_MS;
+}
+
+function updatedRangeFor(prompt: string, now: Date): OpportunityFilters["updatedRange"] {
+  const nowMs = now.getTime();
+  if (/(?:昨天|昨日)(?:更新|发布|新增|上新)?/.test(prompt)) {
+    return { start: shanghaiDayStart(now, -1), end: shanghaiDayStart(now) };
+  }
+  if (/(?:今天|今日)(?:更新|发布|新增|上新)?/.test(prompt)) {
+    return { start: shanghaiDayStart(now), end: nowMs + 1 };
+  }
+  if (/(?:近|最近|过去)\s*24\s*(?:个)?小时|24\s*小时内/.test(prompt)) {
+    return { start: nowMs - DAY_MS, end: nowMs + 1 };
+  }
+  if (/(?:近|最近|过去)\s*(?:1|一)\s*(?:周|星期)|(?:1|一)\s*(?:周|星期)内/.test(prompt)) {
+    return { start: nowMs - 7 * DAY_MS, end: nowMs + 1 };
+  }
+  const recentDays = prompt.match(/(?:近|最近|过去)\s*(\d{1,2})\s*天/);
+  if (recentDays) {
+    const days = Math.max(1, Math.min(Number(recentDays[1]), 90));
+    return { start: nowMs - days * DAY_MS, end: nowMs + 1 };
+  }
+  if (/本周(?:更新|发布|新增|上新)?/.test(prompt)) {
+    const todayStart = shanghaiDayStart(now);
+    const shanghaiToday = new Date(todayStart + SHANGHAI_OFFSET_MS);
+    const daysSinceMonday = (shanghaiToday.getUTCDay() + 6) % 7;
+    return { start: todayStart - daysSinceMonday * DAY_MS, end: nowMs + 1 };
+  }
+  return undefined;
+}
+
+function filtersFor(prompt: string, opportunities: RecruitmentOpportunity[], now: Date): OpportunityFilters {
   const compactPrompt = normalized(prompt);
   const role = ROLE_FILTERS.find((candidate) => candidate.pattern.test(prompt));
   const graduationYears = Array.from(prompt.matchAll(/(20\d{2})\s*届/g), (match) => `${match[1]}届`);
@@ -76,7 +128,19 @@ function filtersFor(prompt: string, opportunities: RecruitmentOpportunity[]): Op
     cities: CITIES.filter((city) => prompt.includes(city)),
     graduationYears,
     batches,
-    companies
+    companies,
+    updatedRange: updatedRangeFor(prompt, now)
+  };
+}
+
+function mergedFilters(context: OpportunityFilters, current: OpportunityFilters): OpportunityFilters {
+  return {
+    roleGroups: current.roleGroups.length ? current.roleGroups : context.roleGroups,
+    cities: current.cities.length ? current.cities : context.cities,
+    graduationYears: current.graduationYears.length ? current.graduationYears : context.graduationYears,
+    batches: current.batches.length ? current.batches : context.batches,
+    companies: current.companies.length ? current.companies : context.companies,
+    updatedRange: current.updatedRange ?? context.updatedRange
   };
 }
 
@@ -98,6 +162,10 @@ function matchesFilters(opportunity: RecruitmentOpportunity, filters: Opportunit
   if (filters.graduationYears.length && !filters.graduationYears.some((year) => opportunity.graduationYears.some((item) => item.includes(year)))) return false;
   if (filters.batches.length && !filters.batches.some((batch) => `${opportunity.batch || ""} ${opportunity.title}`.includes(batch))) return false;
   if (filters.companies.length && !filters.companies.includes(opportunity.company)) return false;
+  if (filters.updatedRange) {
+    const updatedAt = Date.parse(opportunity.updatedAt || "");
+    if (!Number.isFinite(updatedAt) || updatedAt < filters.updatedRange.start || updatedAt >= filters.updatedRange.end) return false;
+  }
   return true;
 }
 
@@ -125,24 +193,75 @@ export function isOpportunitySearchPrompt(prompt: string): boolean {
   if (asksAboutOwnApplications) return false;
   const opportunityNoun = /岗位|职位|招聘(?:信息|机会)?|工作机会|实习机会|校招机会/.test(value);
   const listingCue = /哪些|有什么|有没有|找(?:一下|一找)?|搜索|查询|推荐|列出|看看|适合|可投|能投|在招|开放|投递链接|申请链接/.test(value);
+  const plainWorkSearch = /(?:找(?:一下|一找|一份)?|有什么|有哪些|有没有|搜索|查询|推荐(?!信)).{0,20}工作|工作.{0,20}(?:机会|岗位|职位|招聘|可投|能投|在招|推荐(?!信))/.test(value);
   const campusContext = /应届生?|毕业生|校招生?|校招|春招|秋招/.test(value);
   const campusSearchCue = /推荐|找|看看|哪些|有什么|有没有|适合|可投|能投|在招|机会/.test(value);
-  return (opportunityNoun && listingCue) || (campusContext && campusSearchCue);
+  return (opportunityNoun && listingCue) || plainWorkSearch || (campusContext && campusSearchCue);
+}
+
+export function isOpportunitySearchFollowUp(prompt: string): boolean {
+  const value = prompt.trim();
+  if (!value) return false;
+  const asksAboutOwnApplications = /(?:我的|我已|我投|投过|投了).*(?:投递|申请|岗位|职位).*(?:记录|进度|状态|结果)|(?:投递|申请)(?:记录|进度|状态)/.test(value);
+  if (asksAboutOwnApplications) return false;
+  const asksForCareerAdvice = /面试|简历|能力|技能|岗位职责|工作内容|职业规划|怎么准备|如何准备/.test(value);
+  if (asksForCareerAdvice) return false;
+  const capabilityQuestion = /岗位库|招聘库|岗位数据|招聘数据|json\s*数据|数据库/i.test(value);
+  const resultContinuation = /还有吗|还有没有|换一批|更多|继续(?:找|查|看)|这些|上面|刚才|链接呢|能投吗/.test(value);
+  const filterRefinement = /(?:只看|只想|改成|换成|那|再看|优先|不要).*(?:岗位|职位|工作|春招|秋招|实习|20\d{2}\s*届|今天|昨天|昨日|近\s*\d+\s*天|(?:近|最近|过去)?\s*(?:1|一)\s*(?:周|星期)|本周)|(?:今天|昨天|昨日|近\s*\d+\s*天|(?:近|最近|过去)?\s*(?:1|一)\s*(?:周|星期)(?:内)?|本周)(?:更新|发布|新增|上新)?(?:的)?(?:呢|吗|有哪些)?/.test(value)
+    || CITIES.some((city) => value.includes(city))
+    || ROLE_FILTERS.some((candidate) => candidate.pattern.test(value));
+  return capabilityQuestion || resultContinuation || filterRefinement;
+}
+
+export function resolveOpportunitySearchPrompt(
+  prompt: string,
+  history: readonly OpportunitySearchHistoryMessage[] = []
+): OpportunitySearchResolution | undefined {
+  if (isOpportunitySearchPrompt(prompt)) return { prompt };
+  if (!isOpportunitySearchFollowUp(prompt)) return undefined;
+
+  let lastUserIndex = -1;
+  let lastUserPrompt: string | undefined;
+  let lastResultIndex = -1;
+  let lastResultQuery: string | undefined;
+  history.forEach((message, index) => {
+    if (message.role === "user") {
+      lastUserIndex = index;
+      lastUserPrompt = message.content;
+    }
+    if (message.role === "assistant" && message.opportunityResults) {
+      lastResultIndex = index;
+      lastResultQuery = message.opportunityResults.query;
+    }
+  });
+
+  if (lastResultQuery && lastResultIndex > lastUserIndex) {
+    return { prompt, contextPrompt: lastResultQuery };
+  }
+  if (lastUserPrompt && isOpportunitySearchPrompt(lastUserPrompt)) {
+    return { prompt, contextPrompt: lastUserPrompt };
+  }
+  return undefined;
 }
 
 export function searchOpportunitySnapshot(
   snapshot: OpportunityFeedSnapshot,
   prompt: string,
-  options: { limit?: number; now?: Date; sourceAvailable?: boolean } = {}
+  options: { limit?: number; now?: Date; sourceAvailable?: boolean; contextPrompt?: string } = {}
 ): ChatOpportunityResults {
   const limit = Math.max(1, Math.min(options.limit ?? 5, 5));
   const now = options.now ?? new Date();
-  const filters = filtersFor(prompt, snapshot.opportunities);
+  const currentFilters = filtersFor(prompt, snapshot.opportunities, now);
+  const filters = options.contextPrompt
+    ? mergedFilters(filtersFor(options.contextPrompt, snapshot.opportunities, now), currentFilters)
+    : currentFilters;
   const isBroadSearch = !filters.roleGroups.length
     && !filters.cities.length
     && !filters.graduationYears.length
     && !filters.batches.length
-    && !filters.companies.length;
+    && !filters.companies.length
+    && !filters.updatedRange;
   const deduplicated = new Map<string, RecruitmentOpportunity>();
 
   for (const opportunity of snapshot.opportunities) {
@@ -164,7 +283,7 @@ export function searchOpportunitySnapshot(
   });
 
   return {
-    query: prompt,
+    query: options.contextPrompt ? `${options.contextPrompt}\n${prompt}` : prompt,
     total: matches.length,
     items: matches.slice(0, limit),
     sourceAvailable: options.sourceAvailable ?? true,

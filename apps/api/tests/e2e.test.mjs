@@ -342,7 +342,8 @@ test("opportunity catalogue is public and only accepts trusted importer snapshot
     cities: ["成都"],
     officialUrl: "https://example.com/apply",
     sourceUrl: "https://example.com/notice",
-    sourceName: "Campus Hiring 公开数据"
+    sourceName: "Campus Hiring 公开数据",
+    updatedAt: new Date().toISOString()
   };
   const synced = await jsonRequest(app.baseUrl, "/v1/opportunities/sync", {
     method: "POST",
@@ -387,6 +388,32 @@ test("opportunity catalogue is public and only accepts trusted importer snapshot
   assert.match(chatStream, /先给你展示 1 条当前可投递的校招岗位/);
   assert.match(chatStream, /"opportunityResults"/);
   assert.match(chatStream, /https:\/\/example\.com\/apply/);
+
+  const recentFollowUp = await fetch(`${app.baseUrl}/v1/conversations/${conversation.payload.data.conversation.id}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      content: "只想最近一周更新的",
+      clientMessageId: "opportunity-recent-week-follow-up"
+    })
+  });
+  const recentFollowUpStream = await recentFollowUp.text();
+  assert.match(recentFollowUpStream, /"opportunityResults"/);
+  assert.match(recentFollowUpStream, /https:\/\/example\.com\/apply/);
+  assert.doesNotMatch(recentFollowUpStream, /无法直接访问实时招聘网站/);
+
+  const followUp = await fetch(`${app.baseUrl}/v1/conversations/${conversation.payload.data.conversation.id}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      content: "你不是有json数据没",
+      clientMessageId: "opportunity-search-follow-up"
+    })
+  });
+  const followUpStream = await followUp.text();
+  assert.match(followUpStream, /"opportunityResults"/);
+  assert.match(followUpStream, /https:\/\/example\.com\/apply/);
+  assert.doesNotMatch(followUpStream, /没有接入.*岗位数据库/);
 
   const importStatus = await jsonRequest(app.baseUrl, "/v1/imports/opportunities/status");
   assert.equal(importStatus.payload.data.status, "ready");

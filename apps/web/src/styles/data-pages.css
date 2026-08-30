@@ -370,18 +370,6 @@
   box-shadow: 0 1px 2px rgb(23 23 20 / 0.035);
   font-size: 0.78rem;
   font-weight: 680;
-  text-decoration: none;
-  transition: border-color var(--of-duration-fast) var(--of-ease-standard), transform var(--of-duration-fast) var(--of-ease-standard);
-}
-
-.opportunity-source-badge:hover {
-  border-color: color-mix(in srgb, currentColor 28%, var(--of-line-subtle));
-  transform: translateY(-1px);
-}
-
-.opportunity-source-badge:focus-visible {
-  outline: 2px solid var(--of-focus);
-  outline-offset: 2px;
 }
 
 .opportunity-source-badge i {

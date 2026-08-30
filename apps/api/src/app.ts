@@ -49,6 +49,7 @@ import type {
 } from "@offerflow/domain";
 import { opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
 import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
+import { opportunityCapabilityAnswer } from "./ai/capabilities.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
 import {
@@ -62,9 +63,9 @@ import {
 import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
 import {
   fetchCampusHiringSnapshot,
-  isOpportunitySearchPrompt,
   loadCampusHiringSnapshot,
   opportunitySearchAnswer,
+  resolveOpportunitySearchPrompt,
   searchOpportunitySnapshot
 } from "./opportunities/search.ts";
 import { MemoryStore } from "./store/memory-store.ts";
@@ -330,13 +331,15 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return { snapshot, sourceAvailable };
   }
 
-  async function searchChatOpportunities(prompt: string): Promise<ChatOpportunityResults | undefined> {
-    if (!isOpportunitySearchPrompt(prompt)) return undefined;
+  async function searchChatOpportunities(prompt: string, history: ChatMessage[]): Promise<ChatOpportunityResults | undefined> {
+    const resolution = resolveOpportunitySearchPrompt(prompt, history);
+    if (!resolution) return undefined;
     const { snapshot, sourceAvailable } = await freshOpportunitySnapshot();
 
-    return searchOpportunitySnapshot(snapshot, prompt, {
+    return searchOpportunitySnapshot(snapshot, resolution.prompt, {
       limit: 5,
-      sourceAvailable
+      sourceAvailable,
+      contextPrompt: resolution.contextPrompt
     });
   }
 
@@ -593,12 +596,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     attachments: ChatAttachment[] = [],
     context: ChatContextReference[] = []
   ): Promise<void> {
-    const opportunityResults = await searchChatOpportunities(prompt);
+    const opportunityResults = await searchChatOpportunities(prompt, history);
+    const capabilityAnswer = opportunityResults ? undefined : opportunityCapabilityAnswer(prompt);
     const selectedEntries = await selectedContextKnowledge(userId, context);
     const attachmentEntries = attachmentKnowledge(attachments);
     const contextualEntries = [...selectedEntries, ...attachmentEntries];
     const explicitlySelectedEntries = [...(context.length ? selectedEntries : []), ...attachmentEntries];
-    const citations = opportunityResults
+    const citations = opportunityResults || capabilityAnswer
       ? []
       : [...explicitCitations(explicitlySelectedEntries), ...knowledge.search(prompt, 4, contextualEntries)]
         .filter((citation, index, items) => items.findIndex((item) => item.id === citation.id) === index)
@@ -629,6 +633,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     try {
       if (opportunityResults) {
         content = opportunitySearchAnswer(opportunityResults);
+        await writeSse(response, {
+          type: "message.delta",
+          messageId: assistantMessage.id,
+          delta: content
+        });
+      } else if (capabilityAnswer) {
+        content = capabilityAnswer;
         await writeSse(response, {
           type: "message.delta",
           messageId: assistantMessage.id,
