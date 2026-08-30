@@ -34,6 +34,7 @@ import {
   type InterviewRecordInput,
   type IssuedStoreSession,
   type OfferFlowStore,
+  type ProductFeedbackInput,
   type SessionRecord,
   type SessionScope
 } from "./store.ts";
@@ -114,6 +115,19 @@ export class PostgresStore implements OfferFlowStore {
 
   async close(): Promise<void> {
     await this.pool.end();
+  }
+
+  async createProductFeedback(input: ProductFeedbackInput): Promise<{ id: string; createdAt: string }> {
+    const result = await this.pool.query(
+      `INSERT INTO product_feedback (user_id, category, content, contact, page_path)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING id, created_at`,
+      [input.userId ?? null, input.category, input.content, input.contact ?? null, input.pagePath ?? null]
+    );
+    return {
+      id: String(result.rows[0].id),
+      createdAt: new Date(result.rows[0].created_at).toISOString()
+    };
   }
 
   async createUser(email: string, displayName: string, password: string, fixedId?: string): Promise<SessionUser> {

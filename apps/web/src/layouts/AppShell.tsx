@@ -7,9 +7,7 @@ import {
   Check,
   ChevronDown,
   Clock3,
-  Cloud,
   FileText,
-  Gift,
   Home,
   Info,
   Link2,
@@ -34,6 +32,7 @@ import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
 import { Logo } from "../components/Logo";
+import { FeedbackDialog } from "../components/FeedbackDialog";
 
 interface AppLinkProps extends PropsWithChildren {
   href: string;
@@ -56,10 +55,10 @@ function AppLink({ href, className, onNavigate, guard, ariaCurrent, title, child
 }
 
 const primaryNavigation = [
-  { href: "/app/chat", label: "求职助手", mobileLabel: "助手", icon: MessageCircleMore, requiresAuth: false },
+  { href: "/app/chat", label: "求职助手", mobileLabel: "助手", icon: MessageCircleMore, requiresAuth: false, badge: "内测中" },
   { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper, requiresAuth: false },
   { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2, requiresAuth: false },
-  { href: "/app/resumes", label: "简历中心", mobileLabel: "简历", icon: FileText, requiresAuth: true },
+  { href: "/app/resumes", label: "简历中心", mobileLabel: "简历", icon: FileText, requiresAuth: true, badge: "内测中" },
   { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness, requiresAuth: true }
 ];
 
@@ -108,9 +107,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const [pinnedConversationIds, setPinnedConversationIds] = useState<string[]>([]);
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [accountOpen, setAccountOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
+  const [feedbackOpen, setFeedbackOpen] = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
-  const contactMenuRef = useRef<HTMLDivElement>(null);
   const threadMenuRef = useRef<HTMLDivElement>(null);
   const threadMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
   const threadMenuOpenedByKeyboardRef = useRef(false);
@@ -125,7 +123,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   useEffect(() => {
     setMobileOpen(false);
     setAccountOpen(false);
-    setContactOpen(false);
+    setFeedbackOpen(false);
     setActiveThreadMenuId(undefined);
     setThreadMenuPosition(undefined);
   }, [pathname]);
@@ -134,7 +132,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     const closePopovers = (event: PointerEvent) => {
       const target = event.target as Node;
       if (!accountMenuRef.current?.contains(target)) setAccountOpen(false);
-      if (!contactMenuRef.current?.contains(target)) setContactOpen(false);
       if (!threadMenuRef.current?.contains(target) && !threadMenuTriggerRef.current?.contains(target)) {
         setActiveThreadMenuId(undefined);
         setThreadMenuPosition(undefined);
@@ -144,7 +141,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       if (event.key !== "Escape") return;
       setMobileOpen(false);
       setAccountOpen(false);
-      setContactOpen(false);
       if (threadMenuRef.current) {
         const trigger = threadMenuTriggerRef.current;
         setActiveThreadMenuId(undefined);
@@ -232,7 +228,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const closeMobile = () => {
     setMobileOpen(false);
     setAccountOpen(false);
-    setContactOpen(false);
     setActiveThreadMenuId(undefined);
     setThreadMenuPosition(undefined);
   };
@@ -243,7 +238,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     const next = !sidebarCollapsed;
     window.localStorage.setItem("offerflow:sidebar-collapsed", String(next));
     setAccountOpen(false);
-    setContactOpen(false);
     setActiveThreadMenuId(undefined);
     setThreadMenuPosition(undefined);
     sidebarToggleRequestedFocusRef.current = true;
@@ -362,6 +356,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   return (
     <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
+      <button className="feedback-trigger" type="button" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
+        <MessageCircleMore aria-hidden="true" size={16} />共建反馈
+      </button>
       <header className={`mobile-header${isVisitor ? " is-guest" : ""}`}>
         <button
           type="button"
@@ -373,6 +370,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           <Menu aria-hidden="true" size={21} />
         </button>
         <Logo />
+        <button className="mobile-feedback-trigger" type="button" aria-label="打开共建反馈" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
+          <MessageCircleMore aria-hidden="true" size={20} />
+        </button>
         {isVisitor ? (
           <button className="mobile-login-link" type="button" onClick={() => requestLogin("登录后即可同步并继续使用全部功能。")}>登录</button>
         ) : (
@@ -447,7 +447,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               >
                 <Icon aria-hidden="true" size={18} strokeWidth={1.8} />
                 <span className="sidebar-item-label">{item.label}</span>
-                {item.href === "/app/opportunities" && <em>实时</em>}
+                {item.badge && <em className="nav-release-badge">{item.badge}</em>}
+                {!item.badge && item.href === "/app/opportunities" && <em>实时</em>}
               </AppLink>
             );
           })}
@@ -587,7 +588,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                   onClick={() => setAccountOpen((current) => !current)}
                 >
                   <span className="account-avatar">{user?.displayName.slice(0, 1) || "O"}</span>
-                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>Free</small></span>
+                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>已登录</small></span>
                   <ChevronDown aria-hidden="true" size={15} />
                 </button>
 
@@ -597,12 +598,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                     <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>{user?.email}</small></span>
                   </header>
 
-                  <section className="account-plan-card" aria-label="当前会员方案">
-                    <div><strong>Free</strong><AppLink href="/app/upgrade" onNavigate={closeMobile}>升级</AppLink></div>
-                    <p><span>试用额度</span><b>5 次</b></p>
-                    <p><span>云端同步</span><b className="is-connected"><Cloud aria-hidden="true" size={13} />已连接</b></p>
-                  </section>
-
                   <div className="account-popover-links">
                     <AppLink href="/app/settings" onNavigate={closeMobile}>
                       <Settings aria-hidden="true" size={16} />设置与设备同步
@@ -610,14 +605,11 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                     <AppLink href="/app/chat" onNavigate={closeMobile}>
                       <Home aria-hidden="true" size={16} />返回首页
                     </AppLink>
-                    <button type="button" onClick={() => { setAccountOpen(false); setContactOpen(true); }}>
-                      <MessageCircleMore aria-hidden="true" size={16} />联系我们
+                    <button type="button" onClick={() => { setAccountOpen(false); setFeedbackOpen(true); }}>
+                      <MessageCircleMore aria-hidden="true" size={16} />提交反馈
                     </button>
                     <button type="button" disabled title="后续接入">
                       <Info aria-hidden="true" size={16} />更新日志<span>即将上线</span>
-                    </button>
-                    <button type="button" disabled title="后续接入">
-                      <Gift aria-hidden="true" size={16} />赠送会员<span>即将上线</span>
                     </button>
                     <button type="button" onClick={logout}>
                       <LogOut aria-hidden="true" size={16} />退出登录
@@ -638,41 +630,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               </AppLink>
             )}
 
-            <div
-              className={`contact-menu${contactOpen ? " is-open" : ""}`}
-              ref={contactMenuRef}
-              onBlur={(event) => closeWhenFocusLeaves(event, () => setContactOpen(false))}
-            >
-              <button
-                className="sidebar-footer-icon"
-                type="button"
-                aria-expanded={contactOpen}
-                aria-controls="contact-popover"
-                aria-label="联系我们"
-                onClick={() => setContactOpen((current) => !current)}
-              >
-                <MessageCircleMore aria-hidden="true" size={18} />
-              </button>
-              <section className="contact-popover" id="contact-popover" aria-labelledby="contact-title">
-                <div className="contact-popover-heading">
-                  <h2 id="contact-title">联系我们</h2>
-                  <button type="button" aria-label="关闭联系我们" onClick={() => setContactOpen(false)}>
-                    <X aria-hidden="true" size={16} />
-                  </button>
-                </div>
-                <div className="contact-illustration" aria-hidden="true">
-                  <MessageCircleMore size={28} />
-                  <i /><i /><i />
-                </div>
-                <p>遇到问题或有产品建议？欢迎加入 JobKoI 求职交流 QQ 群。</p>
-                <div className="qq-group-placeholder">
-                  <span>JobKoI 求职交流群</span>
-                  <strong>QQ群号待接入</strong>
-                </div>
-                <button className="contact-primary" type="button" disabled>QQ群即将开放</button>
-                <small>正式群号接入后，这里会支持一键复制。</small>
-              </section>
-            </div>
+            <button className="sidebar-footer-icon" type="button" aria-label="打开共建反馈" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
+              <MessageCircleMore aria-hidden="true" size={18} />
+            </button>
           </div>
           <SiteCompliance className="sidebar-site-compliance" compact />
         </div>
@@ -754,6 +714,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           );
         })}
       </nav>
+      <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} pagePath={pathname} />
     </div>
   );
 }

@@ -367,7 +367,6 @@ img {
 
   html[data-offerflow-transition="route"] :is(
     .workspace-main,
-    .membership-page,
     .resume-studio-shell,
     .resume-studio-state
   ) {
@@ -419,7 +418,6 @@ img {
 
   html[data-offerflow-transition-fallback="route"] :is(
     .workspace-main,
-    .membership-page,
     .resume-studio-shell,
     .resume-studio-state
   ) {

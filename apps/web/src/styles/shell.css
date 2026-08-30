@@ -294,6 +294,16 @@
   font-weight: 550;
 }
 
+.nav-link .nav-release-badge {
+  padding: 0.18rem 0.42rem;
+  color: #7950aa;
+  background: linear-gradient(115deg, #f2ecff, #f9f1ff);
+  border-radius: 999px;
+  font-size: 0.61rem;
+  font-weight: 720;
+  letter-spacing: 0.02em;
+}
+
 .recent-threads {
   min-height: 0;
   max-height: 50rem;
@@ -589,28 +599,6 @@
   box-shadow: 0 0.55rem 1.2rem rgb(63 86 184 / 0.12);
 }
 
-/* Retained for the account plan upgrade action. */
-.upgrade-pro-button {
-  display: flex;
-  min-height: 2.7rem;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: var(--of-brand-700);
-  background: transparent;
-  border: 1px solid transparent;
-  border-radius: 999px;
-  font-size: 0.77rem;
-  font-weight: 680;
-  text-decoration: none;
-}
-
-.upgrade-pro-button:hover {
-  color: var(--of-brand-800);
-  background: color-mix(in srgb, var(--of-brand-50) 58%, transparent);
-  border-color: var(--of-brand-100);
-}
-
 .sidebar-account-row {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 2.35rem 2.35rem;
@@ -731,37 +719,6 @@
 .account-profile strong { color: var(--of-text-strong); font-size: 0.9rem; font-weight: 680; }
 .account-profile small { color: var(--of-text-subtle); font-size: 0.75rem; }
 
-.account-plan-card {
-  display: grid;
-  gap: 0.5rem;
-  padding: 0.75rem;
-  background: var(--of-surface-muted);
-  border-radius: 0.85rem;
-}
-
-.account-plan-card > div,
-.account-plan-card p {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin: 0;
-}
-
-.account-plan-card > div strong { font-size: 0.78rem; }
-.account-plan-card > div a {
-  padding: 0.28rem 0.55rem;
-  color: white;
-  background: var(--of-text-strong);
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 650;
-  text-decoration: none;
-}
-
-.account-plan-card p { color: var(--of-text-muted); font-size: 0.75rem; }
-.account-plan-card p b { color: var(--of-text); font-weight: 620; }
-.account-plan-card .is-connected { display: inline-flex; align-items: center; gap: 0.25rem; color: var(--of-success); }
-
 .account-popover-links {
   display: grid;
   gap: 0.12rem;
@@ -804,103 +761,7 @@
   text-decoration: none;
 }
 
-.sidebar-footer-icon:hover,
-.contact-menu.is-open > .sidebar-footer-icon { color: var(--of-text); background: var(--of-surface-muted); }
-
-.contact-menu { position: relative; }
-
-.contact-popover {
-  position: absolute;
-  inset-inline-end: 0;
-  inset-block-end: calc(100% + 0.6rem);
-  z-index: 35;
-  display: grid;
-  width: 15.8rem;
-  max-width: calc(100vw - 2rem);
-  padding: 1rem;
-  visibility: hidden;
-  text-align: center;
-  background: var(--of-surface-raised);
-  border: 1px solid var(--of-line);
-  border-radius: 1.15rem;
-  box-shadow: var(--of-shadow-float);
-  opacity: 0;
-  transform: translateY(0.35rem);
-  pointer-events: none;
-  transition-property: opacity, transform, visibility;
-  transition-duration: 140ms;
-  transition-timing-function: ease-out;
-}
-
-.contact-menu.is-open .contact-popover {
-  visibility: visible;
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: auto;
-}
-
-.contact-popover-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.contact-popover h2 { margin: 0; color: var(--of-text-strong); font-size: 0.92rem; font-weight: 680; }
-.contact-popover-heading > button {
-  display: grid;
-  width: 2rem;
-  height: 2rem;
-  place-items: center;
-  color: var(--of-text-subtle);
-  background: transparent;
-  border: 0;
-  border-radius: 0.55rem;
-}
-
-.contact-illustration {
-  position: relative;
-  display: grid;
-  width: 4.4rem;
-  height: 4.4rem;
-  margin: 0.5rem auto 0.2rem;
-  place-items: center;
-  color: var(--of-brand-700);
-  background: var(--of-brand-50);
-  border-radius: 1.35rem;
-  rotate: -3deg;
-}
-
-.contact-illustration i { position: absolute; width: 0.35rem; height: 0.35rem; background: var(--of-brand-300); border-radius: 50%; }
-.contact-illustration i:nth-child(2) { inset: 0.4rem auto auto 0.5rem; }
-.contact-illustration i:nth-child(3) { inset: auto 0.25rem 0.8rem auto; width: 0.25rem; height: 0.25rem; }
-.contact-illustration i:nth-child(4) { inset: 0.8rem 0.4rem auto auto; background: var(--of-warning); }
-.contact-popover > p { margin: 0.55rem 0 0.8rem; color: var(--of-text-muted); font-size: 0.75rem; line-height: 1.6; }
-
-.qq-group-placeholder {
-  display: grid;
-  gap: 0.18rem;
-  padding: 0.7rem;
-  text-align: start;
-  background: var(--of-surface-muted);
-  border-radius: 0.75rem;
-}
-
-.qq-group-placeholder span { color: var(--of-text-muted); font-size: 0.75rem; }
-.qq-group-placeholder strong { color: var(--of-text-strong); font-size: 0.78rem; font-weight: 650; }
-
-.contact-primary {
-  min-height: 2.55rem;
-  margin-block-start: 0.7rem;
-  color: white;
-  background: var(--of-text-strong);
-  border: 0;
-  border-radius: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 650;
-}
-
-.contact-primary:disabled { color: white; opacity: 1; cursor: default; }
-.contact-popover > small { margin-block-start: 0.48rem; color: var(--of-text-subtle); font-size: 0.75rem; }
+.sidebar-footer-icon:hover { color: var(--of-text); background: var(--of-surface-muted); }
 
 .workspace-shell {
   min-width: 0;
@@ -987,12 +848,10 @@
 .thread-link-row form button:focus-visible,
 .thread-action-popover button:focus-visible,
 .extension-entry-button:focus-visible,
-.upgrade-pro-button:focus-visible,
 .account-trigger:focus-visible,
 .sidebar-footer-icon:focus-visible,
 .account-popover-links a:focus-visible,
 .account-popover-links button:focus-visible,
-.contact-popover button:focus-visible,
 .mobile-header > button:focus-visible,
 .guest-login-link:focus-visible,
 .mobile-login-link:focus-visible,
@@ -1003,10 +862,8 @@
 
 .new-chat-button:active,
 .extension-entry-button:active,
-.upgrade-pro-button:active,
 .account-trigger:active,
-.sidebar-footer-icon:active,
-.contact-popover button:active { transform: scale(0.96); }
+.sidebar-footer-icon:active { transform: scale(0.96); }
 
 @media (min-width: 60.001rem) {
   .app-frame.is-sidebar-collapsed .app-sidebar {
@@ -1040,7 +897,6 @@
   .app-frame.is-sidebar-collapsed .nav-link > em,
   .app-frame.is-sidebar-collapsed .extension-entry-button > span,
   .app-frame.is-sidebar-collapsed .extension-entry-button > em,
-  .app-frame.is-sidebar-collapsed .upgrade-pro-button > span,
   .app-frame.is-sidebar-collapsed .account-trigger > span:nth-child(2),
   .app-frame.is-sidebar-collapsed .account-trigger > svg {
     max-width: 0;
@@ -1051,7 +907,6 @@
   .app-frame.is-sidebar-collapsed .new-chat-button,
   .app-frame.is-sidebar-collapsed .nav-link,
   .app-frame.is-sidebar-collapsed .extension-entry-button,
-  .app-frame.is-sidebar-collapsed .upgrade-pro-button,
   .app-frame.is-sidebar-collapsed .account-trigger {
     gap: 0;
     justify-content: center;
@@ -1099,11 +954,6 @@
 
   .app-frame.is-sidebar-collapsed .sidebar-site-compliance { display: none; }
 
-  .app-frame.is-sidebar-collapsed .upgrade-pro-button {
-    width: 2.75rem;
-    border-radius: 0.85rem;
-  }
-
   .app-frame.is-sidebar-collapsed .extension-entry-button {
     width: 2.75rem;
   }
@@ -1135,11 +985,6 @@
     inset-block-end: 0;
   }
 
-  .app-frame.is-sidebar-collapsed .contact-popover {
-    inset-inline-start: calc(100% + 0.7rem);
-    inset-inline-end: auto;
-    inset-block-end: 0;
-  }
 }
 
 @media (max-width: 60rem) {
@@ -1170,7 +1015,7 @@
     z-index: 15;
     display: grid;
     min-height: calc(3.75rem + env(safe-area-inset-top));
-    grid-template-columns: 2.75rem 1fr 2.1rem;
+    grid-template-columns: 2.75rem 1fr 2.75rem 2.1rem;
     align-items: center;
     padding-block-start: env(safe-area-inset-top);
     padding-inline: 0.8rem;
@@ -1179,7 +1024,7 @@
     backdrop-filter: blur(1.25rem) saturate(120%);
   }
 
-  .mobile-header.is-guest { grid-template-columns: 2.75rem 1fr auto; }
+  .mobile-header.is-guest { grid-template-columns: 2.75rem 1fr 2.75rem auto; }
 
   .mobile-login-link {
     min-height: 2.75rem;
@@ -1412,7 +1257,6 @@
   .account-trigger > span:nth-child(2),
   .account-trigger > svg,
   .account-popover,
-  .contact-popover,
   .thread-row-actions,
   .thread-row-actions button,
   .thread-action-popover button { transition-duration: 0.01ms; }

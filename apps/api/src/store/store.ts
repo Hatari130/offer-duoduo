@@ -6,6 +6,7 @@ import type {
   ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
+import type { ProductFeedbackCategory } from "@offerflow/contracts";
 import type {
   ChatAttachment,
   ChatContextReference,
@@ -52,6 +53,14 @@ export interface InterviewRecordInput {
   error?: string;
 }
 
+export interface ProductFeedbackInput {
+  userId?: string;
+  category: ProductFeedbackCategory;
+  content: string;
+  contact?: string;
+  pagePath?: string;
+}
+
 export class StoreError extends Error {
   constructor(
     readonly code: string,
@@ -74,6 +83,7 @@ export interface OfferFlowStore {
   getDemoUser(): Awaitable<SessionUser | undefined>;
   recordConsent(userId: string, consentType: string, policyVersion: string): Awaitable<void>;
   deleteUser(userId: string): Awaitable<boolean>;
+  createProductFeedback(input: ProductFeedbackInput): Awaitable<{ id: string; createdAt: string }>;
 
   createSession(
     userId: string,

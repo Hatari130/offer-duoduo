@@ -7,10 +7,10 @@ import "@offerflow/ui/primitives.css";
 import "./styles/global.css";
 import "./styles/auth.css";
 import "./styles/shell.css";
+import "./styles/feedback.css";
 import "./styles/chat.css";
 import "./styles/data-pages.css";
 import "./styles/company-directory.css";
-import "./styles/membership.css";
 import "./styles/resume-studio.css";
 import "./styles/browser-extension.css";
 

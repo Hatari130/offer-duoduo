@@ -10,7 +10,6 @@ import { CompanyDirectoryPage } from "../pages/CompanyDirectoryPage";
 import { ApplicationsPage } from "../pages/ApplicationsPage";
 import { SettingsPage } from "../pages/SettingsPage";
 import { ExtensionConnectPage } from "../pages/ExtensionConnectPage";
-import { MembershipPage } from "../pages/MembershipPage";
 import { ResumeStudioPage } from "../pages/ResumeStudioPage";
 import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
 import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
@@ -26,7 +25,6 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/applications/, "个人投递管理"],
   [/^\/app\/resumes\/tailor/, "岗位定制简历"],
   [/^\/app\/resumes/, "简历中心"],
-  [/^\/app\/upgrade/, "升级至 Pro"],
   [/^\/app\/settings/, "设置与设备同步"],
   [/^\/browser-extension/, "浏览器插件"],
   [/^\/privacy$/, "隐私政策"],
@@ -94,7 +92,6 @@ export function App() {
   }
 
   if (pathname === "/login") return <LoginPage />;
-  if (pathname.startsWith("/app/upgrade") && !protectedReason) return <MembershipPage />;
   const tailorMatch = pathname.match(/^\/app\/resumes\/tailor\/([^/]+)$/);
   if (tailorMatch && !protectedReason) return <ResumeStudioPage taskId={decodeURIComponent(tailorMatch[1])} />;
 

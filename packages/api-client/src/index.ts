@@ -15,6 +15,8 @@ import type {
   CreateTailorTaskRequest,
   CreateTailorTaskResponse,
   CreateConversationRequest,
+  CreateProductFeedbackRequest,
+  CreateProductFeedbackResponse,
   DeviceCodeResponse,
   ExchangeDeviceCodeRequest,
   ExchangeDeviceCodeResponse,
@@ -359,6 +361,14 @@ export function createApiClient(options: ApiClientOptions) {
       })
   };
 
+  const feedback = {
+    create: (body: CreateProductFeedbackRequest) =>
+      request<CreateProductFeedbackResponse>("/v1/feedback", {
+        method: "POST",
+        body: JSON.stringify(body)
+      })
+  };
+
   return {
     auth,
     account,
@@ -366,6 +376,7 @@ export function createApiClient(options: ApiClientOptions) {
     opportunities,
     applications,
     interviews,
+    feedback,
     resumes,
     health: () => request<HealthResponse>("/health"),
     profile: { get: () => request<ProfileResponse>("/v1/profile") },

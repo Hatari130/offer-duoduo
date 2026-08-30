@@ -79,6 +79,27 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   assert.equal(health.response.headers.get("access-control-allow-origin"), "chrome-extension://offerflow-e2e");
   assert.equal(health.payload.data.status, "ok");
 
+  const publicFeedback = await jsonRequest(app.baseUrl, "/v1/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      category: "suggestion",
+      content: "希望岗位筛选可以记住上次的选择",
+      contact: "candidate@example.com",
+      pagePath: "/app/opportunities"
+    })
+  });
+  assert.equal(publicFeedback.response.status, 201);
+  assert.equal(typeof publicFeedback.payload.data.feedbackId, "string");
+
+  const invalidFeedback = await jsonRequest(app.baseUrl, "/v1/feedback", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ category: "suggestion", content: "短" })
+  });
+  assert.equal(invalidFeedback.response.status, 400);
+  assert.equal(invalidFeedback.payload.error.code, "INVALID_FEEDBACK_CONTENT");
+
   const registered = await jsonRequest(app.baseUrl, "/v1/auth/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

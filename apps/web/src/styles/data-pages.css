@@ -770,18 +770,22 @@
   letter-spacing: 0.1em;
 }
 
-.opportunity-company-cell > .opportunity-company-heading,
 .opportunity-company-cell > span {
   display: block;
 }
 
-.opportunity-company-heading,
+.opportunity-company-heading {
+  display: grid;
+  justify-items: start;
+  gap: 0.36rem;
+}
+
 .opportunity-card-heading {
   display: flex;
   min-width: 0;
   align-items: center;
   flex-wrap: wrap;
-  gap: 0.38rem;
+  gap: 0.55rem;
 }
 
 .opportunity-company-cell > .opportunity-company-heading > strong {
@@ -798,31 +802,33 @@
 .company-signal-list {
   display: inline-flex;
   flex-wrap: wrap;
-  gap: 0.28rem;
+  gap: 0.4rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
+.opportunity-card-heading .company-signal-list { margin-inline-start: 0; }
+
 .company-signal {
   display: inline-flex;
-  min-height: 1.35rem;
+  min-height: 1.45rem;
   align-items: center;
-  gap: 0.2rem;
-  padding-inline: 0.4rem;
+  gap: 0.24rem;
+  padding-inline: 0.5rem;
   border-radius: 999px;
-  font-size: 0.68rem;
-  font-weight: 720;
-  letter-spacing: 0.01em;
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
   line-height: 1;
   white-space: nowrap;
 }
 
-.company-signal--hot { color: #bb3a16; background: #fff0e9; box-shadow: inset 0 0 0 1px #ffd7c9; }
-.company-signal--hc { color: #99600b; background: #fff6df; box-shadow: inset 0 0 0 1px #ffe1a0; }
-.company-signal--unicorn { color: #6650a5; background: #f4efff; box-shadow: inset 0 0 0 1px #e4d8fc; }
-.company-signal--leader { color: #2d6497; background: #eef7ff; box-shadow: inset 0 0 0 1px #d5eafb; }
-.company-signal--default { color: var(--of-text-muted); background: var(--of-surface-muted); box-shadow: inset 0 0 0 1px var(--of-line); }
+.company-signal--hot { color: #b94323; background: linear-gradient(110deg, #fff0e7, #fff7ed); }
+.company-signal--hc { color: #8b6412; background: linear-gradient(110deg, #fff5d9, #fff9e9); }
+.company-signal--unicorn { color: #6b55a3; background: linear-gradient(110deg, #f1ecff, #faf5ff); }
+.company-signal--leader { color: #326b9b; background: linear-gradient(110deg, #eaf5ff, #f4faff); }
+.company-signal--default { color: var(--of-text-muted); background: linear-gradient(110deg, var(--of-surface-muted), white); }
 
 .opportunity-company-cell > span {
   margin-block-start: 0.2rem;

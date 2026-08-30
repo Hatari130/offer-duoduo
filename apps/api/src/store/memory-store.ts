@@ -36,6 +36,7 @@ import {
   type InterviewRecordInput,
   type IssuedStoreSession,
   type OfferFlowStore,
+  type ProductFeedbackInput,
   type SessionRecord,
   type SessionScope
 } from "./store.ts";
@@ -322,6 +323,10 @@ export class MemoryStore implements OfferFlowStore {
     for (let index = this.syncLog.length - 1; index >= 0; index -= 1) if (this.syncLog[index].userId === userId) this.syncLog.splice(index, 1);
     this.persist();
     return true;
+  }
+
+  createProductFeedback(_input: ProductFeedbackInput): { id: string; createdAt: string } {
+    return { id: randomUUID(), createdAt: new Date().toISOString() };
   }
 
   createSession(

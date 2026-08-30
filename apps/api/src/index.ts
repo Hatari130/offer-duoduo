@@ -8,7 +8,8 @@ export const API_MODULES = [
   "applications",
   "opportunities",
   "sync",
-  "imports"
+  "imports",
+  "feedback"
 ] as const;
 
 export type ApiModule = (typeof API_MODULES)[number];

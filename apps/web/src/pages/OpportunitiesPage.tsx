@@ -127,12 +127,12 @@ function OpportunityTags({ company, tags }: { company: string; tags: string[] })
 }
 
 const companyTagPresentation: Record<string, { label: string; tone: string; icon: "flame" | "people" | "sparkles" }> = {
-  hot: { label: "热门", tone: "hot", icon: "flame" },
-  "超多hc": { label: "HC充足", tone: "hc", icon: "people" },
-  "行业独角兽": { label: "行业独角兽", tone: "unicorn", icon: "sparkles" },
-  "垂直赛道头部": { label: "赛道头部", tone: "leader", icon: "sparkles" },
-  "知名大厂": { label: "知名大厂", tone: "leader", icon: "sparkles" },
-  "头部大厂": { label: "头部大厂", tone: "leader", icon: "sparkles" }
+  hot: { label: "热度上升", tone: "hot", icon: "flame" },
+  "超多hc": { label: "扩招进行中", tone: "hc", icon: "people" },
+  "行业独角兽": { label: "高成长赛道", tone: "unicorn", icon: "sparkles" },
+  "垂直赛道头部": { label: "赛道焦点", tone: "leader", icon: "sparkles" },
+  "知名大厂": { label: "热门雇主", tone: "leader", icon: "sparkles" },
+  "头部大厂": { label: "热门雇主", tone: "leader", icon: "sparkles" }
 };
 
 function CompanySignals({ company, tags }: { company: string; tags: string[] }) {

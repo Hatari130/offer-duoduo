@@ -257,7 +257,21 @@ export function Dialog({ open, title, description, onClose, footer, className, c
     if (!open && dialog.open) dialog.close();
   }, [open]);
   return (
-    <dialog {...props} ref={dialogRef} className={cx("of-dialog", className)} onCancel={(event) => { event.preventDefault(); onClose(); }} onClose={onClose}>
+    <dialog
+      {...props}
+      ref={dialogRef}
+      className={cx("of-dialog", className)}
+      onKeyDown={(event) => {
+        if (event.key !== "Escape") return;
+        event.preventDefault();
+        onClose();
+      }}
+      onCancel={(event) => {
+        event.preventDefault();
+        onClose();
+      }}
+      onClose={onClose}
+    >
       <header><div><h2>{title}</h2>{description && <p>{description}</p>}</div><IconButton label="关闭" onClick={onClose}>×</IconButton></header>
       <div className="of-dialog__body">{children}</div>
       {footer && <footer>{footer}</footer>}

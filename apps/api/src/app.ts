@@ -20,6 +20,7 @@ import type {
 import {
   MAX_INTERVIEW_AUDIO_BYTES,
   isApplicationSyncRequest,
+  isCreateProductFeedbackRequest,
   isCreateInterviewRecordFromTranscriptRequest,
   isCreateTailorTaskRequest,
   isExchangeHandoffRequest,
@@ -272,6 +273,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
+  const feedbackAttempts = new Map<string, { count: number; resetAt: number }>();
   let opportunityRefresh: Promise<Awaited<ReturnType<OfferFlowStore["getOpportunityFeed"]>>> | undefined;
 
   async function refreshOpportunitySnapshot(preferSeed: boolean): Promise<OpportunityFeedSnapshot> {
@@ -568,6 +570,25 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return session;
   }
 
+  async function optionalSession(request: IncomingMessage): Promise<SessionRecord | undefined> {
+    const token = requestToken(request, config.cookieName);
+    if (!token) return undefined;
+    const session = await store.resolveSession(token);
+    return session && await store.getUser(session.userId) ? session : undefined;
+  }
+
+  function enforceFeedbackRateLimit(request: IncomingMessage): void {
+    const key = String(request.headers["x-forwarded-for"] || request.socket.remoteAddress || "unknown").split(",")[0].trim();
+    const now = Date.now();
+    const current = feedbackAttempts.get(key);
+    if (!current || current.resetAt <= now) {
+      feedbackAttempts.set(key, { count: 1, resetAt: now + 10 * 60_000 });
+      return;
+    }
+    current.count += 1;
+    if (current.count > 5) throw new HttpError(429, "FEEDBACK_RATE_LIMITED", "提交得有点频繁，请稍后再试");
+  }
+
   async function issueSession(
     user: { id: string; email: string; displayName: string },
     scope: "user" | "device" = "user",
@@ -735,6 +756,33 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           registrationMode: config.registrationMode,
           demoEnabled: config.allowDemoAuth
         });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/feedback") {
+        enforceFeedbackRateLimit(request);
+        const body = await readJson(request);
+        if (!isCreateProductFeedbackRequest(body)) {
+          throw new HttpError(400, "INVALID_FEEDBACK", "请选择反馈类型并填写反馈内容");
+        }
+        const content = body.content.trim();
+        const contact = body.contact?.trim() || undefined;
+        const pagePath = body.pagePath?.trim() || undefined;
+        if (content.length < 4 || content.length > 2000) {
+          throw new HttpError(400, "INVALID_FEEDBACK_CONTENT", "反馈内容请填写 4 至 2000 个字符");
+        }
+        if ((contact?.length ?? 0) > 160 || (pagePath?.length ?? 0) > 500) {
+          throw new HttpError(400, "INVALID_FEEDBACK_METADATA", "联系方式或页面地址过长");
+        }
+        const session = await optionalSession(request);
+        const saved = await store.createProductFeedback({
+          userId: session?.userId,
+          category: body.category,
+          content,
+          contact,
+          pagePath
+        });
+        success(response, { feedbackId: saved.id, submittedAt: saved.createdAt }, 201);
         return;
       }
 
