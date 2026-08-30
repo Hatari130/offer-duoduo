@@ -1,4 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type FocusEvent, type MouseEvent, type PropsWithChildren } from "react";
+import { SiteCompliance } from "../components/SiteCompliance";
 import type { ChatConversation } from "@offerflow/domain";
 import {
   BriefcaseBusiness,
@@ -673,6 +674,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               </section>
             </div>
           </div>
+          <SiteCompliance className="sidebar-site-compliance" compact />
         </div>
       </aside>
 

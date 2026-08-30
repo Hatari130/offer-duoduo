@@ -773,17 +773,18 @@ html[data-extension-landing="true"] body {
   display: grid;
   width: min(100% - 3rem, 76rem);
   min-height: 10rem;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto minmax(10rem, 1fr) auto;
   align-items: center;
   gap: 2rem;
   margin-inline: auto;
 }
 
 .extension-footer p { color: var(--ext-copy); font-size: 0.72rem; }
-.extension-footer nav { display: flex; gap: 1rem; }
-.extension-footer nav a { color: var(--ext-copy); font-size: 0.7rem; text-decoration: none; }
-.extension-footer nav a:hover { color: var(--ext-blue-deep); }
-.extension-footer > small { color: var(--ext-muted); font-size: 0.65rem; }
+.extension-site-compliance {
+  justify-content: flex-end;
+  color: var(--ext-muted);
+}
+.extension-site-compliance a:hover { color: var(--ext-blue-deep); }
 
 .extension-feature-intro,
 .extension-install,
@@ -908,7 +909,7 @@ html[data-extension-landing="true"] body {
   .extension-final-cta__device { inset: auto 50% 0 auto; transform: translateX(50%) rotate(3deg); }
   .extension-footer { width: calc(100% - 2rem); grid-template-columns: 1fr; text-align: center; }
   .extension-footer > a { justify-self: center; }
-  .extension-footer > p, .extension-footer nav, .extension-footer > small { grid-column: 1; grid-row: auto; justify-content: center; }
+  .extension-footer > p, .extension-footer > .site-compliance { grid-column: 1; grid-row: auto; justify-content: center; }
 }
 
 @media (max-width: 23rem) {

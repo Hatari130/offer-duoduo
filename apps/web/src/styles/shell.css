@@ -544,6 +544,15 @@
   padding-block-start: 0.8rem;
 }
 
+.sidebar-site-compliance {
+  padding: 0.15rem 0.35rem 0;
+  border-block-start: 1px solid var(--of-line-subtle);
+}
+
+.sidebar-site-compliance .site-compliance__copyright { display: none; }
+.sidebar-site-compliance .site-compliance__links { gap: 0.65rem; }
+.sidebar-site-compliance .site-compliance__record { flex-basis: 100%; text-align: center; }
+
 .extension-entry-button {
   display: flex;
   min-height: 2.7rem;
@@ -1087,6 +1096,8 @@
   .app-frame.is-sidebar-collapsed .sidebar-footer {
     justify-items: center;
   }
+
+  .app-frame.is-sidebar-collapsed .sidebar-site-compliance { display: none; }
 
   .app-frame.is-sidebar-collapsed .upgrade-pro-button {
     width: 2.75rem;

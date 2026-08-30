@@ -16,6 +16,7 @@ import {
   Target
 } from "lucide-react";
 import { Logo } from "../components/Logo";
+import { SiteCompliance } from "../components/SiteCompliance";
 
 type BrowserKey = "edge" | "chrome" | "browser360";
 
@@ -461,8 +462,7 @@ export function BrowserExtensionPage() {
       <footer className="extension-footer">
         <a href="/app/chat" aria-label="返回 JobKoI 工作台"><Logo /></a>
         <p>让求职信息沿着清晰的路径流动。</p>
-        <nav aria-label="页脚导航"><a href="#privacy">隐私说明</a><a href="#install">安装教程</a><a href="/app/chat">返回工作台</a></nav>
-        <small>© 2026 JobKoI</small>
+        <SiteCompliance className="extension-site-compliance" />
       </footer>
     </div>
   );

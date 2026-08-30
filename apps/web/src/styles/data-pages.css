@@ -314,8 +314,8 @@
 
 .opportunity-page-header {
   display: grid;
-  grid-template-columns: minmax(16rem, 1fr) minmax(27rem, 40%);
-  align-items: start;
+  grid-template-columns: minmax(16rem, 1fr) auto;
+  align-items: center;
   gap: 1.25rem;
   margin-block-end: 1.25rem;
 }
@@ -343,56 +343,9 @@
   text-wrap: pretty;
 }
 
-.opportunity-header-aside {
-  display: grid;
-  width: 100%;
-  align-content: start;
-  justify-items: end;
-  gap: 0.65rem;
-}
-
-.opportunity-source-status {
-  display: grid;
-  justify-items: end;
-  gap: 0.25rem;
-}
-
-.opportunity-source-badge {
-  display: inline-flex;
-  min-height: 2.35rem;
-  align-items: center;
-  gap: 0.45rem;
-  padding-inline: 0.75rem;
-  color: var(--of-success);
-  background: var(--of-surface-raised);
-  border: 1px solid var(--of-line-subtle);
-  border-radius: 0.75rem;
-  box-shadow: 0 1px 2px rgb(23 23 20 / 0.035);
-  font-size: 0.78rem;
-  font-weight: 680;
-}
-
-.opportunity-source-badge i {
-  width: 0.38rem;
-  height: 0.38rem;
-  flex: 0 0 auto;
-  background: currentColor;
-  border-radius: 50%;
-}
-
-.opportunity-source-status > small {
-  color: var(--of-text-subtle);
-  font-size: 0.7rem;
-  font-variant-numeric: tabular-nums;
-}
-
-.opportunity-source-status--loading .opportunity-source-badge { color: var(--of-info); }
-.opportunity-source-status--error .opportunity-source-badge { color: var(--of-danger); }
-
 .opportunity-metrics {
   display: grid;
-  width: 100%;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(8.7rem, 1fr));
   gap: 0.6rem;
   margin: 0;
 }
@@ -2985,11 +2938,6 @@
     margin-block-end: 1.5rem;
   }
 
-  .opportunity-header-aside,
-  .opportunity-source-status {
-    justify-items: start;
-  }
-
   .opportunity-page-heading h1 {
     margin-block: 0.65rem 0.45rem;
     font-size: clamp(2.15rem, 10vw, 2.65rem);
@@ -3182,23 +3130,6 @@
 }
 
 @media (max-width: 72rem) {
-  .opportunity-page-header {
-    grid-template-columns: minmax(0, 1fr);
-    align-items: stretch;
-  }
-
-  .opportunity-header-aside {
-    justify-items: stretch;
-  }
-
-  .opportunity-source-status {
-    justify-self: end;
-  }
-
-  .opportunity-metrics {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-
   .opportunity-toolbar {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3209,6 +3140,11 @@
 }
 
 @media (max-width: 50rem) {
+  .opportunity-page-header {
+    grid-template-columns: minmax(0, 1fr);
+    align-items: stretch;
+  }
+
   .opportunity-metrics {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -3228,11 +3164,6 @@
 }
 
 @media (max-width: 40rem) {
-  .opportunity-source-status {
-    justify-self: start;
-    justify-items: start;
-  }
-
   .opportunity-metrics {
     gap: 0.55rem;
   }

@@ -1,4 +1,5 @@
 import { Logo } from "../components/Logo";
+import { SiteCompliance } from "../components/SiteCompliance";
 
 export function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
   const privacy = kind === "privacy";
@@ -34,6 +35,7 @@ export function LegalPage({ kind }: { kind: "privacy" | "terms" }) {
           <h2>联系我们</h2><p>问题或争议可通过 <a href="https://github.com/Hatari130/offer-duoduo/issues" target="_blank" rel="noreferrer">JobKoI GitHub 支持入口</a>提交。适用法律有强制规定的，从其规定。</p>
         </>}
       </article>
+      <SiteCompliance className="legal-site-compliance" />
     </main>
   );
 }

@@ -5,8 +5,6 @@ import {
   ArrowRight,
   BriefcaseBusiness,
   CalendarClock,
-  CircleAlert,
-  CircleCheck,
   ChevronLeft,
   ChevronRight,
   House,
@@ -73,19 +71,6 @@ function dateLabel(value?: string): string {
 
 function openAtLabel(value?: string): string {
   return value ? dateLabel(value) : "/";
-}
-
-function feedTimestampLabel(value?: string): string {
-  if (!value) return "等待同步";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return value;
-  return new Intl.DateTimeFormat("zh-CN", {
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false
-  }).format(date);
 }
 
 function qccSearchUrl(company: string): string {
@@ -181,7 +166,6 @@ export function OpportunitiesPage() {
   const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [sourceUpdatedAt, setSourceUpdatedAt] = useState<string>();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<"all" | OpportunityStatus>("all");
   const [city, setCity] = useState("all");
@@ -197,7 +181,6 @@ export function OpportunitiesPage() {
     fetchCampusHiringFeed(signal)
       .then((result) => {
         setOpportunities(result.opportunities);
-        setSourceUpdatedAt(result.sourceUpdatedAt || result.fetchedAt);
         setPage(1);
       })
       .catch((requestError) => {
@@ -288,12 +271,6 @@ export function OpportunitiesPage() {
   const visible = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
   const pageItems = paginationItems(currentPage, totalPages);
   const initialLoading = loading && opportunities.length === 0;
-  const sourceState = initialLoading ? "loading" : error && opportunities.length === 0 ? "error" : "connected";
-  const sourceStatusLabel = sourceState === "loading"
-    ? "校招数据同步中"
-    : sourceState === "error"
-      ? "校招数据同步失败"
-      : "校招数据已同步";
   const resultsAnnouncement = loading
     ? "正在刷新校招信息"
     : `找到 ${filtered.length.toLocaleString("zh-CN")} 条校招机会，当前第 ${currentPage} 页，共 ${totalPages} 页`;
@@ -349,40 +326,19 @@ export function OpportunitiesPage() {
           <p>聚合公开校招信息、投递窗口与截止提醒，帮助你快速筛选值得关注的机会。</p>
         </div>
 
-          <div className="opportunity-header-aside">
-            <div className={`opportunity-source-status opportunity-source-status--${sourceState}`} role="status" aria-live="polite">
-              <div className="opportunity-source-badge">
-                {sourceState === "loading"
-                  ? <RefreshCw className="spin" aria-hidden="true" size={16} strokeWidth={2} />
-                  : sourceState === "error"
-                  ? <CircleAlert aria-hidden="true" size={16} strokeWidth={2} />
-                  : <CircleCheck aria-hidden="true" size={16} strokeWidth={2} />}
-                <span>{sourceStatusLabel}</span>
-                <i aria-hidden="true" />
-              </div>
-            <small>
-              {sourceState === "loading"
-                ? "正在读取最新数据"
-                : sourceState === "error"
-                  ? "暂时无法读取数据源"
-                  : `${opportunities.length.toLocaleString("zh-CN")} 条 · 更新于 ${feedTimestampLabel(sourceUpdatedAt)}`}
-            </small>
-          </div>
-
-          <div className="opportunity-metrics" aria-label="校招数据概览">
-            <article className="opportunity-metric opportunity-metric--latest">
-              <span className="opportunity-metric__icon"><Sparkles aria-hidden="true" size={21} strokeWidth={1.8} /></span>
-              <span><small>最新发布</small><strong>{dashboard.latestCount.toLocaleString("zh-CN")}</strong><em>{dashboard.latestOpenAt ? `${dateLabel(dashboard.latestOpenAt)} 开放` : "等待更新"}</em></span>
-            </article>
-            <article className="opportunity-metric opportunity-metric--open">
-              <span className="opportunity-metric__icon"><BriefcaseBusiness aria-hidden="true" size={21} strokeWidth={1.8} /></span>
-              <span><small>开放投递</small><strong>{dashboard.openCount.toLocaleString("zh-CN")}</strong><em>可继续投递</em></span>
-            </article>
-            <article className="opportunity-metric opportunity-metric--closing">
-              <span className="opportunity-metric__icon"><AlarmClock aria-hidden="true" size={21} strokeWidth={1.8} /></span>
-              <span><small>即将截止</small><strong>{dashboard.closingCount.toLocaleString("zh-CN")}</strong><em>3 天内截止</em></span>
-            </article>
-          </div>
+        <div className="opportunity-metrics" aria-label="校招数据概览">
+          <article className="opportunity-metric opportunity-metric--latest">
+            <span className="opportunity-metric__icon"><Sparkles aria-hidden="true" size={21} strokeWidth={1.8} /></span>
+            <span><small>最新发布</small><strong>{dashboard.latestCount.toLocaleString("zh-CN")}</strong><em>{dashboard.latestOpenAt ? `${dateLabel(dashboard.latestOpenAt)} 开放` : "等待更新"}</em></span>
+          </article>
+          <article className="opportunity-metric opportunity-metric--open">
+            <span className="opportunity-metric__icon"><BriefcaseBusiness aria-hidden="true" size={21} strokeWidth={1.8} /></span>
+            <span><small>开放投递</small><strong>{dashboard.openCount.toLocaleString("zh-CN")}</strong><em>可继续投递</em></span>
+          </article>
+          <article className="opportunity-metric opportunity-metric--closing">
+            <span className="opportunity-metric__icon"><AlarmClock aria-hidden="true" size={21} strokeWidth={1.8} /></span>
+            <span><small>即将截止</small><strong>{dashboard.closingCount.toLocaleString("zh-CN")}</strong><em>3 天内截止</em></span>
+          </article>
         </div>
       </header>
 

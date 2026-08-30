@@ -1,5 +1,6 @@
 import { Logo } from "../components/Logo";
 import { AuthCard } from "../components/AuthCard";
+import { SiteCompliance } from "../components/SiteCompliance";
 import loginJourney from "../assets/auth/login-journey.png";
 
 export function LoginPage() {
@@ -18,6 +19,7 @@ export function LoginPage() {
       <section className="auth-panel">
         <div className="auth-mobile-brand"><Logo /></div>
         <AuthCard />
+        <SiteCompliance className="auth-site-compliance" compact />
       </section>
     </main>
   );

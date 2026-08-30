@@ -110,6 +110,12 @@
   padding: 2rem clamp(1.5rem, 4vw, 4rem);
 }
 
+.auth-site-compliance {
+  position: absolute;
+  inset-inline: clamp(1rem, 3vw, 2.5rem);
+  inset-block-end: max(1rem, env(safe-area-inset-bottom));
+}
+
 .auth-mobile-brand { display: none; }
 
 .auth-card {
