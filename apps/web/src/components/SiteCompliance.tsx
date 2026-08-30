@@ -1,14 +1,15 @@
 type SiteComplianceProps = {
   className?: string;
   compact?: boolean;
+  showFeedback?: boolean;
 };
 
-export function SiteCompliance({ className = "", compact = false }: SiteComplianceProps) {
+export function SiteCompliance({ className = "", compact = false, showFeedback = true }: SiteComplianceProps) {
   return (
     <div className={`site-compliance${compact ? " site-compliance--compact" : ""}${className ? ` ${className}` : ""}`}>
       <span className="site-compliance__copyright">© 2026 JobKoI</span>
       <nav className="site-compliance__links" aria-label="法律与支持">
-        <a href="https://github.com/Hatari130/offer-duoduo/issues" target="_blank" rel="noreferrer">反馈建议</a>
+        {showFeedback && <a href="https://github.com/Hatari130/offer-duoduo/issues" target="_blank" rel="noreferrer">反馈建议</a>}
         <a href="/privacy">隐私政策</a>
         <a href="/terms">用户协议</a>
       </nav>
