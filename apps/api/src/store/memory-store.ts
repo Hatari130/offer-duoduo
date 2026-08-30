@@ -194,7 +194,8 @@ export class MemoryStore implements OfferFlowStore {
       for (const user of parsed.users ?? []) {
         this.users.set(user.id, {
           ...user,
-          avatarKey: isAvatarKey(user.avatarKey) ? user.avatarKey : "sprout"
+          avatarKey: isAvatarKey(user.avatarKey) ? user.avatarKey : "sprout",
+          createdAt: typeof user.createdAt === "string" ? user.createdAt : new Date().toISOString()
         });
         this.usersByEmail.set(normalizeEmail(user.email), user.id);
       }
@@ -282,6 +283,7 @@ export class MemoryStore implements OfferFlowStore {
       email: normalizedEmail,
       displayName: displayName.trim() || normalizedEmail.split("@")[0],
       avatarKey,
+      createdAt: new Date().toISOString(),
       passwordHash: passwordValue.hash,
       passwordSalt: passwordValue.salt
     };
@@ -423,7 +425,8 @@ export class MemoryStore implements OfferFlowStore {
       id: user.id,
       email: user.email,
       displayName: user.displayName,
-      avatarKey: isAvatarKey(user.avatarKey) ? user.avatarKey : "sprout"
+      avatarKey: isAvatarKey(user.avatarKey) ? user.avatarKey : "sprout",
+      createdAt: user.createdAt
     };
   }
 

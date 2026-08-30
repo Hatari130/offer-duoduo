@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
+import { companionshipLabel } from "../app/companionship";
 import { navigate } from "../app/router";
 import { Logo } from "../components/Logo";
 import { FeedbackDialog } from "../components/FeedbackDialog";
@@ -180,10 +181,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   }, [isAnonymous, user?.id]);
 
   useEffect(() => {
-    if (!conversations.length) return undefined;
+    if (!conversations.length && !user) return undefined;
     const timer = window.setInterval(() => setClockNow(Date.now()), 60_000);
     return () => window.clearInterval(timer);
-  }, [conversations.length]);
+  }, [conversations.length, user]);
 
   useEffect(() => {
     try {
@@ -589,7 +590,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                   onClick={() => setAccountOpen((current) => !current)}
                 >
                   <UserAvatar avatarKey={user?.avatarKey} className="account-avatar" />
-                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>已登录</small></span>
+                  <span><strong>{user?.displayName || "JobKoI 用户"}</strong><small>{companionshipLabel(user?.createdAt || "", clockNow)}</small></span>
                   <ChevronDown aria-hidden="true" size={15} />
                 </button>
 

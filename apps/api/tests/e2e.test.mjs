@@ -112,6 +112,7 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     })
   });
   assert.equal(registered.response.status, 201);
+  assert.equal(typeof registered.payload.data.user.createdAt, "string");
   assert.match(registered.response.headers.get("set-cookie"), /HttpOnly/i);
   assert.match(registered.response.headers.get("set-cookie"), /SameSite=Lax/i);
   const loggedIn = await jsonRequest(app.baseUrl, "/v1/auth/login", {
@@ -122,6 +123,7 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   assert.equal(loggedIn.response.status, 200);
   assert.equal(loggedIn.payload.data.user.displayName, "测试用户");
   assert.equal(loggedIn.payload.data.user.avatarKey, "cloud");
+  assert.equal(loggedIn.payload.data.user.createdAt, registered.payload.data.user.createdAt);
 
   const duplicateRegistration = await jsonRequest(app.baseUrl, "/v1/auth/register", {
     method: "POST",
@@ -145,6 +147,7 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   assert.equal(unauthorized.response.status, 401);
   const session = await jsonRequest(app.baseUrl, "/v1/session", { headers });
   assert.equal(session.payload.data.user.email, "demo@offerflow.cn");
+  assert.equal(typeof session.payload.data.user.createdAt, "string");
 
   const createdConversation = await jsonRequest(app.baseUrl, "/v1/conversations", {
     method: "POST",

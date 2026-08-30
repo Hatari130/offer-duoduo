@@ -22,6 +22,7 @@ export interface SessionUser {
   email: string;
   displayName: string;
   avatarKey: AvatarKey;
+  createdAt: string;
 }
 
 export interface AuthSession {
