@@ -16,6 +16,7 @@ import { ChatComposer } from "../features/chat/ChatComposer";
 import { CompanionAvatar } from "../features/chat/CompanionAvatar";
 import { ChatContextPicker } from "../features/chat/ChatContextPicker";
 import { MessageList } from "../features/chat/MessageList";
+import { chatPendingMode, type ChatPendingMode } from "../features/chat/pendingMode";
 
 const recommendationCards = [
   {
@@ -63,6 +64,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [contextLoading, setContextLoading] = useState(false);
   const [loading, setLoading] = useState(Boolean(conversationId));
   const [streaming, setStreaming] = useState(false);
+  const [pendingMode, setPendingMode] = useState<ChatPendingMode>();
   const [error, setError] = useState("");
   const [copiedMessageId, setCopiedMessageId] = useState<string>();
   const abortRef = useRef<AbortController>();
@@ -150,6 +152,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   ) => {
     for await (const event of stream) {
       if (event.type === "message.started") {
+        setPendingMode(undefined);
         setMessages((current) => [...current, event.message]);
       } else if (event.type === "message.delta") {
         setMessages((current) =>
@@ -194,8 +197,25 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     }
     setError("");
     setStreaming(true);
+    setPendingMode(chatPendingMode(content, messages));
     const controller = new AbortController();
     abortRef.current = controller;
+
+    const clientMessageId = createUuid();
+    let clientMessage: ChatMessage = {
+      id: clientMessageId,
+      conversationId: conversation?.id || `pending:${clientMessageId}`,
+      role: "user",
+      content,
+      status: "complete",
+      createdAt: new Date().toISOString(),
+      attachments,
+      context: selectedContext,
+      citations: []
+    };
+    setMessages((current) => [...current, clientMessage]);
+    setDraft("");
+    setAttachments([]);
 
     try {
       let activeConversation = conversation;
@@ -207,20 +227,12 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         navigate(`/app/chat/${encodeURIComponent(activeConversation.id)}`);
       }
 
-      const clientMessage: ChatMessage = {
-        id: createUuid(),
-        conversationId: activeConversation.id,
-        role: "user",
-        content,
-        status: "complete",
-        createdAt: new Date().toISOString(),
-        attachments,
-        context: selectedContext,
-        citations: []
-      };
-      setMessages((current) => [...current, clientMessage]);
-      setDraft("");
-      setAttachments([]);
+      if (clientMessage.conversationId !== activeConversation.id) {
+        clientMessage = { ...clientMessage, conversationId: activeConversation.id };
+        setMessages((current) => current.map((message) =>
+          message.id === clientMessage.id ? clientMessage : message
+        ));
+      }
       await consumeStream(
         api.chat.sendMessage(
           activeConversation.id,
@@ -245,6 +257,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         setError(requestError instanceof Error ? requestError.message : "回答生成失败，请重试");
       }
     } finally {
+      setPendingMode(undefined);
       setStreaming(false);
       abortRef.current = undefined;
     }
@@ -254,6 +267,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     if (!conversation || streaming) return;
     if (!requireChatLogin()) return;
     setStreaming(true);
+    setPendingMode(message.opportunityResults ? "opportunities" : "answer");
     setError("");
     const controller = new AbortController();
     abortRef.current = controller;
@@ -277,6 +291,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         setError(requestError instanceof Error ? requestError.message : "暂时无法重新生成");
       }
     } finally {
+      setPendingMode(undefined);
       setStreaming(false);
       abortRef.current = undefined;
     }
@@ -422,6 +437,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           <div className="thread-scroll">
             <MessageList
               messages={messages}
+              pendingMode={pendingMode}
               copiedMessageId={copiedMessageId}
               onCopy={copy}
               onRetry={retry}

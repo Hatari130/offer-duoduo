@@ -300,6 +300,60 @@
       ]
     },
     {
+      id: "midea",
+      name: "美的招聘",
+      hosts: [/^careers\.midea\.com$/i],
+      markers: [
+        ".ihr_recruit_resume_form_block",
+        ".md-form-item__label",
+        ".ihr_dict_picker",
+        ".ihr_base_picker"
+      ],
+      mappings: [
+        ["fullName", "candidateName|姓名"],
+        ["firstName", "firstName|姓拼音"],
+        ["lastName", "lastName|名拼音"],
+        ["gender", "gender|性别"],
+        ["idNumber", "idNumber|证件号码"],
+        ["birthDate", "birthDate|出生日期"],
+        ["phone", "phone|手机号码"],
+        ["email", "email|邮箱"],
+        ["nationality", "areaCitizenship|国籍/地区"],
+        ["nativePlace", "nativePlace|籍贯"],
+        ["languageCertificate", "englishLevel|外语类型"],
+        ["languageScore", "englishScore|外语等级"],
+        ["specialty", "specialty|特长爱好"],
+        ["remark", "remark|备注"],
+        ["school", "schoolName|学校名称"],
+        ["major", "majorName|专业"],
+        ["degree", "education|学历"],
+        ["educationStartDate", "startDate|eduTime|学习时间"],
+        ["faculty", "faculty|院系"],
+        ["mentor", "mentor|导师"],
+        ["secondMajor", "secondMajorName|第二专业"],
+        ["educationForm", "learningType|学习方式"],
+        ["countryRegion", "country|所属国家/地区"],
+        ["currentCity", "city|所属城市"],
+        ["experienceOrganization", "companyName|公司名称"],
+        ["experienceTitle", "position|岗位名称"],
+        ["experienceDescription", "description|工作描述"],
+        ["projectName", "projectName|项目名称"],
+        ["projectDescription", "projectResponsibilities|项目职责"],
+        ["projectPerformance", "projectPerformance|项目成果"],
+        ["awardDate", "rewardDate|获奖时间"],
+        ["awardName", "competitionName|奖项名称"],
+        ["awardLevel", "rewardLevel|奖项级别"],
+        ["awardType", "rewardType|奖项类型"],
+        ["languageName", "languageName|语言名称"],
+        ["languageLevel", "languageLevel|熟练程度"],
+        ["patentName", "patentName|专利名称"],
+        ["patentNumber", "patentNumber|专利编号"],
+        ["patentDescription", "patentDetail|专利详情"],
+        ["paperName", "paperName|论文名称"],
+        ["paperDescription", "paperDetail|论文详情"]
+      ]
+    },
+    {
       id: "feishu-career",
       name: "飞书招聘 ATSX",
       // ATSX uses a tenant-owned career domain. Keep known tenants here so
@@ -383,6 +437,15 @@
     formAdapterId: "pupumall",
     mappings: adapters.find((adapter) => adapter.id === "pupumall")?.mappings || [],
     priority: 95
+  });
+  registry?.registerCompany({
+    id: "midea",
+    name: "美的招聘",
+    hosts: [/^careers\.midea\.com$/i],
+    basePlatformId: "generic",
+    formAdapterId: "midea",
+    mappings: adapters.find((adapter) => adapter.id === "midea")?.mappings || [],
+    priority: 90
   });
   registry?.registerCompany({
     id: "duxiaoman",

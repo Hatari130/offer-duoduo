@@ -258,6 +258,13 @@ html[data-theme="dark"] .companion-intro {
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 1rem 2.5rem -1.8rem rgb(0 0 0 / 0.72);
 }
 html[data-theme="dark"] .companion-presence { color: #9bd1ba; background: rgb(45 84 68 / 0.5); }
+html[data-theme="dark"] .assistant-progress {
+  background: color-mix(in oklch, var(--of-surface-raised) 90%, var(--of-brand-50));
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0.9rem 2.2rem -1.6rem rgb(0 0 0 / 0.7);
+}
+html[data-theme="dark"] .assistant-progress[data-mode="opportunities"] {
+  background: color-mix(in oklch, var(--of-surface-raised) 92%, #20362d);
+}
 html[data-theme="dark"] .composer-shell {
   background: rgb(20 28 43 / 0.84);
   border-color: rgb(107 133 203 / 0.48);

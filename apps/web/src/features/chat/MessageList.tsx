@@ -17,6 +17,7 @@ import {
   FileText,
   MapPin,
   RefreshCw,
+  Search,
   ThumbsDown,
   ThumbsUp,
   X
@@ -24,9 +25,11 @@ import {
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { CompanionAvatar } from "./CompanionAvatar";
+import type { ChatPendingMode } from "./pendingMode";
 
 interface MessageListProps {
   messages: ChatMessage[];
+  pendingMode?: ChatPendingMode;
   copiedMessageId?: string;
   onCopy: (message: ChatMessage) => void;
   onRetry: (message: ChatMessage) => void;
@@ -41,6 +44,43 @@ const followUps = [
   "基于我选中的材料给出可直接使用的修改稿"
 ] as const;
 
+const pendingStages = {
+  opportunities: [
+    {
+      label: "理解条件",
+      headline: "小鲤正在理解你的筛选条件",
+      support: "方向、城市和更新时间会一起带入检索"
+    },
+    {
+      label: "查岗位库",
+      headline: "小鲤正在查找可投岗位",
+      support: "正在从 JobKoI 岗位库筛选真实机会"
+    },
+    {
+      label: "核对链接",
+      headline: "小鲤正在核对链接和截止时间",
+      support: "很快给你整理成最多 5 张岗位卡片"
+    }
+  ],
+  answer: [
+    {
+      label: "理解问题",
+      headline: "小鲤正在读你的问题",
+      support: "先把目标和现状理清楚"
+    },
+    {
+      label: "整理信息",
+      headline: "小鲤正在整理回答",
+      support: "正在结合本轮材料与对话上下文"
+    },
+    {
+      label: "形成回答",
+      headline: "小鲤正在把下一步说清楚",
+      support: "让建议更容易直接开始"
+    }
+  ]
+} as const;
+
 function webSourceUrl(value?: string) {
   if (!value) return undefined;
   try {
@@ -53,6 +93,7 @@ function webSourceUrl(value?: string) {
 
 export function MessageList({
   messages,
+  pendingMode,
   copiedMessageId,
   onCopy,
   onRetry,
@@ -62,8 +103,21 @@ export function MessageList({
 }: MessageListProps) {
   const endRef = useRef<HTMLDivElement>(null);
   const [pinnedToBottom, setPinnedToBottom] = useState(true);
+  const [pendingStage, setPendingStage] = useState(0);
   const pinnedRef = useRef(true);
   const lastAssistantId = [...messages].reverse().find((message) => message.role === "assistant")?.id;
+  const pendingCopy = pendingMode ? pendingStages[pendingMode][pendingStage] : undefined;
+
+  useEffect(() => {
+    setPendingStage(0);
+    if (!pendingMode) return;
+    const searchingTimer = window.setTimeout(() => setPendingStage(1), 900);
+    const verifyingTimer = window.setTimeout(() => setPendingStage(2), 5_500);
+    return () => {
+      window.clearTimeout(searchingTimer);
+      window.clearTimeout(verifyingTimer);
+    };
+  }, [pendingMode]);
 
   const getScrollContainer = () =>
     (endRef.current?.closest(".thread-scroll") as HTMLElement | null) ?? null;
@@ -94,7 +148,7 @@ export function MessageList({
       return;
     }
     if (pinnedRef.current) container.scrollTop = container.scrollHeight;
-  }, [messages]);
+  }, [messages, pendingMode, pendingStage]);
 
   const jumpToBottom = () => {
     const container = getScrollContainer();
@@ -112,6 +166,7 @@ export function MessageList({
 
   return (
     <div className="message-list" aria-live="polite" aria-relevant="additions text">
+      <span className="sr-only" role="status" aria-atomic="true">{pendingCopy?.headline || ""}</span>
       {messages.map((message, index) => {
         const messageContext = contextFor(index);
         const workspaceKinds = [...new Set(messageContext.map((item) => item.kind))];
@@ -221,6 +276,33 @@ export function MessageList({
           </article>
         );
       })}
+      {pendingMode && pendingCopy && (
+        <article className="message message--assistant message--pending" aria-hidden="true">
+          <CompanionAvatar className="assistant-avatar" size="small" decorative />
+          <div className="message-body">
+            <div className="assistant-progress" data-mode={pendingMode}>
+              <header>
+                <span className="assistant-progress__icon"><Search size={16} strokeWidth={2} /></span>
+                <div>
+                  <strong>{pendingCopy.headline}</strong>
+                  <span>{pendingCopy.support}</span>
+                </div>
+              </header>
+              <ol>
+                {pendingStages[pendingMode].map((stage, index) => (
+                  <li
+                    key={stage.label}
+                    data-state={index < pendingStage ? "complete" : index === pendingStage ? "current" : "upcoming"}
+                  >
+                    <i>{index < pendingStage ? "✓" : index + 1}</i>
+                    <span>{stage.label}</span>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </div>
+        </article>
+      )}
       <div ref={endRef} />
       {!pinnedToBottom && messages.length > 0 && (
         <button type="button" className="scroll-bottom-fab" onClick={jumpToBottom}>

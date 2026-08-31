@@ -125,6 +125,33 @@
       options: [".t-select-option:not(.t-is-disabled)", ".t-cascader__item:not(.t-is-disabled)", "[role='option']"],
       selected: [".t-input__inner", ".t-tag", ".t-cascader__value"],
       search: ["input[role='combobox']", ".t-select-input"]
+    },
+    {
+      id: "mdesign",
+      roots: ".ihr_dict_picker,.ihr_base_picker,.ihr_school_picker",
+      opener: ".ihr_base_picker-input,.ihr_base_picker-content,[role='combobox']",
+      popups: [
+        ".ihr_base_picker-panel:not([style*='display: none'])",
+        ".ihr_dict_picker-panel:not([style*='display: none'])",
+        ".ihr_school_picker-panel:not([style*='display: none'])",
+        "[class*='ihr_base_picker-panel']:not([style*='display: none'])"
+      ],
+      options: [
+        ".ihr_picker_menu-item:not(.ihr_picker_menu-item--disabled)",
+        "[class*='ihr_picker_menu-item']:not([class*='disabled'])",
+        "[role='option']"
+      ],
+      selected: [
+        ".ihr_base_picker-tag_label",
+        ".ihr_base_picker-content",
+        "[class*='ihr_base_picker'][class*='selected']",
+        "[aria-valuetext]"
+      ],
+      search: [
+        ".ihr_base_picker-search_input",
+        "input[role='combobox']",
+        "input[class*='search_input']"
+      ]
     }
   ];
 

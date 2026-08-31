@@ -1004,9 +1004,9 @@
     const labels = element.labels ? Array.from(element.labels) : [];
     const explicit = labels.map(labelText).find(Boolean) || "";
     const wrapping = element.closest("label");
-    const formItem = element.closest(".el-form-item,[class~='form-item'],fieldset");
+    const formItem = element.closest(".el-form-item,.md-form-item,[class~='form-item'],fieldset");
     const structural = formItem?.querySelector(
-      "label.el-form-item__label,[class~='el-form-item__label'],.form-item__text,[class*='form-item__text']"
+      "label.el-form-item__label,label.md-form-item__label,[class~='el-form-item__label'],[class~='md-form-item__label'],.form-item__text,[class*='form-item__text']"
     );
     const labelledBy = ariaLabelledByText(element);
     const siteLabel = ancestorAttributeText(element, "data-nc-label");
@@ -1036,9 +1036,9 @@
     const explicit = element.labels
       ? Array.from(element.labels).map(labelText).find(Boolean)
       : "";
-    const formItem = element.closest(".el-form-item,[class~='form-item'],fieldset");
+    const formItem = element.closest(".el-form-item,.md-form-item,[class~='form-item'],fieldset");
     const structural = formItem?.querySelector(
-      "label.el-form-item__label,[class~='el-form-item__label'],.form-item__text,[class*='form-item__text']"
+      "label.el-form-item__label,label.md-form-item__label,[class~='el-form-item__label'],[class~='md-form-item__label'],.form-item__text,[class*='form-item__text']"
     );
     const container = element.closest(
       '[class*="form-item"],[class*="formItem"],[class*="field"],[class*="control"],[class*="question"]'
@@ -2185,6 +2185,7 @@
       ".ivu-select", ".ivu-cascader", ".next-select", ".next-cascader",
       ".semi-select", ".semi-cascader", ".arco-select", ".arco-cascader",
       ".t-select", ".t-cascader",
+      ".ihr_dict_picker", ".ihr_base_picker", ".ihr_school_picker",
       ".month-range-select.date_info",
       // Tencent uses div-based controls without native roles for degree and
       // combined year/month selectors.
@@ -2196,6 +2197,7 @@
       ".school-wrap", ".ant-calendar-picker-container", ".ant-select-dropdown",
       ".ivu-select-dropdown", ".next-menu-popup", ".next-overlay-wrapper",
       ".semi-portal", ".arco-select-popup", ".t-popup", ".t-select__dropdown",
+      ".ihr_base_picker-panel", ".ihr_dict_picker-panel", ".ihr_school_picker-panel",
       "[class*='sd-Dropdown-dropdown-']",
       "[role='listbox']"
     ].join(",");
@@ -4412,7 +4414,7 @@
     if (compoundDate?.engine === "moka") return fillMokaDate(element, value);
     if (isMokaManagedDateInput(element)) return fillMokaManagedDate(element, value);
     const sharedDriver = formControlDrivers?.identify?.(element);
-    const sharedDriverIds = new Set(["moka", "feishu", "element", "iview", "fusion", "semi", "arco", "tdesign", "generic"]);
+    const sharedDriverIds = new Set(["moka", "feishu", "element", "iview", "fusion", "semi", "arco", "tdesign", "mdesign", "generic"]);
     if (sharedDriver && sharedDriverIds.has(sharedDriver.id)) {
       const driven = await formControlDrivers.fill(element, value, {
         click: clickControlInUserOrder,

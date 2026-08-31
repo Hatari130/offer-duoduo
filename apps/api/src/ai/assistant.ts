@@ -2,6 +2,7 @@ import type { ChatMessage, KnowledgeCitation } from "@offerflow/domain";
 import type { ApiConfig } from "../config.ts";
 import { assistantCapabilityContext } from "./capabilities.ts";
 import { companionSystemPrompt } from "./companion.ts";
+import { assistantRuntimeContext } from "./runtime-context.ts";
 
 export interface GenerateAnswerInput {
   prompt: string;
@@ -87,7 +88,10 @@ class DemoAssistantProvider implements AssistantProvider {
 class OpenAiCompatibleProvider implements AssistantProvider {
   readonly model: string;
 
-  constructor(private readonly config: ApiConfig) {
+  constructor(
+    private readonly config: ApiConfig,
+    private readonly now: () => Date
+  ) {
     this.model = config.aiModel;
   }
 
@@ -113,6 +117,7 @@ class OpenAiCompatibleProvider implements AssistantProvider {
             role: "system",
             content: [
               companionSystemPrompt(),
+              assistantRuntimeContext(this.now()),
               assistantCapabilityContext(),
               context ? `本轮可引用资料：\n${context}` : "本轮没有提供可引用资料。"
             ].join("\n\n")
@@ -154,8 +159,11 @@ class OpenAiCompatibleProvider implements AssistantProvider {
   }
 }
 
-export function createAssistantProvider(config: ApiConfig): AssistantProvider {
+export function createAssistantProvider(
+  config: ApiConfig,
+  now: () => Date = () => new Date()
+): AssistantProvider {
   return config.aiApiKey
-    ? new OpenAiCompatibleProvider(config)
+    ? new OpenAiCompatibleProvider(config, now)
     : new DemoAssistantProvider(config.demoStreamDelayMs);
 }
