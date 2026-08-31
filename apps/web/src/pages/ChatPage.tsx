@@ -361,15 +361,6 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           <div className="chat-atmosphere" aria-hidden="true">
             <i /><i /><i /><i /><i /><i />
           </div>
-          <div className="companion-intro">
-            <CompanionAvatar size="large" showPresence decorative />
-            <div>
-              <span>你的 AI 求职搭子</span>
-              <strong>{DEFAULT_CHAT_COMPANION.name}</strong>
-              <small>{DEFAULT_CHAT_COMPANION.tagline}</small>
-            </div>
-            <span className="companion-presence"><i aria-hidden="true" />{DEFAULT_CHAT_COMPANION.presence}</span>
-          </div>
           <h1 tabIndex={-1}>今天，我们先推进哪一步？</h1>
           <p>
             找岗位、改简历、理思路，卡住时也可以先说说。{DEFAULT_CHAT_COMPANION.name}会陪你把下一步做小、做清楚。
