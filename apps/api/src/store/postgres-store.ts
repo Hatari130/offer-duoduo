@@ -338,6 +338,16 @@ export class PostgresStore implements OfferFlowStore {
     return result.rows[0] ? userFromRow(result.rows[0]) : undefined;
   }
 
+  async updateUserAvatar(userId: string, avatarKey: AvatarKey): Promise<SessionUser | undefined> {
+    const result = await this.pool.query(
+      `UPDATE users SET avatar_key = $2
+       WHERE id = $1 AND deleted_at IS NULL
+       RETURNING id, email, display_name, avatar_key, created_at`,
+      [userId, avatarKey]
+    );
+    return result.rows[0] ? userFromRow(result.rows[0]) : undefined;
+  }
+
   async recordConsent(userId: string, consentType: string, policyVersion: string): Promise<void> {
     await this.pool.query(
       "INSERT INTO consent_records (user_id,consent_type,policy_version) VALUES ($1,$2,$3)",

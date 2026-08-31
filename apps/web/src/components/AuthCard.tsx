@@ -1,8 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
-import { ArrowRight, Check, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
-import type { AvatarKey } from "@offerflow/contracts";
+import { ArrowRight, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useAuth } from "../app/AuthContext";
-import { avatarOptions, UserAvatar } from "./UserAvatar";
 
 type Mode = "login" | "register";
 
@@ -33,7 +31,6 @@ export function AuthCard({
   } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [displayName, setDisplayName] = useState("");
-  const [avatarKey, setAvatarKey] = useState<AvatarKey>("sprout");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +47,6 @@ export function AuthCard({
   const passwordRef = useRef<HTMLInputElement>(null);
   const emailCodeRef = useRef<HTMLInputElement>(null);
   const consentRef = useRef<HTMLInputElement>(null);
-  const avatarRefs = useRef<Array<HTMLInputElement | null>>([]);
   const errorId = `${idPrefix}-error`;
   const emailCodeStatusId = `${idPrefix}-email-code-status`;
 
@@ -121,7 +117,6 @@ export function AuthCard({
           email: email.trim(),
           password,
           displayName: displayName.trim(),
-          avatarKey,
           acceptPrivacy,
           emailVerificationToken: token
         });
@@ -181,43 +176,6 @@ export function AuthCard({
               />
             </label>
 
-            <fieldset className="auth-avatar-fieldset">
-              <legend>
-                选择你的伙伴
-                <small>它会陪你出现在工作台</small>
-              </legend>
-              <div className="auth-avatar-grid">
-                {avatarOptions.map((option, index) => (
-                  <label className="auth-avatar-option" key={option.key}>
-                    <input
-                      ref={(element) => { avatarRefs.current[index] = element; }}
-                      type="radio"
-                      name="avatar"
-                      value={option.key}
-                      checked={avatarKey === option.key}
-                      onChange={() => setAvatarKey(option.key)}
-                      onKeyDown={(event) => {
-                        const direction = event.key === "ArrowRight" || event.key === "ArrowDown"
-                          ? 1
-                          : event.key === "ArrowLeft" || event.key === "ArrowUp"
-                            ? -1
-                            : 0;
-                        if (!direction) return;
-                        event.preventDefault();
-                        const nextIndex = (index + direction + avatarOptions.length) % avatarOptions.length;
-                        setAvatarKey(avatarOptions[nextIndex].key);
-                        requestAnimationFrame(() => avatarRefs.current[nextIndex]?.focus());
-                      }}
-                    />
-                    <span className="auth-avatar-choice">
-                      <UserAvatar avatarKey={option.key} />
-                      <span>{option.label}</span>
-                      <Check className="auth-avatar-check" aria-hidden="true" size={13} strokeWidth={2.4} />
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
           </>
         )}
         <label>

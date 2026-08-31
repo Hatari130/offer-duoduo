@@ -16,6 +16,7 @@ import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
 import { Logo } from "../components/Logo";
 import { LegalPage } from "../pages/LegalPage";
 import { AuthDialog } from "../components/AuthDialog";
+import { CompanionOnboardingDialog } from "../components/CompanionOnboardingDialog";
 import { loginReasonForPath } from "./authAccess";
 
 const titles: Array<[RegExp, string]> = [
@@ -109,6 +110,7 @@ export function App() {
     <>
       <AppShell pathname={pathname}>{page}</AppShell>
       <AuthDialog />
+      <CompanionOnboardingDialog />
     </>
   );
 }

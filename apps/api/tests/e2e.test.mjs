@@ -84,7 +84,6 @@ test("registration email verification is rate-limited, single-use and bound to t
 
   const registration = {
     displayName: "邮箱验证用户",
-    avatarKey: "cloud",
     email: "verified@example.com",
     password: "strong-pass-2026",
     acceptPrivacy: true
@@ -159,6 +158,23 @@ test("registration email verification is rate-limited, single-use and bound to t
   });
   assert.equal(registered.response.status, 201);
   assert.equal(registered.payload.data.user.email, registration.email);
+  assert.equal(registered.payload.data.user.avatarKey, "sprout");
+
+  const updatedAvatar = await jsonRequest(app.baseUrl, "/v1/account/avatar", {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${registered.payload.data.accessToken}`
+    },
+    body: JSON.stringify({ avatarKey: "mint" })
+  });
+  assert.equal(updatedAvatar.response.status, 200);
+  assert.equal(updatedAvatar.payload.data.user.avatarKey, "mint");
+
+  const refreshedSession = await jsonRequest(app.baseUrl, "/v1/session", {
+    headers: { Authorization: `Bearer ${registered.payload.data.accessToken}` }
+  });
+  assert.equal(refreshedSession.payload.data.user.avatarKey, "mint");
 });
 
 test("a failed verification email delivery does not leave the address rate-limited", async (t) => {

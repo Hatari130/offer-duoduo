@@ -92,6 +92,7 @@ export interface OfferFlowStore {
   authenticate(email: string, password: string): Awaitable<SessionUser | undefined>;
   getUser(userId: string): Awaitable<SessionUser | undefined>;
   getDemoUser(): Awaitable<SessionUser | undefined>;
+  updateUserAvatar(userId: string, avatarKey: AvatarKey): Awaitable<SessionUser | undefined>;
   recordConsent(userId: string, consentType: string, policyVersion: string): Awaitable<void>;
   deleteUser(userId: string): Awaitable<boolean>;
   createProductFeedback(input: ProductFeedbackInput): Awaitable<{ id: string; createdAt: string }>;

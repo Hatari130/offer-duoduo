@@ -7,7 +7,7 @@ import {
   useState,
   type PropsWithChildren
 } from "react";
-import type { AuthCapabilities, LoginRequest, RegisterRequest, SessionUser } from "@offerflow/contracts";
+import type { AuthCapabilities, AvatarKey, LoginRequest, RegisterRequest, SessionUser } from "@offerflow/contracts";
 import { api } from "./api";
 
 type AuthStatus = "loading" | "authenticated" | "guest" | "anonymous";
@@ -17,10 +17,13 @@ interface AuthContextValue {
   user?: SessionUser;
   capabilities?: AuthCapabilities;
   loginPrompt?: string;
+  companionOnboardingOpen: boolean;
   login: (request: LoginRequest) => Promise<void>;
   register: (request: RegisterRequest) => Promise<void>;
   sendRegistrationEmailCode: (email: string) => Promise<{ retryAfterSeconds: number }>;
   verifyRegistrationEmailCode: (email: string, code: string) => Promise<{ verificationToken: string }>;
+  saveCompanion: (avatarKey: AvatarKey) => Promise<void>;
+  dismissCompanionOnboarding: () => void;
   enterDemo: () => Promise<void>;
   logout: () => Promise<void>;
   requestLogin: (reason?: string) => void;
@@ -52,6 +55,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const [user, setUser] = useState<SessionUser>();
   const [capabilities, setCapabilities] = useState<AuthCapabilities>();
   const [loginPrompt, setLoginPrompt] = useState<string>();
+  const [companionOnboardingOpen, setCompanionOnboardingOpen] = useState(false);
 
   const establishSession = useCallback(
     (session: { user: SessionUser }, nextStatus: "authenticated" | "guest" = "authenticated") => {
@@ -65,6 +69,17 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const clearSession = useCallback(() => {
     setUser(undefined);
     setStatus("anonymous");
+    setCompanionOnboardingOpen(false);
+  }, []);
+
+  const dismissCompanionOnboarding = useCallback(() => {
+    setCompanionOnboardingOpen(false);
+  }, []);
+
+  const saveCompanion = useCallback(async (avatarKey: AvatarKey) => {
+    const result = await api.account.updateAvatar({ avatarKey });
+    setUser(result.user);
+    setCompanionOnboardingOpen(false);
   }, []);
 
   const logout = useCallback(async () => {
@@ -133,16 +148,34 @@ export function AuthProvider({ children }: PropsWithChildren) {
       user,
       capabilities,
       loginPrompt,
+      companionOnboardingOpen,
       login: async (request) => establishSession(await api.auth.login(request)),
-      register: async (request) => establishSession(await api.auth.register(request)),
+      register: async (request) => {
+        establishSession(await api.auth.register(request));
+        setCompanionOnboardingOpen(true);
+      },
       sendRegistrationEmailCode: (email) => api.auth.sendEmailCode({ email, purpose: "register" }),
       verifyRegistrationEmailCode: (email, code) => api.auth.verifyEmailCode({ email, purpose: "register", code }),
+      saveCompanion,
+      dismissCompanionOnboarding,
       enterDemo: async () => establishSession(await createGuestSessionOnce(), "guest"),
       logout,
       requestLogin,
       dismissLogin
     }),
-    [capabilities, dismissLogin, establishSession, loginPrompt, logout, requestLogin, status, user]
+    [
+      capabilities,
+      companionOnboardingOpen,
+      dismissCompanionOnboarding,
+      dismissLogin,
+      establishSession,
+      loginPrompt,
+      logout,
+      requestLogin,
+      saveCompanion,
+      status,
+      user
+    ]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -4,7 +4,7 @@ import { useAuth } from "../app/AuthContext";
 import { AuthCard } from "./AuthCard";
 
 export function AuthDialog() {
-  const { status, loginPrompt, dismissLogin } = useAuth();
+  const { status, loginPrompt, dismissLogin, companionOnboardingOpen } = useAuth();
   const dialogRef = useRef<HTMLDialogElement>(null);
   const returnFocusRef = useRef<HTMLElement | null>(null);
   const closingRef = useRef(false);
@@ -70,7 +70,7 @@ export function AuthDialog() {
       }}
       onClose={() => {
         dismissLogin();
-        restoreFocus();
+        if (!companionOnboardingOpen) restoreFocus();
       }}
     >
       <div className="auth-dialog-surface">

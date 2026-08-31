@@ -37,6 +37,7 @@ import {
   isRetryMessageRequest,
   isSendMessageRequest,
   isSupportedInterviewAudioMimeType,
+  isUpdateAccountAvatarRequest,
   normalizeMimeType,
   isUpdateConversationRequest,
   isUpdateResumeVersionRequest
@@ -884,7 +885,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         ) {
           throw new HttpError(403, "EMAIL_VERIFICATION_REQUIRED", "请先完成邮箱验证");
         }
-        const user = await store.createUser(body.email, body.displayName, body.password, body.avatarKey);
+        const user = await store.createUser(body.email, body.displayName, body.password, body.avatarKey ?? "sprout");
         await store.recordConsent(user.id, "privacy_and_terms", "2026-08-26");
         const session = await issueSession(user);
         setSessionCookie(response, config, session.accessToken, session.expiresAt);
@@ -1038,6 +1039,17 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
 
       if (method === "GET" && path === "/v1/session") {
         success(response, { user: (await store.getUser(userId))! });
+        return;
+      }
+
+      if (method === "PATCH" && path === "/v1/account/avatar") {
+        const body = await readJson(request);
+        if (!isUpdateAccountAvatarRequest(body)) {
+          throw new HttpError(400, "INVALID_AVATAR", "请选择一个伙伴形象");
+        }
+        const user = await store.updateUserAvatar(userId, body.avatarKey);
+        if (!user) throw new HttpError(404, "USER_NOT_FOUND", "账号不存在或已经停用");
+        success(response, { user });
         return;
       }
 

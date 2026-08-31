@@ -24,6 +24,10 @@ test("auth contracts accept complete payloads and reject ambiguous input", () =>
     isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", avatarKey: "cloud", acceptPrivacy: true }),
     true
   );
+  assert.equal(
+    isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", acceptPrivacy: true }),
+    true
+  );
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123" }), false);
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", avatarKey: "cloud", acceptPrivacy: false }), false);
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", avatarKey: "unknown", acceptPrivacy: true }), false);

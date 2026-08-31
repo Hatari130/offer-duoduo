@@ -38,9 +38,13 @@ export interface LoginRequest {
 
 export interface RegisterRequest extends LoginRequest {
   displayName: string;
-  avatarKey: AvatarKey;
+  avatarKey?: AvatarKey;
   acceptPrivacy: boolean;
   emailVerificationToken?: string;
+}
+
+export interface UpdateAccountAvatarRequest {
+  avatarKey: AvatarKey;
 }
 
 export interface AuthCapabilities {
@@ -108,13 +112,20 @@ export function isRegisterRequest(value: unknown): value is RegisterRequest {
     isRecord(value) &&
     isLoginRequest(value) &&
     typeof (value as Record<string, unknown>).displayName === "string" &&
-    isAvatarKey((value as Record<string, unknown>).avatarKey) &&
+    (
+      (value as Record<string, unknown>).avatarKey === undefined
+      || isAvatarKey((value as Record<string, unknown>).avatarKey)
+    ) &&
     (value as Record<string, unknown>).acceptPrivacy === true &&
     (
       (value as Record<string, unknown>).emailVerificationToken === undefined
       || typeof (value as Record<string, unknown>).emailVerificationToken === "string"
     )
   );
+}
+
+export function isUpdateAccountAvatarRequest(value: unknown): value is UpdateAccountAvatarRequest {
+  return isRecord(value) && isAvatarKey(value.avatarKey);
 }
 
 export function isEmailVerificationPurpose(value: unknown): value is EmailVerificationPurpose {

@@ -44,6 +44,7 @@ import type {
   TailorTaskDetailResponse,
   UpdateConversationRequest,
   UpdateApplicationRequest,
+  UpdateAccountAvatarRequest,
   UpdateResumeVersionRequest,
   VerifyEmailVerificationCodeRequest
 } from "@offerflow/contracts";
@@ -367,6 +368,11 @@ export function createApiClient(options: ApiClientOptions) {
 
   const account = {
     exportData: () => request<Record<string, unknown>>("/v1/account/export"),
+    updateAvatar: (body: UpdateAccountAvatarRequest) =>
+      request<SessionResponse>("/v1/account/avatar", {
+        method: "PATCH",
+        body: JSON.stringify(body)
+      }),
     delete: (body: { password: string; confirmation: "DELETE" }) =>
       request<{ deleted: true }>("/v1/account", {
         method: "DELETE",

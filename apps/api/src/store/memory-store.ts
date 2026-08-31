@@ -324,6 +324,14 @@ export class MemoryStore implements OfferFlowStore {
     return this.publicUser(this.users.get("demo-user")!);
   }
 
+  updateUserAvatar(userId: string, avatarKey: AvatarKey): SessionUser | undefined {
+    const user = this.users.get(userId);
+    if (!user) return undefined;
+    user.avatarKey = avatarKey;
+    this.persist();
+    return this.publicUser(user);
+  }
+
   recordConsent(_userId: string, _consentType: string, _policyVersion: string): void {
     // The development store intentionally carries no compliance guarantees;
     // production uses PostgreSQL, where consent is append-only and audited.
