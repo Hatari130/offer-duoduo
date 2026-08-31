@@ -117,7 +117,7 @@ export function ChatComposer({
           ))}
         </div>
       )}
-      <label className="sr-only" htmlFor="career-question">输入求职问题</label>
+      <label className="sr-only" htmlFor="career-question">告诉小鲤你想推进什么</label>
       <textarea
         ref={textareaRef}
         id="career-question"
@@ -129,13 +129,13 @@ export function ChatComposer({
           onChange(event.target.value);
         }}
         onKeyDown={handleKeyDown}
-        placeholder="描述你的目标、经历或正在卡住的问题…"
+        placeholder="跟小鲤说说你想推进什么，或哪里卡住了…"
       />
       <div className="composer-toolbar">
         <div>
           <input
             ref={fileRef}
-            className="sr-only"
+            hidden
             type="file"
             multiple
             accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"

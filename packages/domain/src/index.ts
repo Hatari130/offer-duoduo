@@ -3,6 +3,7 @@ export * from "./application-identity.ts";
 export * from "./application-sync.ts";
 export * from "./campus-hiring.ts";
 export * from "./chat.ts";
+export * from "./companion.ts";
 export * from "./interviews.ts";
 export * from "./opportunities.ts";
 export * from "./profile.ts";

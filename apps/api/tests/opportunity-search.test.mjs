@@ -9,6 +9,7 @@ import {
   assistantCapabilityContext,
   opportunityCapabilityAnswer
 } from "../src/ai/capabilities.ts";
+import { companionSystemPrompt } from "../src/ai/companion.ts";
 
 function opportunity(id, overrides = {}) {
   return {
@@ -77,8 +78,16 @@ test("inherits opportunity intent for follow-up questions instead of falling bac
 
 test("states the backend opportunity capability without asking the model to guess", () => {
   assert.match(assistantCapabilityContext(), /后端已接入真实校招岗位数据/);
-  assert.match(opportunityCapabilityAnswer("你不是有json数据没") || "", /JobKoI 后端已经接入/);
+  assert.match(opportunityCapabilityAnswer("你不是有json数据没") || "", /我能直接查 JobKoI 已接入/);
   assert.equal(opportunityCapabilityAnswer("帮我修改项目经历"), undefined);
+});
+
+test("gives the model one bounded companion identity", () => {
+  const prompt = companionSystemPrompt();
+  assert.match(prompt, /AI 求职伙伴“小鲤”/);
+  assert.match(prompt, /温暖但不敷衍，直接但不催逼/);
+  assert.match(prompt, /只承接当前请求中实际提供的材料和真实历史/);
+  assert.match(prompt, /你不是人类/);
 });
 
 test("returns at most five matching open opportunities with verified web links", () => {

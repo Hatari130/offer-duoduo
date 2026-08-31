@@ -6,13 +6,14 @@ import type {
   ChatConversation,
   ChatMessage
 } from "@offerflow/domain";
-import { CAREER_CHAT_SUGGESTIONS } from "@offerflow/domain";
-import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, Sparkles, X } from "lucide-react";
+import { CAREER_CHAT_SUGGESTIONS, DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
+import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { createUuid } from "../app/id";
 import { navigate } from "../app/router";
 import { ChatComposer } from "../features/chat/ChatComposer";
+import { CompanionAvatar } from "../features/chat/CompanionAvatar";
 import { ChatContextPicker } from "../features/chat/ChatContextPicker";
 import { MessageList } from "../features/chat/MessageList";
 
@@ -345,10 +346,18 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           <div className="chat-atmosphere" aria-hidden="true">
             <i /><i /><i /><i /><i /><i />
           </div>
-          <h1 tabIndex={-1}>今天想先解决哪一步？</h1>
+          <div className="companion-intro">
+            <CompanionAvatar size="large" showPresence decorative />
+            <div>
+              <span>你的 AI 求职搭子</span>
+              <strong>{DEFAULT_CHAT_COMPANION.name}</strong>
+              <small>{DEFAULT_CHAT_COMPANION.tagline}</small>
+            </div>
+            <span className="companion-presence"><i aria-hidden="true" />{DEFAULT_CHAT_COMPANION.presence}</span>
+          </div>
+          <h1 tabIndex={-1}>今天，我们先推进哪一步？</h1>
           <p>
-            聊岗位、改简历、做规划，优先检索你的求职知识库，帮你更快拿到 offer
-            <Sparkles className="welcome-subtitle-spark" aria-hidden="true" size={17} />
+            找岗位、改简历、理思路，卡住时也可以先说说。{DEFAULT_CHAT_COMPANION.name}会陪你把下一步做小、做清楚。
           </p>
           {contextPicker}
           <ChatComposer
@@ -363,10 +372,10 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
-          <section className="recommendation-section" aria-label="为你推荐">
+          <section className="recommendation-section" aria-label={`${DEFAULT_CHAT_COMPANION.name}可以陪你`}>
             <header>
               <div>
-                <span className="recommendation-label"><Compass aria-hidden="true" size={14} />为你推荐</span>
+                <span className="recommendation-label"><Compass aria-hidden="true" size={14} />{DEFAULT_CHAT_COMPANION.name}可以陪你</span>
               </div>
             </header>
             <div className="recommendation-grid">
@@ -387,7 +396,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
                     <span className="recommendation-tag">{card.tag}</span>
                     <strong>{card.title}</strong>
                     <small>{card.description}</small>
-                    <span className="recommendation-action">开始提问 <ArrowRight aria-hidden="true" size={14} /></span>
+                    <span className="recommendation-action">一起开始 <ArrowRight aria-hidden="true" size={14} /></span>
                   </button>
                 );
               })}
@@ -398,9 +407,15 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       ) : (
         <>
           <header className="thread-header">
-            <div>
-              <span>求职陪跑</span>
-              <h1 tabIndex={-1}>{conversation?.title || "求职对话"}</h1>
+            <div className="thread-header__companion">
+              <CompanionAvatar showPresence decorative />
+              <div className="thread-header__copy">
+                <span className="thread-header__eyebrow">
+                  <strong>{DEFAULT_CHAT_COMPANION.name}</strong>
+                  <i>{DEFAULT_CHAT_COMPANION.role}</i>
+                </span>
+                <h1 tabIndex={-1}>{conversation?.title || "求职对话"}</h1>
+              </div>
             </div>
             <button type="button" onClick={() => navigate("/app/chat")}>开始新对话</button>
           </header>

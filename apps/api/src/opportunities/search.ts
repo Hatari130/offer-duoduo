@@ -295,18 +295,18 @@ export function searchOpportunitySnapshot(
 
 export function opportunitySearchAnswer(results: ChatOpportunityResults): string {
   if (!results.sourceAvailable) {
-    return "岗位库暂时无法连接，因此我没有返回可能失真的投递链接。稍后重试即可；你的其他求职问题仍然可以继续问我。";
+    return "这次岗位库暂时没连上，我先不拿可能过期的链接糊弄你。稍后再试一次就好；其他求职问题我们可以接着聊。";
   }
   if (!results.total) {
     return results.isBroadSearch
-      ? "当前岗位库暂时没有仍可投递的校招岗位。你可以稍后再查，或告诉我目标方向和城市，我会在岗位库更新后按这些条件筛选。"
-      : "当前岗位库里没有找到符合这些条件且仍可投递的岗位。你可以放宽城市、届别或岗位方向后再查一次。";
+      ? "我刚查了岗位库，暂时没有仍可投递的校招岗位。你可以稍后再来看看；也可以先告诉我目标方向和城市，等岗位库更新后我们按这些条件继续筛。"
+      : "我刚按这些条件查了一遍，暂时没有找到仍可投递的岗位。我们可以先放宽城市、届别或岗位方向中的一项，再查一次。";
   }
   const shown = results.items.length;
   if (results.isBroadSearch) {
-    return `先给你展示 ${shown} 条当前可投递的校招岗位，岗位库里共有 ${results.total} 条。因为你还没指定方向和城市，这一轮优先展示近期更新的机会；告诉我专业、想做的方向或目标城市中的任意一项，我可以继续缩小范围。`;
+    return `我先从 ${results.total} 条当前可投递的校招岗位里，挑出近期更新的 ${shown} 条给你。你还没限定方向和城市，告诉我专业、想做的方向或目标城市中的任意一项，我们就能继续收窄。`;
   }
-  return `找到 ${results.total} 条当前可投递的匹配岗位，先展示匹配度最高的 ${shown} 条。投递状态和截止时间可能变化，打开招聘页面后请再确认一次。`;
+  return `查到了 ${results.total} 条当前可投递的匹配岗位，我先把最符合条件的 ${shown} 条放在下面。我们可以接着一起挑；打开投递页后，记得再确认一次状态和截止时间。`;
 }
 
 export async function fetchCampusHiringSnapshot(

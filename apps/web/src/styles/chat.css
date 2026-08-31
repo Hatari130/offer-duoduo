@@ -17,7 +17,7 @@
   place-items: start center;
   overflow-x: hidden;
   overflow-y: auto;
-  background: #f5f7ff;
+  background: #faf6f1;
 }
 
 .chat-page--empty::before {
@@ -27,11 +27,11 @@
   content: "";
   pointer-events: none;
   background:
-    radial-gradient(circle at 83% 4%, rgb(194 202 255 / 0.44) 0 7%, transparent 24%),
-    radial-gradient(ellipse 46% 38% at 47% 42%, rgb(210 226 255 / 0.62), transparent 72%),
-    radial-gradient(ellipse 44% 32% at 78% 56%, rgb(226 218 255 / 0.5), transparent 70%),
-    radial-gradient(ellipse 42% 28% at 28% 88%, rgb(210 237 255 / 0.48), transparent 70%),
-    linear-gradient(145deg, #fbfdff 0%, #f4f7ff 46%, #f7f3ff 100%);
+    radial-gradient(circle at 83% 4%, rgb(235 188 165 / 0.34) 0 7%, transparent 24%),
+    radial-gradient(ellipse 46% 38% at 47% 42%, rgb(255 225 203 / 0.5), transparent 72%),
+    radial-gradient(ellipse 44% 32% at 78% 56%, rgb(226 220 197 / 0.42), transparent 70%),
+    radial-gradient(ellipse 42% 28% at 28% 88%, rgb(206 229 219 / 0.45), transparent 70%),
+    linear-gradient(145deg, #fffaf6 0%, #faf5ed 46%, #f4f7f1 100%);
   opacity: 1;
 }
 
@@ -72,9 +72,9 @@
   display: block;
   width: 1rem;
   aspect-ratio: 1;
-  background: linear-gradient(145deg, #82bfff, #8879ee);
+  background: linear-gradient(145deg, #e39778, #bd6a54);
   clip-path: polygon(50% 0, 61% 38%, 100% 50%, 61% 62%, 50% 100%, 39% 62%, 0 50%, 39% 38%);
-  filter: drop-shadow(0 0 0.75rem rgb(89 139 238 / 0.38));
+  filter: drop-shadow(0 0 0.75rem rgb(190 106 77 / 0.3));
   opacity: 0.72;
 }
 
@@ -87,12 +87,79 @@
   inset-block-start: 7.5rem;
   inset-inline-start: 15%;
   width: 0.8rem;
-  background: #7eabf1;
+  background: #76a391;
   border-radius: 50%;
   clip-path: none;
   filter: blur(0.05rem);
   opacity: 0.32;
 }
+
+.companion-avatar {
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  border-radius: 0.9rem;
+}
+
+.companion-avatar--small { width: 2.25rem; height: 2.25rem; border-radius: 0.72rem; }
+.companion-avatar--medium { width: 2.75rem; height: 2.75rem; }
+.companion-avatar--large { width: 4rem; height: 4rem; border-radius: 1.2rem; }
+
+.companion-avatar .user-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  box-shadow: 0 0.55rem 1.4rem -0.85rem rgb(106 64 53 / 0.5);
+}
+
+.companion-avatar__presence {
+  position: absolute;
+  inset-inline-end: -0.08rem;
+  inset-block-end: -0.08rem;
+  width: 0.72rem;
+  height: 0.72rem;
+  background: #4e9678;
+  border: 0.16rem solid var(--of-surface, #fffdfb);
+  border-radius: 50%;
+}
+
+.companion-intro {
+  display: inline-grid;
+  max-width: 100%;
+  grid-template-columns: auto auto auto;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.75rem 0.65rem 0.65rem;
+  color: var(--of-text);
+  background: rgb(255 253 250 / 0.72);
+  border: 1px solid rgb(191 140 119 / 0.22);
+  border-radius: 1.35rem;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), 0 1rem 2.5rem -1.8rem rgb(111 76 61 / 0.36);
+  backdrop-filter: blur(1rem) saturate(112%);
+  text-align: start;
+}
+
+.companion-intro > div { display: grid; min-width: 0; gap: 0.08rem; }
+.companion-intro > div > span { color: var(--of-text-subtle); font-size: 0.7rem; font-weight: 650; }
+.companion-intro > div > strong { color: var(--of-text-strong, #171714); font-size: 1.05rem; font-weight: 760; }
+.companion-intro > div > small { color: var(--of-text-muted); font-size: 0.75rem; white-space: nowrap; }
+
+.companion-presence {
+  display: inline-flex;
+  min-height: 1.75rem;
+  align-items: center;
+  gap: 0.35rem;
+  padding-inline: 0.55rem;
+  color: #477762;
+  background: rgb(221 238 230 / 0.7);
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.companion-presence > i { width: 0.38rem; height: 0.38rem; background: #4e9678; border-radius: 50%; }
 
 .welcome-kicker {
   display: inline-flex;
@@ -114,15 +181,15 @@
 }
 
 .chat-welcome h1 {
-  margin: 0.6rem 0 0.7rem;
-  color: #071b4f;
+  margin: 1rem 0 0.7rem;
+  color: #302722;
   outline: none;
   font-family: var(--of-font-sans);
   font-size: clamp(2.35rem, 3vw, 3.25rem);
   font-weight: 760;
   line-height: 1.08;
   letter-spacing: -0.055em;
-  text-shadow: 0 0.75rem 2.5rem rgb(55 83 149 / 0.1);
+  text-shadow: 0 0.75rem 2.5rem rgb(112 72 54 / 0.09);
   text-wrap: balance;
 }
 
@@ -133,15 +200,10 @@
   justify-content: center;
   gap: 0.35rem;
   margin: 0 auto 1.45rem;
-  color: #52668f;
+  color: #6f6159;
   font-size: clamp(0.95rem, 1.05vw, 1.08rem);
   line-height: 1.7;
   text-wrap: pretty;
-}
-
-.welcome-subtitle-spark {
-  flex: 0 0 auto;
-  color: #6d8ff0;
 }
 
 .chat-welcome > .composer-shell {
@@ -579,12 +641,29 @@
   border-block-end: 1px solid var(--of-line);
 }
 
-.thread-header > div { min-width: 0; }
+.thread-header__companion {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.75rem;
+}
 
-.thread-header span {
+.thread-header__copy { min-width: 0; }
+
+.thread-header__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
   color: var(--of-brand-700, #8f4d35);
   font-size: 0.75rem;
   font-weight: 700;
+}
+
+.thread-header__eyebrow > i {
+  color: var(--of-text-subtle);
+  font-size: 0.68rem;
+  font-style: normal;
+  font-weight: 560;
 }
 
 .thread-header h1 {
@@ -732,14 +811,9 @@
 .message--user { justify-content: flex-end; }
 
 .assistant-avatar {
-  display: grid;
   width: 2.25rem;
   height: 2.25rem;
   flex: 0 0 auto;
-  place-items: center;
-  color: var(--of-brand-700, #8f4d35);
-  background: var(--of-brand-50);
-  border: 1px solid color-mix(in oklch, var(--of-brand-600, #ad6042) 20%, var(--of-line));
   border-radius: 0.7rem;
 }
 
@@ -1302,9 +1376,12 @@
   }
 
   .chat-welcome::before { inset-block-start: 1rem; width: 100%; height: 17rem; }
+  .companion-intro { width: 100%; grid-template-columns: auto minmax(0, 1fr); }
+  .companion-intro .companion-avatar--large { width: 3.5rem; height: 3.5rem; }
+  .companion-intro > div > small { white-space: normal; }
+  .companion-presence { grid-column: 2; width: fit-content; }
   .chat-welcome h1 { font-size: clamp(2.15rem, 10vw, 2.65rem); }
   .chat-welcome > p { display: block; margin-block-end: 1.5rem; font-size: 0.95rem; }
-  .welcome-subtitle-spark { display: none; }
   .chat-atmosphere { display: none; }
   .chat-context-row { flex-wrap: wrap; gap: 0.35rem; }
   .chat-context-label { width: 100%; }

@@ -412,7 +412,7 @@ test("opportunity catalogue is public and only accepts trusted importer snapshot
     })
   });
   const chatStream = await chat.text();
-  assert.match(chatStream, /先给你展示 1 条当前可投递的校招岗位/);
+  assert.match(chatStream, /我先从 1 条当前可投递的校招岗位里/);
   assert.match(chatStream, /"opportunityResults"/);
   assert.match(chatStream, /https:\/\/example\.com\/apply/);
 

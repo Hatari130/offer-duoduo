@@ -27,5 +27,5 @@ export function opportunityCapabilityAnswer(prompt: string): string | undefined 
   const mentionsOpportunityData = /岗位库|招聘库|岗位数据|招聘数据|json\s*数据|数据库/i.test(prompt);
   const asksAboutCapability = /有没有|有吗|有没|不是有|是否|接入|能不能|可以.*(?:查|搜)|怎么.*(?:查|搜)/.test(prompt);
   if (!mentionsOpportunityData || !asksAboutCapability) return undefined;
-  return "有。JobKoI 后端已经接入真实校招岗位数据，可以按岗位方向、公司、城市、届别、批次和更新时间检索，并返回最多 5 张带真实投递链接的岗位卡片。你可以直接说，例如“找上海昨天更新的产品经理岗位”。";
+  return "有，我能直接查 JobKoI 已接入的真实校招岗位库。告诉我岗位方向、公司、城市、届别、批次或时间范围中的任意一项，我会先筛出最多 5 个还能投、带真实链接的岗位。比如，你可以说：“找上海最近一周更新的产品经理岗位”。";
 }

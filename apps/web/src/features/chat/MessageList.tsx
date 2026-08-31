@@ -19,11 +19,11 @@ import {
   RefreshCw,
   ThumbsDown,
   ThumbsUp,
-  Waypoints,
   X
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { CompanionAvatar } from "./CompanionAvatar";
 
 interface MessageListProps {
   messages: ChatMessage[];
@@ -122,7 +122,7 @@ export function MessageList({
             aria-busy={message.status === "streaming"}
           >
             {message.role === "assistant" && (
-              <div className="assistant-avatar" aria-hidden="true"><Waypoints size={16} /></div>
+              <CompanionAvatar className="assistant-avatar" size="small" />
             )}
             <div className="message-body">
               {message.attachments.length > 0 && (
@@ -158,7 +158,7 @@ export function MessageList({
               )}
 
               {message.status === "error" && (
-                <p className="message-generation-state is-error">回答没有生成完成。检查网络后再生成一版。</p>
+                <p className="message-generation-state is-error">小鲤这次没生成完整。检查网络后再试一次。</p>
               )}
               {message.status === "stopped" && (
                 <p className="message-generation-state">已停止生成，你可以保留当前内容或再生成一版。</p>
@@ -366,7 +366,7 @@ function CitationList({ citations }: { citations: KnowledgeCitation[] }) {
 
 function ThinkingIndicator() {
   return (
-    <span className="thinking-indicator" aria-label="正在生成回答">
+    <span className="thinking-indicator" aria-label="小鲤正在整理回答">
       <i /><i /><i />
     </span>
   );
