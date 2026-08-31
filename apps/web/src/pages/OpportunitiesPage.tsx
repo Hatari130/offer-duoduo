@@ -17,6 +17,8 @@ import {
   X
 } from "lucide-react";
 import { fetchCampusHiringFeed, type CampusHiringOpportunity } from "../features/opportunities/campusHiringFeed";
+import { opportunityPageRequiresLogin } from "../features/opportunities/paginationAccess";
+import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
 
 const PAGE_SIZE = 20;
@@ -163,6 +165,8 @@ function OpportunityDeadline({ opportunity }: { opportunity: CampusHiringOpportu
 }
 
 export function OpportunitiesPage() {
+  const { status: authStatus, requestLogin } = useAuth();
+  const isAuthenticated = authStatus === "authenticated";
   const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -302,7 +306,12 @@ export function OpportunitiesPage() {
   };
 
   const goToPage = (nextPage: number) => {
-    setPage(Math.max(1, Math.min(nextPage, totalPages)));
+    const targetPage = Math.max(1, Math.min(nextPage, totalPages));
+    if (opportunityPageRequiresLogin(targetPage, isAuthenticated)) {
+      requestLogin("登录后即可查看第 4 页及后续校招信息。");
+      return;
+    }
+    setPage(targetPage);
     document.getElementById("opportunity-results")?.scrollIntoView({ block: "start" });
   };
 
