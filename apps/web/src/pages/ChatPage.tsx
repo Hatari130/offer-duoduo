@@ -399,7 +399,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         <>
           <header className="thread-header">
             <div>
-              <span>求职助手</span>
+              <span>求职陪跑</span>
               <h1 tabIndex={-1}>{conversation?.title || "求职对话"}</h1>
             </div>
             <button type="button" onClick={() => navigate("/app/chat")}>开始新对话</button>

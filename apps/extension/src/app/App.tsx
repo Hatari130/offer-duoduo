@@ -831,7 +831,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           </span>
           <span className="brand-wordmark">
             <strong>JobKoI</strong>
-            <small>求职助手</small>
+            <small>求职陪跑</small>
           </span>
         </button>
         <div className="topbar-actions">

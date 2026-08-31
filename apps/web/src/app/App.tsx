@@ -19,7 +19,7 @@ import { AuthDialog } from "../components/AuthDialog";
 import { loginReasonForPath } from "./authAccess";
 
 const titles: Array<[RegExp, string]> = [
-  [/^\/app\/chat/, "求职助手"],
+  [/^\/app\/chat/, "求职陪跑"],
   [/^\/app\/opportunities/, "校招信息速递"],
   [/^\/app\/companies/, "公司投递一键直达"],
   [/^\/app\/applications/, "个人投递管理"],

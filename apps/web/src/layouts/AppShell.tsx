@@ -57,7 +57,7 @@ function AppLink({ href, className, onNavigate, guard, ariaCurrent, title, child
 }
 
 const primaryNavigation = [
-  { href: "/app/chat", label: "求职助手", mobileLabel: "助手", icon: MessageCircleMore, requiresAuth: false, badge: "内测中" },
+  { href: "/app/chat", label: "求职陪跑", mobileLabel: "陪跑", icon: MessageCircleMore, requiresAuth: false, badge: "内测中" },
   { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper, requiresAuth: false },
   { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2, requiresAuth: false },
   { href: "/app/resumes", label: "简历中心", mobileLabel: "简历", icon: FileText, requiresAuth: true, badge: "内测中" },
