@@ -32,8 +32,10 @@ import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { companionshipLabel } from "../app/companionship";
 import { navigate } from "../app/router";
+import { applyColorTheme, persistColorTheme, readStoredColorTheme, type ColorTheme } from "../app/theme";
 import { Logo } from "../components/Logo";
 import { FeedbackDialog } from "../components/FeedbackDialog";
+import { ThemeToggle } from "../components/ThemeToggle";
 import { UserAvatar } from "../components/UserAvatar";
 
 interface AppLinkProps extends PropsWithChildren {
@@ -110,6 +112,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [accountOpen, setAccountOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [colorTheme, setColorTheme] = useState<ColorTheme>(() =>
+    document.documentElement.dataset.theme === "dark" ? "dark" : "light"
+  );
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const threadMenuRef = useRef<HTMLDivElement>(null);
   const threadMenuTriggerRef = useRef<HTMLButtonElement | null>(null);
@@ -181,6 +186,19 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   }, [isAnonymous, user?.id]);
 
   useEffect(() => {
+    const colorScheme = window.matchMedia?.("(prefers-color-scheme: dark)");
+    if (!colorScheme) return undefined;
+    const followSystemTheme = (event: MediaQueryListEvent) => {
+      if (readStoredColorTheme()) return;
+      const nextTheme = event.matches ? "dark" : "light";
+      applyColorTheme(nextTheme);
+      setColorTheme(nextTheme);
+    };
+    colorScheme.addEventListener("change", followSystemTheme);
+    return () => colorScheme.removeEventListener("change", followSystemTheme);
+  }, []);
+
+  useEffect(() => {
     if (!conversations.length && !user) return undefined;
     const timer = window.setInterval(() => setClockNow(Date.now()), 60_000);
     return () => window.clearInterval(timer);
@@ -244,6 +262,12 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     setThreadMenuPosition(undefined);
     sidebarToggleRequestedFocusRef.current = true;
     setSidebarCollapsed(next);
+  };
+  const toggleColorTheme = () => {
+    const nextTheme = colorTheme === "dark" ? "light" : "dark";
+    applyColorTheme(nextTheme);
+    persistColorTheme(nextTheme);
+    setColorTheme(nextTheme);
   };
   const requireLogin = (reason: string) => {
     if (!isAnonymous) return true;
@@ -358,9 +382,12 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   return (
     <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
-      <button className="feedback-trigger" type="button" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
-        <MessageCircleMore aria-hidden="true" size={16} />共建反馈
-      </button>
+      <div className="workspace-quick-actions" role="group" aria-label="显示与反馈">
+        <button className="feedback-trigger" type="button" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
+          <MessageCircleMore aria-hidden="true" size={16} />共建反馈
+        </button>
+        <ThemeToggle theme={colorTheme} onToggle={toggleColorTheme} />
+      </div>
       <header className={`mobile-header${isVisitor ? " is-guest" : ""}`}>
         <button
           type="button"
@@ -375,6 +402,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         <button className="mobile-feedback-trigger" type="button" aria-label="打开共建反馈" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
           <MessageCircleMore aria-hidden="true" size={20} />
         </button>
+        <ThemeToggle className="theme-toggle--mobile" theme={colorTheme} onToggle={toggleColorTheme} />
         {isVisitor ? (
           <button className="mobile-login-link" type="button" onClick={() => requestLogin("登录后即可同步并继续使用全部功能。")}>登录</button>
         ) : (
