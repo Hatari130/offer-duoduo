@@ -23,6 +23,17 @@ package or receive `DATABASE_URL`.
 Run `pnpm --filter @offerflow/api db:migrate` before a PostgreSQL start. See
 `docs/production-security.md` for legacy-state import and deployment steps.
 
+Registration email verification is optional in development and required only
+when `EMAIL_VERIFICATION_ENABLED=true`. It uses Alibaba Cloud DirectMail and the
+`email_verification_codes` PostgreSQL table; no Redis or message queue is
+required. Configure `ALIBABA_CLOUD_ACCESS_KEY_ID`,
+`ALIBABA_CLOUD_ACCESS_KEY_SECRET`, `DIRECTMAIL_ACCOUNT`,
+`DIRECTMAIL_FROM_ALIAS`, and a random `EMAIL_CODE_HMAC_SECRET` of at least 32
+characters. Keep every secret server-side. The API exposes
+`POST /v1/auth/email-code/send` and `POST /v1/auth/email-code/verify`; successful
+verification returns a short-lived token bound to the normalized email address,
+which registration must submit as `emailVerificationToken`.
+
 Interview audio transcription defaults to the free, unofficial BcutASR adapter
 (`INTERVIEW_ASR_PROVIDER=bcut`) and requires `ffmpeg` plus `ffprobe` on the API
 host. Set the provider to `disabled` to prevent third-party audio processing.

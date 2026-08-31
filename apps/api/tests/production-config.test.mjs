@@ -20,4 +20,21 @@ test("production refuses unsafe auth, transport and storage defaults", () => {
   });
   assert.doesNotThrow(() => validateProductionConfig(safe));
   assert.match(safe.opportunitySeedPath, /apps[\\/]api[\\/]data[\\/]campus-hiring\.json$/);
+
+  const emailVerificationWithoutSecrets = {
+    ...safe,
+    emailVerificationEnabled: true
+  };
+  assert.throws(
+    () => validateProductionConfig(emailVerificationWithoutSecrets),
+    /EMAIL_CODE_HMAC_SECRET/
+  );
+
+  assert.doesNotThrow(() => validateProductionConfig({
+    ...emailVerificationWithoutSecrets,
+    emailCodeHmacSecret: "offerflow-production-email-code-secret-long-enough",
+    alibabaCloudAccessKeyId: "test-access-key-id",
+    alibabaCloudAccessKeySecret: "test-access-key-secret",
+    directMailAccount: "no-reply@example.com"
+  }));
 });

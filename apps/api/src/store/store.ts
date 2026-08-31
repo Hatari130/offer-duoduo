@@ -27,6 +27,16 @@ import type {
 
 export type Awaitable<T> = T | Promise<T>;
 export type SessionScope = "user" | "device";
+export type EmailVerificationPurpose = "register" | "login" | "reset_password";
+
+export interface EmailVerificationCodeInput {
+  email: string;
+  purpose: EmailVerificationPurpose;
+  codeHmac: string;
+  requesterIp?: string;
+  createdAt: string;
+  expiresAt: string;
+}
 
 export interface SessionRecord {
   id: string;
@@ -85,6 +95,16 @@ export interface OfferFlowStore {
   recordConsent(userId: string, consentType: string, policyVersion: string): Awaitable<void>;
   deleteUser(userId: string): Awaitable<boolean>;
   createProductFeedback(input: ProductFeedbackInput): Awaitable<{ id: string; createdAt: string }>;
+
+  reserveEmailVerificationCode(input: EmailVerificationCodeInput): Awaitable<{ id: string }>;
+  markEmailVerificationCodeSent(id: string, sentAt: string): Awaitable<void>;
+  deleteEmailVerificationCode(id: string): Awaitable<void>;
+  consumeEmailVerificationCode(
+    email: string,
+    purpose: EmailVerificationPurpose,
+    codeHmac: string,
+    now: string
+  ): Awaitable<boolean>;
 
   createSession(
     userId: string,

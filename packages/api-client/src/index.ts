@@ -18,6 +18,7 @@ import type {
   CreateProductFeedbackRequest,
   CreateProductFeedbackResponse,
   DeviceCodeResponse,
+  EmailVerificationTicketResponse,
   ExchangeDeviceCodeRequest,
   ExchangeDeviceCodeResponse,
   ExchangeHandoffRequest,
@@ -37,12 +38,14 @@ import type {
   ResumeVersionListResponse,
   RegisterRequest,
   RetryMessageRequest,
+  SendEmailVerificationCodeRequest,
   SendMessageRequest,
   SessionResponse,
   TailorTaskDetailResponse,
   UpdateConversationRequest,
   UpdateApplicationRequest,
-  UpdateResumeVersionRequest
+  UpdateResumeVersionRequest,
+  VerifyEmailVerificationCodeRequest
 } from "@offerflow/contracts";
 import type { CreateInterviewRecordFromTranscriptRequest } from "@offerflow/contracts";
 
@@ -185,6 +188,16 @@ export function createApiClient(options: ApiClientOptions) {
       }),
     register: (body: RegisterRequest) =>
       request<AuthSession>("/v1/auth/register", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
+    sendEmailCode: (body: SendEmailVerificationCodeRequest) =>
+      request<{ sent: true; retryAfterSeconds: number }>("/v1/auth/email-code/send", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
+    verifyEmailCode: (body: VerifyEmailVerificationCodeRequest) =>
+      request<EmailVerificationTicketResponse>("/v1/auth/email-code/verify", {
         method: "POST",
         body: JSON.stringify(body)
       }),

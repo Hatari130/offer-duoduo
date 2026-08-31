@@ -1,4 +1,4 @@
-import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type {
@@ -35,6 +35,8 @@ import {
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
 import {
   StoreError,
+  type EmailVerificationCodeInput,
+  type EmailVerificationPurpose,
   type InterviewRecordInput,
   type IssuedStoreSession,
   type OfferFlowStore,
@@ -80,6 +82,13 @@ interface StoredSession extends SessionRecord {
   tokenHash: string;
 }
 
+interface StoredEmailVerificationCode extends EmailVerificationCodeInput {
+  id: string;
+  attemptCount: number;
+  sentAt?: string;
+  consumedAt?: string;
+}
+
 interface StoredResumeVersion {
   userId: string;
   item: ResumeVersionRecord;
@@ -119,6 +128,7 @@ interface PersistedStoreState {
   sequence: number;
   opportunityFeed?: OpportunityFeedSnapshot;
   sessions?: StoredSession[];
+  emailVerificationCodes?: StoredEmailVerificationCode[];
 }
 
 const DEFAULT_DATA_FILE = join(process.cwd(), ".offerflow-data", "state.json");
@@ -169,6 +179,7 @@ export class MemoryStore implements OfferFlowStore {
   private readonly handoffCodes = new Map<string, HandoffCode>();
   private readonly sessionsByHash = new Map<string, StoredSession>();
   private readonly sessionHashById = new Map<string, string>();
+  private readonly emailVerificationCodes = new Map<string, StoredEmailVerificationCode>();
   private readonly appliedChanges = new Map<string, number>();
   private readonly syncLog: SyncLogEntry[] = [];
   private opportunityFeed?: OpportunityFeedSnapshot;
@@ -243,6 +254,9 @@ export class MemoryStore implements OfferFlowStore {
         this.sessionsByHash.set(session.tokenHash, session);
         this.sessionHashById.set(session.id, session.tokenHash);
       }
+      for (const code of parsed.emailVerificationCodes ?? []) {
+        this.emailVerificationCodes.set(code.id, code);
+      }
     } catch {
       // A corrupt or partial state file must not prevent the API from starting.
     }
@@ -264,7 +278,8 @@ export class MemoryStore implements OfferFlowStore {
       syncLog: this.syncLog,
       sequence: this.sequence,
       opportunityFeed: this.opportunityFeed,
-      sessions: [...this.sessionsByHash.values()]
+      sessions: [...this.sessionsByHash.values()],
+      emailVerificationCodes: [...this.emailVerificationCodes.values()]
     };
     const temporary = `${this.dataFile}.tmp`;
     mkdirSync(dirname(this.dataFile), { recursive: true });
@@ -329,6 +344,98 @@ export class MemoryStore implements OfferFlowStore {
     for (const [hash, value] of this.handoffCodes) if (value.userId === userId) this.handoffCodes.delete(hash);
     for (const key of this.appliedChanges.keys()) if (key.startsWith(`${userId}:`)) this.appliedChanges.delete(key);
     for (let index = this.syncLog.length - 1; index >= 0; index -= 1) if (this.syncLog[index].userId === userId) this.syncLog.splice(index, 1);
+    this.persist();
+    return true;
+  }
+
+  reserveEmailVerificationCode(input: EmailVerificationCodeInput): { id: string } {
+    const email = normalizeEmail(input.email);
+    const now = Date.parse(input.createdAt);
+    const recent = [...this.emailVerificationCodes.values()].filter(
+      (item) => item.email === email && item.purpose === input.purpose
+    );
+    if (recent.some((item) => Date.parse(item.createdAt) > now - 60_000)) {
+      throw new MemoryStoreError("EMAIL_CODE_RATE_LIMITED", "验证码发送得太频繁，请稍后再试", 429, {
+        retryAfterSeconds: 60
+      });
+    }
+    if (recent.filter((item) => Date.parse(item.createdAt) > now - 60 * 60_000).length >= 10) {
+      throw new MemoryStoreError("EMAIL_CODE_RATE_LIMITED", "验证码发送得太频繁，请稍后再试", 429, {
+        retryAfterSeconds: 3600
+      });
+    }
+    if (input.requesterIp) {
+      const fromIp = [...this.emailVerificationCodes.values()].filter(
+        (item) => item.requesterIp === input.requesterIp && Date.parse(item.createdAt) > now - 60 * 60_000
+      );
+      if (fromIp.length >= 30) {
+        throw new MemoryStoreError("EMAIL_CODE_RATE_LIMITED", "验证码发送得太频繁，请稍后再试", 429, {
+          retryAfterSeconds: 3600
+        });
+      }
+    }
+
+    const id = randomUUID();
+    this.emailVerificationCodes.set(id, {
+      ...input,
+      id,
+      email,
+      attemptCount: 0
+    });
+    this.persist();
+    return { id };
+  }
+
+  markEmailVerificationCodeSent(id: string, sentAt: string): void {
+    const current = this.emailVerificationCodes.get(id);
+    if (!current) throw new MemoryStoreError("EMAIL_CODE_NOT_FOUND", "验证码记录不存在", 404);
+    current.sentAt = sentAt;
+    for (const item of this.emailVerificationCodes.values()) {
+      if (
+        item.id !== id
+        && item.email === current.email
+        && item.purpose === current.purpose
+        && !item.consumedAt
+      ) {
+        item.consumedAt = sentAt;
+      }
+    }
+    this.persist();
+  }
+
+  deleteEmailVerificationCode(id: string): void {
+    this.emailVerificationCodes.delete(id);
+    this.persist();
+  }
+
+  consumeEmailVerificationCode(
+    rawEmail: string,
+    purpose: EmailVerificationPurpose,
+    codeHmac: string,
+    now: string
+  ): boolean {
+    const email = normalizeEmail(rawEmail);
+    const current = [...this.emailVerificationCodes.values()]
+      .filter(
+        (item) => item.email === email
+          && item.purpose === purpose
+          && item.sentAt
+          && !item.consumedAt
+          && Date.parse(item.expiresAt) > Date.parse(now)
+      )
+      .sort((left, right) => right.createdAt.localeCompare(left.createdAt))[0];
+    if (!current || current.attemptCount >= 5) return false;
+
+    const expected = Buffer.from(current.codeHmac, "hex");
+    const received = Buffer.from(codeHmac, "hex");
+    const correct = expected.length === received.length && timingSafeEqual(expected, received);
+    if (!correct) {
+      current.attemptCount += 1;
+      if (current.attemptCount >= 5) current.consumedAt = now;
+      this.persist();
+      return false;
+    }
+    current.consumedAt = now;
     this.persist();
     return true;
   }

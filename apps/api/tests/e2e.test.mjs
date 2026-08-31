@@ -8,6 +8,7 @@ import test from "node:test";
 import { createOfferFlowServer } from "../src/server.ts";
 import { loadApiConfig } from "../src/config.ts";
 import { MemoryStore } from "../src/store/memory-store.ts";
+import { StoreError } from "../src/store/store.ts";
 
 function sampleApplication(overrides = {}) {
   return {
@@ -27,7 +28,7 @@ function sampleApplication(overrides = {}) {
   };
 }
 
-async function startTestServer(configOverrides = {}) {
+async function startTestServer(configOverrides = {}, appOverrides = {}) {
   const config = {
     ...loadApiConfig({}),
     host: "127.0.0.1",
@@ -48,7 +49,8 @@ async function startTestServer(configOverrides = {}) {
   const app = createOfferFlowServer({
     config,
     assistant,
-    store: new MemoryStore({ persistence: false })
+    store: new MemoryStore({ persistence: false }),
+    ...appOverrides
   });
   app.server.listen(0, config.host);
   await once(app.server, "listening");
@@ -58,6 +60,144 @@ async function startTestServer(configOverrides = {}) {
     baseUrl: `http://${config.host}:${address.port}`
   };
 }
+
+test("registration email verification is rate-limited, single-use and bound to the email", async (t) => {
+  const deliveries = [];
+  const app = await startTestServer(
+    {
+      emailVerificationEnabled: true,
+      emailCodeHmacSecret: "offerflow-email-code-test-secret-2026-long-enough"
+    },
+    {
+      emailMailer: {
+        configured: true,
+        async sendVerificationEmail(email, code) {
+          deliveries.push({ email, code });
+        }
+      }
+    }
+  );
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+  });
+
+  const registration = {
+    displayName: "邮箱验证用户",
+    avatarKey: "cloud",
+    email: "verified@example.com",
+    password: "strong-pass-2026",
+    acceptPrivacy: true
+  };
+  const unverified = await jsonRequest(app.baseUrl, "/v1/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(registration)
+  });
+  assert.equal(unverified.response.status, 403);
+  assert.equal(unverified.payload.error.code, "EMAIL_VERIFICATION_REQUIRED");
+
+  const sent = await jsonRequest(app.baseUrl, "/v1/auth/email-code/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: registration.email, purpose: "register" })
+  });
+  assert.equal(sent.response.status, 200);
+  assert.equal(sent.payload.data.retryAfterSeconds, 60);
+  assert.equal(deliveries.length, 1);
+  assert.match(deliveries[0].code, /^\d{6}$/);
+
+  const rateLimited = await jsonRequest(app.baseUrl, "/v1/auth/email-code/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: registration.email, purpose: "register" })
+  });
+  assert.equal(rateLimited.response.status, 429);
+  assert.equal(rateLimited.payload.error.code, "EMAIL_CODE_RATE_LIMITED");
+  assert.equal(rateLimited.response.headers.get("retry-after"), "60");
+
+  const incorrectCode = deliveries[0].code === "000000" ? "000001" : "000000";
+  const incorrect = await jsonRequest(app.baseUrl, "/v1/auth/email-code/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: registration.email, purpose: "register", code: incorrectCode })
+  });
+  assert.equal(incorrect.response.status, 400);
+  assert.equal(incorrect.payload.error.code, "INVALID_EMAIL_CODE");
+
+  const verified = await jsonRequest(app.baseUrl, "/v1/auth/email-code/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: registration.email, purpose: "register", code: deliveries[0].code })
+  });
+  assert.equal(verified.response.status, 200);
+  assert.equal(typeof verified.payload.data.verificationToken, "string");
+
+  const reusedCode = await jsonRequest(app.baseUrl, "/v1/auth/email-code/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: registration.email, purpose: "register", code: deliveries[0].code })
+  });
+  assert.equal(reusedCode.response.status, 400);
+
+  const wrongEmail = await jsonRequest(app.baseUrl, "/v1/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      ...registration,
+      email: "other@example.com",
+      emailVerificationToken: verified.payload.data.verificationToken
+    })
+  });
+  assert.equal(wrongEmail.response.status, 403);
+  assert.equal(wrongEmail.payload.error.code, "EMAIL_VERIFICATION_REQUIRED");
+
+  const registered = await jsonRequest(app.baseUrl, "/v1/auth/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ ...registration, emailVerificationToken: verified.payload.data.verificationToken })
+  });
+  assert.equal(registered.response.status, 201);
+  assert.equal(registered.payload.data.user.email, registration.email);
+});
+
+test("a failed verification email delivery does not leave the address rate-limited", async (t) => {
+  let deliveryAttempts = 0;
+  const app = await startTestServer(
+    {
+      emailVerificationEnabled: true,
+      emailCodeHmacSecret: "offerflow-email-code-test-secret-2026-long-enough"
+    },
+    {
+      emailMailer: {
+        configured: true,
+        async sendVerificationEmail() {
+          deliveryAttempts += 1;
+          if (deliveryAttempts === 1) {
+            throw new StoreError("EMAIL_DELIVERY_FAILED", "验证码邮件发送失败，请稍后重试", 502);
+          }
+        }
+      }
+    }
+  );
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+  });
+
+  const request = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "retry@example.com", purpose: "register" })
+  };
+  const failed = await jsonRequest(app.baseUrl, "/v1/auth/email-code/send", request);
+  assert.equal(failed.response.status, 502);
+  assert.equal(failed.payload.error.code, "EMAIL_DELIVERY_FAILED");
+
+  const retried = await jsonRequest(app.baseUrl, "/v1/auth/email-code/send", request);
+  assert.equal(retried.response.status, 200);
+  assert.equal(deliveryAttempts, 2);
+});
 
 async function jsonRequest(baseUrl, path, options = {}) {
   const response = await fetch(`${baseUrl}${path}`, options);

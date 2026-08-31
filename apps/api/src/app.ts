@@ -1,5 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { once } from "node:events";
+import { isIP } from "node:net";
 import type {
   ApiError,
   ApiResponse,
@@ -26,6 +27,8 @@ import {
   isCreateTailorTaskRequest,
   isExchangeHandoffRequest,
   isExchangeDeviceCodeRequest,
+  isSendEmailVerificationCodeRequest,
+  isVerifyEmailVerificationCodeRequest,
   isLoginRequest,
   isRecord,
   isRegisterRequest,
@@ -51,6 +54,8 @@ import type {
 } from "@offerflow/domain";
 import { opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
 import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
+import { createDirectMailMailer, type EmailMailer } from "./auth/direct-mail.ts";
+import { createEmailVerificationService } from "./auth/email-verification.ts";
 import { opportunityCapabilityAnswer } from "./ai/capabilities.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
@@ -82,6 +87,7 @@ export interface OfferFlowAppOptions {
   knowledge?: KnowledgeService;
   interviewQaParser?: InterviewQaParser;
   transcriber?: InterviewTranscriptionProvider;
+  emailMailer?: EmailMailer;
 }
 
 class HttpError extends Error {
@@ -134,6 +140,13 @@ async function readJson(request: IncomingMessage): Promise<unknown> {
   } catch {
     throw new HttpError(400, "INVALID_JSON", "请求内容不是有效的 JSON");
   }
+}
+
+function requestIp(request: IncomingMessage): string | undefined {
+  const forwarded = request.headers["x-forwarded-for"];
+  const candidate = (Array.isArray(forwarded) ? forwarded[0] : forwarded?.split(",")[0])?.trim()
+    || request.socket.remoteAddress;
+  return candidate && isIP(candidate) ? candidate : undefined;
 }
 
 async function readBinary(request: IncomingMessage, maximumBytes: number): Promise<Buffer> {
@@ -273,6 +286,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const knowledge = options.knowledge ?? new KnowledgeService();
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
+  const emailMailer = options.emailMailer ?? createDirectMailMailer(config);
+  const emailVerification = createEmailVerificationService(config, store, emailMailer);
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
   const feedbackAttempts = new Map<string, { count: number; resetAt: number }>();
   let opportunityRefresh: Promise<Awaited<ReturnType<OfferFlowStore["getOpportunityFeed"]>>> | undefined;
@@ -755,8 +770,46 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       if (method === "GET" && path === "/v1/auth/capabilities") {
         success(response, {
           registrationMode: config.registrationMode,
-          demoEnabled: config.allowDemoAuth
+          demoEnabled: config.allowDemoAuth,
+          emailVerificationEnabled: config.emailVerificationEnabled
         });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/email-code/send") {
+        const body = await readJson(request);
+        if (!isSendEmailVerificationCodeRequest(body) || !/^\S+@\S+\.\S+$/.test(body.email.trim()) || body.email.length > 254) {
+          throw new HttpError(400, "INVALID_EMAIL_CODE_REQUEST", "请输入有效的邮箱地址");
+        }
+        if (body.purpose !== "register") {
+          throw new HttpError(400, "EMAIL_CODE_PURPOSE_UNAVAILABLE", "当前仅支持注册邮箱验证");
+        }
+        if (!config.emailVerificationEnabled) {
+          throw new HttpError(404, "NOT_FOUND", "邮箱验证功能没有开启");
+        }
+        if (config.registrationMode === "closed") {
+          throw new HttpError(403, "REGISTRATION_CLOSED", "当前仅限受邀用户注册");
+        }
+        const email = body.email.trim().toLowerCase();
+        if (config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.includes(email)) {
+          throw new HttpError(403, "REGISTRATION_NOT_ALLOWED", "这个邮箱尚未获得注册权限");
+        }
+        await emailVerification.sendCode(email, body.purpose, requestIp(request));
+        success(response, { sent: true as const, retryAfterSeconds: 60 });
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/email-code/verify") {
+        const body = await readJson(request);
+        if (!isVerifyEmailVerificationCodeRequest(body) || body.purpose !== "register") {
+          throw new HttpError(400, "INVALID_EMAIL_CODE", "验证码无效或已过期");
+        }
+        if (!config.emailVerificationEnabled) {
+          throw new HttpError(404, "NOT_FOUND", "邮箱验证功能没有开启");
+        }
+        const ticket = await emailVerification.verifyCode(body.email, body.purpose, body.code.trim());
+        if (!ticket) throw new HttpError(400, "INVALID_EMAIL_CODE", "验证码无效或已过期");
+        success(response, ticket);
         return;
       }
 
@@ -821,6 +874,15 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         }
         if (config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.includes(body.email.trim().toLowerCase())) {
           throw new HttpError(403, "REGISTRATION_NOT_ALLOWED", "这个邮箱尚未获得注册权限");
+        }
+        if (
+          config.emailVerificationEnabled
+          && (
+            !body.emailVerificationToken
+            || !emailVerification.verifyTicket(body.emailVerificationToken, body.email, "register")
+          )
+        ) {
+          throw new HttpError(403, "EMAIL_VERIFICATION_REQUIRED", "请先完成邮箱验证");
         }
         const user = await store.createUser(body.email, body.displayName, body.password, body.avatarKey);
         await store.recordConsent(user.id, "privacy_and_terms", "2026-08-26");
@@ -1397,6 +1459,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
       if (error instanceof HttpError || error instanceof StoreError) {
+        const retryAfterSeconds = error.details?.retryAfterSeconds;
+        if (error.status === 429 && typeof retryAfterSeconds === "number") {
+          response.setHeader("Retry-After", String(Math.max(1, Math.ceil(retryAfterSeconds))));
+        }
         failure(response, error.status, error.code, error.message, error.details);
         return;
       }

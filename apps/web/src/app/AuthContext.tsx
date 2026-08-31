@@ -19,6 +19,8 @@ interface AuthContextValue {
   loginPrompt?: string;
   login: (request: LoginRequest) => Promise<void>;
   register: (request: RegisterRequest) => Promise<void>;
+  sendRegistrationEmailCode: (email: string) => Promise<{ retryAfterSeconds: number }>;
+  verifyRegistrationEmailCode: (email: string, code: string) => Promise<{ verificationToken: string }>;
   enterDemo: () => Promise<void>;
   logout: () => Promise<void>;
   requestLogin: (reason?: string) => void;
@@ -133,6 +135,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       loginPrompt,
       login: async (request) => establishSession(await api.auth.login(request)),
       register: async (request) => establishSession(await api.auth.register(request)),
+      sendRegistrationEmailCode: (email) => api.auth.sendEmailCode({ email, purpose: "register" }),
+      verifyRegistrationEmailCode: (email, code) => api.auth.verifyEmailCode({ email, purpose: "register", code }),
       enterDemo: async () => establishSession(await createGuestSessionOnce(), "guest"),
       logout,
       requestLogin,

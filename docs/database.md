@@ -22,6 +22,7 @@ is an extension offline cache, not a replacement for authenticated cloud data.
 | --- | --- |
 | `users` | identity link to the chosen authentication provider |
 | `auth_credentials` / `auth_sessions` | scrypt password material and hashed revocable sessions |
+| `email_verification_codes` | HMAC-only, rate-limited and single-use email verification state |
 | `profiles` | sensitive candidate profile document and revision |
 | `applications` | private application state plus immutable job snapshots |
 | `application_events` | assessment/interview/offer timeline |

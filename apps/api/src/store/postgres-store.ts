@@ -1,4 +1,4 @@
-import { createHash, randomBytes, randomInt, randomUUID } from "node:crypto";
+import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from "node:crypto";
 import { Pool, type PoolClient } from "pg";
 import type {
   ApplicationSyncChange,
@@ -33,6 +33,8 @@ import {
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
 import {
   StoreError,
+  type EmailVerificationCodeInput,
+  type EmailVerificationPurpose,
   type InterviewRecordInput,
   type IssuedStoreSession,
   type OfferFlowStore,
@@ -103,15 +105,18 @@ export class PostgresStore implements OfferFlowStore {
   }
 
   async initialize(): Promise<void> {
-    const result = await this.pool.query<{ ready: string | null }>(
-      "SELECT to_regclass('public.auth_sessions')::text AS ready"
+    const result = await this.pool.query<{ auth_ready: string | null; email_code_ready: string | null }>(
+      `SELECT
+         to_regclass('public.auth_sessions')::text AS auth_ready,
+         to_regclass('public.email_verification_codes')::text AS email_code_ready`
     );
-    if (!result.rows[0]?.ready) {
+    if (!result.rows[0]?.auth_ready || !result.rows[0]?.email_code_ready) {
       throw new Error("PostgreSQL 尚未迁移，请先运行 pnpm --filter @offerflow/api db:migrate");
     }
     await this.pool.query("DELETE FROM auth_sessions WHERE expires_at < now() - interval '7 days' OR revoked_at < now() - interval '7 days'");
     await this.pool.query("DELETE FROM device_pairing_codes WHERE expires_at < now() - interval '1 day' OR consumed_at < now() - interval '1 day'");
     await this.pool.query("DELETE FROM handoff_codes WHERE expires_at < now() - interval '1 day' OR consumed_at < now() - interval '1 day'");
+    await this.pool.query("DELETE FROM email_verification_codes WHERE created_at < now() - interval '7 days'");
     if (this.allowDemoAuth && !(await this.getDemoUser())) {
       await this.createUser(DEMO_EMAIL, "林知夏", "offerflow2026", "sprout");
     }
@@ -132,6 +137,147 @@ export class PostgresStore implements OfferFlowStore {
       id: String(result.rows[0].id),
       createdAt: new Date(result.rows[0].created_at).toISOString()
     };
+  }
+
+  async reserveEmailVerificationCode(input: EmailVerificationCodeInput): Promise<{ id: string }> {
+    const email = normalizeEmail(input.email);
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      await client.query("SELECT pg_advisory_xact_lock(hashtextextended($1, 0))", [`email-code:${email}:${input.purpose}`]);
+      const emailRate = await client.query(
+        `SELECT
+           COUNT(*) FILTER (WHERE created_at > $3::timestamptz - interval '60 seconds') AS last_minute,
+           COUNT(*) FILTER (WHERE created_at > $3::timestamptz - interval '1 hour') AS last_hour
+         FROM email_verification_codes
+         WHERE email = $1 AND purpose = $2`,
+        [email, input.purpose, input.createdAt]
+      );
+      if (Number(emailRate.rows[0].last_minute) >= 1) {
+        throw new StoreError("EMAIL_CODE_RATE_LIMITED", "验证码发送得太频繁，请稍后再试", 429, {
+          retryAfterSeconds: 60
+        });
+      }
+      if (Number(emailRate.rows[0].last_hour) >= 10) {
+        throw new StoreError("EMAIL_CODE_RATE_LIMITED", "验证码发送得太频繁，请稍后再试", 429, {
+          retryAfterSeconds: 3600
+        });
+      }
+      if (input.requesterIp) {
+        const ipRate = await client.query(
+          `SELECT COUNT(*) AS count
+           FROM email_verification_codes
+           WHERE requester_ip = $1::inet
+             AND created_at > $2::timestamptz - interval '1 hour'`,
+          [input.requesterIp, input.createdAt]
+        );
+        if (Number(ipRate.rows[0].count) >= 30) {
+          throw new StoreError("EMAIL_CODE_RATE_LIMITED", "验证码发送得太频繁，请稍后再试", 429, {
+            retryAfterSeconds: 3600
+          });
+        }
+      }
+      const result = await client.query(
+        `INSERT INTO email_verification_codes
+           (email, purpose, code_hmac, requester_ip, created_at, expires_at)
+         VALUES ($1, $2, $3, $4::inet, $5, $6)
+         RETURNING id`,
+        [email, input.purpose, input.codeHmac, input.requesterIp ?? null, input.createdAt, input.expiresAt]
+      );
+      await client.query("COMMIT");
+      return { id: String(result.rows[0].id) };
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  async markEmailVerificationCodeSent(id: string, sentAt: string): Promise<void> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      const current = await client.query(
+        `UPDATE email_verification_codes
+         SET sent_at = $2
+         WHERE id = $1
+         RETURNING email, purpose`,
+        [id, sentAt]
+      );
+      if (!current.rowCount) throw new StoreError("EMAIL_CODE_NOT_FOUND", "验证码记录不存在", 404);
+      await client.query(
+        `UPDATE email_verification_codes
+         SET consumed_at = $3
+         WHERE email = $1 AND purpose = $2 AND id <> $4 AND consumed_at IS NULL`,
+        [current.rows[0].email, current.rows[0].purpose, sentAt, id]
+      );
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  async deleteEmailVerificationCode(id: string): Promise<void> {
+    await this.pool.query("DELETE FROM email_verification_codes WHERE id = $1", [id]);
+  }
+
+  async consumeEmailVerificationCode(
+    rawEmail: string,
+    purpose: EmailVerificationPurpose,
+    codeHmac: string,
+    now: string
+  ): Promise<boolean> {
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      const result = await client.query(
+        `SELECT id, code_hmac, attempt_count
+         FROM email_verification_codes
+         WHERE email = $1 AND purpose = $2
+           AND sent_at IS NOT NULL AND consumed_at IS NULL AND expires_at > $3
+         ORDER BY created_at DESC
+         LIMIT 1
+         FOR UPDATE`,
+        [normalizeEmail(rawEmail), purpose, now]
+      );
+      const row = result.rows[0];
+      if (!row || Number(row.attempt_count) >= 5) {
+        await client.query("ROLLBACK");
+        return false;
+      }
+      const expected = Buffer.from(String(row.code_hmac), "hex");
+      const received = Buffer.from(codeHmac, "hex");
+      const correct = expected.length === received.length && timingSafeEqual(expected, received);
+      if (!correct) {
+        await client.query(
+          `UPDATE email_verification_codes
+           SET attempt_count = attempt_count + 1,
+               consumed_at = CASE WHEN attempt_count + 1 >= 5 THEN $2 ELSE consumed_at END
+           WHERE id = $1`,
+          [row.id, now]
+        );
+        await client.query("COMMIT");
+        return false;
+      }
+      const consumed = await client.query(
+        `UPDATE email_verification_codes
+         SET consumed_at = $2
+         WHERE id = $1 AND consumed_at IS NULL
+         RETURNING id`,
+        [row.id, now]
+      );
+      await client.query("COMMIT");
+      return consumed.rowCount === 1;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 
   async createUser(email: string, displayName: string, password: string, avatarKey: AvatarKey = "sprout", fixedId?: string): Promise<SessionUser> {

@@ -40,11 +40,30 @@ export interface RegisterRequest extends LoginRequest {
   displayName: string;
   avatarKey: AvatarKey;
   acceptPrivacy: boolean;
+  emailVerificationToken?: string;
 }
 
 export interface AuthCapabilities {
   registrationMode: "open" | "allowlist" | "closed";
   demoEnabled: boolean;
+  emailVerificationEnabled: boolean;
+}
+
+export const emailVerificationPurposes = ["register", "login", "reset_password"] as const;
+export type EmailVerificationPurpose = (typeof emailVerificationPurposes)[number];
+
+export interface SendEmailVerificationCodeRequest {
+  email: string;
+  purpose: EmailVerificationPurpose;
+}
+
+export interface VerifyEmailVerificationCodeRequest extends SendEmailVerificationCodeRequest {
+  code: string;
+}
+
+export interface EmailVerificationTicketResponse {
+  verificationToken: string;
+  expiresAt: string;
 }
 
 export interface AuthDeviceSession {
@@ -90,8 +109,24 @@ export function isRegisterRequest(value: unknown): value is RegisterRequest {
     isLoginRequest(value) &&
     typeof (value as Record<string, unknown>).displayName === "string" &&
     isAvatarKey((value as Record<string, unknown>).avatarKey) &&
-    (value as Record<string, unknown>).acceptPrivacy === true
+    (value as Record<string, unknown>).acceptPrivacy === true &&
+    (
+      (value as Record<string, unknown>).emailVerificationToken === undefined
+      || typeof (value as Record<string, unknown>).emailVerificationToken === "string"
+    )
   );
+}
+
+export function isEmailVerificationPurpose(value: unknown): value is EmailVerificationPurpose {
+  return typeof value === "string" && emailVerificationPurposes.includes(value as EmailVerificationPurpose);
+}
+
+export function isSendEmailVerificationCodeRequest(value: unknown): value is SendEmailVerificationCodeRequest {
+  return isRecord(value) && typeof value.email === "string" && isEmailVerificationPurpose(value.purpose);
+}
+
+export function isVerifyEmailVerificationCodeRequest(value: unknown): value is VerifyEmailVerificationCodeRequest {
+  return isRecord(value) && isSendEmailVerificationCodeRequest(value) && typeof value.code === "string";
 }
 
 export function isExchangeDeviceCodeRequest(

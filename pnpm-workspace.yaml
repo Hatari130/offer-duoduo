@@ -3,6 +3,7 @@ packages:
   - "packages/*"
 
 allowBuilds:
+  '@alicloud/openapi-core': false
   esbuild: true
 onlyBuiltDependencies:
   - esbuild

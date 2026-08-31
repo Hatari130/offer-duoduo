@@ -297,6 +297,54 @@
   box-shadow: 0 0 0 3px var(--of-brand-100);
 }
 
+.auth-code-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.auth-code-field > label {
+  color: var(--of-text);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.auth-code-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.65rem;
+}
+
+.auth-code-row button {
+  min-width: 7.2rem;
+  min-height: 3rem;
+  padding-inline: 0.85rem;
+  color: var(--of-brand-700);
+  background: var(--of-surface);
+  border: 1px solid var(--of-line-strong);
+  border-radius: var(--of-radius-sm);
+  font-size: 0.8125rem;
+  font-weight: 650;
+}
+
+.auth-code-row button:hover:not(:disabled) { background: var(--of-surface-muted); }
+
+.auth-code-row button:focus-visible {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
+.auth-code-status {
+  min-height: 1.1rem;
+  color: var(--of-text-subtle);
+  font-size: 0.75rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 24rem) {
+  .auth-code-row { grid-template-columns: 1fr; }
+  .auth-code-row button { width: 100%; }
+}
+
 .auth-avatar-fieldset {
   min-width: 0;
   margin: 0;

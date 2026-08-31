@@ -4,6 +4,7 @@ import {
   isApplicationSyncRequest,
   isCreateInterviewRecordFromTranscriptRequest,
   isExchangeDeviceCodeRequest,
+  isSendEmailVerificationCodeRequest,
   isLoginRequest,
   isMessageFeedbackRequest,
   isOpportunitySyncRequest,
@@ -12,6 +13,7 @@ import {
   isSendMessageRequest,
   isUpdateConversationRequest,
   isSupportedInterviewAudioMimeType,
+  isVerifyEmailVerificationCodeRequest,
   normalizeMimeType
 } from "../src/index.ts";
 
@@ -28,6 +30,22 @@ test("auth contracts accept complete payloads and reject ambiguous input", () =>
   assert.equal(
     isExchangeDeviceCodeRequest({ code: "1234-5678", deviceId: "browser-1" }),
     true
+  );
+  assert.equal(
+    isSendEmailVerificationCodeRequest({ email: "user@example.com", purpose: "register" }),
+    true
+  );
+  assert.equal(
+    isSendEmailVerificationCodeRequest({ email: "user@example.com", purpose: "unknown" }),
+    false
+  );
+  assert.equal(
+    isVerifyEmailVerificationCodeRequest({ email: "user@example.com", purpose: "register", code: "123456" }),
+    true
+  );
+  assert.equal(
+    isVerifyEmailVerificationCodeRequest({ email: "user@example.com", purpose: "register" }),
+    false
   );
 });
 

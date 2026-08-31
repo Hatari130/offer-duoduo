@@ -15,6 +15,12 @@ export interface ApiConfig {
   allowDemoAuth: boolean;
   registrationMode: RegistrationMode;
   allowedRegistrationEmails: string[];
+  emailVerificationEnabled: boolean;
+  emailCodeHmacSecret?: string;
+  alibabaCloudAccessKeyId?: string;
+  alibabaCloudAccessKeySecret?: string;
+  directMailAccount?: string;
+  directMailFromAlias: string;
   webSessionTtlSeconds: number;
   deviceSessionTtlSeconds: number;
   cookieName: string;
@@ -69,6 +75,12 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
       .split(",")
       .map((email) => email.trim().toLowerCase())
       .filter(Boolean),
+    emailVerificationEnabled: booleanValue(env.EMAIL_VERIFICATION_ENABLED, false),
+    emailCodeHmacSecret: env.EMAIL_CODE_HMAC_SECRET?.trim() || undefined,
+    alibabaCloudAccessKeyId: env.ALIBABA_CLOUD_ACCESS_KEY_ID?.trim() || undefined,
+    alibabaCloudAccessKeySecret: env.ALIBABA_CLOUD_ACCESS_KEY_SECRET?.trim() || undefined,
+    directMailAccount: env.DIRECTMAIL_ACCOUNT?.trim() || undefined,
+    directMailFromAlias: env.DIRECTMAIL_FROM_ALIAS?.trim() || "JobKoI",
     webSessionTtlSeconds: positiveNumber(env.WEB_SESSION_TTL_SECONDS, 60 * 60 * 24 * 30),
     deviceSessionTtlSeconds: positiveNumber(env.DEVICE_SESSION_TTL_SECONDS, 60 * 60 * 24 * 90),
     cookieName: env.AUTH_COOKIE_NAME?.trim() || "offerflow_session",
@@ -105,6 +117,17 @@ export function validateProductionConfig(config: ApiConfig): void {
   }
   if (config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.length) {
     errors.push("allowlist 注册模式必须配置 ALLOWED_REGISTRATION_EMAILS");
+  }
+  if (config.emailVerificationEnabled) {
+    if (!config.emailCodeHmacSecret || config.emailCodeHmacSecret.length < 32) {
+      errors.push("EMAIL_CODE_HMAC_SECRET 至少需要 32 个字符");
+    }
+    if (!config.alibabaCloudAccessKeyId || !config.alibabaCloudAccessKeySecret) {
+      errors.push("邮箱验证已开启时必须配置阿里云 AccessKey");
+    }
+    if (!config.directMailAccount) {
+      errors.push("邮箱验证已开启时必须配置 DIRECTMAIL_ACCOUNT");
+    }
   }
   if (errors.length) throw new Error(`生产配置不安全：\n- ${errors.join("\n- ")}`);
 }
