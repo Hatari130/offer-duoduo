@@ -93,6 +93,25 @@ function normalizedCompanyName(value: string): string {
   return value.toLocaleLowerCase("zh-CN").replace(/[^\p{L}\p{N}]/gu, "");
 }
 
+const directoryCompanyNames = new Set(
+  companyDirectory.flatMap((category) => category.companies.flatMap((company) => [
+    company.name,
+    ...company.aliases
+  ])).map(normalizedCompanyName)
+);
+
+function isUsableRecruitmentUrl(value?: string): boolean {
+  if (!value) return false;
+  try {
+    const url = new URL(value);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return false;
+    if (["mp.weixin.qq.com", "mp.weixinbridge.com", "young.yingjiesheng.com"].includes(url.hostname)) return false;
+    return (value.match(/https?:\/\//gi) || []).length === 1;
+  } catch {
+    return false;
+  }
+}
+
 function companyLogoUrl(company: CompanyDirectoryEntry): string | undefined {
   const domain = logoDomainOverrides[company.name] || (() => {
     try {
@@ -144,12 +163,25 @@ function opportunityForCompany(
   opportunities: CampusHiringOpportunity[]
 ): CampusHiringOpportunity | undefined {
   const aliases = company.aliases.map(normalizedCompanyName);
-  return opportunities
-    .filter((opportunity) => {
-      const candidate = normalizedCompanyName(opportunity.company);
-      return aliases.some((alias) => candidate === alias || candidate.includes(alias) || alias.includes(candidate));
-    })
+  const exactMatches = opportunities.filter((opportunity) => aliases.includes(normalizedCompanyName(opportunity.company)));
+  const fuzzyMatches = opportunities.filter((opportunity) => {
+    const candidate = normalizedCompanyName(opportunity.company);
+    const isKnownCompany = directoryCompanyNames.has(candidate);
+    return !isKnownCompany && aliases.some((alias) => candidate.startsWith(alias) || alias.startsWith(candidate));
+  });
+  return [...(exactMatches.length ? exactMatches : fuzzyMatches)]
     .sort((a, b) => statusPriority[b.status || "closed"] - statusPriority[a.status || "closed"])[0];
+}
+
+function opportunityDestination(
+  company: CompanyDirectoryEntry,
+  opportunity: CampusHiringOpportunity | undefined,
+  isOpen: boolean
+): string {
+  if (isOpen && isUsableRecruitmentUrl(opportunity?.officialUrl)) {
+    return opportunity!.officialUrl;
+  }
+  return company.careerUrl;
 }
 
 function updateLabel(value?: string): string {
@@ -194,15 +226,16 @@ export function CompanyDirectoryPage() {
   const resolvedDirectory = useMemo(() => companyDirectory.map((category) => ({
     ...category,
     companies: category.companies.map((company) => {
-      const opportunity = opportunityForCompany(company, opportunities);
-      const status = opportunity?.status || "closed";
-      return {
-        ...company,
-        opportunity,
-        status,
-        isOpen: Boolean(opportunity && openStatuses.has(status)),
-        destination: opportunity && openStatuses.has(status) ? opportunity.officialUrl : company.careerUrl
-      };
+        const opportunity = opportunityForCompany(company, opportunities);
+        const status = opportunity?.status || "closed";
+        const isOpen = Boolean(opportunity && openStatuses.has(status));
+        return {
+          ...company,
+          opportunity,
+          status,
+          isOpen,
+          destination: opportunityDestination(company, opportunity, isOpen)
+        };
     })
   })), [opportunities]);
 
