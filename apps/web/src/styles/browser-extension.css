@@ -216,13 +216,13 @@ html[data-extension-landing="true"] body {
 }
 
 .extension-hero h1 {
-  max-width: 9.7em;
-  margin: 1rem 0 1.35rem;
+  max-width: 10.5em;
+  margin: 1.35rem 0 1.75rem;
   color: var(--ext-ink);
-  font-size: clamp(3.1rem, 5.2vw, 5.7rem);
+  font-size: clamp(2.85rem, 4.2vw, 4.6rem);
   font-weight: 820;
   letter-spacing: -0.075em;
-  line-height: 0.98;
+  line-height: 1.06;
 }
 
 .extension-hero h1 em {
@@ -246,15 +246,15 @@ html[data-extension-landing="true"] body {
   max-width: 34rem;
   margin: 0;
   color: var(--ext-copy);
-  font-size: clamp(1rem, 1.35vw, 1.15rem);
-  line-height: 1.85;
+  font-size: clamp(0.98rem, 1.15vw, 1.08rem);
+  line-height: 1.9;
 }
 
 .extension-hero__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 0.75rem;
-  margin-block-start: 2rem;
+  margin-block-start: 2.25rem;
 }
 
 .extension-button {
@@ -569,7 +569,7 @@ html[data-extension-landing="true"] body {
   margin-inline: auto;
 }
 
-.extension-feature-intro { padding-block: 7rem 4rem; text-align: center; }
+.extension-feature-intro { padding-block: 8rem 5rem; text-align: center; }
 .extension-feature-intro .extension-section-kicker,
 .extension-install__heading .extension-section-kicker { justify-content: center; }
 .extension-feature-intro h2,
@@ -578,7 +578,7 @@ html[data-extension-landing="true"] body {
 .extension-final-cta h2 {
   margin: 0.8rem auto 1rem;
   color: var(--ext-ink);
-  font-size: clamp(2rem, 3.4vw, 3.5rem);
+  font-size: clamp(1.9rem, 3vw, 3.1rem);
   font-weight: 790;
   letter-spacing: -0.055em;
   line-height: 1.12;
@@ -593,7 +593,7 @@ html[data-extension-landing="true"] body {
   grid-template-columns: minmax(17rem, 0.78fr) minmax(26rem, 1.22fr);
   align-items: center;
   gap: clamp(3rem, 8vw, 8rem);
-  padding-block: 5rem;
+  padding-block: 6.5rem;
 }
 
 .extension-feature-row + .extension-feature-row { border-block-start: 1px solid var(--ext-line); }
@@ -602,7 +602,7 @@ html[data-extension-landing="true"] body {
 
 .extension-feature-row__copy { position: relative; z-index: 2; }
 .extension-feature-number { position: absolute; inset: -3.4rem auto auto -0.25rem; color: rgb(64 88 199 / 0.11); font-size: 5.5rem; font-weight: 850; letter-spacing: -0.08em; line-height: 1; }
-.extension-feature-row__copy h2 { margin: 0.72rem 0 1rem; font-size: clamp(2rem, 3vw, 3rem); font-weight: 780; letter-spacing: -0.052em; line-height: 1.18; }
+.extension-feature-row__copy h2 { margin: 1rem 0 1.35rem; font-size: clamp(1.85rem, 2.6vw, 2.65rem); font-weight: 780; letter-spacing: -0.052em; line-height: 1.22; }
 .extension-feature-row__copy > p:not(.extension-section-kicker) { margin: 0; color: var(--ext-copy); line-height: 1.8; }
 .extension-feature-row__copy ul { display: grid; gap: 0.72rem; margin: 1.6rem 0 0; padding: 0; list-style: none; }
 .extension-feature-row__copy li { display: flex; align-items: center; gap: 0.55rem; color: var(--ext-copy); font-size: 0.82rem; font-weight: 620; }
@@ -698,14 +698,14 @@ html[data-extension-landing="true"] body {
 }
 
 .extension-trust .extension-section-kicker { color: #a9b9ff; }
-.extension-trust h2 { margin-inline: 0; color: white; font-size: clamp(2rem, 3vw, 3rem); }
+.extension-trust h2 { margin: 1rem 0 0; color: white; font-size: clamp(1.85rem, 2.6vw, 2.65rem); line-height: 1.22; }
 .extension-trust__grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; }
 .extension-trust article { min-height: 9.3rem; padding: 1.2rem; color: white; background: rgb(255 255 255 / 0.065); border: 1px solid rgb(255 255 255 / 0.1); border-radius: 1rem; }
 .extension-trust article svg { color: #a9b9ff; }
 .extension-trust article h3 { margin: 1rem 0 0.35rem; font-size: 0.9rem; }
 .extension-trust article p { margin: 0; color: #b9c1d1; font-size: 0.72rem; line-height: 1.6; }
 
-.extension-install { padding-block: 1rem 8rem; scroll-margin-top: 5.5rem; }
+.extension-install { padding-block: 2rem 9rem; scroll-margin-top: 5.5rem; }
 .extension-install__heading { max-width: 44rem; margin-inline: auto; text-align: center; }
 .extension-install__heading > p:last-child { margin: 0; color: var(--ext-copy); line-height: 1.75; }
 .extension-install__browser-tabs { display: grid; max-width: 54rem; grid-template-columns: repeat(3, 1fr); gap: 0.65rem; margin: 2.8rem auto 0; padding: 0.55rem; background: #e9edf5; border-radius: 1.05rem; }
