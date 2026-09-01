@@ -664,6 +664,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               <MessageCircleMore aria-hidden="true" size={18} />
             </button>
           </div>
+
+          <SiteCompliance className="sidebar-site-compliance" compact showFeedback={false} />
         </div>
       </aside>
 
@@ -723,9 +725,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         >
           {children}
         </main>
-        <footer className="workspace-footer">
-          <SiteCompliance className="workspace-site-compliance" compact showFeedback={false} />
-        </footer>
       </div>
 
       <nav className="mobile-bottom-nav" aria-label="主要功能" data-active-index={activeNavigationIndex}>

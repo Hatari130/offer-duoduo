@@ -549,9 +549,40 @@
 
 .sidebar-footer {
   display: grid;
-  gap: 0.6rem;
+  gap: 0.55rem;
   margin-block-start: auto;
   padding-block-start: 0.8rem;
+}
+
+.sidebar-site-compliance {
+  display: grid;
+  justify-items: start;
+  gap: 0.28rem;
+  padding: 0.2rem 0.45rem 0;
+  color: color-mix(in srgb, var(--of-text-subtle) 82%, transparent);
+  font-size: 0.6rem;
+  line-height: 1.45;
+}
+
+.sidebar-site-compliance .site-compliance__copyright { display: none; }
+
+.sidebar-site-compliance .site-compliance__links {
+  justify-content: flex-start;
+  gap: 0.7rem;
+}
+
+.sidebar-site-compliance a {
+  border-radius: 0.3rem;
+  text-underline-offset: 0.18rem;
+}
+
+.sidebar-site-compliance a:hover {
+  color: var(--of-text-muted);
+  text-decoration: underline;
+}
+
+.sidebar-site-compliance .site-compliance__record {
+  color: color-mix(in srgb, var(--of-text-subtle) 70%, transparent);
 }
 
 .extension-entry-button {
@@ -759,7 +790,7 @@
   min-width: 0;
   height: 100dvh;
   min-height: 0;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr);
   margin: 0;
   overflow: hidden;
   background: var(--of-surface);
@@ -769,7 +800,7 @@
 }
 
 .workspace-shell--guest {
-  grid-template-rows: 3.75rem minmax(0, 1fr) auto;
+  grid-template-rows: 3.75rem minmax(0, 1fr);
 }
 
 .guest-toolbar {
@@ -821,17 +852,6 @@
 .workspace-main--chat {
   overflow: hidden;
 }
-
-.workspace-footer {
-  position: relative;
-  z-index: 2;
-  padding: 0.42rem clamp(1rem, 2.4vw, 2rem) 0.5rem;
-  background: color-mix(in srgb, var(--of-surface-raised) 96%, transparent);
-  border-block-start: 1px solid var(--of-line-subtle);
-}
-
-.workspace-site-compliance .site-compliance__copyright { display: none; }
-.workspace-site-compliance .site-compliance__links { gap: 0.8rem; }
 
 .mobile-header,
 .sidebar-scrim,
@@ -978,6 +998,10 @@
     height: 2.75rem;
   }
 
+  .app-frame.is-sidebar-collapsed .sidebar-site-compliance {
+    display: none;
+  }
+
   .app-frame.is-sidebar-collapsed .account-popover {
     inset-inline-start: calc(100% + 0.7rem);
     inset-block-end: 0;
@@ -1033,7 +1057,7 @@
 
   .workspace-shell--guest {
     height: 100%;
-    grid-template-rows: minmax(0, 1fr) auto;
+    grid-template-rows: minmax(0, 1fr);
   }
 
   .mobile-header > button {
@@ -1114,11 +1138,6 @@
   }
 
   .workspace-main { min-height: 0; }
-
-  .workspace-footer {
-    padding-block: 0.38rem 0.45rem;
-    padding-inline: max(0.75rem, env(safe-area-inset-left)) max(0.75rem, env(safe-area-inset-right));
-  }
 
   .mobile-bottom-nav {
     position: fixed;
