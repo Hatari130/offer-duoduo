@@ -143,7 +143,7 @@ export function AuthCard({
   };
 
   return (
-    <div className="auth-card">
+    <div className={`auth-card auth-card--${mode}${mode === "register" && capabilities?.emailVerificationEnabled ? " auth-card--verification" : ""}`}>
       <div className="auth-card-orbit" aria-hidden="true"><i /><i /><i /></div>
       <header>
         <span className="auth-eyebrow">欢迎来到 JobKoI</span>
@@ -159,8 +159,8 @@ export function AuthCard({
       </div>
 
       <form className="auth-form" onSubmit={submit} noValidate>
-        {mode === "register" && (
-          <>
+        <div className="auth-form-fields">
+          {mode === "register" && (
             <label>
               <span>你的称呼</span>
               <input
@@ -175,111 +175,112 @@ export function AuthCard({
                 placeholder="例如：知夏"
               />
             </label>
-
-          </>
-        )}
-        <label>
-          <span>邮箱</span>
-          <input
-            ref={emailRef}
-            name="email"
-            type="email"
-            inputMode="email"
-            autoComplete="email"
-            autoFocus={autoFocus}
-            spellCheck={false}
-            maxLength={254}
-            value={email}
-            onChange={(event) => {
-              setEmail(event.target.value);
-              setEmailCode("");
-              setVerificationToken("");
-              setCodeSent(false);
-              setCodeCooldown(0);
-            }}
-            aria-invalid={Boolean(error && !/^\S+@\S+\.\S+$/.test(email.trim()))}
-            aria-describedby={error ? errorId : undefined}
-            placeholder="name@example.com"
-          />
-        </label>
-        {mode === "register" && capabilities?.emailVerificationEnabled && (
-          <div className="auth-code-field">
-            <label htmlFor={`${idPrefix}-email-code`}>邮箱验证码</label>
-            <div className="auth-code-row">
-              <input
-                ref={emailCodeRef}
-                id={`${idPrefix}-email-code`}
-                name="email-code"
-                type="text"
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={6}
-                value={emailCode}
-                onChange={(event) => {
-                  setEmailCode(event.target.value.replace(/\D/g, "").slice(0, 6));
-                  setVerificationToken("");
-                }}
-                aria-invalid={Boolean(error && !/^\d{6}$/.test(emailCode))}
-                aria-describedby={`${emailCodeStatusId}${error ? ` ${errorId}` : ""}`}
-                placeholder="6 位验证码"
-              />
-              <button type="button" onClick={() => void sendEmailCode()} disabled={codeBusy || codeCooldown > 0}>
-                {codeBusy ? "正在发送" : codeCooldown > 0 ? `${codeCooldown} 秒后重发` : codeSent ? "重新发送" : "发送验证码"}
-              </button>
-            </div>
-            <div id={emailCodeStatusId} className="auth-code-status" role="status">
-              {codeSent ? "验证码已发送，5 分钟内有效。" : ""}
-            </div>
-          </div>
-        )}
-        <label>
-          <span>密码</span>
-          <span className="password-field">
+          )}
+          <label>
+            <span>邮箱</span>
             <input
-              ref={passwordRef}
-              name="password"
-              type={showPassword ? "text" : "password"}
-              autoComplete={mode === "login" ? "current-password" : "new-password"}
-              maxLength={256}
-              value={password}
-              onChange={(event) => setPassword(event.target.value)}
-              aria-invalid={Boolean(error && (!password || (mode === "register" && password.length < 8)))}
+              ref={emailRef}
+              name="email"
+              type="email"
+              inputMode="email"
+              autoComplete="email"
+              autoFocus={autoFocus}
+              spellCheck={false}
+              maxLength={254}
+              value={email}
+              onChange={(event) => {
+                setEmail(event.target.value);
+                setEmailCode("");
+                setVerificationToken("");
+                setCodeSent(false);
+                setCodeCooldown(0);
+              }}
+              aria-invalid={Boolean(error && !/^\S+@\S+\.\S+$/.test(email.trim()))}
               aria-describedby={error ? errorId : undefined}
-              placeholder={mode === "register" ? "至少 8 个字符" : "输入你的密码"}
+              placeholder="name@example.com"
             />
-            <button
-              type="button"
-              aria-label={showPassword ? "隐藏密码" : "显示密码"}
-              onClick={() => setShowPassword((current) => !current)}
-            >
-              {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
-            </button>
-          </span>
-        </label>
-
-        {mode === "register" && (
-          <label className="auth-consent">
-            <input
-              ref={consentRef}
-              type="checkbox"
-              checked={acceptPrivacy}
-              onChange={(event) => setAcceptPrivacy(event.target.checked)}
-              aria-invalid={Boolean(error && !acceptPrivacy)}
-              aria-describedby={error ? errorId : undefined}
-            />
-            <span>我已阅读并同意<a href="/privacy" target="_blank" rel="noreferrer">隐私政策</a>与<a href="/terms" target="_blank" rel="noreferrer">用户协议</a></span>
           </label>
-        )}
+          {mode === "register" && capabilities?.emailVerificationEnabled && (
+            <div className="auth-code-field">
+              <label htmlFor={`${idPrefix}-email-code`}>邮箱验证码</label>
+              <div className="auth-code-row">
+                <input
+                  ref={emailCodeRef}
+                  id={`${idPrefix}-email-code`}
+                  name="email-code"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={6}
+                  value={emailCode}
+                  onChange={(event) => {
+                    setEmailCode(event.target.value.replace(/\D/g, "").slice(0, 6));
+                    setVerificationToken("");
+                  }}
+                  aria-invalid={Boolean(error && !/^\d{6}$/.test(emailCode))}
+                  aria-describedby={`${emailCodeStatusId}${error ? ` ${errorId}` : ""}`}
+                  placeholder="6 位验证码"
+                />
+                <button type="button" onClick={() => void sendEmailCode()} disabled={codeBusy || codeCooldown > 0}>
+                  {codeBusy ? "正在发送" : codeCooldown > 0 ? `${codeCooldown} 秒后重发` : codeSent ? "重新发送" : "发送验证码"}
+                </button>
+              </div>
+              <div id={emailCodeStatusId} className="auth-code-status" role="status">
+                {codeSent ? "验证码已发送，5 分钟内有效。" : ""}
+              </div>
+            </div>
+          )}
+          <label>
+            <span>密码</span>
+            <span className="password-field">
+              <input
+                ref={passwordRef}
+                name="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete={mode === "login" ? "current-password" : "new-password"}
+                maxLength={256}
+                value={password}
+                onChange={(event) => setPassword(event.target.value)}
+                aria-invalid={Boolean(error && (!password || (mode === "register" && password.length < 8)))}
+                aria-describedby={error ? errorId : undefined}
+                placeholder={mode === "register" ? "至少 8 个字符" : "输入你的密码"}
+              />
+              <button
+                type="button"
+                aria-label={showPassword ? "隐藏密码" : "显示密码"}
+                onClick={() => setShowPassword((current) => !current)}
+              >
+                {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
+              </button>
+            </span>
+          </label>
 
-        <div id={errorId} className="auth-error" role={error ? "alert" : undefined} aria-live="polite">
-          {error}
+          {mode === "register" && (
+            <label className="auth-consent">
+              <input
+                ref={consentRef}
+                type="checkbox"
+                checked={acceptPrivacy}
+                onChange={(event) => setAcceptPrivacy(event.target.checked)}
+                aria-invalid={Boolean(error && !acceptPrivacy)}
+                aria-describedby={error ? errorId : undefined}
+              />
+              <span>我已阅读并同意<a href="/privacy" target="_blank" rel="noreferrer">隐私政策</a>与<a href="/terms" target="_blank" rel="noreferrer">用户协议</a></span>
+            </label>
+          )}
         </div>
 
-        <button className="auth-submit" type="submit" disabled={busy} aria-busy={busy}>
-          {busy ? <LoaderCircle className="spin" aria-hidden="true" size={18} /> : null}
-          <span>{mode === "login" ? "登录工作台" : "创建账号"}</span>
-          {!busy && <ArrowRight aria-hidden="true" size={18} />}
-        </button>
+        <div className="auth-form-actions">
+          <div id={errorId} className="auth-error" role={error ? "alert" : undefined} aria-live="polite">
+            {error}
+          </div>
+
+          <button className="auth-submit" type="submit" disabled={busy} aria-busy={busy}>
+            {busy ? <LoaderCircle className="spin" aria-hidden="true" size={18} /> : null}
+            <span>{mode === "login" ? "登录工作台" : "创建账号"}</span>
+            {!busy && <ArrowRight aria-hidden="true" size={18} />}
+          </button>
+        </div>
       </form>
 
       {capabilities?.demoEnabled && <><div className="auth-divider"><span>或</span></div>
