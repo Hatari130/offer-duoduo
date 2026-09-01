@@ -17,3 +17,18 @@ test("preserves and normalizes enterprise tags from the campus hiring feed", () 
 
   assert.deepEqual(snapshot.opportunities[0]?.companyTags, ["hot", "超多hc", "行业独角兽"]);
 });
+
+test("preserves company nature for enterprise filtering", () => {
+  const snapshot = normalizeCampusHiringFeed({
+    items: [{
+      id: "state-owned-company",
+      company: "示例国企",
+      positions: "研发工程师",
+      city: "北京",
+      applyUrl: "https://example.com/apply",
+      companyNature: "国企"
+    }]
+  });
+
+  assert.equal(snapshot.opportunities[0]?.companyType, "国企");
+});

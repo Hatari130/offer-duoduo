@@ -171,11 +171,11 @@ export function OpportunitiesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
-  const [status, setStatus] = useState<"all" | OpportunityStatus>("all");
   const [city, setCity] = useState("all");
   const [industry, setIndustry] = useState("all");
   const [cohort, setCohort] = useState("all");
   const [batch, setBatch] = useState("all");
+  const [companyType, setCompanyType] = useState("all");
   const [quickFilter, setQuickFilter] = useState<OpportunityQuickFilter>("all");
   const [page, setPage] = useState(1);
 
@@ -228,7 +228,8 @@ export function OpportunitiesPage() {
       (opportunity.industry || "").split(/[,，/]+/)
     )),
     cohorts: uniqueOptions(opportunities.flatMap((opportunity) => opportunity.graduationYears)),
-    batches: uniqueOptions(opportunities.map((opportunity) => opportunity.batch))
+    batches: uniqueOptions(opportunities.map((opportunity) => opportunity.batch)),
+    companyTypes: uniqueOptions(opportunities.map((opportunity) => opportunity.companyType))
   }), [opportunities]);
 
   const filtered = useMemo(() => {
@@ -245,22 +246,22 @@ export function OpportunitiesPage() {
         ...opportunity.companyTags
       ].filter(Boolean).join(" ").toLowerCase();
       const matchesQuery = !normalized || searchable.includes(normalized);
-      const matchesStatus = status === "all" || opportunity.status === status;
       const matchesCity = city === "all" || opportunity.cities.some((location) => location.includes(city));
       const matchesIndustry = industry === "all" || opportunity.industry?.includes(industry);
       const matchesCohort = cohort === "all" || opportunity.graduationYears.includes(cohort);
       const matchesBatch = batch === "all" || opportunity.batch === batch;
+      const matchesCompanyType = companyType === "all" || opportunity.companyType === companyType;
       const matchesQuickFilter = quickFilter === "all"
         || (quickFilter === "latest" && opportunity.openAt === dashboard.latestOpenAt)
         || (quickFilter === "open" && isOpenOpportunity(opportunity.status))
         || (quickFilter === "closing" && opportunity.status === "closing")
         || (quickFilter === "ongoing" && opportunity.status === "ongoing");
       return matchesQuery
-        && matchesStatus
         && matchesCity
         && matchesIndustry
         && matchesCohort
         && matchesBatch
+        && matchesCompanyType
         && matchesQuickFilter;
     }).sort((left, right) => {
       if (left.openAt === right.openAt) return 0;
@@ -268,7 +269,7 @@ export function OpportunitiesPage() {
       if (!right.openAt) return -1;
       return right.openAt.localeCompare(left.openAt);
     });
-  }, [batch, city, cohort, dashboard.latestOpenAt, industry, opportunities, query, quickFilter, status]);
+  }, [batch, city, cohort, companyType, dashboard.latestOpenAt, industry, opportunities, query, quickFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);
@@ -280,28 +281,27 @@ export function OpportunitiesPage() {
     : `找到 ${filtered.length.toLocaleString("zh-CN")} 条校招机会，当前第 ${currentPage} 页，共 ${totalPages} 页`;
   const activeFilterCount = [
     Boolean(query.trim()),
-    status !== "all",
     city !== "all",
     industry !== "all",
     cohort !== "all",
     batch !== "all",
+    companyType !== "all",
     quickFilter !== "all"
   ].filter(Boolean).length;
 
   const clearFilters = () => {
     setQuery("");
-    setStatus("all");
     setCity("all");
     setIndustry("all");
     setCohort("all");
     setBatch("all");
+    setCompanyType("all");
     setQuickFilter("all");
     setPage(1);
   };
 
   const selectQuickFilter = (value: OpportunityQuickFilter) => {
     setQuickFilter(value);
-    setStatus("all");
     setPage(1);
   };
 
@@ -396,18 +396,10 @@ export function OpportunitiesPage() {
             </select>
           </label>
           <label className="select-control">
-            <span className="sr-only">按投递状态筛选</span>
-            <select
-              value={status}
-              onChange={(event) => {
-                setStatus(event.target.value as typeof status);
-                setQuickFilter("all");
-                setPage(1);
-              }}
-              aria-controls="opportunity-results"
-            >
-              <option value="all">投递状态</option>
-              {Object.entries(statusLabels).map(([value, label]) => <option value={value} key={value}>{label}</option>)}
+            <span className="sr-only">按企业性质筛选</span>
+            <select value={companyType} onChange={(event) => { setCompanyType(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+              <option value="all">全部企业性质</option>
+              {filterOptions.companyTypes.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <div className="opportunity-filter-actions">
