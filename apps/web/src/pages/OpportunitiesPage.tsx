@@ -370,14 +370,21 @@ export function OpportunitiesPage() {
           <label className="select-control">
             <span className="sr-only">按城市筛选</span>
             <select value={city} onChange={(event) => { setCity(event.target.value); setPage(1); }} aria-controls="opportunity-results">
-              <option value="all">全部城市</option>
+              <option value="all">城市</option>
               {filterOptions.cities.map((value) => <option value={value} key={value}>{value}</option>)}
+            </select>
+          </label>
+          <label className="select-control">
+            <span className="sr-only">按企业性质筛选</span>
+            <select value={companyType} onChange={(event) => { setCompanyType(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+              <option value="all">企业性质</option>
+              {filterOptions.companyTypes.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <label className="select-control">
             <span className="sr-only">按行业筛选</span>
             <select value={industry} onChange={(event) => { setIndustry(event.target.value); setPage(1); }} aria-controls="opportunity-results">
-              <option value="all">全部行业</option>
+              <option value="all">行业</option>
               {filterOptions.industries.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
@@ -393,13 +400,6 @@ export function OpportunitiesPage() {
             <select value={batch} onChange={(event) => { setBatch(event.target.value); setPage(1); }} aria-controls="opportunity-results">
               <option value="all">全部类型</option>
               {filterOptions.batches.map((value) => <option value={value} key={value}>{value}</option>)}
-            </select>
-          </label>
-          <label className="select-control">
-            <span className="sr-only">按企业性质筛选</span>
-            <select value={companyType} onChange={(event) => { setCompanyType(event.target.value); setPage(1); }} aria-controls="opportunity-results">
-              <option value="all">全部企业性质</option>
-              {filterOptions.companyTypes.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <div className="opportunity-filter-actions">
