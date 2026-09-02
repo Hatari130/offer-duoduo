@@ -13,6 +13,34 @@
   position: static;
 }
 
+.help-center-trigger {
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
+  flex: 0 0 auto;
+  place-items: center;
+  color: var(--of-text-muted);
+  background: color-mix(in srgb, var(--of-surface-raised) 84%, transparent);
+  border: 1px solid color-mix(in srgb, var(--of-line-strong) 65%, transparent);
+  border-radius: 50%;
+  box-shadow: var(--of-shadow-button);
+  text-decoration: none;
+  backdrop-filter: blur(0.9rem) saturate(125%);
+}
+
+.help-center-trigger:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface-raised);
+  border-color: var(--of-line-strong);
+}
+
+.help-center-trigger:focus-visible {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
+.help-center-trigger--mobile { display: none; }
+
 .theme-toggle {
   position: relative;
   display: grid;
@@ -90,6 +118,22 @@ html[data-theme="dark"] .theme-toggle__moon {
     box-shadow: none;
     backdrop-filter: none;
   }
+  .help-center-trigger--mobile {
+    display: grid;
+    width: 2.75rem;
+    height: 2.75rem;
+    color: var(--of-text-muted);
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+  }
+  .mobile-header { grid-template-columns: 2.75rem 1fr 2.75rem 2.75rem 2.75rem 2.1rem; }
+  .mobile-header.is-guest { grid-template-columns: 2.75rem 1fr 2.75rem 2.75rem 2.75rem auto; }
+}
+
+@media (max-width: 26rem) {
+  .mobile-header > .mobile-feedback-trigger { display: none; }
   .mobile-header { grid-template-columns: 2.75rem 1fr 2.75rem 2.75rem 2.1rem; }
   .mobile-header.is-guest { grid-template-columns: 2.75rem 1fr 2.75rem 2.75rem auto; }
 }
@@ -229,6 +273,23 @@ html[data-theme="dark"] .feedback-trigger {
   background: rgb(24 33 49 / 0.86);
   border-color: rgb(112 135 199 / 0.45);
   box-shadow: 0 0.6rem 1.6rem -0.8rem rgb(0 0 0 / 0.72);
+}
+
+html[data-theme="dark"] .help-center-trigger {
+  color: var(--of-text-muted);
+  background: rgb(24 33 49 / 0.86);
+  border-color: rgb(112 135 199 / 0.45);
+  box-shadow: 0 0.6rem 1.6rem -0.8rem rgb(0 0 0 / 0.72);
+}
+
+html[data-theme="dark"] .help-center-trigger:hover { color: var(--of-text-strong); background: var(--of-surface-raised); }
+
+@media (max-width: 60rem) {
+  html[data-theme="dark"] .help-center-trigger--mobile {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+  }
 }
 
 html[data-theme="dark"] .feedback-trigger:hover { background: var(--of-surface-raised); }

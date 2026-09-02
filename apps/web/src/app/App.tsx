@@ -13,6 +13,7 @@ import { ExtensionConnectPage } from "../pages/ExtensionConnectPage";
 import { ResumeStudioPage } from "../pages/ResumeStudioPage";
 import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
 import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
+import { HelpCenterPage } from "../pages/HelpCenterPage";
 import { Logo } from "../components/Logo";
 import { LegalPage } from "../pages/LegalPage";
 import { AuthDialog } from "../components/AuthDialog";
@@ -28,6 +29,7 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/resumes/, "简历中心"],
   [/^\/app\/settings/, "设置与设备同步"],
   [/^\/browser-extension/, "浏览器插件"],
+  [/^\/help-center$/, "帮助中心"],
   [/^\/privacy$/, "隐私政策"],
   [/^\/terms$/, "用户协议"]
 ];
@@ -38,6 +40,7 @@ export function App() {
   const extensionConnect = pathname.startsWith("/extension/connect");
   const extensionLanding = pathname.startsWith("/browser-extension");
   const legalPage = pathname === "/privacy" || pathname === "/terms";
+  const helpPage = pathname === "/help-center";
   const protectedReason = status === "anonymous" ? loginReasonForPath(pathname) : undefined;
 
   useEffect(() => {
@@ -53,11 +56,12 @@ export function App() {
       && !pathname.startsWith("/app")
       && !extensionConnect
       && !extensionLanding
+      && !helpPage
       && !legalPage
     ) {
       navigate("/app/chat", { replace: true });
     }
-  }, [extensionConnect, extensionLanding, legalPage, pathname, protectedReason, requestLogin, status]);
+  }, [extensionConnect, extensionLanding, helpPage, legalPage, pathname, protectedReason, requestLogin, status]);
 
   useEffect(() => {
     const section = titles.find(([pattern]) => pattern.test(pathname))?.[1];
@@ -80,6 +84,7 @@ export function App() {
   }, [requestLogin, status]);
 
   if (extensionLanding) return <BrowserExtensionPage />;
+  if (helpPage) return <HelpCenterPage />;
   if (legalPage) return <LegalPage kind={pathname === "/privacy" ? "privacy" : "terms"} />;
 
   if (status === "loading") {
