@@ -8,6 +8,7 @@ extension, a shared API boundary and a PostgreSQL data model.
 | Workspace | Status | Purpose |
 | --- | --- | --- |
 | `apps/web` | runnable | Login, career chat, opportunity shell, application management and device pairing |
+| `apps/admin` | runnable | Private operations dashboard for registration, activity, chat quality and product usage |
 | `apps/api` | PostgreSQL production runtime | Cookie/device sessions, SSE chat, knowledge retrieval, applications and incremental sync |
 | `apps/extension` | runnable | Capture/autofill workspace plus local-first Web synchronization |
 | `packages/db` | migration-ready | PostgreSQL schema for auth, chat, knowledge, recruitment and private application data |
@@ -43,6 +44,7 @@ Run each application in a separate terminal:
 ```powershell
 pnpm dev:api
 pnpm dev:web
+pnpm dev:admin
 pnpm dev:extension
 ```
 
@@ -85,4 +87,5 @@ apps/extension/dist
 - Extension-only APIs remain under `apps/extension`.
 
 See [docs/architecture.md](docs/architecture.md) for runtime boundaries and
-[docs/database.md](docs/database.md) for data ownership.
+[docs/database.md](docs/database.md) for data ownership. The private operations
+dashboard is documented in [docs/admin-dashboard.md](docs/admin-dashboard.md).

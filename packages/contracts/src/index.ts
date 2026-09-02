@@ -1,4 +1,5 @@
 export * from "./applications.ts";
+export * from "./admin.ts";
 export * from "./auth.ts";
 export * from "./api.ts";
 export * from "./autofill.ts";

@@ -1,4 +1,6 @@
 import type {
+  AdminDashboardRangeDays,
+  AdminDashboardResponse,
   ApiResponse,
   ApplicationDetailResponse,
   ApplicationListResponse,
@@ -380,6 +382,11 @@ export function createApiClient(options: ApiClientOptions) {
       })
   };
 
+  const admin = {
+    dashboard: (days: AdminDashboardRangeDays = 30) =>
+      request<AdminDashboardResponse>(`/v1/admin/dashboard?days=${days}`)
+  };
+
   const feedback = {
     create: (body: CreateProductFeedbackRequest) =>
       request<CreateProductFeedbackResponse>("/v1/feedback", {
@@ -389,6 +396,7 @@ export function createApiClient(options: ApiClientOptions) {
   };
 
   return {
+    admin,
     auth,
     account,
     chat,

@@ -74,6 +74,15 @@ jobs:
           VITE_CHROME_WEB_STORE_URL: ${{ vars.JOBKOI_CHROME_WEB_STORE_URL }}
         run: pnpm --filter @offerflow/web build:production
 
+      - name: Build the private operations dashboard
+        env:
+          VITE_API_BASE_URL: /api
+        run: |
+          pnpm --filter @offerflow/admin build
+          rm -rf apps/web/dist/admin
+          cp -R apps/admin/dist apps/web/dist/admin
+          test -f apps/web/dist/admin/index.html
+
       - name: Package the immutable release
         run: |
           printf '%s\n' "$GITHUB_SHA" > REVISION
@@ -89,6 +98,8 @@ jobs:
             -czf "$RUNNER_TEMP/release.tar.gz" .
           tar -tzf "$RUNNER_TEMP/release.tar.gz" \
             | grep -Fx './apps/api/data/campus-hiring.json'
+          tar -tzf "$RUNNER_TEMP/release.tar.gz" \
+            | grep -Fx './apps/web/dist/admin/index.html'
 
       - name: Store the release for the deploy job
         uses: actions/upload-artifact@v7

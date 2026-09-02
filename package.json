@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "pnpm run dev:extension",
     "dev:api": "pnpm --filter @offerflow/api dev",
+    "dev:admin": "pnpm --filter @offerflow/admin dev",
     "dev:extension": "pnpm --filter @offerflow/extension dev",
     "dev:web": "pnpm --filter @offerflow/web dev",
     "build": "pnpm -r --if-present run build",

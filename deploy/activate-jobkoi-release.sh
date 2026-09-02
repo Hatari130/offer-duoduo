@@ -105,6 +105,10 @@ if [[ ! -f "$staging_path/apps/web/dist/index.html" ]]; then
   echo "release is missing the validated Web build" >&2
   false
 fi
+if [[ ! -f "$staging_path/apps/web/dist/admin/index.html" ]]; then
+  echo "release is missing the validated operations dashboard" >&2
+  false
+fi
 
 chown -R admin:admin "$staging_path"
 (

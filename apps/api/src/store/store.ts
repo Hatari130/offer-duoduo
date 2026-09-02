@@ -1,4 +1,6 @@
 import type {
+  AdminDashboardRangeDays,
+  AdminDashboardResponse,
   ApplicationSyncItem,
   ApplicationSyncRequest,
   ApplicationSyncResponse,
@@ -96,6 +98,7 @@ export interface OfferFlowStore {
   recordConsent(userId: string, consentType: string, policyVersion: string): Awaitable<void>;
   deleteUser(userId: string): Awaitable<boolean>;
   createProductFeedback(input: ProductFeedbackInput): Awaitable<{ id: string; createdAt: string }>;
+  getAdminDashboard(rangeDays: AdminDashboardRangeDays): Awaitable<AdminDashboardResponse>;
 
   reserveEmailVerificationCode(input: EmailVerificationCodeInput): Awaitable<{ id: string }>;
   markEmailVerificationCodeSent(id: string, sentAt: string): Awaitable<void>;

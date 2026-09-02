@@ -1042,6 +1042,19 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      if (method === "GET" && path === "/v1/admin/dashboard") {
+        const user = await store.getUser(userId);
+        if (!user || !config.adminEmails.includes(user.email.trim().toLowerCase())) {
+          throw new HttpError(403, "ADMIN_FORBIDDEN", "当前账号没有运营后台访问权限");
+        }
+        const days = Number(url.searchParams.get("days") || "30");
+        if (days !== 7 && days !== 30 && days !== 90) {
+          throw new HttpError(400, "INVALID_ADMIN_RANGE", "统计周期仅支持 7、30 或 90 天");
+        }
+        success(response, await store.getAdminDashboard(days));
+        return;
+      }
+
       if (method === "PATCH" && path === "/v1/account/avatar") {
         const body = await readJson(request);
         if (!isUpdateAccountAvatarRequest(body)) {

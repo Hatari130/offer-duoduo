@@ -2,6 +2,8 @@ import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from 
 import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import type {
+  AdminDashboardRangeDays,
+  AdminDashboardResponse,
   ApplicationSyncChange,
   ApplicationSyncConflict,
   ApplicationSyncItem,
@@ -104,6 +106,12 @@ interface StoredInterviewRecord {
   record: InterviewRecord;
 }
 
+interface StoredProductFeedback extends ProductFeedbackInput {
+  id: string;
+  status: "new" | "reviewing" | "planned" | "resolved" | "closed";
+  createdAt: string;
+}
+
 export interface MemoryStoreOptions {
   /**
    * Set false to keep the store fully in-memory (used by tests). Persistence is
@@ -123,6 +131,7 @@ interface PersistedStoreState {
   resumeVersions?: StoredResumeVersion[];
   tailorTasks?: StoredTailorTask[];
   interviewRecords?: StoredInterviewRecord[];
+  productFeedback?: StoredProductFeedback[];
   appliedChanges: Record<string, number>;
   syncLog: SyncLogEntry[];
   sequence: number;
@@ -153,6 +162,12 @@ function normalizeEmail(email: string): string {
   return email.trim().toLowerCase();
 }
 
+function maskEmail(email: string): string {
+  const [name, domain = ""] = email.split("@");
+  const visible = name.slice(0, Math.min(2, name.length));
+  return `${visible}${"*".repeat(Math.max(2, Math.min(6, name.length - visible.length)))}@${domain}`;
+}
+
 function normalizeDeviceCode(code: string): string {
   return code.trim().replace(/[\s-]/g, "");
 }
@@ -175,6 +190,7 @@ export class MemoryStore implements OfferFlowStore {
   private readonly resumeVersions = new Map<string, StoredResumeVersion>();
   private readonly tailorTasks = new Map<string, StoredTailorTask>();
   private readonly interviewRecords = new Map<string, StoredInterviewRecord>();
+  private readonly productFeedback: StoredProductFeedback[] = [];
   private readonly deviceCodes = new Map<string, DeviceCode>();
   private readonly handoffCodes = new Map<string, HandoffCode>();
   private readonly sessionsByHash = new Map<string, StoredSession>();
@@ -254,6 +270,7 @@ export class MemoryStore implements OfferFlowStore {
         this.sessionsByHash.set(session.tokenHash, session);
         this.sessionHashById.set(session.id, session.tokenHash);
       }
+      this.productFeedback.push(...(parsed.productFeedback ?? []));
       for (const code of parsed.emailVerificationCodes ?? []) {
         this.emailVerificationCodes.set(code.id, code);
       }
@@ -274,6 +291,7 @@ export class MemoryStore implements OfferFlowStore {
       resumeVersions: [...this.resumeVersions.values()],
       tailorTasks: [...this.tailorTasks.values()],
       interviewRecords: [...this.interviewRecords.values()],
+      productFeedback: this.productFeedback,
       appliedChanges: Object.fromEntries(this.appliedChanges),
       syncLog: this.syncLog,
       sequence: this.sequence,
@@ -448,8 +466,138 @@ export class MemoryStore implements OfferFlowStore {
     return true;
   }
 
-  createProductFeedback(_input: ProductFeedbackInput): { id: string; createdAt: string } {
-    return { id: randomUUID(), createdAt: new Date().toISOString() };
+  createProductFeedback(input: ProductFeedbackInput): { id: string; createdAt: string } {
+    const item: StoredProductFeedback = {
+      ...clone(input),
+      id: randomUUID(),
+      status: "new",
+      createdAt: new Date().toISOString()
+    };
+    this.productFeedback.push(item);
+    this.persist();
+    return { id: item.id, createdAt: item.createdAt };
+  }
+
+  getAdminDashboard(rangeDays: AdminDashboardRangeDays): AdminDashboardResponse {
+    const end = new Date();
+    const start = new Date(end);
+    start.setUTCHours(0, 0, 0, 0);
+    start.setUTCDate(start.getUTCDate() - rangeDays + 1);
+    const startMs = start.getTime();
+    const realUsers = [...this.users.values()].filter((user) => user.email !== "demo@offerflow.cn");
+    const realUserIds = new Set(realUsers.map((user) => user.id));
+    const conversations = [...this.conversations.values()].filter(
+      (item) => realUserIds.has(item.userId) && !item.deletedAt
+    );
+    const periodConversations = conversations.filter(
+      (item) => Date.parse(item.conversation.createdAt) >= startMs
+    );
+    const periodMessages = conversations.flatMap((item) =>
+      (this.messages.get(item.conversation.id) ?? []).map((message) => ({ userId: item.userId, message }))
+    ).filter((item) => Date.parse(item.message.createdAt) >= startMs);
+    const assistantMessages = periodMessages.filter((item) => item.message.role === "assistant");
+    const ratedMessages = assistantMessages.filter((item) => item.message.feedback);
+    const activeUsers = new Set(
+      [...this.sessionsByHash.values()]
+        .filter((session) => realUserIds.has(session.userId) && !session.revokedAt && Date.parse(session.lastSeenAt) >= startMs)
+        .map((session) => session.userId)
+    ).size;
+
+    const dateKeys = Array.from({ length: rangeDays }, (_, index) => {
+      const date = new Date(start);
+      date.setUTCDate(start.getUTCDate() + index);
+      return date.toISOString().slice(0, 10);
+    });
+    const dayKey = (value: string) => new Date(value).toISOString().slice(0, 10);
+    const daily = dateKeys.map((date) => ({
+      date,
+      registrations: realUsers.filter((user) => dayKey(user.createdAt) === date).length,
+      activeChatUsers: new Set(periodMessages.filter((item) => dayKey(item.message.createdAt) === date).map((item) => item.userId)).size,
+      conversations: periodConversations.filter((item) => dayKey(item.conversation.createdAt) === date).length,
+      messages: periodMessages.filter((item) => dayKey(item.message.createdAt) === date).length
+    }));
+
+    const statusLabels: Record<string, string> = {
+      complete: "已完成",
+      error: "失败",
+      stopped: "已停止",
+      streaming: "生成中"
+    };
+    const messageStatuses = ["complete", "error", "stopped", "streaming"].map((status) => ({
+      key: status,
+      label: statusLabels[status],
+      value: assistantMessages.filter((item) => item.message.status === status).length
+    }));
+    const periodFeedback = this.productFeedback.filter((item) => Date.parse(item.createdAt) >= startMs);
+    const categoryLabels: Record<string, string> = { suggestion: "功能建议", issue: "问题反馈", content: "内容反馈", other: "其他" };
+    const feedbackCategories = Object.entries(categoryLabels).map(([key, label]) => ({
+      key,
+      label,
+      value: periodFeedback.filter((item) => item.category === key).length
+    }));
+    const feedbackStatuses = [
+      ["new", "待处理"],
+      ["reviewing", "处理中"],
+      ["planned", "已规划"],
+      ["resolved", "已解决"],
+      ["closed", "已关闭"]
+    ].map(([key, label]) => ({ key, label, value: periodFeedback.filter((item) => item.status === key).length }));
+    const periodApplications = [...this.applications.values()].filter(
+      (item) => realUserIds.has(item.userId) && Date.parse(item.item.application.createdAt) >= startMs && !item.item.deletedAt
+    );
+    const periodResumeVersions = [...this.resumeVersions.values()].filter(
+      (item) => realUserIds.has(item.userId) && Date.parse(item.item.version.createdAt) >= startMs
+    );
+    const periodInterviewRecords = [...this.interviewRecords.values()].filter(
+      (item) => realUserIds.has(item.userId) && Date.parse(item.record.createdAt) >= startMs
+    );
+    const lastActiveByUser = new Map<string, string>();
+    for (const session of this.sessionsByHash.values()) {
+      if (!realUserIds.has(session.userId)) continue;
+      const current = lastActiveByUser.get(session.userId);
+      if (!current || session.lastSeenAt > current) lastActiveByUser.set(session.userId, session.lastSeenAt);
+    }
+
+    return {
+      generatedAt: end.toISOString(),
+      rangeDays,
+      overview: {
+        totalUsers: realUsers.length,
+        newUsers: realUsers.filter((user) => Date.parse(user.createdAt) >= startMs).length,
+        activeUsers,
+        conversations: periodConversations.length,
+        userMessages: periodMessages.filter((item) => item.message.role === "user").length,
+        assistantMessages: assistantMessages.length,
+        chatSuccessRate: assistantMessages.length
+          ? assistantMessages.filter((item) => item.message.status === "complete").length / assistantMessages.length
+          : null,
+        positiveFeedbackRate: ratedMessages.length
+          ? ratedMessages.filter((item) => item.message.feedback === "positive").length / ratedMessages.length
+          : null
+      },
+      daily,
+      messageStatuses,
+      feedbackCategories,
+      feedbackStatuses,
+      featureUsage: {
+        applications: periodApplications.length,
+        resumeVersions: periodResumeVersions.length,
+        interviewRecords: periodInterviewRecords.length,
+        usersWithApplications: new Set(periodApplications.map((item) => item.userId)).size
+      },
+      recentUsers: realUsers
+        .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
+        .slice(0, 8)
+        .map((user) => ({
+          id: user.id,
+          displayName: user.displayName,
+          maskedEmail: maskEmail(user.email),
+          createdAt: user.createdAt,
+          lastActiveAt: lastActiveByUser.get(user.id),
+          conversationCount: conversations.filter((item) => item.userId === user.id).length,
+          applicationCount: [...this.applications.values()].filter((item) => item.userId === user.id && !item.item.deletedAt).length
+        }))
+    };
   }
 
   createSession(

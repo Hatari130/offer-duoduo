@@ -1,6 +1,8 @@
 import { createHash, randomBytes, randomInt, randomUUID, timingSafeEqual } from "node:crypto";
 import { Pool, type PoolClient } from "pg";
 import type {
+  AdminDashboardRangeDays,
+  AdminDashboardResponse,
   ApplicationSyncChange,
   ApplicationSyncConflict,
   ApplicationSyncItem,
@@ -51,6 +53,12 @@ function hashSecret(value: string): string {
 
 function normalizeEmail(value: string): string {
   return value.trim().toLowerCase();
+}
+
+function maskEmail(email: string): string {
+  const [name, domain = ""] = email.split("@");
+  const visible = name.slice(0, Math.min(2, name.length));
+  return `${visible}${"*".repeat(Math.max(2, Math.min(6, name.length - visible.length)))}@${domain}`;
 }
 
 function normalizeDeviceCode(value: string): string {
@@ -136,6 +144,170 @@ export class PostgresStore implements OfferFlowStore {
     return {
       id: String(result.rows[0].id),
       createdAt: new Date(result.rows[0].created_at).toISOString()
+    };
+  }
+
+  async getAdminDashboard(rangeDays: AdminDashboardRangeDays): Promise<AdminDashboardResponse> {
+    const [overviewResult, dailyResult, statusResult, feedbackResult, featureResult, recentUsersResult] = await Promise.all([
+      this.pool.query(
+        `WITH params AS (SELECT now() - make_interval(days => $1::int) AS start_at)
+         SELECT
+           (SELECT COUNT(*) FROM users WHERE deleted_at IS NULL AND email <> $2) AS total_users,
+           (SELECT COUNT(*) FROM users, params WHERE deleted_at IS NULL AND email <> $2 AND created_at >= params.start_at) AS new_users,
+           (SELECT COUNT(DISTINCT s.user_id)
+              FROM auth_sessions s JOIN users u ON u.id = s.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND s.revoked_at IS NULL AND s.last_seen_at >= params.start_at) AS active_users,
+           (SELECT COUNT(*) FROM conversations c JOIN users u ON u.id = c.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND c.deleted_at IS NULL AND c.created_at >= params.start_at) AS conversations,
+           (SELECT COUNT(*) FROM messages m JOIN users u ON u.id = m.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND m.role = 'user' AND m.created_at >= params.start_at) AS user_messages,
+           (SELECT COUNT(*) FROM messages m JOIN users u ON u.id = m.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND m.role = 'assistant' AND m.created_at >= params.start_at) AS assistant_messages,
+           (SELECT COUNT(*) FILTER (WHERE m.status = 'complete')::float / NULLIF(COUNT(*), 0)
+              FROM messages m JOIN users u ON u.id = m.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND m.role = 'assistant' AND m.created_at >= params.start_at) AS chat_success_rate,
+           (SELECT COUNT(*) FILTER (WHERE m.payload->>'feedback' = 'positive')::float
+                   / NULLIF(COUNT(*) FILTER (WHERE m.payload->>'feedback' IN ('positive', 'negative')), 0)
+              FROM messages m JOIN users u ON u.id = m.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND m.role = 'assistant' AND m.created_at >= params.start_at) AS positive_feedback_rate`,
+        [rangeDays, DEMO_EMAIL]
+      ),
+      this.pool.query(
+        `WITH days AS (
+           SELECT generate_series(
+             (now() AT TIME ZONE 'Asia/Shanghai')::date - ($1::int - 1),
+             (now() AT TIME ZONE 'Asia/Shanghai')::date,
+             interval '1 day'
+           )::date AS day
+         ), registrations AS (
+           SELECT (u.created_at AT TIME ZONE 'Asia/Shanghai')::date AS day, COUNT(*) AS value
+             FROM users u
+            WHERE u.deleted_at IS NULL AND u.email <> $2
+              AND u.created_at >= now() - make_interval(days => $1::int)
+            GROUP BY 1
+         ), chat AS (
+           SELECT (m.created_at AT TIME ZONE 'Asia/Shanghai')::date AS day,
+                  COUNT(*) AS messages,
+                  COUNT(DISTINCT m.user_id) AS active_users
+             FROM messages m JOIN users u ON u.id = m.user_id
+            WHERE u.deleted_at IS NULL AND u.email <> $2
+              AND m.created_at >= now() - make_interval(days => $1::int)
+            GROUP BY 1
+         ), conversation_counts AS (
+           SELECT (c.created_at AT TIME ZONE 'Asia/Shanghai')::date AS day, COUNT(*) AS value
+             FROM conversations c JOIN users u ON u.id = c.user_id
+            WHERE u.deleted_at IS NULL AND u.email <> $2 AND c.deleted_at IS NULL
+              AND c.created_at >= now() - make_interval(days => $1::int)
+            GROUP BY 1
+         )
+         SELECT d.day, COALESCE(r.value, 0) AS registrations,
+                COALESCE(ch.active_users, 0) AS active_chat_users,
+                COALESCE(cc.value, 0) AS conversations,
+                COALESCE(ch.messages, 0) AS messages
+           FROM days d
+           LEFT JOIN registrations r ON r.day = d.day
+           LEFT JOIN chat ch ON ch.day = d.day
+           LEFT JOIN conversation_counts cc ON cc.day = d.day
+          ORDER BY d.day`,
+        [rangeDays, DEMO_EMAIL]
+      ),
+      this.pool.query(
+        `SELECT m.status AS key, COUNT(*) AS value
+           FROM messages m JOIN users u ON u.id = m.user_id
+          WHERE u.deleted_at IS NULL AND u.email <> $2 AND m.role = 'assistant'
+            AND m.created_at >= now() - make_interval(days => $1::int)
+          GROUP BY m.status`,
+        [rangeDays, DEMO_EMAIL]
+      ),
+      this.pool.query(
+        `SELECT category, status, COUNT(*) AS value
+           FROM product_feedback
+          WHERE created_at >= now() - make_interval(days => $1::int)
+          GROUP BY category, status`,
+        [rangeDays]
+      ),
+      this.pool.query(
+        `WITH params AS (SELECT now() - make_interval(days => $1::int) AS start_at)
+         SELECT
+           (SELECT COUNT(*) FROM applications a JOIN users u ON u.id = a.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND a.deleted_at IS NULL AND a.created_at >= params.start_at) AS applications,
+           (SELECT COUNT(*) FROM resume_versions r JOIN users u ON u.id = r.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND r.created_at >= params.start_at) AS resume_versions,
+           (SELECT COUNT(*) FROM interview_records i JOIN users u ON u.id = i.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND i.created_at >= params.start_at) AS interview_records,
+           (SELECT COUNT(DISTINCT a.user_id) FROM applications a JOIN users u ON u.id = a.user_id, params
+             WHERE u.deleted_at IS NULL AND u.email <> $2 AND a.deleted_at IS NULL AND a.created_at >= params.start_at) AS users_with_applications`,
+        [rangeDays, DEMO_EMAIL]
+      ),
+      this.pool.query(
+        `SELECT u.id, u.email, u.display_name, u.created_at,
+                MAX(s.last_seen_at) AS last_active_at,
+                COUNT(DISTINCT c.id) FILTER (WHERE c.deleted_at IS NULL) AS conversation_count,
+                COUNT(DISTINCT a.id) FILTER (WHERE a.deleted_at IS NULL) AS application_count
+           FROM users u
+           LEFT JOIN auth_sessions s ON s.user_id = u.id
+           LEFT JOIN conversations c ON c.user_id = u.id
+           LEFT JOIN applications a ON a.user_id = u.id
+          WHERE u.deleted_at IS NULL AND u.email <> $1
+          GROUP BY u.id
+          ORDER BY u.created_at DESC
+          LIMIT 8`,
+        [DEMO_EMAIL]
+      )
+    ]);
+
+    const overview = overviewResult.rows[0] ?? {};
+    const statusLabels: Record<string, string> = { complete: "已完成", error: "失败", stopped: "已停止", streaming: "生成中" };
+    const statusCounts = new Map(statusResult.rows.map((row) => [String(row.key), Number(row.value)]));
+    const categoryLabels: Record<string, string> = { suggestion: "功能建议", issue: "问题反馈", content: "内容反馈", other: "其他" };
+    const feedbackStatusLabels: Record<string, string> = { new: "待处理", reviewing: "处理中", planned: "已规划", resolved: "已解决", closed: "已关闭" };
+    const feedbackCategoryCounts = new Map<string, number>();
+    const feedbackStatusCounts = new Map<string, number>();
+    for (const row of feedbackResult.rows) {
+      const value = Number(row.value);
+      feedbackCategoryCounts.set(String(row.category), (feedbackCategoryCounts.get(String(row.category)) ?? 0) + value);
+      feedbackStatusCounts.set(String(row.status), (feedbackStatusCounts.get(String(row.status)) ?? 0) + value);
+    }
+    const feature = featureResult.rows[0] ?? {};
+
+    return {
+      generatedAt: new Date().toISOString(),
+      rangeDays,
+      overview: {
+        totalUsers: Number(overview.total_users ?? 0),
+        newUsers: Number(overview.new_users ?? 0),
+        activeUsers: Number(overview.active_users ?? 0),
+        conversations: Number(overview.conversations ?? 0),
+        userMessages: Number(overview.user_messages ?? 0),
+        assistantMessages: Number(overview.assistant_messages ?? 0),
+        chatSuccessRate: overview.chat_success_rate === null || overview.chat_success_rate === undefined ? null : Number(overview.chat_success_rate),
+        positiveFeedbackRate: overview.positive_feedback_rate === null || overview.positive_feedback_rate === undefined ? null : Number(overview.positive_feedback_rate)
+      },
+      daily: dailyResult.rows.map((row) => ({
+        date: new Date(row.day).toISOString().slice(0, 10),
+        registrations: Number(row.registrations),
+        activeChatUsers: Number(row.active_chat_users),
+        conversations: Number(row.conversations),
+        messages: Number(row.messages)
+      })),
+      messageStatuses: Object.entries(statusLabels).map(([key, label]) => ({ key, label, value: statusCounts.get(key) ?? 0 })),
+      feedbackCategories: Object.entries(categoryLabels).map(([key, label]) => ({ key, label, value: feedbackCategoryCounts.get(key) ?? 0 })),
+      feedbackStatuses: Object.entries(feedbackStatusLabels).map(([key, label]) => ({ key, label, value: feedbackStatusCounts.get(key) ?? 0 })),
+      featureUsage: {
+        applications: Number(feature.applications ?? 0),
+        resumeVersions: Number(feature.resume_versions ?? 0),
+        interviewRecords: Number(feature.interview_records ?? 0),
+        usersWithApplications: Number(feature.users_with_applications ?? 0)
+      },
+      recentUsers: recentUsersResult.rows.map((row) => ({
+        id: String(row.id),
+        displayName: String(row.display_name || "未命名用户"),
+        maskedEmail: maskEmail(String(row.email || "")),
+        createdAt: new Date(row.created_at).toISOString(),
+        lastActiveAt: row.last_active_at ? new Date(row.last_active_at).toISOString() : undefined,
+        conversationCount: Number(row.conversation_count),
+        applicationCount: Number(row.application_count)
+      }))
     };
   }
 
