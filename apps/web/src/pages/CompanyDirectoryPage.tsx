@@ -59,6 +59,14 @@ const statusLabels: Record<OpportunityStatus, string> = {
   ongoing: "持续招聘"
 };
 
+// The feed captures individual campaigns, while the directory represents the
+// current availability of an official company portal. Keep explicitly verified
+// portal states here when they differ from a still-indexed historical campaign.
+const directoryAvailabilityOverrides: Partial<Record<string, OpportunityStatus>> = {
+  "小红书": "closed",
+  "拼多多": "open"
+};
+
 // Keep the same lookup strategy as the transferred company-map page: known
 // official domains first, then a logo service with the recruitment site's domain.
 const logoDomainOverrides: Record<string, string> = {
@@ -169,7 +177,8 @@ function opportunityForCompany(
     const isKnownCompany = directoryCompanyNames.has(candidate);
     return !isKnownCompany && aliases.some((alias) => candidate.startsWith(alias) || alias.startsWith(candidate));
   });
-  return [...(exactMatches.length ? exactMatches : fuzzyMatches)]
+  return [...exactMatches, ...fuzzyMatches]
+    .filter((opportunity, index, matches) => matches.findIndex((item) => item.id === opportunity.id) === index)
     .sort((a, b) => statusPriority[b.status || "closed"] - statusPriority[a.status || "closed"])[0];
 }
 
@@ -227,14 +236,16 @@ export function CompanyDirectoryPage() {
     ...category,
     companies: category.companies.map((company) => {
         const opportunity = opportunityForCompany(company, opportunities);
-        const status = opportunity?.status || "closed";
-        const isOpen = Boolean(opportunity && openStatuses.has(status));
+        const status = directoryAvailabilityOverrides[company.name] || opportunity?.status || "closed";
+        const isOpen = openStatuses.has(status);
         return {
           ...company,
           opportunity,
           status,
           isOpen,
-          destination: opportunityDestination(company, opportunity, isOpen)
+          destination: directoryAvailabilityOverrides[company.name]
+            ? company.careerUrl
+            : opportunityDestination(company, opportunity, isOpen)
         };
     })
   })), [opportunities]);
