@@ -15,7 +15,12 @@ import {
   Flame,
   X
 } from "lucide-react";
-import { fetchCampusHiringFeed, type CampusHiringOpportunity } from "../features/opportunities/campusHiringFeed";
+import {
+  cacheCampusHiringFeed,
+  fetchCampusHiringFeed,
+  readCachedCampusHiringFeed,
+  type CampusHiringOpportunity
+} from "../features/opportunities/campusHiringFeed";
 import { opportunityPageRequiresLogin } from "../features/opportunities/paginationAccess";
 import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
@@ -166,8 +171,9 @@ function OpportunityDeadline({ opportunity }: { opportunity: CampusHiringOpportu
 export function OpportunitiesPage() {
   const { status: authStatus, requestLogin } = useAuth();
   const isAuthenticated = authStatus === "authenticated";
-  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [cachedFeed] = useState(() => readCachedCampusHiringFeed());
+  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>(() => cachedFeed?.opportunities || []);
+  const [loading, setLoading] = useState(() => !cachedFeed);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("all");
@@ -183,6 +189,7 @@ export function OpportunitiesPage() {
     setError("");
     fetchCampusHiringFeed(signal)
       .then((result) => {
+        cacheCampusHiringFeed(result);
         setOpportunities(result.opportunities);
         setPage(1);
       })

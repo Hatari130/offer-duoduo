@@ -24,7 +24,9 @@ import {
 } from "../features/opportunities/companyDirectory";
 import { resolveCompanyBrandMark } from "../features/opportunities/companyBrandMarks";
 import {
+  cacheCampusHiringFeed,
   fetchCampusHiringFeed,
+  readCachedCampusHiringFeed,
   type CampusHiringOpportunity
 } from "../features/opportunities/campusHiringFeed";
 import { navigate } from "../app/router";
@@ -204,10 +206,11 @@ function updateLabel(value?: string): string {
 }
 
 export function CompanyDirectoryPage() {
-  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [cachedFeed] = useState(() => readCachedCampusHiringFeed());
+  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>(() => cachedFeed?.opportunities || []);
+  const [loading, setLoading] = useState(() => !cachedFeed);
   const [error, setError] = useState("");
-  const [updatedAt, setUpdatedAt] = useState<string>();
+  const [updatedAt, setUpdatedAt] = useState<string | undefined>(() => cachedFeed?.sourceUpdatedAt || cachedFeed?.fetchedAt);
   const [query, setQuery] = useState("");
   const [visibility, setVisibility] = useState<VisibilityFilter>("all");
 
@@ -216,6 +219,7 @@ export function CompanyDirectoryPage() {
     setError("");
     fetchCampusHiringFeed(signal)
       .then((result) => {
+        cacheCampusHiringFeed(result);
         setOpportunities(result.opportunities);
         setUpdatedAt(result.sourceUpdatedAt || result.fetchedAt);
       })
