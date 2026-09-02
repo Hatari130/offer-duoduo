@@ -13,7 +13,6 @@ import {
   Search,
   Sparkles,
   Flame,
-  UsersRound,
   X
 } from "lucide-react";
 import { fetchCampusHiringFeed, type CampusHiringOpportunity } from "../features/opportunities/campusHiringFeed";
@@ -128,13 +127,13 @@ function OpportunityTags({ company, tags }: { company: string; tags: string[] })
   );
 }
 
-const companyTagPresentation: Record<string, { label: string; tone: string; icon: "flame" | "people" | "sparkles" }> = {
-  hot: { label: "热度上升", tone: "hot", icon: "flame" },
-  "超多hc": { label: "扩招进行中", tone: "hc", icon: "people" },
-  "行业独角兽": { label: "高成长赛道", tone: "unicorn", icon: "sparkles" },
-  "垂直赛道头部": { label: "赛道焦点", tone: "leader", icon: "sparkles" },
-  "知名大厂": { label: "热门雇主", tone: "leader", icon: "sparkles" },
-  "头部大厂": { label: "热门雇主", tone: "leader", icon: "sparkles" }
+const companyTagPresentation: Record<string, { tone: string; icon: "flame" | "sparkles" }> = {
+  hot: { tone: "hot", icon: "flame" },
+  "超多hc": { tone: "hc", icon: "flame" },
+  "行业独角兽": { tone: "unicorn", icon: "sparkles" },
+  "垂直赛道头部": { tone: "leader", icon: "sparkles" },
+  "知名大厂": { tone: "leader", icon: "sparkles" },
+  "头部大厂": { tone: "leader", icon: "sparkles" }
 };
 
 function CompanySignals({ company, tags }: { company: string; tags: string[] }) {
@@ -143,9 +142,9 @@ function CompanySignals({ company, tags }: { company: string; tags: string[] }) 
   return (
     <ul className="company-signal-list" aria-label={`${company} 的企业标签`}>
       {visibleTags.map((tag) => {
-        const presentation = companyTagPresentation[tag] || { label: tag, tone: "default", icon: "sparkles" as const };
-        const Icon = presentation.icon === "flame" ? Flame : presentation.icon === "people" ? UsersRound : Sparkles;
-        return <li className={`company-signal company-signal--${presentation.tone}`} key={tag} title={tag}><Icon aria-hidden="true" size={12} strokeWidth={2} /><span>{presentation.label}</span></li>;
+        const presentation = companyTagPresentation[tag] || { tone: "default", icon: "sparkles" as const };
+        const Icon = presentation.icon === "flame" ? Flame : Sparkles;
+        return <li className={`company-signal company-signal--${presentation.tone}`} key={tag} title={tag}><Icon aria-hidden="true" size={12} strokeWidth={2} /><span>{tag}</span></li>;
       })}
     </ul>
   );

@@ -827,7 +827,20 @@
 }
 
 .company-signal--hot { color: #b94323; background: linear-gradient(110deg, #fff0e7, #fff7ed); }
-.company-signal--hc { color: #8b6412; background: linear-gradient(110deg, #fff5d9, #fff9e9); }
+.company-signal--hc {
+  min-height: 1.7rem;
+  padding-inline: 0.7rem;
+  color: #fff !important;
+  background: linear-gradient(105deg, #ff6b6f, #ff6268) !important;
+  box-shadow: 0 0.28rem 0.7rem rgb(255 98 104 / 0.18);
+  letter-spacing: 0;
+}
+
+.company-signal--hc svg {
+  color: #ffd25f;
+  fill: #ff9d3e;
+  stroke: #ffb43f;
+}
 .company-signal--unicorn { color: #6b55a3; background: linear-gradient(110deg, #f1ecff, #faf5ff); }
 .company-signal--leader { color: #326b9b; background: linear-gradient(110deg, #eaf5ff, #f4faff); }
 .company-signal--default { color: var(--of-text-muted); background: linear-gradient(110deg, var(--of-surface-muted), white); }
