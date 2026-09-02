@@ -777,21 +777,24 @@
 }
 
 .opportunity-company-heading {
-  display: grid;
-  justify-items: start;
-  gap: 0.36rem;
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .opportunity-card-heading {
   display: flex;
   min-width: 0;
   align-items: center;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 0.55rem;
 }
 
 .opportunity-company-cell > .opportunity-company-heading > strong {
-  max-width: 100%;
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: none;
   overflow: hidden;
   color: var(--of-text-strong);
   font-size: 0.9875rem;
@@ -803,7 +806,8 @@
 
 .company-signal-list {
   display: inline-flex;
-  flex-wrap: wrap;
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
   gap: 0.4rem;
   margin: 0;
   padding: 0;
@@ -1129,7 +1133,14 @@
   line-height: 1.35;
 }
 
-.opportunity-card-heading h2 { max-width: 100%; }
+.opportunity-card-heading h2 {
+  min-width: 0;
+  flex: 1 1 auto;
+  max-width: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 
 .opportunity-card header p {
   margin: 0.25rem 0 0;
