@@ -306,6 +306,29 @@ html[data-theme="dark"] .board-column[data-stage="assessment"] { background: #2b
 html[data-theme="dark"] .board-column[data-stage="interview"] { background: #251f32; border-color: #3b304b; }
 html[data-theme="dark"] .board-column[data-stage="offer"] { background: #18291f; border-color: #294233; }
 
+/* Native option menus are rendered outside the select surface on Windows.
+   Give the menu its own dark colors so inherited light text never lands on the
+   browser's default light popup. */
+html[data-theme="dark"] select {
+  color-scheme: dark;
+}
+
+html[data-theme="dark"] select option,
+html[data-theme="dark"] select optgroup {
+  color: var(--of-text);
+  background-color: var(--of-surface-raised);
+}
+
+html[data-theme="dark"] select option:checked {
+  color: var(--of-text-strong);
+  background-color: var(--of-brand-300);
+}
+
+html[data-theme="dark"] select:focus-visible {
+  outline: 2px solid var(--of-focus);
+  outline-offset: 2px;
+}
+
 html[data-theme="dark"] .auth-visual-copy {
   background: linear-gradient(90deg, rgb(18 25 37 / 0.96), rgb(18 25 37 / 0.76));
 }
