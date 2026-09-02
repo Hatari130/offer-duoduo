@@ -307,6 +307,8 @@
   text-align: start;
 }
 
+.application-table { min-width: 62rem; }
+
 .opportunities-page {
   --opportunity-blue: var(--of-info);
   --opportunity-blue-soft: var(--of-info-soft);
@@ -1637,6 +1639,7 @@
   white-space: nowrap;
 }
 
+.application-jd-entry,
 .interview-record-entry {
   display: inline-flex;
   min-width: 5.5rem;
@@ -1653,15 +1656,24 @@
   font-weight: 680;
 }
 
+.application-jd-entry > span,
 .interview-record-entry > span {
   white-space: nowrap;
 }
 
+.application-jd-entry.has-content {
+  color: var(--of-success);
+  background: var(--of-success-soft);
+  border-color: color-mix(in srgb, var(--of-success) 28%, var(--of-line));
+}
+
+.application-jd-entry:hover,
 .interview-record-entry:hover {
   background: var(--of-brand-50);
   border-color: var(--of-brand-200);
 }
 
+.application-jd-entry:focus-visible,
 .interview-record-entry:focus-visible {
   outline: 2px solid var(--of-brand-400);
   outline-offset: 2px;
@@ -1770,6 +1782,13 @@
 .board-stage-label { width: fit-content; color: var(--of-text-muted); font-size: 0.72rem; font-weight: 650; }
 .board-card--closed { filter: grayscale(1); opacity: 0.62; }
 
+.board-card-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  border-block-start: 1px solid var(--of-brand-100);
+}
+
+.board-jd-entry,
 .board-interview-entry {
   display: flex;
   min-height: 2.4rem;
@@ -1779,11 +1798,13 @@
   color: var(--of-brand-700);
   background: var(--of-brand-50);
   border: 0;
-  border-block-start: 1px solid var(--of-brand-100);
   font-size: 0.75rem;
   font-weight: 670;
 }
 
+.board-jd-entry { border-inline-end: 1px solid var(--of-brand-100); }
+.board-jd-entry.has-content { color: var(--of-success); background: var(--of-success-soft); }
+.board-jd-entry:hover,
 .board-interview-entry:hover { background: var(--of-brand-100); }
 .board-card:hover { border-color: var(--of-brand-300); }
 .board-empty { padding: 1.2rem 0.5rem; color: var(--of-text-subtle); font-size: 0.75rem; text-align: center; }
@@ -2610,7 +2631,8 @@
 }
 
 .dialog-fields input,
-.dialog-fields select {
+.dialog-fields select,
+.dialog-fields textarea {
   width: 100%;
   min-height: 2.7rem;
   padding-inline: 0.75rem;
@@ -2621,9 +2643,18 @@
   font-size: 1rem;
 }
 
+.dialog-fields textarea {
+  min-height: 10rem;
+  padding: 0.72rem 0.75rem;
+  line-height: 1.65;
+  resize: vertical;
+}
+
 .dialog-fields input:focus,
-.dialog-fields select:focus { border-color: var(--of-brand-400); }
+.dialog-fields select:focus,
+.dialog-fields textarea:focus { border-color: var(--of-brand-400); }
 .dialog-fields .field-wide { grid-column: 1 / -1; }
+.dialog-fields .dialog-note--wide { max-width: none; white-space: normal; line-height: 1.5; }
 
 .dialog-error {
   min-height: 1.3rem;
@@ -2766,7 +2797,8 @@
 
 @media (min-width: 48rem) {
   .dialog-fields input,
-  .dialog-fields select { font-size: 0.82rem; }
+  .dialog-fields select,
+  .dialog-fields textarea { font-size: 0.82rem; }
 }
 
 @media (max-width: 60rem) {
@@ -2905,6 +2937,7 @@
   }
   .application-table td:first-child,
   .application-table td:nth-child(6),
+  .application-table td:nth-child(7),
   .application-table td:last-child { grid-column: 1 / -1; }
   .application-table td:first-child {
     padding-block-end: 0.8rem;
@@ -2921,6 +2954,7 @@
   .application-tag--select { width: 100%; min-width: 0; min-height: 2.75rem; }
   .stage-cell { min-width: 0; }
   .cell-icon { min-height: 2.75rem; white-space: normal; }
+  .application-jd-entry,
   .interview-record-entry { width: 100%; min-width: 0; min-height: 2.75rem; }
   .application-table td:last-child {
     grid-template-columns: auto minmax(0, 1fr);
@@ -2943,6 +2977,7 @@
   }
   .board-column > header { min-height: 2.75rem; padding-block: 0.25rem 0.65rem; }
   .board-card-main { min-height: 2.75rem; }
+  .board-jd-entry,
   .board-interview-entry { min-height: 2.75rem; }
   .integration-empty,
   .application-empty { min-height: 25rem; padding-inline: 1.2rem; }

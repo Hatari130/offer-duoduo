@@ -145,7 +145,7 @@ export function ApplicationsPage() {
     const normalized = query.trim().toLowerCase();
     return items.filter(({ application }) => {
       const recruitmentType = applicationRecruitmentType(application);
-      const matchQuery = !normalized || `${application.company} ${application.position} ${application.city || ""} ${recruitmentType ? RECRUITMENT_TYPE_LABELS[recruitmentType] : ""}`.toLowerCase().includes(normalized);
+      const matchQuery = !normalized || `${application.company} ${application.position} ${application.city || ""} ${recruitmentType ? RECRUITMENT_TYPE_LABELS[recruitmentType] : ""} ${application.summary || ""} ${application.rawExcerpt || ""}`.toLowerCase().includes(normalized);
       return matchQuery && (stage === "all" || selectableStage(application.stage) === stage);
     }).sort((left, right) => {
       const closedDifference = Number(selectableStage(left.application.stage) === "closed") - Number(selectableStage(right.application.stage) === "closed");
@@ -326,7 +326,7 @@ export function ApplicationsPage() {
         <label className="search-control">
           <span className="sr-only">搜索投递记录</span>
           <Search aria-hidden="true" size={17} />
-          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索公司、岗位或城市" />
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="搜索公司、岗位、城市或 JD" />
         </label>
         <label className="select-control">
           <ListFilter aria-hidden="true" size={16} />
@@ -361,7 +361,7 @@ export function ApplicationsPage() {
         <div className="application-table-wrap">
           <table className="data-table application-table">
             <caption className="sr-only">个人投递记录</caption>
-            <thead><tr><th>公司与岗位</th><th aria-sort={sort?.key === "recruitmentType" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("recruitmentType")}>岗位类型<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "stage" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("stage")}>当前阶段<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "appliedAt" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("appliedAt")}>投递时间<ArrowUpDown aria-hidden="true" size={13} /></button></th><th>地点</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
+            <thead><tr><th>公司与岗位</th><th aria-sort={sort?.key === "recruitmentType" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("recruitmentType")}>岗位类型<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "stage" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("stage")}>当前阶段<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "appliedAt" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("appliedAt")}>投递时间<ArrowUpDown aria-hidden="true" size={13} /></button></th><th>地点</th><th>岗位 JD</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
             <tbody>
               {filtered.map((item) => {
                 const application = item.application;
@@ -372,6 +372,7 @@ export function ApplicationsPage() {
                     <td data-label="当前阶段"><div className="stage-cell"><select className={`application-tag application-tag--stage application-tag--select application-tag--${stageTone(selectableStage(application.stage))}`} aria-label={`更新 ${application.company} ${application.position} 的阶段`} value={selectableStage(application.stage)} onChange={(event) => changeStage(item, event.target.value as ApplicationStage)}>{SELECTABLE_STAGES.map((value) => <option value={value} key={value}>{value === "closed" ? selectedStageLabel(value, application.closedReason) : value === "interview" ? selectedStageLabel(value, undefined, application.interviewRound) : STAGE_LABELS[value]}</option>)}</select>{selectableStage(application.stage) === "interview" && !application.interviewRound && <select className="application-tag application-tag--select application-tag--secondary" aria-label={`更新 ${application.company} ${application.position} 的面试轮次`} value="" onChange={(event) => changeInterviewRound(item, event.target.value as InterviewRound)}><option value="">选择面试轮次</option>{INTERVIEW_ROUNDS.map((round) => <option value={round} key={round}>{INTERVIEW_ROUND_LABELS[round]}</option>)}</select>}{selectableStage(application.stage) === "closed" && !application.closedReason && <select className="application-tag application-tag--select application-tag--secondary" aria-label={`更新 ${application.company} ${application.position} 的结束原因`} value="" onChange={(event) => changeClosedReason(item, event.target.value as ClosedStageReason)}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select>}</div></td>
                     <td data-label="投递时间"><span className="cell-icon"><CalendarClock aria-hidden="true" size={14} />{appliedAtLabel(application.appliedAt)}</span></td>
                     <td data-label="地点"><span className="cell-icon"><MapPin aria-hidden="true" size={14} />{application.city || "未填写"}</span></td>
+                    <td data-label="岗位 JD"><button className={`application-jd-entry ${application.rawExcerpt?.trim() ? "has-content" : ""}`} type="button" aria-label={`${application.rawExcerpt?.trim() ? "查看" : "为"} ${application.company} ${application.position} ${application.rawExcerpt?.trim() ? "的岗位 JD" : "添加岗位 JD"}`} onClick={() => setDialog({ mode: "edit", item })}><FileText aria-hidden="true" size={15} /><span>{application.rawExcerpt?.trim() ? "查看 JD" : "添加 JD"}</span></button></td>
                     <td data-label="面试记录"><button className="interview-record-entry" type="button" aria-label={`为 ${application.company} ${application.position} 添加面试问答记录`} onClick={() => setInterviewDialog(item)}><Plus aria-hidden="true" size={15} /><span>添加</span></button></td>
                     <td data-label="快捷操作"><div className="row-actions"><button type="button" aria-label={application.isFavorite ? "取消收藏" : "收藏投递"} onClick={() => void mutate(item, { ...application, isFavorite: !application.isFavorite, updatedAt: new Date().toISOString() })}><Star aria-hidden="true" size={17} fill={application.isFavorite ? "currentColor" : "none"} /></button>{application.tailorTaskId && <button type="button" aria-label={`打开 ${application.company} 的定制简历`} onClick={() => navigate(`/app/resumes/tailor/${encodeURIComponent(application.tailorTaskId!)}`)}><FileText aria-hidden="true" size={17} /></button>}{application.sourceUrl && application.sourceHost !== "manual" && <a href={application.sourceUrl} target="_blank" rel="noreferrer" aria-label={`打开 ${application.position} 来源页面`}><ArrowUpRight aria-hidden="true" size={17} /></a>}</div></td>
                   </tr>
@@ -404,7 +405,10 @@ export function ApplicationsPage() {
                       <button className="board-card-main" type="button" onClick={() => setDialog({ mode: "edit", item })}>
                         <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em>{["closed", "interview"].includes(selectableStage(item.application.stage)) && <b className="board-stage-label">{applicationStageLabel(item.application)}</b>}<small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
                       </button>
-                      <button className="board-interview-entry" type="button" onClick={() => setInterviewDialog(item)}><MessageCircleQuestion aria-hidden="true" size={14} /><span>面试问答记录</span></button>
+                      <div className="board-card-actions">
+                        <button className={`board-jd-entry ${item.application.rawExcerpt?.trim() ? "has-content" : ""}`} type="button" aria-label={`${item.application.rawExcerpt?.trim() ? "查看" : "为"} ${item.application.company} ${item.application.position} ${item.application.rawExcerpt?.trim() ? "的岗位 JD" : "添加岗位 JD"}`} onClick={() => setDialog({ mode: "edit", item })}><FileText aria-hidden="true" size={14} /><span>{item.application.rawExcerpt?.trim() ? "查看 JD" : "添加 JD"}</span></button>
+                        <button className="board-interview-entry" type="button" aria-label={`为 ${item.application.company} ${item.application.position} 添加面试问答记录`} onClick={() => setInterviewDialog(item)}><MessageCircleQuestion aria-hidden="true" size={14} /><span>面试记录</span></button>
+                      </div>
                     </article>
                   ))}
                   {!stageItems.length && <span className="board-empty">暂无记录</span>}
@@ -462,6 +466,7 @@ function ApplicationDialog({
   const [appliedAt, setAppliedAt] = useState(
     item?.application.appliedAt?.slice(0, 16).replace(" ", "T") || ""
   );
+  const [jobDescription, setJobDescription] = useState(item?.application.rawExcerpt || "");
   const [sourceUrl, setSourceUrl] = useState(item?.application.sourceHost === "manual" ? "" : item?.application.sourceUrl || "");
   const [busy, setBusy] = useState(false);
   const [formError, setFormError] = useState("");
@@ -526,7 +531,7 @@ function ApplicationDialog({
       }
       if (event.key !== "Tab") return;
       const focusable = [...dialog.querySelectorAll<HTMLElement>(
-        'button:not([disabled]), input:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+        'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
       )].filter((element) => !element.hidden);
       if (!focusable.length) {
         event.preventDefault();
@@ -576,6 +581,7 @@ function ApplicationDialog({
             closedReason: stage === "closed" ? closedReason || undefined : undefined,
             interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
             appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
+            rawExcerpt: jobDescription.trim() || undefined,
             sourceUrl: url,
             sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
             updatedAt: now,
@@ -594,6 +600,7 @@ function ApplicationDialog({
             closedReason: stage === "closed" ? closedReason || undefined : undefined,
             interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
             appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
+            rawExcerpt: jobDescription.trim() || undefined,
             sourceUrl: url,
             sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
             responsibilities: [],
@@ -664,6 +671,7 @@ function ApplicationDialog({
           {stage === "interview" && <label><span>面试轮次</span><select value={interviewRound} onChange={(event) => setInterviewRound(event.target.value as InterviewRound | "")}><option value="">选择面试轮次</option>{INTERVIEW_ROUNDS.map((round) => <option value={round} key={round}>{INTERVIEW_ROUND_LABELS[round]}</option>)}</select></label>}
           {stage === "closed" && <label><span>结束原因</span><select value={closedReason} onChange={(event) => setClosedReason(event.target.value as ClosedStageReason | "")}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select></label>}
           <label><span>投递时间</span><input type="datetime-local" value={appliedAt} onChange={(event) => setAppliedAt(event.target.value)} /></label>
+          <label className="field-wide"><span>岗位 JD</span><textarea aria-describedby="application-jd-note" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} placeholder="粘贴岗位职责、任职要求、加分项等完整 JD" /><small className="dialog-note dialog-note--wide" id="application-jd-note">插件同步的岗位 JD 会自动显示在这里，也可以手动补充或修改。</small></label>
           <label className="field-wide"><span>岗位来源链接</span><input type="url" inputMode="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://careers.example.com/job/123" /></label>
         </div>
         <div className="dialog-error" role={formError ? "alert" : undefined}>{formError}</div>
