@@ -1336,6 +1336,31 @@
 
 .application-toolbar .search-control { flex: 1; }
 
+.application-export-button {
+  display: inline-flex;
+  min-height: 2.75rem;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 0.42rem;
+  padding-inline: 0.85rem;
+  color: var(--of-brand-700);
+  background: var(--of-surface-raised);
+  border: 1px solid color-mix(in srgb, var(--of-brand-300) 72%, var(--of-line));
+  border-radius: 0.72rem;
+  font-size: 0.78rem;
+  font-weight: 680;
+  white-space: nowrap;
+}
+
+.application-export-button:hover:not(:disabled) {
+  color: var(--of-brand-800);
+  background: var(--of-brand-50);
+  border-color: var(--of-brand-400);
+}
+
+.application-export-button:focus-visible { outline: 2px solid var(--of-focus); outline-offset: 2px; }
+
 .view-switch {
   position: relative;
   display: grid;
