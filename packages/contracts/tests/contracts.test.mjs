@@ -9,6 +9,7 @@ import {
   isMessageFeedbackRequest,
   isOpportunitySyncRequest,
   isRegisterRequest,
+  isResetPasswordRequest,
   isRetryMessageRequest,
   isSendMessageRequest,
   isUpdateConversationRequest,
@@ -29,6 +30,8 @@ test("auth contracts accept complete payloads and reject ambiguous input", () =>
     true
   );
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123" }), false);
+  assert.equal(isResetPasswordRequest({ email: "user@example.com", password: "secret123", code: "123456" }), true);
+  assert.equal(isResetPasswordRequest({ email: "user@example.com", password: "secret123" }), false);
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", avatarKey: "cloud", acceptPrivacy: false }), false);
   assert.equal(isRegisterRequest({ email: "user@example.com", password: "secret123", displayName: "Lin", avatarKey: "unknown", acceptPrivacy: true }), false);
   assert.equal(

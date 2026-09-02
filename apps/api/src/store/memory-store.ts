@@ -333,6 +333,26 @@ export class MemoryStore implements OfferFlowStore {
     return this.publicUser(user);
   }
 
+  findUserByEmail(email: string): SessionUser | undefined {
+    const userId = this.usersByEmail.get(normalizeEmail(email));
+    const user = userId ? this.users.get(userId) : undefined;
+    return user ? this.publicUser(user) : undefined;
+  }
+
+  resetPasswordAndRevokeSessions(userId: string, password: string): boolean {
+    const user = this.users.get(userId);
+    if (!user) return false;
+    const passwordValue = hashPassword(password);
+    user.passwordHash = passwordValue.hash;
+    user.passwordSalt = passwordValue.salt;
+    const now = new Date().toISOString();
+    for (const session of this.sessionsByHash.values()) {
+      if (session.userId === userId && !session.revokedAt) session.revokedAt = now;
+    }
+    this.persist();
+    return true;
+  }
+
   getUser(userId: string): SessionUser | undefined {
     const user = this.users.get(userId);
     return user ? this.publicUser(user) : undefined;

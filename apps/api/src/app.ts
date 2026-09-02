@@ -32,6 +32,7 @@ import {
   isLoginRequest,
   isRecord,
   isRegisterRequest,
+  isResetPasswordRequest,
   isOpportunitySyncRequest,
   isMessageFeedbackRequest,
   isRetryMessageRequest,
@@ -782,20 +783,22 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!isSendEmailVerificationCodeRequest(body) || !/^\S+@\S+\.\S+$/.test(body.email.trim()) || body.email.length > 254) {
           throw new HttpError(400, "INVALID_EMAIL_CODE_REQUEST", "请输入有效的邮箱地址");
         }
-        if (body.purpose !== "register") {
-          throw new HttpError(400, "EMAIL_CODE_PURPOSE_UNAVAILABLE", "当前仅支持注册邮箱验证");
+        if (!["register", "reset_password"].includes(body.purpose)) {
+          throw new HttpError(400, "EMAIL_CODE_PURPOSE_UNAVAILABLE", "当前不支持此邮箱验证类型");
         }
         if (!config.emailVerificationEnabled) {
           throw new HttpError(404, "NOT_FOUND", "邮箱验证功能没有开启");
         }
-        if (config.registrationMode === "closed") {
+        if (body.purpose === "register" && config.registrationMode === "closed") {
           throw new HttpError(403, "REGISTRATION_CLOSED", "当前仅限受邀用户注册");
         }
         const email = body.email.trim().toLowerCase();
-        if (config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.includes(email)) {
+        if (body.purpose === "register" && config.registrationMode === "allowlist" && !config.allowedRegistrationEmails.includes(email)) {
           throw new HttpError(403, "REGISTRATION_NOT_ALLOWED", "这个邮箱尚未获得注册权限");
         }
-        await emailVerification.sendCode(email, body.purpose, requestIp(request));
+        if (body.purpose === "register" || await store.findUserByEmail(email)) {
+          await emailVerification.sendCode(email, body.purpose, requestIp(request));
+        }
         success(response, { sent: true as const, retryAfterSeconds: 60 });
         return;
       }
@@ -890,6 +893,26 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         const session = await issueSession(user);
         setSessionCookie(response, config, session.accessToken, session.expiresAt);
         success(response, session, 201);
+        return;
+      }
+
+      if (method === "POST" && path === "/v1/auth/reset-password") {
+        const body = await readJson(request);
+        if (!isResetPasswordRequest(body) || !/^\S+@\S+\.\S+$/.test(body.email.trim()) || body.email.length > 254 || body.password.length > 256 || !/^\d{6}$/.test(body.code)) {
+          throw new HttpError(400, "INVALID_PASSWORD_RESET", "请填写有效的邮箱和新密码");
+        }
+        if (body.password.length < 8) {
+          throw new HttpError(400, "WEAK_PASSWORD", "新密码至少需要 8 个字符");
+        }
+        if (!config.emailVerificationEnabled || !(await emailVerification.verifyCode(body.email, "reset_password", body.code))) {
+          throw new HttpError(400, "INVALID_PASSWORD_RESET", "验证码无效或已过期，请重新获取验证码");
+        }
+        const user = await store.findUserByEmail(body.email);
+        if (!user || !(await store.resetPasswordAndRevokeSessions(user.id, body.password))) {
+          throw new HttpError(400, "INVALID_PASSWORD_RESET", "重置链接已失效，请重新验证邮箱");
+        }
+        clearSessionCookie(response, config);
+        success(response, { passwordReset: true as const });
         return;
       }
 

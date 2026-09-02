@@ -92,6 +92,8 @@ export interface OfferFlowStore {
 
   createUser(email: string, displayName: string, password: string, avatarKey: AvatarKey, fixedId?: string): Awaitable<SessionUser>;
   authenticate(email: string, password: string): Awaitable<SessionUser | undefined>;
+  findUserByEmail(email: string): Awaitable<SessionUser | undefined>;
+  resetPasswordAndRevokeSessions(userId: string, password: string): Awaitable<boolean>;
   getUser(userId: string): Awaitable<SessionUser | undefined>;
   getDemoUser(): Awaitable<SessionUser | undefined>;
   updateUserAvatar(userId: string, avatarKey: AvatarKey): Awaitable<SessionUser | undefined>;

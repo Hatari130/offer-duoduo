@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { ArrowRight, Eye, EyeOff, LoaderCircle, ShieldCheck } from "lucide-react";
 import { useAuth } from "../app/AuthContext";
 
-type Mode = "login" | "register";
+type Mode = "login" | "register" | "reset";
 
 interface AuthCardProps {
   autoFocus?: boolean;
@@ -27,12 +27,15 @@ export function AuthCard({
     enterDemo,
     capabilities,
     sendRegistrationEmailCode,
-    verifyRegistrationEmailCode
+    verifyRegistrationEmailCode,
+    sendPasswordResetEmailCode,
+    resetPassword
   } = useAuth();
   const [mode, setMode] = useState<Mode>("login");
   const [displayName, setDisplayName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [acceptPrivacy, setAcceptPrivacy] = useState(false);
   const [emailCode, setEmailCode] = useState("");
@@ -42,13 +45,18 @@ export function AuthCard({
   const [codeCooldown, setCodeCooldown] = useState(0);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
   const nameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
+  const confirmPasswordRef = useRef<HTMLInputElement>(null);
   const emailCodeRef = useRef<HTMLInputElement>(null);
   const consentRef = useRef<HTMLInputElement>(null);
   const errorId = `${idPrefix}-error`;
   const emailCodeStatusId = `${idPrefix}-email-code-status`;
+
+  const isEmailValid = /^\S+@\S+\.\S+$/.test(email.trim());
+  const requiresEmailCode = mode !== "login" && capabilities?.emailVerificationEnabled;
 
   useEffect(() => {
     if (codeCooldown <= 0) return;
@@ -58,16 +66,20 @@ export function AuthCard({
 
   const sendEmailCode = async () => {
     setError("");
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+    setNotice("");
+    if (!isEmailValid) {
       setError("请输入有效的邮箱地址");
       emailRef.current?.focus();
       return;
     }
     setCodeBusy(true);
     try {
-      const result = await sendRegistrationEmailCode(email.trim());
+      const result = mode === "reset"
+        ? await sendPasswordResetEmailCode(email.trim())
+        : await sendRegistrationEmailCode(email.trim());
       setCodeSent(true);
       setCodeCooldown(result.retryAfterSeconds);
+      if (mode === "reset") setNotice("如果该邮箱已注册，验证码已发送。请在 5 分钟内完成重置。");
       window.requestAnimationFrame(() => emailCodeRef.current?.focus());
     } catch (requestError) {
       setError(requestError instanceof Error ? requestError.message : "暂时无法发送验证码，请稍后重试");
@@ -79,18 +91,24 @@ export function AuthCard({
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     setError("");
+    setNotice("");
     if (mode === "register" && !displayName.trim()) {
       setError("请输入你的称呼");
       nameRef.current?.focus();
       return;
     }
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) {
+    if (!isEmailValid) {
       setError("请输入有效的邮箱地址");
       emailRef.current?.focus();
       return;
     }
-    if (!password || (mode === "register" && password.length < 8)) {
-      setError(mode === "register" ? "密码至少需要 8 个字符" : "请输入密码");
+    if (mode === "reset" && !/^\d{6}$/.test(emailCode)) {
+      setError("请输入邮件中的 6 位验证码");
+      emailCodeRef.current?.focus();
+      return;
+    }
+    if (!password || (mode !== "login" && password.length < 8)) {
+      setError(mode === "login" ? "请输入密码" : "新密码至少需要 8 个字符");
       passwordRef.current?.focus();
       return;
     }
@@ -108,7 +126,7 @@ export function AuthCard({
     setBusy(true);
     try {
       if (mode === "login") await login({ email: email.trim(), password });
-      else {
+      else if (mode === "register") {
         const token = capabilities?.emailVerificationEnabled
           ? verificationToken || (await verifyRegistrationEmailCode(email.trim(), emailCode)).verificationToken
           : undefined;
@@ -120,6 +138,21 @@ export function AuthCard({
           acceptPrivacy,
           emailVerificationToken: token
         });
+      } else {
+        if (password !== confirmPassword) {
+          setError("两次输入的新密码不一致");
+          confirmPasswordRef.current?.focus();
+          return;
+        }
+        await resetPassword({ email: email.trim(), password, code: emailCode });
+        setMode("login");
+        setPassword("");
+        setConfirmPassword("");
+        setEmailCode("");
+        setVerificationToken("");
+        setCodeSent(false);
+        setNotice("密码已更新。为保护账号安全，所有设备均已退出，请使用新密码登录。");
+        return;
       }
       onSuccess?.();
     } catch (requestError) {
@@ -143,20 +176,20 @@ export function AuthCard({
   };
 
   return (
-    <div className={`auth-card auth-card--${mode}${mode === "register" && capabilities?.emailVerificationEnabled ? " auth-card--verification" : ""}`}>
+    <div className={`auth-card auth-card--${mode}${requiresEmailCode ? " auth-card--verification" : ""}`}>
       <div className="auth-card-orbit" aria-hidden="true"><i /><i /><i /></div>
       <header>
         <span className="auth-eyebrow">欢迎来到 JobKoI</span>
-        <h2 id={headingId}>{mode === "login" ? loginHeading : "建立你的求职工作台"}</h2>
-        <p>{mode === "login" ? (prompt || "登录后同步对话、机会与投递记录。") : "创建账号，在 Web 与浏览器插件之间同步进度。"}</p>
+        <h2 id={headingId}>{mode === "login" ? loginHeading : mode === "register" ? "建立你的求职工作台" : "重设密码"}</h2>
+        <p>{mode === "login" ? (prompt || "登录后同步对话、机会与投递记录。") : mode === "register" ? "创建账号，在 Web 与浏览器插件之间同步进度。" : "验证注册邮箱后设置新密码，完成后所有设备都会退出。"}</p>
       </header>
 
-      <div className="auth-mode" aria-label="账号操作">
+      {mode !== "reset" && <div className="auth-mode" aria-label="账号操作">
         <button type="button" aria-pressed={mode === "login"} onClick={() => { setMode("login"); setError(""); }}>登录</button>
         {capabilities?.registrationMode !== "closed" && (
           <button type="button" aria-pressed={mode === "register"} onClick={() => { setMode("register"); setError(""); }}>创建账号</button>
         )}
-      </div>
+      </div>}
 
       <form className="auth-form" onSubmit={submit} noValidate>
         <div className="auth-form-fields">
@@ -194,13 +227,14 @@ export function AuthCard({
                 setVerificationToken("");
                 setCodeSent(false);
                 setCodeCooldown(0);
+                setNotice("");
               }}
               aria-invalid={Boolean(error && !/^\S+@\S+\.\S+$/.test(email.trim()))}
               aria-describedby={error ? errorId : undefined}
               placeholder="name@example.com"
             />
           </label>
-          {mode === "register" && capabilities?.emailVerificationEnabled && (
+          {requiresEmailCode && (
             <div className="auth-code-field">
               <label htmlFor={`${idPrefix}-email-code`}>邮箱验证码</label>
               <div className="auth-code-row">
@@ -226,12 +260,12 @@ export function AuthCard({
                 </button>
               </div>
               <div id={emailCodeStatusId} className="auth-code-status" role="status">
-                {codeSent ? "验证码已发送，5 分钟内有效。" : ""}
+                {codeSent && mode === "register" ? "验证码已发送，5 分钟内有效。" : ""}
               </div>
             </div>
           )}
           <label>
-            <span>密码</span>
+            <span>{mode === "reset" ? "新密码" : "密码"}</span>
             <span className="password-field">
               <input
                 ref={passwordRef}
@@ -241,9 +275,9 @@ export function AuthCard({
                 maxLength={256}
                 value={password}
                 onChange={(event) => setPassword(event.target.value)}
-                aria-invalid={Boolean(error && (!password || (mode === "register" && password.length < 8)))}
+                aria-invalid={Boolean(error && (!password || (mode !== "login" && password.length < 8)))}
                 aria-describedby={error ? errorId : undefined}
-                placeholder={mode === "register" ? "至少 8 个字符" : "输入你的密码"}
+                placeholder={mode === "login" ? "输入你的密码" : "至少 8 个字符"}
               />
               <button
                 type="button"
@@ -254,6 +288,26 @@ export function AuthCard({
               </button>
             </span>
           </label>
+
+          {mode === "login" && capabilities?.emailVerificationEnabled && <button className="auth-forgot-password" type="button" onClick={() => { setMode("reset"); setPassword(""); setConfirmPassword(""); setEmailCode(""); setVerificationToken(""); setCodeSent(false); setCodeCooldown(0); setError(""); setNotice(""); }}>忘记密码？</button>}
+
+          {mode === "reset" && <label>
+            <span>确认新密码</span>
+            <input
+              ref={confirmPasswordRef}
+              name="confirm-password"
+              type={showPassword ? "text" : "password"}
+              autoComplete="new-password"
+              maxLength={256}
+              value={confirmPassword}
+              onChange={(event) => setConfirmPassword(event.target.value)}
+              aria-invalid={Boolean(error && password !== confirmPassword)}
+              aria-describedby={error ? errorId : undefined}
+              placeholder="再次输入新密码"
+            />
+          </label>}
+
+          {mode === "reset" && <button className="auth-back-to-login" type="button" onClick={() => { setMode("login"); setError(""); setNotice(""); }}>返回登录</button>}
 
           {mode === "register" && (
             <label className="auth-consent">
@@ -274,16 +328,17 @@ export function AuthCard({
           <div id={errorId} className="auth-error" role={error ? "alert" : undefined} aria-live="polite">
             {error}
           </div>
+          <div className="auth-notice" role="status" aria-live="polite">{notice}</div>
 
           <button className="auth-submit" type="submit" disabled={busy} aria-busy={busy}>
             {busy ? <LoaderCircle className="spin" aria-hidden="true" size={18} /> : null}
-            <span>{mode === "login" ? "登录工作台" : "创建账号"}</span>
+            <span>{mode === "login" ? "登录工作台" : mode === "register" ? "创建账号" : "重设密码"}</span>
             {!busy && <ArrowRight aria-hidden="true" size={18} />}
           </button>
         </div>
       </form>
 
-      {capabilities?.demoEnabled && <><div className="auth-divider"><span>或</span></div>
+      {mode === "login" && capabilities?.demoEnabled && <><div className="auth-divider"><span>或</span></div>
         <button className="auth-demo" type="button" onClick={useDemo} disabled={busy}>进入体验账号</button></>}
       <footer><ShieldCheck aria-hidden="true" size={14} />会话保存在安全 Cookie 中，密码不会明文存储</footer>
     </div>

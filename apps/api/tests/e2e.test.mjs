@@ -177,6 +177,83 @@ test("registration email verification is rate-limited, single-use and bound to t
   assert.equal(refreshedSession.payload.data.user.avatarKey, "mint");
 });
 
+test("password reset consumes the email code and revokes every existing session", async (t) => {
+  const deliveries = [];
+  const app = await startTestServer(
+    {
+      emailVerificationEnabled: true,
+      emailCodeHmacSecret: "offerflow-password-reset-test-secret-2026-long-enough"
+    },
+    {
+      emailMailer: {
+        configured: true,
+        async sendVerificationEmail(email, code) {
+          deliveries.push({ email, code });
+        }
+      }
+    }
+  );
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+  });
+
+  const user = await app.store.createUser("reset@example.com", "重置密码用户", "old-password-2026", "sprout");
+  const webSession = await app.store.createSession(user.id, "user", new Date(Date.now() + 60_000).toISOString());
+  const deviceSession = await app.store.createSession(user.id, "device", new Date(Date.now() + 60_000).toISOString(), "browser-1", "Chrome");
+
+  const unknownEmail = await jsonRequest(app.baseUrl, "/v1/auth/email-code/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: "missing@example.com", purpose: "reset_password" })
+  });
+  assert.equal(unknownEmail.response.status, 200);
+  assert.equal(deliveries.length, 0);
+
+  const sent = await jsonRequest(app.baseUrl, "/v1/auth/email-code/send", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: user.email, purpose: "reset_password" })
+  });
+  assert.equal(sent.response.status, 200);
+  assert.equal(deliveries.length, 1);
+
+  const reset = await jsonRequest(app.baseUrl, "/v1/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: user.email, password: "new-password-2026", code: deliveries[0].code })
+  });
+  assert.equal(reset.response.status, 200);
+  assert.equal(reset.payload.data.passwordReset, true);
+
+  const reusedCode = await jsonRequest(app.baseUrl, "/v1/auth/reset-password", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: user.email, password: "another-password-2026", code: deliveries[0].code })
+  });
+  assert.equal(reusedCode.response.status, 400);
+  assert.equal(reusedCode.payload.error.code, "INVALID_PASSWORD_RESET");
+
+  for (const token of [webSession.accessToken, deviceSession.accessToken]) {
+    const session = await jsonRequest(app.baseUrl, "/v1/session", { headers: { Authorization: `Bearer ${token}` } });
+    assert.equal(session.response.status, 401);
+  }
+
+  const oldLogin = await jsonRequest(app.baseUrl, "/v1/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: user.email, password: "old-password-2026" })
+  });
+  assert.equal(oldLogin.response.status, 401);
+
+  const newLogin = await jsonRequest(app.baseUrl, "/v1/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email: user.email, password: "new-password-2026" })
+  });
+  assert.equal(newLogin.response.status, 200);
+});
+
 test("a failed verification email delivery does not leave the address rate-limited", async (t) => {
   let deliveryAttempts = 0;
   const app = await startTestServer(

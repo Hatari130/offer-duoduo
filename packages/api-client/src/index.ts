@@ -39,6 +39,7 @@ import type {
   ResumeVersionResponse,
   ResumeVersionListResponse,
   RegisterRequest,
+  ResetPasswordRequest,
   RetryMessageRequest,
   SendEmailVerificationCodeRequest,
   SendMessageRequest,
@@ -191,6 +192,11 @@ export function createApiClient(options: ApiClientOptions) {
       }),
     register: (body: RegisterRequest) =>
       request<AuthSession>("/v1/auth/register", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
+    resetPassword: (body: ResetPasswordRequest) =>
+      request<{ passwordReset: true }>("/v1/auth/reset-password", {
         method: "POST",
         body: JSON.stringify(body)
       }),

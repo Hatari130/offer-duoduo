@@ -494,6 +494,45 @@ export class PostgresStore implements OfferFlowStore {
     return userFromRow(row);
   }
 
+  async findUserByEmail(email: string): Promise<SessionUser | undefined> {
+    const result = await this.pool.query(
+      "SELECT id, email, display_name, avatar_key, created_at FROM users WHERE email = $1 AND deleted_at IS NULL",
+      [normalizeEmail(email)]
+    );
+    return result.rows[0] ? userFromRow(result.rows[0]) : undefined;
+  }
+
+  async resetPasswordAndRevokeSessions(userId: string, password: string): Promise<boolean> {
+    const passwordValue = hashPassword(password);
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      const updated = await client.query(
+        `UPDATE auth_credentials
+         SET password_hash = $2, password_salt = $3
+         WHERE user_id = $1
+         RETURNING user_id`,
+        [userId, passwordValue.hash, passwordValue.salt]
+      );
+      if (!updated.rowCount) {
+        await client.query("ROLLBACK");
+        return false;
+      }
+      await client.query(
+        "UPDATE auth_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL",
+        [userId]
+      );
+      await client.query("INSERT INTO audit_logs (user_id, action) VALUES ($1, 'password_reset')", [userId]);
+      await client.query("COMMIT");
+      return true;
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
   async getUser(userId: string): Promise<SessionUser | undefined> {
     const result = await this.pool.query(
       "SELECT id, email, display_name, avatar_key, created_at FROM users WHERE id = $1 AND deleted_at IS NULL",

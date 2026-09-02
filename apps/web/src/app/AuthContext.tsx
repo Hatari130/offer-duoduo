@@ -7,7 +7,7 @@ import {
   useState,
   type PropsWithChildren
 } from "react";
-import type { AuthCapabilities, AvatarKey, LoginRequest, RegisterRequest, SessionUser } from "@offerflow/contracts";
+import type { AuthCapabilities, AvatarKey, LoginRequest, RegisterRequest, ResetPasswordRequest, SessionUser } from "@offerflow/contracts";
 import { api } from "./api";
 
 type AuthStatus = "loading" | "authenticated" | "guest" | "anonymous";
@@ -22,6 +22,8 @@ interface AuthContextValue {
   register: (request: RegisterRequest) => Promise<void>;
   sendRegistrationEmailCode: (email: string) => Promise<{ retryAfterSeconds: number }>;
   verifyRegistrationEmailCode: (email: string, code: string) => Promise<{ verificationToken: string }>;
+  sendPasswordResetEmailCode: (email: string) => Promise<{ retryAfterSeconds: number }>;
+  resetPassword: (request: ResetPasswordRequest) => Promise<void>;
   saveCompanion: (avatarKey: AvatarKey) => Promise<void>;
   dismissCompanionOnboarding: () => void;
   enterDemo: () => Promise<void>;
@@ -156,6 +158,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
       },
       sendRegistrationEmailCode: (email) => api.auth.sendEmailCode({ email, purpose: "register" }),
       verifyRegistrationEmailCode: (email, code) => api.auth.verifyEmailCode({ email, purpose: "register", code }),
+      sendPasswordResetEmailCode: (email) => api.auth.sendEmailCode({ email, purpose: "reset_password" }),
+      resetPassword: async (request) => { await api.auth.resetPassword(request); },
       saveCompanion,
       dismissCompanionOnboarding,
       enterDemo: async () => establishSession(await createGuestSessionOnce(), "guest"),

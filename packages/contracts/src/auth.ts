@@ -43,6 +43,12 @@ export interface RegisterRequest extends LoginRequest {
   emailVerificationToken?: string;
 }
 
+export interface ResetPasswordRequest {
+  email: string;
+  password: string;
+  code: string;
+}
+
 export interface UpdateAccountAvatarRequest {
   avatarKey: AvatarKey;
 }
@@ -121,6 +127,15 @@ export function isRegisterRequest(value: unknown): value is RegisterRequest {
       (value as Record<string, unknown>).emailVerificationToken === undefined
       || typeof (value as Record<string, unknown>).emailVerificationToken === "string"
     )
+  );
+}
+
+export function isResetPasswordRequest(value: unknown): value is ResetPasswordRequest {
+  return (
+    isRecord(value)
+    && typeof value.email === "string"
+    && typeof value.password === "string"
+    && typeof value.code === "string"
   );
 }
 
