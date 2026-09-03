@@ -11,6 +11,7 @@ import type {
   ApplicationSyncResponse,
   AvatarKey,
   CreateTailorTaskRequest,
+  ResumeTemplateRecord,
   ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
@@ -106,6 +107,11 @@ interface StoredInterviewRecord {
   record: InterviewRecord;
 }
 
+interface StoredResumeTemplate {
+  userId: string;
+  template: ResumeTemplateRecord;
+}
+
 interface StoredProductFeedback extends ProductFeedbackInput {
   id: string;
   status: "new" | "reviewing" | "planned" | "resolved" | "closed";
@@ -129,6 +135,7 @@ interface PersistedStoreState {
   messages: Record<string, ChatMessage[]>;
   applications: StoredApplication[];
   resumeVersions?: StoredResumeVersion[];
+  resumeTemplates?: StoredResumeTemplate[];
   tailorTasks?: StoredTailorTask[];
   interviewRecords?: StoredInterviewRecord[];
   productFeedback?: StoredProductFeedback[];
@@ -188,6 +195,7 @@ export class MemoryStore implements OfferFlowStore {
   private readonly messages = new Map<string, ChatMessage[]>();
   private readonly applications = new Map<string, StoredApplication>();
   private readonly resumeVersions = new Map<string, StoredResumeVersion>();
+  private readonly resumeTemplates = new Map<string, StoredResumeTemplate>();
   private readonly tailorTasks = new Map<string, StoredTailorTask>();
   private readonly interviewRecords = new Map<string, StoredInterviewRecord>();
   private readonly productFeedback: StoredProductFeedback[] = [];
@@ -237,6 +245,9 @@ export class MemoryStore implements OfferFlowStore {
       }
       for (const stored of parsed.resumeVersions ?? []) {
         this.resumeVersions.set(`${stored.userId}:${stored.item.version.id}`, stored);
+      }
+      for (const stored of parsed.resumeTemplates ?? []) {
+        this.resumeTemplates.set(`${stored.userId}:${stored.template.id}`, stored);
       }
       for (const stored of parsed.tailorTasks ?? []) {
         this.tailorTasks.set(`${stored.userId}:${stored.task.id}`, stored);
@@ -289,6 +300,7 @@ export class MemoryStore implements OfferFlowStore {
       messages: Object.fromEntries(this.messages),
       applications: [...this.applications.values()],
       resumeVersions: [...this.resumeVersions.values()],
+      resumeTemplates: [...this.resumeTemplates.values()],
       tailorTasks: [...this.tailorTasks.values()],
       interviewRecords: [...this.interviewRecords.values()],
       productFeedback: this.productFeedback,
@@ -1253,6 +1265,24 @@ export class MemoryStore implements OfferFlowStore {
       .sort((left, right) => right.version.updatedAt.localeCompare(left.version.updatedAt));
   }
 
+  listResumeTemplates(userId: string): ResumeTemplateRecord[] {
+    return [...this.resumeTemplates.values()]
+      .filter((stored) => stored.userId === userId)
+      .map((stored) => clone(stored.template))
+      .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
+  }
+
+  syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): ResumeTemplateRecord[] {
+    for (const template of templates) {
+      this.resumeTemplates.set(`${userId}:${template.id}`, {
+        userId,
+        template: clone(template)
+      });
+    }
+    this.persist();
+    return this.listResumeTemplates(userId);
+  }
+
   updateResumeVersion(
     userId: string,
     versionId: string,
@@ -1287,6 +1317,18 @@ export class MemoryStore implements OfferFlowStore {
     this.resumeVersions.set(key, { userId, item: clone(item) });
     this.persist();
     return clone(item);
+  }
+
+  deleteResumeVersion(userId: string, versionId: string, expectedRevision: number): void {
+    const key = `${userId}:${versionId}`;
+    const stored = this.resumeVersions.get(key);
+    if (!stored) throw new MemoryStoreError("RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本", 404);
+    if (stored.item.revision !== expectedRevision) {
+      throw new MemoryStoreError("REVISION_CONFLICT", "这份简历已在其他页面更新，请刷新后重试", 409);
+    }
+    this.resumeVersions.delete(key);
+    this.tailorTasks.delete(`${userId}:${stored.item.version.tailorTaskId}`);
+    this.persist();
   }
 
   createHandoffCode(userId: string, targetPath: string): { code: string; expiresAt: string } {

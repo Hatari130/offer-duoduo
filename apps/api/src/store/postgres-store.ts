@@ -10,6 +10,7 @@ import type {
   ApplicationSyncResponse,
   AvatarKey,
   CreateTailorTaskRequest,
+  ResumeTemplateRecord,
   ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
@@ -1038,6 +1039,37 @@ export class PostgresStore implements OfferFlowStore {
     return result.rows.map((row) => row.payload);
   }
 
+  async listResumeTemplates(userId: string): Promise<ResumeTemplateRecord[]> {
+    const result = await this.pool.query(
+      "SELECT payload FROM resume_templates WHERE user_id=$1 ORDER BY updated_at DESC",
+      [userId]
+    );
+    return result.rows.map((row) => row.payload as ResumeTemplateRecord);
+  }
+
+  async syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): Promise<ResumeTemplateRecord[]> {
+    if (!templates.length) return this.listResumeTemplates(userId);
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      for (const template of templates) {
+        await client.query(
+          `INSERT INTO resume_templates (id,user_id,payload,created_at,updated_at)
+           VALUES ($1,$2,$3::jsonb,$4,$5)
+           ON CONFLICT (id,user_id) DO UPDATE SET payload=EXCLUDED.payload, updated_at=EXCLUDED.updated_at`,
+          [template.id, userId, json(template), template.createdAt, template.updatedAt]
+        );
+      }
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
+    return this.listResumeTemplates(userId);
+  }
+
   async updateResumeVersion(userId: string, versionId: string, document: ResumeDocument, expectedRevision: number): Promise<ResumeVersionRecord> {
     const current = await this.getResumeVersion(userId, versionId);
     if (!current) throw new StoreError("RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本", 404);
@@ -1048,5 +1080,27 @@ export class PostgresStore implements OfferFlowStore {
     const result = await this.pool.query("UPDATE resume_versions SET revision=$3,payload=$4::jsonb,updated_at=$5 WHERE id=$1 AND user_id=$2 AND revision=$6", [versionId,userId,item.revision,json(item),now,expectedRevision]);
     if (!result.rowCount) throw new StoreError("REVISION_CONFLICT", "这份简历已在其他页面更新，请刷新后重试", 409);
     return item;
+  }
+
+  async deleteResumeVersion(userId: string, versionId: string, expectedRevision: number): Promise<void> {
+    const current = await this.getResumeVersion(userId, versionId);
+    if (!current) throw new StoreError("RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本", 404);
+    if (current.revision !== expectedRevision) throw new StoreError("REVISION_CONFLICT", "这份简历已在其他页面更新，请刷新后重试", 409);
+    const client = await this.pool.connect();
+    try {
+      await client.query("BEGIN");
+      const result = await client.query(
+        "DELETE FROM resume_versions WHERE id=$1 AND user_id=$2 AND revision=$3",
+        [versionId, userId, expectedRevision]
+      );
+      if (!result.rowCount) throw new StoreError("REVISION_CONFLICT", "这份简历已在其他页面更新，请刷新后重试", 409);
+      await client.query("DELETE FROM tailor_tasks WHERE id=$1 AND user_id=$2", [current.version.tailorTaskId, userId]);
+      await client.query("COMMIT");
+    } catch (error) {
+      await client.query("ROLLBACK");
+      throw error;
+    } finally {
+      client.release();
+    }
   }
 }

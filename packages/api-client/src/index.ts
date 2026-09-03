@@ -38,6 +38,8 @@ import type {
   ProfileResponse,
   ResumeVersionResponse,
   ResumeVersionListResponse,
+  ResumeTemplateListResponse,
+  SyncResumeTemplatesRequest,
   RegisterRequest,
   ResetPasswordRequest,
   RetryMessageRequest,
@@ -317,6 +319,12 @@ export function createApiClient(options: ApiClientOptions) {
   };
 
   const resumes = {
+    listTemplates: () => request<ResumeTemplateListResponse>("/v1/resume-templates"),
+    syncTemplates: (body: SyncResumeTemplatesRequest) =>
+      request<ResumeTemplateListResponse>("/v1/resume-templates/sync", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
     listVersions: () => request<ResumeVersionListResponse>("/v1/resume-versions"),
     createTailorTask: (body: CreateTailorTaskRequest) =>
       request<CreateTailorTaskResponse>("/v1/tailor-tasks", {
@@ -340,6 +348,11 @@ export function createApiClient(options: ApiClientOptions) {
       request<ResumeVersionResponse>(
         `/v1/resume-versions/${encodeURIComponent(versionId)}`,
         { method: "PATCH", body: JSON.stringify(body) }
+      ),
+    removeVersion: (versionId: string, expectedRevision: number) =>
+      request<{ deleted: true }>(
+        `/v1/resume-versions/${encodeURIComponent(versionId)}?expectedRevision=${expectedRevision}`,
+        { method: "DELETE" }
       )
   };
 

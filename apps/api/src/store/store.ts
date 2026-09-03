@@ -6,6 +6,7 @@ import type {
   ApplicationSyncResponse,
   AvatarKey,
   CreateTailorTaskRequest,
+  ResumeTemplateRecord,
   ResumeVersionRecord,
   SessionUser
 } from "@offerflow/contracts";
@@ -205,10 +206,13 @@ export interface OfferFlowStore {
   ): Awaitable<{ task: TailorTask; version: ResumeVersionRecord } | undefined>;
   getResumeVersion(userId: string, versionId: string): Awaitable<ResumeVersionRecord | undefined>;
   listResumeVersions(userId: string): Awaitable<ResumeVersionRecord[]>;
+  listResumeTemplates(userId: string): Awaitable<ResumeTemplateRecord[]>;
+  syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): Awaitable<ResumeTemplateRecord[]>;
   updateResumeVersion(
     userId: string,
     versionId: string,
     document: ResumeDocument,
     expectedRevision: number
   ): Awaitable<ResumeVersionRecord>;
+  deleteResumeVersion(userId: string, versionId: string, expectedRevision: number): Awaitable<void>;
 }

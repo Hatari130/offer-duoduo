@@ -1513,6 +1513,22 @@
 .resume-library-skeleton__line { width: 78%; height: 0.85rem; }
 .resume-library-skeleton__line--short { width: 46%; height: 0.68rem; }
 .resume-source-groups { display: grid; gap: 1.1rem; }
+.resume-library-sections { display: grid; gap: 1.1rem; }
+.resume-template-section,
+.resume-tailored-section { padding: 1.15rem; background: var(--of-surface); border: 1px solid var(--of-line-structural, var(--of-line)); border-radius: 1.1rem; }
+.resume-section-heading { display: flex; align-items: center; gap: 0.7rem; margin-block-end: 0.9rem; }
+.resume-section-heading > span { display: grid; width: 2.35rem; height: 2.35rem; flex: 0 0 auto; place-items: center; color: var(--of-brand-700); background: var(--of-brand-50); border-radius: 0.75rem; }
+.resume-section-heading strong,
+.resume-section-heading small { display: block; }
+.resume-section-heading strong { color: var(--of-text-strong); font-size: 0.86rem; }
+.resume-section-heading small { margin-block-start: 0.12rem; color: var(--of-text-muted); font-size: 0.75rem; }
+.resume-template-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 0.75rem; }
+.resume-template-card { display: grid; min-width: 0; min-height: 8.75rem; align-content: start; gap: 0.32rem; padding: 0.9rem; background: linear-gradient(135deg, var(--of-brand-50), var(--of-surface-muted) 72%); border: 1px solid var(--of-brand-100); border-radius: 0.85rem; }
+.resume-template-card__tag { display: inline-flex; width: fit-content; padding: 0.22rem 0.42rem; color: var(--of-brand-700); background: var(--of-surface); border: 1px solid var(--of-brand-200); border-radius: 99px; font-size: 0.7rem; font-weight: 700; }
+.resume-template-card > strong { margin-block-start: 0.3rem; overflow: hidden; color: var(--of-text-strong); font-size: 0.86rem; text-overflow: ellipsis; white-space: nowrap; }
+.resume-template-card > span:not(.resume-template-card__tag) { color: var(--of-text-muted); font-size: 0.75rem; }
+.resume-template-card > small { display: inline-flex; align-items: center; gap: 0.3rem; margin-block-start: auto; color: var(--of-text-subtle); font-size: 0.72rem; }
+.resume-section-empty { padding: 1rem; margin: 0; color: var(--of-text-muted); background: var(--of-surface-muted); border: 1px dashed var(--of-line); border-radius: 0.8rem; font-size: 0.78rem; }
 .resume-source-group { padding: 1.15rem; background: var(--of-surface); border: 1px solid var(--of-line-structural, var(--of-line)); border-radius: 1.1rem; }
 .resume-source-group > header { display: flex; align-items: center; gap: 0.7rem; margin-block-end: 0.9rem; }
 .resume-source-group > header > span { display: grid; width: 2.35rem; height: 2.35rem; place-items: center; color: var(--of-brand-700); background: var(--of-brand-50); border-radius: 0.75rem; }
@@ -1521,11 +1537,16 @@
 .resume-source-group > header strong { color: var(--of-text-strong); font-size: 0.86rem; }
 .resume-source-group > header small { margin-block-start: 0.12rem; color: var(--of-text-muted); font-size: 0.75rem; }
 .resume-version-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 15rem), 1fr)); gap: 0.75rem; }
-.resume-version-card { display: grid; min-width: 0; min-height: 9rem; align-content: start; gap: 0.3rem; padding: 0.9rem; text-align: start; background: var(--of-surface-muted); border: 1px solid transparent; border-radius: 0.85rem; }
+.resume-version-card { position: relative; min-width: 0; min-height: 9rem; background: var(--of-surface-muted); border: 1px solid transparent; border-radius: 0.85rem; }
 .resume-version-card:hover { background: var(--of-surface-raised); border-color: var(--of-brand-200); }
-.resume-version-card > strong { margin-block-start: 0.45rem; overflow: hidden; color: var(--of-text-strong); font-size: 0.84rem; text-overflow: ellipsis; white-space: nowrap; }
-.resume-version-card > span:not(.resume-version-status) { color: var(--of-text-muted); font-size: 0.75rem; }
-.resume-version-card > small { display: inline-flex; align-items: center; gap: 0.3rem; margin-block-start: auto; color: var(--of-text-subtle); font-size: 0.75rem; }
+.resume-version-card__open { display: grid; width: 100%; min-height: 9rem; align-content: start; gap: 0.3rem; padding: 0.9rem; padding-inline-end: 3rem; text-align: start; color: inherit; border-radius: inherit; }
+.resume-version-card__open > strong { margin-block-start: 0.45rem; overflow: hidden; color: var(--of-text-strong); font-size: 0.84rem; text-overflow: ellipsis; white-space: nowrap; }
+.resume-version-card__open > span:not(.resume-version-status) { color: var(--of-text-muted); font-size: 0.75rem; }
+.resume-version-card__open > small { display: inline-flex; align-items: center; gap: 0.3rem; margin-block-start: auto; color: var(--of-text-subtle); font-size: 0.75rem; }
+.resume-version-card__delete { position: absolute; inset-block-start: 0.5rem; inset-inline-end: 0.5rem; display: grid; width: 2.25rem; height: 2.25rem; place-items: center; color: var(--of-text-subtle); border-radius: 0.6rem; }
+.resume-version-card__delete:hover { color: var(--of-danger); background: var(--of-danger-soft); }
+.resume-version-card__open:focus-visible,
+.resume-version-card__delete:focus-visible { outline: 2px solid var(--of-brand-500); outline-offset: 2px; }
 .resume-version-status { display: inline-flex; width: fit-content; align-items: center; gap: 0.3rem; padding: 0.25rem 0.45rem; color: var(--of-brand-700); background: var(--of-brand-50); border-radius: 99px; font-size: 0.75rem; font-weight: 680; }
 .resume-library-empty { position: relative; isolation: isolate; display: grid; min-height: 24rem; place-content: center; justify-items: center; gap: 0.75rem; padding: 2rem; overflow: hidden; text-align: center; background: var(--of-surface); border: 1px solid var(--of-line-structural, var(--of-line)); border-radius: 1.1rem; }
 .resume-library-empty > span { display: grid; width: 3.5rem; height: 3.5rem; place-items: center; color: var(--of-brand-700); background: var(--of-brand-50); border-radius: 1rem; }

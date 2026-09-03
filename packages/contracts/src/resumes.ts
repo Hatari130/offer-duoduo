@@ -20,6 +20,25 @@ export interface ResumeVersionListResponse {
   versions: ResumeVersionRecord[];
 }
 
+/** A reusable source resume mirrored from the browser extension.  It contains
+ * structured content only: original files stay on the user's device. */
+export interface ResumeTemplateRecord {
+  id: string;
+  name: string;
+  sourceFileName?: string;
+  profile: PersonalProfile;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ResumeTemplateListResponse {
+  templates: ResumeTemplateRecord[];
+}
+
+export interface SyncResumeTemplatesRequest {
+  templates: ResumeTemplateRecord[];
+}
+
 export interface CreateTailorTaskRequest {
   sourceResumeId: string;
   sourceResumeName: string;
@@ -98,6 +117,19 @@ export function isUpdateResumeVersionRequest(value: unknown): value is UpdateRes
     isRecord(value.document.profile) &&
     isRecord(value.document.template)
   );
+}
+
+export function isSyncResumeTemplatesRequest(value: unknown): value is SyncResumeTemplatesRequest {
+  return isRecord(value)
+    && Array.isArray(value.templates)
+    && value.templates.length <= 50
+    && value.templates.every((template) => isRecord(template)
+      && typeof template.id === "string"
+      && typeof template.name === "string"
+      && isRecord(template.profile)
+      && typeof template.createdAt === "string"
+      && typeof template.updatedAt === "string"
+      && (template.sourceFileName === undefined || typeof template.sourceFileName === "string"));
 }
 
 export function isExchangeHandoffRequest(value: unknown): value is ExchangeHandoffRequest {

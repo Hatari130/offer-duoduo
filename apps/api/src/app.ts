@@ -41,7 +41,8 @@ import {
   isUpdateAccountAvatarRequest,
   normalizeMimeType,
   isUpdateConversationRequest,
-  isUpdateResumeVersionRequest
+  isUpdateResumeVersionRequest,
+  isSyncResumeTemplatesRequest
 } from "@offerflow/contracts";
 import type {
   ChatAttachment,
@@ -1203,6 +1204,18 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       }
 
       const resumeVersionMatch = path.match(/^\/v1\/resume-versions\/([^/]+)$/);
+      if (method === "GET" && path === "/v1/resume-templates") {
+        success(response, { templates: await store.listResumeTemplates(userId) });
+        return;
+      }
+      if (method === "POST" && path === "/v1/resume-templates/sync") {
+        const body = await readJson(request);
+        if (!isSyncResumeTemplatesRequest(body)) {
+          throw new HttpError(400, "INVALID_RESUME_TEMPLATES", "简历模板内容不完整");
+        }
+        success(response, { templates: await store.syncResumeTemplates(userId, body.templates) });
+        return;
+      }
       if (method === "GET" && path === "/v1/resume-versions") {
         success(response, { versions: await store.listResumeVersions(userId) });
         return;
@@ -1223,6 +1236,37 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           success(response, {
             item: await store.updateResumeVersion(userId, versionId, body.document, body.expectedRevision)
           });
+          return;
+        }
+        if (method === "DELETE") {
+          const expectedRevision = Number(url.searchParams.get("expectedRevision"));
+          if (!Number.isInteger(expectedRevision) || expectedRevision < 1) {
+            throw new HttpError(400, "INVALID_RESUME_VERSION", "缺少有效的简历版本号");
+          }
+          const current = await store.getResumeVersion(userId, versionId);
+          if (!current) throw new HttpError(404, "RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本");
+          await store.deleteResumeVersion(userId, versionId, expectedRevision);
+          if (current.version.applicationId) {
+            const application = await store.getApplication(userId, current.version.applicationId);
+            if (application) {
+              const now = new Date().toISOString();
+              await store.updateApplication(userId, {
+                ...application.application,
+                tailorTaskId: undefined,
+                tailoredResumeVersionId: undefined,
+                tailoredResumeName: undefined,
+                tailoredResumeUpdatedAt: undefined,
+                updatedAt: now,
+                events: [...application.application.events, {
+                  id: crypto.randomUUID(),
+                  type: "updated",
+                  title: "已删除岗位定制简历",
+                  occurredAt: now
+                }]
+              }, application.revision);
+            }
+          }
+          success(response, { deleted: true as const });
           return;
         }
       }

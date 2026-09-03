@@ -5,7 +5,7 @@ import type {
   ApplicationSyncItem
 } from "@offerflow/contracts";
 import type { JobApplication } from "@offerflow/domain";
-import { loadJobs, saveJobs } from "@/infrastructure/storage/storage";
+import { loadJobs, loadResumeLibrary, saveJobs } from "@/infrastructure/storage/storage";
 import {
   clearCloudSyncStorage,
   clearCloudDataOwner,
@@ -289,6 +289,22 @@ function preserveLocalConflicts(
   }));
 }
 
+/** Mirrors reusable extension resumes without transferring the source PDF. */
+async function syncResumeTemplates(client: ReturnType<typeof createApiClient>): Promise<void> {
+  const library = await loadResumeLibrary();
+  const templates = library
+    .filter((resume) => (resume.kind || "base") === "base")
+    .map((resume) => ({
+      id: resume.id,
+      name: resume.name,
+      sourceFileName: resume.sourceFileName,
+      profile: resume.profile,
+      createdAt: resume.createdAt,
+      updatedAt: resume.updatedAt
+    }));
+  await client.resumes.syncTemplates({ templates });
+}
+
 async function performCloudSync(): Promise<CloudSyncOverview> {
   const connection = await loadConnectionWithFreshToken();
   if (!connection) return getCloudSyncOverview();
@@ -347,6 +363,7 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
         lastReceivedCount: response.changes.length
       })
     ]);
+    await syncResumeTemplates(client);
     return getCloudSyncOverview();
   } catch (error) {
     const message = cloudErrorMessage(error, "云端同步失败");
@@ -447,6 +464,7 @@ async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
         lastReceivedCount: receivedCount
       })
     ]);
+    await syncResumeTemplates(client);
     return getCloudSyncOverview();
   } catch (error) {
     const message = cloudErrorMessage(error, "云端同步失败");
