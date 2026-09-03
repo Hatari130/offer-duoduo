@@ -1,4 +1,4 @@
-import { useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent } from "react";
+import { useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
 import type { ChatAttachment } from "@offerflow/domain";
 import { ArrowUp, FileText, LoaderCircle, Paperclip, Square, X } from "lucide-react";
 import { createUuid } from "../../app/id";
@@ -9,6 +9,7 @@ interface ChatComposerProps {
   attachments: ChatAttachment[];
   streaming: boolean;
   autoFocus?: boolean;
+  contextSlot?: ReactNode;
   onChange: (value: string) => void;
   onAttachmentsChange: (attachments: ChatAttachment[]) => void;
   onAttachmentRequest?: () => boolean;
@@ -30,6 +31,7 @@ export function ChatComposer({
   attachments,
   streaming,
   autoFocus,
+  contextSlot,
   onChange,
   onAttachmentsChange,
   onAttachmentRequest,
@@ -100,6 +102,7 @@ export function ChatComposer({
 
   return (
     <div className="composer-shell">
+      {contextSlot && <div className="composer-context-strip">{contextSlot}</div>}
       {attachments.length > 0 && (
         <div className="composer-attachments" aria-label="待发送附件">
           {attachments.map((attachment) => (

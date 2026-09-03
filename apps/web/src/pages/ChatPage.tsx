@@ -213,9 +213,17 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       context: selectedContext,
       citations: []
     };
-    setMessages((current) => [...current, clientMessage]);
-    setDraft("");
-    setAttachments([]);
+    const appendMessage = () => {
+      setMessages((current) => [...current, clientMessage]);
+      setDraft("");
+      setAttachments([]);
+    };
+
+    if (isEmpty && typeof document !== "undefined" && "startViewTransition" in document) {
+      (document as unknown as { startViewTransition: (cb: () => void) => void }).startViewTransition(appendMessage);
+    } else {
+      appendMessage();
+    }
 
     try {
       let activeConversation = conversation;
@@ -359,17 +367,26 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       {isEmpty ? (
         <div className="chat-welcome">
           <div className="chat-atmosphere" aria-hidden="true">
-            <i /><i /><i /><i /><i /><i />
+            <div className="chat-atmosphere__mesh" />
+            <div className="chat-atmosphere__orb chat-atmosphere__orb--primary" />
+            <div className="chat-atmosphere__orb chat-atmosphere__orb--secondary" />
+          </div>
+          <div className="companion-hero-badge">
+            <CompanionAvatar showPresence decorative />
+            <span className="companion-hero-badge__label">
+              <span className="companion-hero-badge__dot" aria-hidden="true" />
+              <strong>{DEFAULT_CHAT_COMPANION.name}</strong> · {DEFAULT_CHAT_COMPANION.role}
+            </span>
           </div>
           <h1 tabIndex={-1}>今天，我们先推进哪一步？</h1>
           <p>
             找岗位、改简历、理思路，卡住时也可以先说说。{DEFAULT_CHAT_COMPANION.name}会陪你把下一步做小、做清楚。
           </p>
-          {contextPicker}
           <ChatComposer
             value={draft}
             attachments={attachments}
             streaming={streaming}
+            contextSlot={contextPicker}
             autoFocus
             onChange={setDraft}
             onAttachmentsChange={setAttachments}
@@ -390,19 +407,25 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
                 return (
                   <button
                     type="button"
-                    className="recommendation-card"
+                    className="recommendation-bento-card"
                     data-tone={card.tone}
                     key={card.prompt}
                     onClick={() => void send(card.prompt)}
                   >
-                    <span className="recommendation-visual" aria-hidden="true">
-                      <Icon size={22} />
-                      <i /><i />
-                    </span>
-                    <span className="recommendation-tag">{card.tag}</span>
-                    <strong>{card.title}</strong>
-                    <small>{card.description}</small>
-                    <span className="recommendation-action">一起开始 <ArrowRight aria-hidden="true" size={14} /></span>
+                    <div className="recommendation-bento-card__header">
+                      <span className="recommendation-bento-card__icon-badge" aria-hidden="true">
+                        <Icon size={18} strokeWidth={2.2} />
+                      </span>
+                      <span className="recommendation-bento-card__tag">{card.tag}</span>
+                    </div>
+                    <div className="recommendation-bento-card__body">
+                      <strong>{card.title}</strong>
+                      <p>{card.description}</p>
+                    </div>
+                    <div className="recommendation-bento-card__footer">
+                      <span>一起开始</span>
+                      <ArrowRight aria-hidden="true" size={13} className="recommendation-bento-card__arrow" />
+                    </div>
                   </button>
                 );
               })}
@@ -438,11 +461,11 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             />
           </div>
           <div className="thread-composer">
-            {contextPicker}
             <ChatComposer
               value={draft}
               attachments={attachments}
               streaming={streaming}
+              contextSlot={contextPicker}
               onChange={setDraft}
               onAttachmentsChange={setAttachments}
               onAttachmentRequest={requireChatLogin}
