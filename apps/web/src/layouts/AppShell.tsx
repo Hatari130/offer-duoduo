@@ -603,17 +603,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
             <em>免费</em>
           </a>
 
-          {!isVisitor && (
-            <AppLink
-              href="/app/settings"
-              className="sidebar-footer-icon"
-              onNavigate={closeMobile}
-            >
-              <MonitorSmartphone aria-hidden="true" size={17} />
-              <span className="sr-only">打开设备同步设置</span>
-            </AppLink>
-          )}
-
           <div className={`sidebar-account-row${isVisitor ? " is-guest" : ""}`}>
             {isVisitor ? (
               <div
@@ -718,7 +707,18 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               </div>
             )}
 
+            {!isVisitor && (
+              <AppLink
+                href="/app/settings"
+                className="sidebar-footer-icon"
+                onNavigate={closeMobile}
+              >
+                <MonitorSmartphone aria-hidden="true" size={17} />
+                <span className="sr-only">打开设备同步设置</span>
+              </AppLink>
+            )}
           </div>
+
         </div>
       </aside>
 

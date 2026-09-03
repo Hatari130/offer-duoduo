@@ -992,8 +992,6 @@
 
   .app-frame.is-sidebar-collapsed .extension-entry-button { order: 1; min-height: 2.75rem; background: transparent; border-color: transparent; box-shadow: none; }
 
-  .app-frame.is-sidebar-collapsed .sidebar-footer > .sidebar-footer-icon { order: 2; }
-
   .app-frame.is-sidebar-collapsed .sidebar-account-row { order: 3; }
 
   .app-frame.is-sidebar-collapsed .sidebar-account-row {
@@ -1005,6 +1003,13 @@
   .app-frame.is-sidebar-collapsed .sidebar-account-row.is-guest {
     grid-template-columns: 1fr;
   }
+
+  .app-frame.is-sidebar-collapsed .sidebar-account-row .sidebar-footer-icon {
+    order: 1;
+    margin-inline: auto;
+  }
+
+  .app-frame.is-sidebar-collapsed .sidebar-account-row .account-menu { order: 2; }
 
   .app-frame.is-sidebar-collapsed .account-trigger {
     grid-template-columns: 2.4rem 0 0;
