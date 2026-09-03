@@ -919,8 +919,7 @@
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
-    transform: scale(0.25);
-    filter: blur(4px);
+    transform: scale(0.9);
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-compact-toggle {
@@ -928,7 +927,6 @@
     opacity: 1;
     pointer-events: auto;
     transform: translate(-50%, -50%) scale(1);
-    filter: blur(0);
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-item-label,
@@ -940,7 +938,8 @@
   .app-frame.is-sidebar-collapsed .account-trigger > svg {
     max-width: 0;
     opacity: 0;
-    transform: translateX(-0.5rem);
+    transform: translateX(-6px);
+    pointer-events: none;
   }
 
   .app-frame.is-sidebar-collapsed .new-chat-button,
@@ -962,20 +961,6 @@
     padding-inline: 0;
   }
 
-  .app-frame.is-sidebar-collapsed .new-chat-button {
-    width: 2.75rem;
-    margin-inline: auto;
-  }
-
-  .app-frame.is-sidebar-collapsed .nav-link {
-    width: 2.75rem;
-    margin-inline: auto;
-  }
-
-  .app-frame.is-sidebar-collapsed .primary-nav::before {
-    inset-inline-start: -0.875rem;
-  }
-
   .app-frame.is-sidebar-collapsed .recent-threads {
     max-height: 0;
     margin-block-start: 0;
@@ -984,29 +969,24 @@
     opacity: 0;
     visibility: hidden;
     pointer-events: none;
-    transform: translateX(-0.5rem);
+    transform: translateY(-6px);
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-footer {
     justify-items: center;
   }
 
-  .app-frame.is-sidebar-collapsed .extension-entry-button {
-    width: 2.75rem;
-  }
-
   .app-frame.is-sidebar-collapsed .sidebar-account-row {
-    grid-template-columns: 2.75rem;
+    grid-template-columns: 1fr;
     justify-content: center;
     gap: 0.35rem;
   }
 
   .app-frame.is-sidebar-collapsed .sidebar-account-row.is-guest {
-    grid-template-columns: 2.75rem;
+    grid-template-columns: 1fr;
   }
 
   .app-frame.is-sidebar-collapsed .account-trigger {
-    width: 2.75rem;
     grid-template-columns: 2.4rem 0 0;
     justify-content: center;
     padding-inline: 0.175rem;
@@ -1211,25 +1191,41 @@
 
 @media (min-width: 60.001rem) and (prefers-reduced-motion: no-preference) {
   .app-frame {
-    transition: grid-template-columns 320ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: grid-template-columns 240ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .app-frame.is-sidebar-collapsed {
-    transition: grid-template-columns 260ms cubic-bezier(0.4, 0, 0.2, 1);
+    transition: grid-template-columns 240ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .app-sidebar {
-    transition: padding-inline 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition: padding 240ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
-  .sidebar-brand-link,
-  .sidebar-collapse-toggle,
-  .sidebar-compact-toggle {
-    transition-property: color, background-color, box-shadow, opacity, transform, filter;
-    transition-duration: 140ms;
-    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  .sidebar-brand-row {
+    transition: padding 240ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  .new-chat-button,
+  .nav-link,
+  .extension-entry-button {
+    transition:
+      padding 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      gap 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 140ms ease,
+      border-color 140ms ease,
+      color 140ms ease;
+  }
+
+  .account-trigger {
+    transition:
+      grid-template-columns 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      padding 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      gap 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      background-color 140ms ease;
+  }
+
+  /* When expanding: text fades in with a gentle staggered delay so sidebar has room */
   .sidebar-item-label,
   .sidebar-shortcut,
   .nav-link > em,
@@ -1238,11 +1234,12 @@
   .account-trigger > span:nth-child(2),
   .account-trigger > svg {
     transition:
-      opacity 240ms cubic-bezier(0.22, 1, 0.36, 1) 80ms,
-      transform 240ms cubic-bezier(0.22, 1, 0.36, 1) 80ms,
-      max-width 240ms cubic-bezier(0.22, 1, 0.36, 1) 80ms;
+      opacity 180ms ease 60ms,
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1) 60ms,
+      max-width 240ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
+  /* When collapsing: text fades out quickly (90ms) before the sidebar finishes collapsing */
   .app-frame.is-sidebar-collapsed .sidebar-item-label,
   .app-frame.is-sidebar-collapsed .sidebar-shortcut,
   .app-frame.is-sidebar-collapsed .nav-link > em,
@@ -1251,19 +1248,47 @@
   .app-frame.is-sidebar-collapsed .account-trigger > span:nth-child(2),
   .app-frame.is-sidebar-collapsed .account-trigger > svg {
     transition:
-      opacity 160ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-      transform 160ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,
-      max-width 160ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+      opacity 90ms ease 0ms,
+      transform 140ms ease 0ms,
+      max-width 240ms cubic-bezier(0.16, 1, 0.3, 1) 0ms;
   }
 
   .recent-threads {
     transition:
-      max-height 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      margin-block-start 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      padding-inline 260ms cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 180ms cubic-bezier(0.22, 1, 0.36, 1) 60ms,
-      transform 180ms cubic-bezier(0.22, 1, 0.36, 1) 60ms,
-      visibility 0s linear 240ms;
+      opacity 120ms ease,
+      transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      max-height 240ms cubic-bezier(0.16, 1, 0.3, 1),
+      margin-block-start 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .sidebar-brand-link,
+  .sidebar-collapse-toggle {
+    transition:
+      opacity 140ms ease,
+      transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 140ms;
+  }
+
+  .app-frame.is-sidebar-collapsed .sidebar-brand-link,
+  .app-frame.is-sidebar-collapsed .sidebar-collapse-toggle {
+    transition:
+      opacity 100ms ease 0ms,
+      transform 140ms ease 0ms,
+      visibility 0s linear 100ms;
+  }
+
+  .sidebar-compact-toggle {
+    transition:
+      opacity 140ms ease,
+      transform 160ms cubic-bezier(0.16, 1, 0.3, 1),
+      visibility 0s linear 140ms;
+  }
+
+  .app-frame.is-sidebar-collapsed .sidebar-compact-toggle {
+    transition:
+      opacity 160ms ease 60ms,
+      transform 200ms cubic-bezier(0.16, 1, 0.3, 1) 60ms,
+      visibility 0s linear 0ms;
   }
 }
 
