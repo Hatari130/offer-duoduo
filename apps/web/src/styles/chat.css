@@ -447,6 +447,10 @@
     background-color 180ms ease;
 }
 
+/* The translucent composer creates a stacking context. Lift that whole context
+   while its material picker is open so later recommendation cards cannot cover it. */
+.composer-shell:has(.chat-context-popover) { z-index: 3; }
+
 .composer-shell:hover {
   background: rgb(255 255 255 / 0.94);
   border-color: color-mix(in oklch, var(--of-brand-400, #738de0) 65%, var(--of-line));
