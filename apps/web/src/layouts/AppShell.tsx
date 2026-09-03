@@ -718,9 +718,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               </AppLink>
             )}
 
-            <button className="sidebar-footer-icon" type="button" aria-label="打开共建反馈" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
-              <MessageCircleMore aria-hidden="true" size={18} />
-            </button>
           </div>
         </div>
       </aside>
