@@ -605,16 +605,55 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
 
           <div className={`sidebar-account-row${isVisitor ? " is-guest" : ""}`}>
             {isVisitor ? (
-              <button
-                type="button"
-                className="account-trigger account-trigger--guest"
-                title={sidebarCollapsed ? "登录" : undefined}
-                onClick={() => requestLogin("登录后即可同步对话、简历和投递记录。")}
+              <div
+                className={`account-menu${accountOpen ? " is-open" : ""}`}
+                ref={accountMenuRef}
+                onMouseEnter={() => setAccountOpen(true)}
+                onMouseLeave={() => setAccountOpen(false)}
+                onFocus={() => setAccountOpen(true)}
+                onBlur={(event) => closeWhenFocusLeaves(event, () => setAccountOpen(false))}
               >
-                <span className="account-avatar">访</span>
-                <span><strong>点击登录</strong><small>登录后同步</small></span>
-                <LogIn aria-hidden="true" size={15} />
-              </button>
+                <button
+                  type="button"
+                  className="account-trigger account-trigger--guest"
+                  title={sidebarCollapsed ? "登录" : undefined}
+                  onClick={() => requestLogin("登录后即可同步对话、简历和投递记录。")}
+                >
+                  <span className="account-avatar">访</span>
+                  <span><strong>点击登录</strong><small>登录后同步</small></span>
+                  <LogIn aria-hidden="true" size={15} />
+                </button>
+
+                <div className="account-popover" id="account-popover" aria-label="访客菜单">
+                  <header className="account-profile">
+                    <span className="account-avatar account-avatar--large">访</span>
+                    <span><strong>访客模式</strong><small>登录后数据云端同步</small></span>
+                  </header>
+
+                  <div className="account-popover-links">
+                    <button
+                      type="button"
+                      className="account-popover-login-btn"
+                      onClick={() => {
+                        setAccountOpen(false);
+                        requestLogin("登录后即可同步对话、简历和投递记录。");
+                      }}
+                    >
+                      <LogIn aria-hidden="true" size={16} />立即登录 / 注册
+                    </button>
+                    <AppLink href="/help" onNavigate={closeMobile}>
+                      <CircleHelp aria-hidden="true" size={16} />帮助中心与使用指南
+                    </AppLink>
+                    <button type="button" onClick={() => { setAccountOpen(false); setFeedbackOpen(true); }}>
+                      <MessageCircleMore aria-hidden="true" size={16} />提交反馈
+                    </button>
+                  </div>
+
+                  <footer className="account-popover-compliance">
+                    <SiteCompliance compact showFeedback={false} />
+                  </footer>
+                </div>
+              </div>
             ) : (
               <div
                 className={`account-menu${accountOpen ? " is-open" : ""}`}
@@ -660,6 +699,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                       <LogOut aria-hidden="true" size={16} />退出登录
                     </button>
                   </div>
+
+                  <footer className="account-popover-compliance">
+                    <SiteCompliance compact showFeedback={false} />
+                  </footer>
                 </div>
               </div>
             )}
@@ -679,8 +722,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               <MessageCircleMore aria-hidden="true" size={18} />
             </button>
           </div>
-
-          <SiteCompliance className="sidebar-site-compliance" compact showFeedback={false} />
         </div>
       </aside>
 
