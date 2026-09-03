@@ -247,52 +247,67 @@ export default function ResumeManagerApp() {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const [loadedLibrary, active, storedFixedProfile, globalProfile, libraryUi] = await Promise.all([
-        loadResumeLibrary(),
-        loadActiveResumeId(),
-        loadBaseProfile(),
-        loadProfile(),
-        loadResumeLibraryUi()
-      ]);
-      const seedProfile = hasResumeBasics(extractResumeBasics(globalProfile))
-        ? globalProfile
-        : loadedLibrary[0]?.profile || globalProfile;
-      const fixedProfile = storedFixedProfile?.fixedSectionsVersion === 1
-        ? storedFixedProfile
-        : extractResumeFixedProfile(seedProfile);
-      const library = loadedLibrary
-        .map(migrateLegacyResumeName)
-        .map((resume) => {
-          const inferred = inferArchiveMetadata(fileStem(resume.sourceFileName), resume.profile);
-          const normalizedProfile = {
-            ...resume.profile,
-            education: normalizeEducationEntries(resume.profile.education)
-          };
-          return {
-            ...resume,
-            company: resume.archiveNameSource === "manual" ? resume.company : resume.company || inferred.company,
-            position: resume.archiveNameSource === "manual" ? resume.position : resume.position || inferred.position,
-            archiveNameSource: resume.archiveNameSource || "filename",
-            profile: applyResumeFixedProfile(normalizedProfile, fixedProfile)
-          };
-        });
-      if (cancelled) return;
-      setResumeFixedProfile(fixedProfile);
-      setLibraryCollapsed(libraryUi.collapsed);
-      setLibraryPinned(libraryUi.pinned);
-      if (storedFixedProfile?.fixedSectionsVersion !== 1) await saveBaseProfile(fixedProfile);
-      if (library.some((resume, index) => resume !== loadedLibrary[index])) await saveResumeLibrary(library);
-      const currentId = resolveActiveResumeId(library, active);
-      const currentResume = library.find((resume) => resume.id === currentId);
-      await Promise.all([
-        currentId && active !== currentId ? setActiveResumeId(currentId) : Promise.resolve(),
-        currentResume ? saveProfile(currentResume.profile) : Promise.resolve(),
-        pruneOrphanedTailoredResumes(library.map((resume) => resume.id))
-      ]);
-      setResumes(library);
-      setActiveId(currentId);
-      setSelectedId(currentId);
-      setLoading(false);
+      try {
+        const [loadedLibrary, active, storedFixedProfile, globalProfile, libraryUi] = await Promise.all([
+          loadResumeLibrary(),
+          loadActiveResumeId(),
+          loadBaseProfile(),
+          loadProfile(),
+          loadResumeLibraryUi()
+        ]);
+        const seedProfile = hasResumeBasics(extractResumeBasics(globalProfile))
+          ? globalProfile
+          : loadedLibrary[0]?.profile || globalProfile;
+        const fixedProfile = storedFixedProfile?.fixedSectionsVersion === 1
+          ? storedFixedProfile
+          : extractResumeFixedProfile(seedProfile);
+        const library = loadedLibrary
+          .map(migrateLegacyResumeName)
+          .map((resume) => {
+            const inferred = inferArchiveMetadata(fileStem(resume.sourceFileName), resume.profile);
+            const normalizedProfile = {
+              ...resume.profile,
+              education: normalizeEducationEntries(resume.profile.education)
+            };
+            return {
+              ...resume,
+              company: resume.archiveNameSource === "manual" ? resume.company : resume.company || inferred.company,
+              position: resume.archiveNameSource === "manual" ? resume.position : resume.position || inferred.position,
+              archiveNameSource: resume.archiveNameSource || "filename",
+              profile: applyResumeFixedProfile(normalizedProfile, fixedProfile)
+            };
+          });
+        const libraryChanged = JSON.stringify(library) !== JSON.stringify(loadedLibrary);
+        const currentId = resolveActiveResumeId(library, active);
+        const currentResume = library.find((resume) => resume.id === currentId);
+        if (cancelled) return;
+
+        // Render first. Storage repair is best-effort and must never trap the
+        // user on the loading screen when the browser profile is temporarily full.
+        setResumeFixedProfile(fixedProfile);
+        setLibraryCollapsed(libraryUi.collapsed);
+        setLibraryPinned(libraryUi.pinned);
+        setResumes(library);
+        setActiveId(currentId);
+        setSelectedId(currentId);
+        setLoading(false);
+
+        try {
+          await Promise.all([
+            storedFixedProfile?.fixedSectionsVersion !== 1 ? saveBaseProfile(fixedProfile) : Promise.resolve(),
+            libraryChanged ? saveResumeLibrary(library) : Promise.resolve(),
+            currentId && active !== currentId ? setActiveResumeId(currentId) : Promise.resolve(),
+            currentResume && (libraryChanged || active !== currentId) ? saveProfile(currentResume.profile) : Promise.resolve(),
+            pruneOrphanedTailoredResumes(library.map((resume) => resume.id))
+          ]);
+        } catch {
+          if (!cancelled) notify("简历已打开，但浏览器本地空间不足，暂未保存自动整理结果。");
+        }
+      } catch {
+        if (cancelled) return;
+        setLoading(false);
+        notify("无法读取本地简历数据，请刷新后重试。");
+      }
     })();
     return () => {
       cancelled = true;

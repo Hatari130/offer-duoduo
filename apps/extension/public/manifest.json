@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "JobKoI",
   "description": "从招聘网页抓取岗位，并持续管理求职投递进度。",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "permissions": [
     "alarms",
     "identity",
