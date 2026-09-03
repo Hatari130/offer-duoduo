@@ -493,7 +493,6 @@ export function OpportunitiesPage() {
                 <col className="opportunity-col-type" />
                 <col className="opportunity-col-industry" />
                 <col className="opportunity-col-company-type" />
-                <col className="opportunity-col-status" />
                 <col className="opportunity-col-city" />
                 <col className="opportunity-col-open-at" />
                 <col className="opportunity-col-deadline" />
@@ -506,7 +505,6 @@ export function OpportunitiesPage() {
                   <th scope="col">招聘类型</th>
                   <th scope="col">行业</th>
                   <th scope="col">企业性质</th>
-                  <th scope="col">状态</th>
                   <th scope="col">城市</th>
                   <th scope="col">开放投递</th>
                   <th scope="col">截止时间</th>
@@ -516,7 +514,6 @@ export function OpportunitiesPage() {
               </thead>
               <tbody>
                 {visible.map((opportunity) => {
-                  const opportunityStatus = opportunity.status || "upcoming";
                   return (
                     <tr key={opportunity.id}>
                       <td className="opportunity-company-cell">
@@ -527,7 +524,6 @@ export function OpportunitiesPage() {
                       <td><span className="opportunity-type-badge" title={opportunity.batch || "未分类"}>{opportunity.batch || "未分类"}</span></td>
                       <td><span className="industry-cell" title={opportunity.industry || "未提供"}>{opportunity.industry || "未提供"}</span></td>
                       <td><span className="company-type-cell" title={opportunity.companyType || "未注明"}>{opportunity.companyType || "未注明"}</span></td>
-                      <td><span className={`status-badge status-badge--${opportunityStatus}`}>{statusLabels[opportunityStatus]}</span></td>
                       <td><span className="cell-icon"><MapPin aria-hidden="true" size={17} strokeWidth={1.7} /><span>{opportunity.cities.slice(0, 2).join("、") || "不限"}</span></span></td>
                       <td><span className="opportunity-open-at">{openAtLabel(opportunity.openAt)}</span></td>
                       <td><OpportunityDeadline opportunity={opportunity} /></td>
