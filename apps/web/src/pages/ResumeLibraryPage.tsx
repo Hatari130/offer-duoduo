@@ -47,18 +47,18 @@ export function ResumeLibraryPage() {
           <ChevronRight aria-hidden="true" size={13} /><span aria-current="page">简历档案</span>
         </nav>
         <h1 tabIndex={-1}>简历中心</h1>
-        <p>插件里的通用简历会同步到这里；每个岗位的定制版本独立保存、可追溯。</p>
+        <p>一份通用版本作为岗位定制的起点；每个岗位的定制简历独立保存、可追溯。</p>
       </div>
-      <div className="resume-library-metrics"><span><strong>{templates.length}</strong> 个插件模板</span><span><strong>{versions.length}</strong> 个岗位版本</span></div>
+      <div className="resume-library-metrics"><span><strong>{templates.length}</strong> 份通用版本</span><span><strong>{versions.length}</strong> 个岗位版本</span></div>
     </header>
 
     {error && <div className="data-error" role="alert">{error}</div>}
     {loading ? <div className="resume-library-skeleton" role="status"><span className="sr-only">正在同步简历版本…</span>{[0, 1].map((groupIndex) => <section className="resume-library-skeleton__group" key={groupIndex} aria-hidden="true"><header className="resume-library-skeleton__header"><span className="skel resume-library-skeleton__badge" /><div className="resume-library-skeleton__heading"><span className="skel resume-library-skeleton__title" /><span className="skel resume-library-skeleton__subtitle" /></div></header><div className="resume-library-skeleton__grid">{[0, 1, 2].map((cardIndex) => <div className="resume-library-skeleton__card" key={cardIndex}><span className="skel resume-library-skeleton__pill" /><span className="skel resume-library-skeleton__line" /><span className="skel resume-library-skeleton__line resume-library-skeleton__line--short" /></div>)}</div></section>)}</div>
-    : !versions.length && !templates.length ? <div className="resume-library-empty"><span><FileText size={28} /></span><h2>还没有同步到简历</h2><p>在插件中打开“简历管理”，点击同步后，通用模板会显示在这里；岗位定制版本也会集中保存。</p><button className="secondary-button" onClick={() => navigate("/app/applications")}>查看投递管理</button></div>
+    : !versions.length && !templates.length ? <div className="resume-library-empty"><span><FileText size={28} /></span><h2>还没有通用简历</h2><p>在插件中创建或导入一份通用版本并同步，它会成为后续岗位定制的基础。</p><button className="secondary-button" onClick={() => navigate("/app/applications")}>查看投递管理</button></div>
     : <div className="resume-library-sections">
       <section className="resume-template-section">
-        <header className="resume-section-heading"><span><FileText size={18} /></span><div><strong>插件简历模板</strong><small>来自已连接浏览器插件的通用简历；原始文件仍保存在你的设备中。</small></div></header>
-        {templates.length ? <div className="resume-template-grid">{templates.map((template) => <article className="resume-template-card" key={template.id}><span className="resume-template-card__tag">已同步</span><strong>{template.name}</strong><span>{template.profile.targetRole || "通用求职简历"}</span><small><Clock3 size={13} />{new Date(template.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} · 在插件中编辑</small></article>)}</div> : <p className="resume-section-empty">暂未收到插件模板。请在插件中完成登录后点击同步。</p>}
+        <header className="resume-section-heading"><span><FileText size={18} /></span><div><strong>通用版本</strong><small>用于创建岗位定制简历的基础版本；只同步简历内容，不需要上传 PDF 原件。</small></div></header>
+        {templates.length ? <div className="resume-template-grid">{templates.map((template) => <article className="resume-template-card" key={template.id}><span className="resume-template-card__tag">通用模板</span><strong>{template.name}</strong><span>{template.profile.targetRole || "可用于岗位定制"}</span><small><Clock3 size={13} />{new Date(template.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} · 从插件同步</small></article>)}</div> : <p className="resume-section-empty">还没有通用版本。请在插件中创建或导入简历后点击同步。</p>}
       </section>
       <section className="resume-tailored-section">
         <header className="resume-section-heading"><span><FileCheck2 size={18} /></span><div><strong>岗位定制简历</strong><small>每份定制简历独立对应一个岗位，删除不会影响插件中的通用模板。</small></div></header>
