@@ -953,6 +953,15 @@
     padding-inline: 0;
   }
 
+  /* Keep navigation glyphs on one physical center line; hidden labels must not
+     influence their position while the active indicator remains on the edge. */
+  .app-frame.is-sidebar-collapsed .nav-link > svg {
+    position: absolute;
+    inset-inline-start: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .app-frame.is-sidebar-collapsed .sidebar-shortcut,
   .app-frame.is-sidebar-collapsed .nav-link > em,
   .app-frame.is-sidebar-collapsed .extension-entry-button > em {
