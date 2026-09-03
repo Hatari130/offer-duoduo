@@ -9,7 +9,9 @@ export type { CampusHiringOpportunity } from "@offerflow/domain";
 export const CAMPUS_HIRING_FEED_URL =
   import.meta.env?.VITE_CAMPUS_HIRING_FEED_URL || DEFAULT_CAMPUS_HIRING_FEED_URL;
 
-const CAMPUS_HIRING_CACHE_KEY = "offerflow:campus-hiring-feed:v1";
+const CAMPUS_HIRING_CACHE_DB = "offerflow-public-data";
+const CAMPUS_HIRING_CACHE_STORE = "snapshots";
+const CAMPUS_HIRING_CACHE_KEY = "campus-hiring-feed:v1";
 
 export interface CampusHiringFeedSnapshot {
   opportunities: CampusHiringOpportunity[];
@@ -29,37 +31,57 @@ export function normalizeCampusHiringFeed(
   return normalizeSharedCampusHiringFeed(payload, sourceUrl);
 }
 
-/**
- * Public feed only: a successful snapshot is kept in this browser so list
- * pages can render immediately while their background refresh is in flight.
- */
-export function readCachedCampusHiringFeed(): CampusHiringFeedSnapshot | undefined {
-  if (typeof window === "undefined") return undefined;
+function openCampusHiringCache(): Promise<IDBDatabase | undefined> {
+  if (typeof window === "undefined" || !window.indexedDB) return Promise.resolve(undefined);
+  return new Promise((resolve) => {
+    const request = window.indexedDB.open(CAMPUS_HIRING_CACHE_DB, 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains(CAMPUS_HIRING_CACHE_STORE)) {
+        request.result.createObjectStore(CAMPUS_HIRING_CACHE_STORE);
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => resolve(undefined);
+  });
+}
+
+/** Public data only. IndexedDB avoids the small synchronous localStorage quota. */
+export async function readCachedCampusHiringFeed(): Promise<CampusHiringFeedSnapshot | undefined> {
+  const database = await openCampusHiringCache();
+  if (!database) return undefined;
   try {
-    const value = window.localStorage.getItem(CAMPUS_HIRING_CACHE_KEY);
-    if (!value) return undefined;
-    const cached = JSON.parse(value) as Partial<CachedCampusHiringFeed>;
-    if (cached.version !== 1 || !Array.isArray(cached.opportunities)) {
-      return undefined;
-    }
+    const cached = await new Promise<Partial<CachedCampusHiringFeed> | undefined>((resolve) => {
+      const request = database.transaction(CAMPUS_HIRING_CACHE_STORE, "readonly")
+        .objectStore(CAMPUS_HIRING_CACHE_STORE)
+        .get(CAMPUS_HIRING_CACHE_KEY);
+      request.onsuccess = () => resolve(request.result as Partial<CachedCampusHiringFeed> | undefined);
+      request.onerror = () => resolve(undefined);
+    });
+    if (cached?.version !== 1 || !Array.isArray(cached.opportunities)) return undefined;
     return {
       opportunities: cached.opportunities,
       fetchedAt: typeof cached.fetchedAt === "string" ? cached.fetchedAt : undefined,
       sourceUpdatedAt: typeof cached.sourceUpdatedAt === "string" ? cached.sourceUpdatedAt : undefined,
       sourceUrl: typeof cached.sourceUrl === "string" ? cached.sourceUrl : undefined
     };
-  } catch {
-    return undefined;
+  } finally {
+    database.close();
   }
 }
 
-export function cacheCampusHiringFeed(snapshot: CampusHiringFeedSnapshot): void {
-  if (typeof window === "undefined") return;
+export async function cacheCampusHiringFeed(snapshot: CampusHiringFeedSnapshot): Promise<void> {
+  const database = await openCampusHiringCache();
+  if (!database) return;
   try {
-    const cached: CachedCampusHiringFeed = { version: 1, ...snapshot };
-    window.localStorage.setItem(CAMPUS_HIRING_CACHE_KEY, JSON.stringify(cached));
-  } catch {
-    // Storage can be disabled or full; the live request still remains usable.
+    await new Promise<void>((resolve) => {
+      const request = database.transaction(CAMPUS_HIRING_CACHE_STORE, "readwrite")
+        .objectStore(CAMPUS_HIRING_CACHE_STORE)
+        .put({ version: 1, ...snapshot } satisfies CachedCampusHiringFeed, CAMPUS_HIRING_CACHE_KEY);
+      request.onsuccess = () => resolve();
+      request.onerror = () => resolve();
+    });
+  } finally {
+    database.close();
   }
 }
 

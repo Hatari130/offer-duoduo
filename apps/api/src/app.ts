@@ -69,7 +69,16 @@ import {
   createInterviewTranscriptionProvider,
   type InterviewTranscriptionProvider
 } from "./interviews/transcription.ts";
-import { KnowledgeService, type KnowledgeEntry } from "./knowledge/service.ts";
+import {
+  applicationKnowledgeEntry,
+  applicationOverviewEntry,
+  shouldUseApplicationContext
+} from "./knowledge/application-context.ts";
+import {
+  KnowledgeService,
+  searchKnowledgeEntries,
+  type KnowledgeEntry
+} from "./knowledge/service.ts";
 import {
   fetchCampusHiringSnapshot,
   loadCampusHiringSnapshot,
@@ -449,21 +458,6 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     ].filter(Boolean).join("\n\n").slice(0, 12_000);
   }
 
-  function applicationKnowledge(application: JobApplication): string {
-    return [
-      `公司：${application.company}`,
-      `岗位：${application.position}`,
-      application.city && `城市：${application.city}`,
-      `投递阶段：${STAGE_LABELS[application.stage]}`,
-      application.deadline && `截止时间：${application.deadline}`,
-      application.nextAction && `下一步：${application.nextAction}`,
-      application.summary && `岗位摘要：${application.summary}`,
-      application.responsibilities.length && `岗位职责：\n${application.responsibilities.join("\n")}`,
-      application.requirements.length && `岗位要求：\n${application.requirements.join("\n")}`,
-      application.rawExcerpt && `岗位原文：\n${application.rawExcerpt}`
-    ].filter(Boolean).join("\n\n").slice(0, 10_000);
-  }
-
   async function chatContextCatalog(userId: string): Promise<ChatContextResponse> {
     const applications = (await store.listApplications(userId)).filter((item) => !item.deletedAt);
     const versions = await store.listResumeVersions(userId);
@@ -533,13 +527,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return references.flatMap((reference) => {
       if (reference.kind === "application") {
         const application = applications.find((item) => !item.deletedAt && item.application.id === reference.id)?.application;
-        return application ? [{
-          id: `application:${application.id}`,
-          sourceId: `application:${application.id}`,
-          title: `投递记录｜${application.company} · ${application.position}`,
-          content: applicationKnowledge(application),
-          url: application.sourceUrl
-        }] : [];
+        return application ? [applicationKnowledgeEntry(application)] : [];
       }
       if (reference.kind === "resume") {
         const version = versions.find((item) => item.version.id === reference.id)?.version;
@@ -577,6 +565,22 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         score: 100
       }];
     }).slice(0, 4);
+  }
+
+  function automaticApplicationCitations(
+    prompt: string,
+    applications: JobApplication[]
+  ): KnowledgeCitation[] {
+    const overview = explicitCitations([applicationOverviewEntry(applications)]);
+    const matchingRecords = searchKnowledgeEntries(
+      prompt,
+      applications.map(applicationKnowledgeEntry),
+      5
+    ).map((citation) => ({
+      ...citation,
+      excerpt: citation.excerpt.slice(0, 1_800)
+    }));
+    return [...overview, ...matchingRecords];
   }
 
   async function requireSession(request: IncomingMessage): Promise<SessionRecord> {
@@ -635,15 +639,30 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     attachments: ChatAttachment[] = [],
     context: ChatContextReference[] = []
   ): Promise<void> {
-    const opportunityResults = await searchChatOpportunities(prompt, history);
-    const capabilityAnswer = opportunityResults ? undefined : opportunityCapabilityAnswer(prompt);
+    const applications = (await store.listApplications(userId))
+      .filter((item) => !item.deletedAt)
+      .map((item) => item.application);
+    const useApplicationContext = shouldUseApplicationContext(prompt, history, applications);
+    const opportunityResults = useApplicationContext
+      ? undefined
+      : await searchChatOpportunities(prompt, history);
+    const capabilityAnswer = opportunityResults || useApplicationContext
+      ? undefined
+      : opportunityCapabilityAnswer(prompt);
     const selectedEntries = await selectedContextKnowledge(userId, context);
     const attachmentEntries = attachmentKnowledge(attachments);
     const contextualEntries = [...selectedEntries, ...attachmentEntries];
     const explicitlySelectedEntries = [...(context.length ? selectedEntries : []), ...attachmentEntries];
+    const personalApplicationCitations = useApplicationContext
+      ? automaticApplicationCitations(prompt, applications)
+      : [];
     const citations = opportunityResults || capabilityAnswer
       ? []
-      : [...explicitCitations(explicitlySelectedEntries), ...knowledge.search(prompt, 4, contextualEntries)]
+      : [
+        ...explicitCitations(explicitlySelectedEntries),
+        ...personalApplicationCitations,
+        ...(useApplicationContext ? [] : knowledge.search(prompt, 4, contextualEntries))
+      ]
         .filter((citation, index, items) => items.findIndex((item) => item.id === citation.id) === index)
         .slice(0, 6);
     const assistantMessage = await store.beginAssistantMessage(userId, conversationId);

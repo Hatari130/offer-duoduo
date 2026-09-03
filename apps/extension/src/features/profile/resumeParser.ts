@@ -1274,11 +1274,7 @@ export async function parseResumeFile(file: File): Promise<ResumeParseResult> {
     extraFields: {
       ...(structured.profile.extraFields || {}),
       resumeSourceName: file.name,
-      parseMode: "layout-aware-text-v2",
-      parseCoverage: String(structured.diagnostics.coverage),
-      ...(structured.diagnostics.unclassifiedText
-        ? { resumeUnclassifiedText: structured.diagnostics.unclassifiedText }
-        : {})
+      parseMode: "layout-aware-text-v2"
     }
   };
 

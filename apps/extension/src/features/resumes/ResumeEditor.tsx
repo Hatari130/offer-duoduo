@@ -68,9 +68,17 @@ type EditorSectionKey =
   | "campus"
   | "awards"
   | "answers"
+  | "personal"
+  | "identity"
+  | "languages"
+  | "qualifications"
+  | "emergency"
+  | "family"
   | "extra";
 
-const SECTION_INDEX: Array<{ key: EditorSectionKey; label: string }> = [
+type ProfileRecordKey = "languages" | "qualifications" | "familyMembers";
+
+const CORE_SECTION_INDEX: Array<{ key: EditorSectionKey; label: string }> = [
   { key: "basic", label: "基本信息" },
   { key: "preference", label: "求职偏好" },
   { key: "education", label: "教育经历" },
@@ -79,9 +87,20 @@ const SECTION_INDEX: Array<{ key: EditorSectionKey; label: string }> = [
   { key: "projects", label: "项目经历" },
   { key: "campus", label: "在校经历" },
   { key: "awards", label: "获奖证书" },
-  { key: "answers", label: "自我介绍" },
+  { key: "answers", label: "常用回答" }
+];
+
+const APPLICATION_SECTION_INDEX: Array<{ key: EditorSectionKey; label: string }> = [
+  { key: "personal", label: "个人与联系" },
+  { key: "identity", label: "证件与政治" },
+  { key: "languages", label: "外语能力" },
+  { key: "qualifications", label: "证书资格" },
+  { key: "emergency", label: "紧急联系人" },
+  { key: "family", label: "家庭情况" },
   { key: "extra", label: "其他字段" }
 ];
+
+const SECTION_INDEX = [...CORE_SECTION_INDEX, ...APPLICATION_SECTION_INDEX];
 
 const PHONE_COUNTRY_CODE_KEY = "phoneCountryCode";
 const PHONE_COUNTRY_CODES = [
@@ -97,7 +116,8 @@ const PHONE_COUNTRY_CODES = [
   { value: "+82", label: "+82 韩国" }
 ] as const;
 const INTERNAL_EXTRA_KEYS = new Set(["resumeSourceName", "parseMode", PHONE_COUNTRY_CODE_KEY]);
-const DEFAULT_EXTRA_FIELDS = [
+const RETIRED_DIAGNOSTIC_EXTRA_KEYS = new Set(["parseCoverage", "resumeUnclassifiedText"]);
+const EXTRA_FIELD_SUGGESTIONS = [
   "专业技能",
   "语言能力",
   "证书资格",
@@ -111,21 +131,13 @@ const DEFAULT_EXTRA_FIELDS = [
 const newId = (prefix: string) => `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 7)}`;
 
 function initialExtraRows(profile: PersonalProfile): ExtraRow[] {
-  const stored = Object.entries(profile.extraFields || {})
-    .filter(([key]) => !INTERNAL_EXTRA_KEYS.has(key))
+  return Object.entries(profile.extraFields || {})
+    .filter(([key, value]) => !INTERNAL_EXTRA_KEYS.has(key) && !RETIRED_DIAGNOSTIC_EXTRA_KEYS.has(key) && value.trim())
     .map(([key, value]) => ({ id: newId("extra"), key, value }));
-  const existingKeys = new Set(stored.map((row) => row.key));
-  return [
-    ...stored,
-    ...DEFAULT_EXTRA_FIELDS.filter((key) => !existingKeys.has(key)).map((key) => ({
-      id: newId("extra"),
-      key,
-      value: ""
-    }))
-  ];
 }
 
 function countProfileFields(profile: PersonalProfile) {
+  const recordValues = (records?: Record<string, string>[]) => records?.flatMap((item) => Object.values(item)) || [];
   return [
     profile.fullName,
     profile.gender,
@@ -141,6 +153,22 @@ function countProfileFields(profile: PersonalProfile) {
     profile.earliestStartDate,
     profile.portfolioUrl,
     profile.githubUrl,
+    profile.currentResidence,
+    profile.nationality,
+    profile.idType,
+    profile.idNumber,
+    profile.studentSource,
+    profile.wechat,
+    profile.qq,
+    profile.politicalStatus,
+    profile.maritalStatus,
+    profile.healthStatus,
+    profile.specialty,
+    profile.workYears,
+    profile.emergencyContactName,
+    profile.emergencyContactPhone,
+    profile.countryRegion,
+    profile.expectedSalary,
     profile.selfIntroduction,
     profile.strengths,
     profile.careerPlan,
@@ -149,7 +177,12 @@ function countProfileFields(profile: PersonalProfile) {
     ...profile.projects.flatMap((item) => Object.values(item)),
     ...profile.campusExperiences.flatMap((item) => Object.values(item)),
     ...profile.awards.flatMap((item) => Object.values(item)),
-    ...Object.values(profile.extraFields || {})
+    ...recordValues(profile.languages),
+    ...recordValues(profile.qualifications),
+    ...recordValues(profile.familyMembers),
+    ...Object.entries(profile.extraFields || {})
+      .filter(([key]) => !RETIRED_DIAGNOSTIC_EXTRA_KEYS.has(key))
+      .map(([, value]) => value)
   ].filter((value) => typeof value === "string" && value.trim()).length;
 }
 
@@ -168,7 +201,7 @@ export default function ResumeEditor({
   const [phoneCountryCode, setPhoneCountryCode] = useState(resume.profile.extraFields?.[PHONE_COUNTRY_CODE_KEY] || "+86");
   const [extraRows, setExtraRows] = useState<ExtraRow[]>(() => initialExtraRows(resume.profile));
   const [openSections, setOpenSections] = useState<Set<EditorSectionKey>>(
-    () => new Set(["basic", "preference", "education", "internships", "work", "projects", "campus", "awards", "answers", "extra"])
+    () => new Set(["basic", "preference", "education", "internships", "work", "projects", "campus", "awards", "answers"])
   );
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -246,6 +279,16 @@ export default function ResumeEditor({
     setDraft((current) => ({ ...current, campusExperiences: current.campusExperiences.map((item) => item.id === id ? { ...item, ...patch } : item) }));
   const updateAward = (id: string, patch: Partial<ProfileAward>) =>
     setDraft((current) => ({ ...current, awards: current.awards.map((item) => item.id === id ? { ...item, ...patch } : item) }));
+  const updateProfileRecord = (collection: ProfileRecordKey, index: number, field: string, value: string) =>
+    setDraft((current) => {
+      const records = [...(current[collection] || [])];
+      records[index] = { ...records[index], [field]: value };
+      return { ...current, [collection]: records };
+    });
+  const addProfileRecord = (collection: ProfileRecordKey, record: Record<string, string>) =>
+    setDraft((current) => ({ ...current, [collection]: [...(current[collection] || []), record] }));
+  const removeProfileRecord = (collection: ProfileRecordKey, index: number) =>
+    setDraft((current) => ({ ...current, [collection]: (current[collection] || []).filter((_, itemIndex) => itemIndex !== index) }));
 
   const save = async () => {
     setSaving(true);
@@ -255,8 +298,8 @@ export default function ResumeEditor({
       );
       const customFields = Object.fromEntries(
         extraRows
-          .filter((row) => row.key.trim())
-          .map((row) => [row.key.trim(), row.value])
+          .filter((row) => row.key.trim() && row.value.trim())
+          .map((row) => [row.key.trim(), row.value.trim()])
       );
       await onSave(
         { ...draft, extraFields: { ...metadata, ...customFields, [PHONE_COUNTRY_CODE_KEY]: phoneCountryCode } },
@@ -274,7 +317,10 @@ export default function ResumeEditor({
     }
   };
 
-  const addExtra = () => setExtraRows((current) => [...current, { id: newId("extra"), key: "", value: "" }]);
+  const addExtra = (key = "") => setExtraRows((current) => {
+    if (key && current.some((row) => row.key === key)) return current;
+    return [...current, { id: newId("extra"), key, value: "" }];
+  });
   const internshipExperiences = draft.experiences.filter(
     (experience) => resolveProfileExperienceKind(experience) === "internship"
   );
@@ -320,18 +366,26 @@ export default function ResumeEditor({
       <div className="resume-editor-layout">
         <nav className="resume-editor-index" aria-label="简历内容索引">
           <span className="resume-editor-index-title">内容索引</span>
-          <div>
-            {SECTION_INDEX.map((item) => (
-              <button
-                key={item.key}
-                className={activeSection === item.key ? "active" : ""}
-                onClick={() => jumpToSection(item.key)}
-                aria-current={activeSection === item.key ? "location" : undefined}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
+          {[
+            { label: "核心简历", items: CORE_SECTION_INDEX },
+            { label: "网申资料库", items: APPLICATION_SECTION_INDEX }
+          ].map((group) => (
+            <div className="resume-editor-index-group" key={group.label}>
+              <span>{group.label}</span>
+              <div>
+                {group.items.map((item) => (
+                  <button
+                    key={item.key}
+                    className={activeSection === item.key ? "active" : ""}
+                    onClick={() => jumpToSection(item.key)}
+                    aria-current={activeSection === item.key ? "location" : undefined}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ))}
         </nav>
         <div className="resume-editor-content">
       <header className="resume-editor-header">
@@ -387,7 +441,7 @@ export default function ResumeEditor({
             <EditorField label="出生日期"><input type="date" value={draft.birthDate} onChange={(event) => set("birthDate", event.target.value)} /></EditorField>
             <EditorField label="毕业时间"><input type="month" value={monthInputValue(draft.graduationDate)} onChange={(event) => set("graduationDate", event.target.value)} /></EditorField>
             <EditorField label="现居城市"><input value={draft.currentCity} onChange={(event) => set("currentCity", event.target.value)} /></EditorField>
-            <EditorField label="籍贯"><input value={draft.nativePlace} onChange={(event) => set("nativePlace", event.target.value)} /></EditorField>
+            <EditorField label="籍贯 / 户籍"><input value={draft.nativePlace} onChange={(event) => set("nativePlace", event.target.value)} /></EditorField>
             <EditorField label="身高（厘米）"><input inputMode="numeric" value={draft.height} onChange={(event) => set("height", event.target.value)} /></EditorField>
             <EditorField label="体重（公斤）"><input inputMode="decimal" value={draft.weight} onChange={(event) => set("weight", event.target.value)} /></EditorField>
             <EditorField label="是否统招"><select value={draft.recruitmentType} onChange={(event) => set("recruitmentType", event.target.value)}><option value="">请选择</option><option>是</option><option>否</option></select></EditorField>
@@ -401,6 +455,7 @@ export default function ResumeEditor({
             <EditorField label="目标岗位"><input value={draft.targetRole} onChange={(event) => set("targetRole", event.target.value)} /></EditorField>
             <EditorField label="意向城市"><input value={draft.targetCities} onChange={(event) => set("targetCities", event.target.value)} placeholder="例如：北京、上海" /></EditorField>
             <EditorField label="最早到岗"><input type="date" value={draft.earliestStartDate} onChange={(event) => set("earliestStartDate", event.target.value)} /></EditorField>
+            <EditorField label="期望薪资"><input value={draft.expectedSalary || ""} onChange={(event) => set("expectedSalary", event.target.value)} placeholder="例如：15k · 14 薪" /></EditorField>
             <EditorField label="作品集"><input type="url" value={draft.portfolioUrl} onChange={(event) => set("portfolioUrl", event.target.value)} /></EditorField>
             <EditorField label="GitHub" wide><div className="resume-editor-input-with-icon"><Link2 size={14} /><input type="url" value={draft.githubUrl} onChange={(event) => set("githubUrl", event.target.value)} /></div></EditorField>
           </div>
@@ -484,14 +539,99 @@ export default function ResumeEditor({
           </div>
         </EditorSection>
 
-        <EditorSection keyName="extra" title="技能、证书与其他网申字段" description="解析不到的信息可在这里手动添加，例如政治面貌、身份证号、紧急联系人、专业技能等" icon={<ShieldCheck size={17} />} open={openSections.has("extra")} onToggle={toggle} action="添加字段" onAction={addExtra}>
+        <EditorSection keyName="personal" title="个人与联系" description="网申常见的个人资料与补充联系方式" icon={<UserRound size={17} />} open={openSections.has("personal")} onToggle={toggle}>
+          <div className="resume-editor-grid">
+            <EditorField label="民族"><input value={draft.nationality || ""} onChange={(event) => set("nationality", event.target.value)} /></EditorField>
+            <EditorField label="婚姻状况"><select value={draft.maritalStatus || ""} onChange={(event) => set("maritalStatus", event.target.value)}><option value="">请选择</option><option>未婚</option><option>已婚</option><option>其他</option></select></EditorField>
+            <EditorField label="生源地"><input value={draft.studentSource || ""} onChange={(event) => set("studentSource", event.target.value)} placeholder="例如：河北省秦皇岛市" /></EditorField>
+            <EditorField label="当前居住地"><input value={draft.currentResidence || ""} onChange={(event) => set("currentResidence", event.target.value)} /></EditorField>
+            <EditorField label="国家 / 地区"><input value={draft.countryRegion || ""} onChange={(event) => set("countryRegion", event.target.value)} placeholder="例如：中国大陆" /></EditorField>
+            <EditorField label="工作年限"><input value={draft.workYears || ""} onChange={(event) => set("workYears", event.target.value)} placeholder="例如：0 年" /></EditorField>
+            <EditorField label="健康状况"><input value={draft.healthStatus || ""} onChange={(event) => set("healthStatus", event.target.value)} /></EditorField>
+            <EditorField label="个人特长"><input value={draft.specialty || ""} onChange={(event) => set("specialty", event.target.value)} /></EditorField>
+            <EditorField label="微信号"><input value={draft.wechat || ""} onChange={(event) => set("wechat", event.target.value)} /></EditorField>
+            <EditorField label="QQ"><input value={draft.qq || ""} onChange={(event) => set("qq", event.target.value)} /></EditorField>
+          </div>
+        </EditorSection>
+
+        <EditorSection keyName="identity" title="证件与政治信息" description="仅在企业网申明确需要时自动填写" icon={<ShieldCheck size={17} />} open={openSections.has("identity")} onToggle={toggle}>
+          <div className="resume-editor-grid">
+            <EditorField label="政治面貌"><select value={draft.politicalStatus || ""} onChange={(event) => set("politicalStatus", event.target.value)}><option value="">请选择</option><option>中共党员</option><option>中共预备党员</option><option>共青团员</option><option>群众</option><option>其他党派</option></select></EditorField>
+            <EditorField label="证件类型"><select value={draft.idType || ""} onChange={(event) => set("idType", event.target.value)}><option value="">请选择</option><option>居民身份证</option><option>护照</option><option>港澳居民来往内地通行证</option><option>台湾居民来往大陆通行证</option><option>其他</option></select></EditorField>
+            <EditorField label="证件号码" wide><div className="resume-editor-sensitive-field"><input type="password" autoComplete="off" value={draft.idNumber || ""} onChange={(event) => set("idNumber", event.target.value)} placeholder="仅本地保存，网申需要时才填写" /><small>已加密显示；不会被用于简历优化。</small></div></EditorField>
+          </div>
+        </EditorSection>
+
+        <EditorSection keyName="languages" title="外语能力" description={`${draft.languages?.length || 0} 项语言资料 · 支持网申逐项填写`} icon={<CircleUserRound size={17} />} open={openSections.has("languages")} onToggle={toggle} action="添加外语能力" onAction={() => addProfileRecord("languages", { id: newId("language"), name: "", certificate: "", englishLevel: "", score: "", proficiency: "", listeningSpeaking: "", readingWriting: "" })}>
+          {(draft.languages || []).map((item, index) => <EditorEntry key={item.id || `language-${index}`} title={item.name || "新外语能力"} onRemove={() => removeProfileRecord("languages", index)}>
+            <div className="resume-editor-grid">
+              <EditorField label="外语语种"><input value={item.name || ""} onChange={(event) => updateProfileRecord("languages", index, "name", event.target.value)} /></EditorField>
+              <EditorField label="证书名称"><input value={item.certificate || ""} onChange={(event) => updateProfileRecord("languages", index, "certificate", event.target.value)} /></EditorField>
+              <EditorField label="语言等级"><input value={item.englishLevel || ""} onChange={(event) => updateProfileRecord("languages", index, "englishLevel", event.target.value)} placeholder="例如：CET-6" /></EditorField>
+              <EditorField label="成绩"><input value={item.score || ""} onChange={(event) => updateProfileRecord("languages", index, "score", event.target.value)} /></EditorField>
+              <EditorField label="掌握程度"><input value={item.proficiency || ""} onChange={(event) => updateProfileRecord("languages", index, "proficiency", event.target.value)} placeholder="例如：熟练" /></EditorField>
+              <EditorField label="听说能力"><input value={item.listeningSpeaking || ""} onChange={(event) => updateProfileRecord("languages", index, "listeningSpeaking", event.target.value)} /></EditorField>
+              <EditorField label="读写能力"><input value={item.readingWriting || ""} onChange={(event) => updateProfileRecord("languages", index, "readingWriting", event.target.value)} /></EditorField>
+            </div>
+          </EditorEntry>)}
+          {!(draft.languages || []).length && <EmptyEditorEntry text="还没有外语能力，点击添加" onClick={() => addProfileRecord("languages", { id: newId("language"), name: "", certificate: "", englishLevel: "", score: "", proficiency: "", listeningSpeaking: "", readingWriting: "" })} />}
+        </EditorSection>
+
+        <EditorSection keyName="qualifications" title="证书资格" description={`${draft.qualifications?.length || 0} 项证书 · 与奖项分开维护`} icon={<Trophy size={17} />} open={openSections.has("qualifications")} onToggle={toggle} action="添加证书" onAction={() => addProfileRecord("qualifications", { id: newId("qualification"), date: "", name: "", number: "", description: "" })}>
+          {(draft.qualifications || []).map((item, index) => <EditorEntry key={item.id || `qualification-${index}`} title={item.name || "新证书"} onRemove={() => removeProfileRecord("qualifications", index)}>
+            <div className="resume-editor-grid">
+              <EditorField label="获得时间"><input type="month" value={monthInputValue(item.date)} onChange={(event) => updateProfileRecord("qualifications", index, "date", event.target.value)} /></EditorField>
+              <EditorField label="证书名称"><input value={item.name || ""} onChange={(event) => updateProfileRecord("qualifications", index, "name", event.target.value)} /></EditorField>
+              <EditorField label="证书编号"><input value={item.number || ""} onChange={(event) => updateProfileRecord("qualifications", index, "number", event.target.value)} /></EditorField>
+              <EditorField label="证书说明" wide><textarea rows={3} value={item.description || ""} onChange={(event) => updateProfileRecord("qualifications", index, "description", event.target.value)} /></EditorField>
+            </div>
+          </EditorEntry>)}
+          {!(draft.qualifications || []).length && <EmptyEditorEntry text="还没有证书资格，点击添加" onClick={() => addProfileRecord("qualifications", { id: newId("qualification"), date: "", name: "", number: "", description: "" })} />}
+        </EditorSection>
+
+        <EditorSection keyName="emergency" title="紧急联系人" description="仅在企业网申明确需要时自动填写" icon={<ShieldCheck size={17} />} open={openSections.has("emergency")} onToggle={toggle}>
+          <div className="resume-editor-grid">
+            <EditorField label="姓名"><input value={draft.emergencyContactName || ""} onChange={(event) => set("emergencyContactName", event.target.value)} /></EditorField>
+            <EditorField label="电话"><input type="tel" value={draft.emergencyContactPhone || ""} onChange={(event) => set("emergencyContactPhone", event.target.value)} /></EditorField>
+          </div>
+        </EditorSection>
+
+        <EditorSection keyName="family" title="家庭情况" description={`${draft.familyMembers?.length || 0} 位家庭成员 · 仅用于要求该信息的网申`} icon={<CircleUserRound size={17} />} open={openSections.has("family")} onToggle={toggle} action="添加家庭成员" onAction={() => addProfileRecord("familyMembers", { id: newId("family"), name: "", relation: "", phone: "", company: "", position: "", politicalStatus: "" })}>
+          {(draft.familyMembers || []).map((item, index) => <EditorEntry key={item.id || `family-${index}`} title={item.name || "新家庭成员"} onRemove={() => removeProfileRecord("familyMembers", index)}>
+            <div className="resume-editor-grid">
+              <EditorField label="姓名"><input value={item.name || ""} onChange={(event) => updateProfileRecord("familyMembers", index, "name", event.target.value)} /></EditorField>
+              <EditorField label="关系"><input value={item.relation || ""} onChange={(event) => updateProfileRecord("familyMembers", index, "relation", event.target.value)} placeholder="例如：父亲" /></EditorField>
+              <EditorField label="电话"><input type="tel" value={item.phone || ""} onChange={(event) => updateProfileRecord("familyMembers", index, "phone", event.target.value)} /></EditorField>
+              <EditorField label="公司 / 单位"><input value={item.company || ""} onChange={(event) => updateProfileRecord("familyMembers", index, "company", event.target.value)} /></EditorField>
+              <EditorField label="职位"><input value={item.position || ""} onChange={(event) => updateProfileRecord("familyMembers", index, "position", event.target.value)} /></EditorField>
+              <EditorField label="政治面貌"><input value={item.politicalStatus || ""} onChange={(event) => updateProfileRecord("familyMembers", index, "politicalStatus", event.target.value)} /></EditorField>
+            </div>
+          </EditorEntry>)}
+          {!(draft.familyMembers || []).length && <EmptyEditorEntry text="还没有家庭成员资料，点击添加" onClick={() => addProfileRecord("familyMembers", { id: newId("family"), name: "", relation: "", phone: "", company: "", position: "", politicalStatus: "" })} />}
+        </EditorSection>
+
+        <EditorSection keyName="extra" title="其他自定义字段" description="补充少见或企业专属的网申信息" icon={<ShieldCheck size={17} />} open={openSections.has("extra")} onToggle={toggle} action="添加字段" onAction={() => addExtra()}>
           <div className="resume-editor-extra-list">
             {extraRows.map((row) => <div className="resume-editor-extra-row" key={row.id}>
               <input value={row.key} placeholder="字段名称，例如：英语水平" onChange={(event) => setExtraRows((current) => current.map((item) => item.id === row.id ? { ...item, key: event.target.value } : item))} />
               <textarea rows={2} value={row.value} placeholder="填写字段内容" onChange={(event) => setExtraRows((current) => current.map((item) => item.id === row.id ? { ...item, value: event.target.value } : item))} />
               <button onClick={() => setExtraRows((current) => current.filter((item) => item.id !== row.id))} aria-label="删除字段"><X size={15} /></button>
             </div>)}
-            <button className="resume-editor-add-row" onClick={addExtra}><Plus size={14} />添加一个未识别字段</button>
+            {extraRows.length === 0 && (
+              <div className="resume-editor-extra-empty">
+                <strong>暂无其他字段</strong>
+                <span>选择常用字段，或自行添加一个字段。</span>
+              </div>
+            )}
+            <div className="resume-editor-extra-suggestions" aria-label="常用字段">
+              <span>常用字段</span>
+              <div>
+                {EXTRA_FIELD_SUGGESTIONS
+                  .filter((key) => !extraRows.some((row) => row.key === key))
+                  .map((key) => <button key={key} onClick={() => addExtra(key)}><Plus size={13} />{key}</button>)}
+              </div>
+            </div>
+            <button className="resume-editor-add-row" onClick={() => addExtra()}><Plus size={14} />添加自定义字段</button>
           </div>
         </EditorSection>
       </div>

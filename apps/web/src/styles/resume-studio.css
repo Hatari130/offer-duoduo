@@ -319,13 +319,32 @@
 .resume-editor-intro {
   padding: 1.15rem 1.2rem;
   margin-block-end: 1rem;
-  background: var(--of-text-strong, #171714);
+  background: var(--studio-raised);
+  border: 1px solid var(--studio-line);
   border-radius: 1rem;
-  color: var(--of-text-inverse, #fffdfb);
+  color: var(--of-text);
 }
-.resume-editor-intro span { color: var(--of-brand-300); font-size: 0.75rem; font-weight: 760; letter-spacing: 0.02em; }
-.resume-editor-intro strong { display: block; margin-block-start: 0.25rem; font-family: var(--of-font-display, serif); font-size: 1.05rem; }
-.resume-editor-intro p { margin: 0.5rem 0 0; color: color-mix(in oklch, var(--of-text-inverse, #fffdfb) 78%, transparent); font-size: 0.8125rem; line-height: 1.6; }
+.resume-editor-intro span {
+  display: inline-block;
+  color: var(--of-brand-600);
+  font-size: 0.75rem;
+  font-weight: 760;
+  letter-spacing: 0.02em;
+}
+.resume-editor-intro strong {
+  display: block;
+  margin-block-start: 0.25rem;
+  color: var(--of-text-strong);
+  font-family: var(--of-font-display, serif);
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+.resume-editor-intro p {
+  margin: 0.5rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
 
 .resume-template-picker { padding: 1rem; margin-block-end: 0.9rem; background: var(--studio-raised); border: 1px solid var(--studio-line); border-radius: 1rem; }
 .resume-template-picker > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-block-end: 0.8rem; }
@@ -628,7 +647,7 @@
   .resume-document-settings > summary span { display: none; }
   .resume-mobile-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; padding: 0.45rem max(0.45rem, env(safe-area-inset-right)) 0.45rem max(0.45rem, env(safe-area-inset-left)); background: var(--studio-surface); border-block-end: 1px solid var(--studio-line); }
   .resume-mobile-tabs button { display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.4rem; color: var(--studio-muted); background: transparent; border-radius: 0.65rem; font-size: 0.8125rem; font-weight: 700; }
-  .resume-mobile-tabs button[aria-selected="true"] { color: var(--of-text-inverse); background: var(--of-text-strong); }
+  .resume-mobile-tabs button[aria-selected="true"] { color: var(--of-action-primary-text, #ffffff); background: var(--of-action-primary, #3f56b8); }
   .resume-studio-workspace { display: block; }
   .resume-preview-pane,
   .resume-editor-pane { display: none; height: 100%; }

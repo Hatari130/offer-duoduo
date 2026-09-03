@@ -47,31 +47,35 @@ function queryTokens(query: string): string[] {
   return [...new Set([...latin, ...pairs, ...chinese.filter((character) => "简历面试投递校招项目规划".includes(character))])];
 }
 
+export function searchKnowledgeEntries(
+  query: string,
+  entries: KnowledgeEntry[],
+  limit = 3
+): KnowledgeCitation[] {
+  const tokens = queryTokens(query);
+  const ranked = entries.map((entry) => {
+    const haystack = `${entry.title}${entry.content}`.toLowerCase();
+    const score = tokens.reduce(
+      (total, token) => total + (haystack.includes(token) ? Math.max(1, token.length) : 0),
+      0
+    );
+    return { entry, score };
+  }).sort((left, right) => right.score - left.score);
+
+  return ranked.filter((result) => result.score > 0).slice(0, limit).map(({ entry, score }) => ({
+    id: entry.id,
+    sourceId: entry.sourceId,
+    title: entry.title,
+    excerpt: entry.content,
+    url: entry.url,
+    score
+  }));
+}
+
 export class KnowledgeService {
   search(query: string, limit = 3, additionalEntries: KnowledgeEntry[] = []): KnowledgeCitation[] {
-    const tokens = queryTokens(query);
     const entries = [...additionalEntries, ...KNOWLEDGE];
-    const ranked = entries.map((entry) => {
-      const haystack = `${entry.title}${entry.content}`.toLowerCase();
-      const score = tokens.reduce(
-        (total, token) => total + (haystack.includes(token) ? Math.max(1, token.length) : 0),
-        0
-      );
-      return { entry, score };
-    }).sort((left, right) => right.score - left.score);
-
-    // Returning an arbitrary first entry on a zero-score query creates a false
-    // citation. This matters even more for private interview material: it
-    // should enter a prompt only when the user's question actually matches it.
-    const relevant = ranked.filter((result) => result.score > 0);
-
-    return relevant.slice(0, limit).map(({ entry, score }) => ({
-      id: entry.id,
-      sourceId: entry.sourceId,
-      title: entry.title,
-      excerpt: entry.content,
-      url: entry.url,
-      score
-    }));
+    // Returning an arbitrary first entry on a zero-score query creates a false citation.
+    return searchKnowledgeEntries(query, entries, limit);
   }
 }

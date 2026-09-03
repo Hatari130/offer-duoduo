@@ -1525,26 +1525,30 @@
       "campusExperienceType", "campusExperienceRole", "campusExperienceStartDate",
       "campusExperienceEndDate", "campusExperienceDescription"
     ],
-    award: ["awardDate", "awardName", "awardLevel", "awardDescription"]
+    award: ["awardDate", "awardName", "awardLevel", "awardDescription"],
+    language: ["languageName", "languageCertificate", "englishLevel", "languageScore", "languageProficiency", "listeningSpeaking", "readingWriting"],
+    qualification: ["qualificationDate", "qualificationName", "qualificationNumber", "qualificationDescription"],
+    family: ["familyName", "familyRelation", "familyPhone", "familyCompany", "familyPosition", "familyPoliticalStatus"]
   };
 
   const repeatableGroupForKey = (key) =>
     Object.entries(repeatableFieldKeys).find(([, keys]) => keys.includes(key))?.[0];
 
-  const explicitlySingleSection = (section) => /^(?:个人(?:基本)?信息|个人(?:基本)?资料|基本信息|基本资料|求职意向|求职偏好|语言能力|自我描述|自我介绍|联系方式)$/i
+  const explicitlySingleSection = (section) => /^(?:个人(?:基本)?信息|个人(?:基本)?资料|基本信息|基本资料|求职意向|求职偏好|自我描述|自我介绍|联系方式)$/i
     .test(clean(section || ""));
 
-  const contextualRepeatGroupForSection = (section) => /教育|学历|学业/i.test(section || "")
-    ? "education"
-    : /工作|实习|实践|任职/i.test(section || "")
-      ? "experience"
-      : /项目/i.test(section || "")
-        ? "project"
-        : /在校|校园/i.test(section || "")
-          ? "campus"
-          : /获奖|奖项|奖励/i.test(section || "")
-            ? "award"
-            : undefined;
+  const contextualRepeatGroupForSection = (section) => {
+    const text = section || "";
+    if (/教育|学历|学业/i.test(text)) return "education";
+    if (/工作|实习|实践|任职/i.test(text)) return "experience";
+    if (/项目/i.test(text)) return "project";
+    if (/在校|校园/i.test(text)) return "campus";
+    if (/获奖|奖项|奖励/i.test(text)) return "award";
+    if (/外语|语言能力|language/i.test(text)) return "language";
+    if (/资格证书|职业证书|证书资格|qualification|certificate/i.test(text)) return "qualification";
+    if (/家庭情况|家庭成员|family/i.test(text)) return "family";
+    return undefined;
+  };
 
   const effectiveRepeatGroupForField = (field) => {
     if (explicitlySingleSection(field?.section)) return undefined;
@@ -4705,7 +4709,10 @@
       experience: "experienceOrganization",
       project: "projectName",
       campus: "campusExperienceRole",
-      award: "awardName"
+      award: "awardName",
+      language: "languageName",
+      qualification: "qualificationName",
+      family: "familyName"
     };
     const inferredExperienceKind = (field) => field.repeatEntryKind === "combined" ? "" : field.repeatEntryKind || (
       /实习|practice|intern/i.test(field.section || "")

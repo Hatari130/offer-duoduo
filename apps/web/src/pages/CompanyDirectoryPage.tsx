@@ -26,12 +26,13 @@ import { resolveCompanyBrandMark } from "../features/opportunities/companyBrandM
 import {
   cacheCampusHiringFeed,
   fetchCampusHiringFeed,
-  readCachedCampusHiringFeed,
   type CampusHiringOpportunity
 } from "../features/opportunities/campusHiringFeed";
 import { navigate } from "../app/router";
 
 type VisibilityFilter = "all" | "open" | "inactive";
+
+const COMPANY_DIRECTORY_STATUS_CACHE_KEY = "offerflow:company-directory-status:v1";
 
 const categoryIcons = {
   internet: Globe2,
@@ -205,12 +206,62 @@ function updateLabel(value?: string): string {
   }).format(new Date(value));
 }
 
+interface CompanyDirectoryStatusCache {
+  version: 1;
+  updatedAt?: string;
+  companies: Record<string, { status: OpportunityStatus; destination: string }>;
+}
+
+function readCompanyDirectoryStatusCache(): CompanyDirectoryStatusCache | undefined {
+  try {
+    const value = window.localStorage.getItem(COMPANY_DIRECTORY_STATUS_CACHE_KEY);
+    if (!value) return undefined;
+    const cached = JSON.parse(value) as Partial<CompanyDirectoryStatusCache>;
+    if (cached.version !== 1 || !cached.companies || typeof cached.companies !== "object") return undefined;
+    return cached as CompanyDirectoryStatusCache;
+  } catch {
+    return undefined;
+  }
+}
+
+function resolvedCompany(
+  company: CompanyDirectoryEntry,
+  opportunities: CampusHiringOpportunity[],
+  cached?: CompanyDirectoryStatusCache["companies"][string]
+) {
+  const opportunity = opportunityForCompany(company, opportunities);
+  const status = directoryAvailabilityOverrides[company.name] || opportunity?.status || cached?.status || "closed";
+  const isOpen = openStatuses.has(status);
+  const destination = directoryAvailabilityOverrides[company.name]
+    ? company.careerUrl
+    : opportunity
+      ? opportunityDestination(company, opportunity, isOpen)
+      : cached?.destination || company.careerUrl;
+  return { ...company, opportunity, status, isOpen, destination };
+}
+
+function cacheCompanyDirectoryStatus(opportunities: CampusHiringOpportunity[], updatedAt?: string): void {
+  try {
+    const companies = Object.fromEntries(companyDirectory.flatMap((category) => category.companies.map((company) => {
+      const resolved = resolvedCompany(company, opportunities);
+      return [company.name, { status: resolved.status, destination: resolved.destination }];
+    })));
+    window.localStorage.setItem(COMPANY_DIRECTORY_STATUS_CACHE_KEY, JSON.stringify({
+      version: 1,
+      updatedAt,
+      companies
+    } satisfies CompanyDirectoryStatusCache));
+  } catch {
+    // The compact status map is optional; a live response still renders normally.
+  }
+}
+
 export function CompanyDirectoryPage() {
-  const [cachedFeed] = useState(() => readCachedCampusHiringFeed());
-  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>(() => cachedFeed?.opportunities || []);
-  const [loading, setLoading] = useState(() => !cachedFeed);
+  const [cachedStatus] = useState(() => readCompanyDirectoryStatusCache());
+  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [updatedAt, setUpdatedAt] = useState<string | undefined>(() => cachedFeed?.sourceUpdatedAt || cachedFeed?.fetchedAt);
+  const [updatedAt, setUpdatedAt] = useState<string | undefined>(() => cachedStatus?.updatedAt);
   const [query, setQuery] = useState("");
   const [visibility, setVisibility] = useState<VisibilityFilter>("all");
 
@@ -219,7 +270,8 @@ export function CompanyDirectoryPage() {
     setError("");
     fetchCampusHiringFeed(signal)
       .then((result) => {
-        cacheCampusHiringFeed(result);
+        void cacheCampusHiringFeed(result);
+        cacheCompanyDirectoryStatus(result.opportunities, result.sourceUpdatedAt || result.fetchedAt);
         setOpportunities(result.opportunities);
         setUpdatedAt(result.sourceUpdatedAt || result.fetchedAt);
       })
@@ -238,21 +290,12 @@ export function CompanyDirectoryPage() {
 
   const resolvedDirectory = useMemo(() => companyDirectory.map((category) => ({
     ...category,
-    companies: category.companies.map((company) => {
-        const opportunity = opportunityForCompany(company, opportunities);
-        const status = directoryAvailabilityOverrides[company.name] || opportunity?.status || "closed";
-        const isOpen = openStatuses.has(status);
-        return {
-          ...company,
-          opportunity,
-          status,
-          isOpen,
-          destination: directoryAvailabilityOverrides[company.name]
-            ? company.careerUrl
-            : opportunityDestination(company, opportunity, isOpen)
-        };
-    })
-  })), [opportunities]);
+    companies: category.companies.map((company) => resolvedCompany(
+      company,
+      opportunities,
+      cachedStatus?.companies[company.name]
+    ))
+  })), [cachedStatus, opportunities]);
 
   const openCount = useMemo(() => resolvedDirectory.reduce(
     (total, category) => total + category.companies.filter((company) => company.isOpen).length,

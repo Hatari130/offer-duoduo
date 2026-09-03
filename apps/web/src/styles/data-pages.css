@@ -617,16 +617,16 @@
   table-layout: fixed;
 }
 
-.opportunity-col-company { width: 21%; }
-.opportunity-col-type { width: 8%; }
-.opportunity-col-industry { width: 8%; }
-.opportunity-col-company-type { width: 8%; }
-.opportunity-col-status { width: 8%; }
+.opportunity-col-company { width: 23%; }
+.opportunity-col-type { width: 7.5%; }
+.opportunity-col-industry { width: 12.5%; }
+.opportunity-col-company-type { width: 7.5%; }
+.opportunity-col-status { width: 7.5%; }
 .opportunity-col-city { width: 9%; }
-.opportunity-col-open-at { width: 8%; }
-.opportunity-col-deadline { width: 10%; }
-.opportunity-col-qcc { width: 9.5%; }
-.opportunity-col-apply { width: 10.5%; }
+.opportunity-col-open-at { width: 7.5%; }
+.opportunity-col-deadline { width: 9.5%; }
+.opportunity-col-qcc { width: 7.5%; }
+.opportunity-col-apply { width: 8.5%; }
 
 .opportunities-page .data-table th,
 .opportunities-page .data-table td {
@@ -1586,16 +1586,22 @@
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
-  background-image: none;
+  padding-inline: 0.55rem 1.4rem;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23687187' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.38rem center;
+  background-size: 0.72rem;
   font-family: inherit;
   font-size: 0.75rem !important;
   font-weight: 650;
   line-height: 1.2;
   text-overflow: ellipsis;
+  transition: box-shadow var(--of-duration-fast, 140ms) ease, filter var(--of-duration-fast, 140ms) ease;
 }
 
 .application-tag--select:hover {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 28%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, currentColor 35%, transparent);
+  filter: brightness(1.04);
 }
 
 .application-tag--select:focus-visible {
@@ -1605,29 +1611,29 @@
 
 .application-tag--secondary {
   color: var(--of-text-muted);
-  background: var(--of-surface-raised);
+  background-color: var(--of-surface-raised);
   border: 1px solid var(--of-line);
 }
 
 .application-tag--recruitment {
   color: var(--of-text-muted);
-  background: var(--of-surface-raised);
+  background-color: var(--of-surface-raised);
   border: 1px solid var(--of-line);
 }
 
-.application-tag--interested { color: var(--of-stage-interested); background: var(--of-stage-interested-soft); }
-.application-tag--applied { color: var(--of-info); background: var(--of-info-soft); }
-.application-tag--assessment { color: var(--of-warning); background: var(--of-warning-soft); }
-.application-tag--interview { color: var(--of-stage-interview); background: var(--of-stage-interview-soft); }
-.application-tag--success { color: var(--of-success); background: var(--of-success-soft); }
-.application-tag--muted { color: var(--of-text-muted); background: var(--of-surface-muted); }
+.application-tag--interested { color: var(--of-stage-interested); background-color: var(--of-stage-interested-soft); }
+.application-tag--applied { color: var(--of-info); background-color: var(--of-info-soft); }
+.application-tag--assessment { color: var(--of-warning); background-color: var(--of-warning-soft); }
+.application-tag--interview { color: var(--of-stage-interview); background-color: var(--of-stage-interview-soft); }
+.application-tag--success { color: var(--of-success); background-color: var(--of-success-soft); }
+.application-tag--muted { color: var(--of-text-muted); background-color: var(--of-surface-muted); }
 
-.stage-select--interested { color: var(--of-stage-interested); background: var(--of-stage-interested-soft); }
-.stage-select--applied { color: var(--of-info); background: var(--of-info-soft); }
-.stage-select--assessment { color: var(--of-warning); background: var(--of-warning-soft); }
-.stage-select--interview { color: var(--of-stage-interview); background: var(--of-stage-interview-soft); }
-.stage-select--success { color: var(--of-success); background: var(--of-success-soft); }
-.stage-select--muted { color: var(--of-text-muted); background: var(--of-surface-muted); }
+.stage-select--interested { color: var(--of-stage-interested); background-color: var(--of-stage-interested-soft); }
+.stage-select--applied { color: var(--of-info); background-color: var(--of-info-soft); }
+.stage-select--assessment { color: var(--of-warning); background-color: var(--of-warning-soft); }
+.stage-select--interview { color: var(--of-stage-interview); background-color: var(--of-stage-interview-soft); }
+.stage-select--success { color: var(--of-success); background-color: var(--of-success-soft); }
+.stage-select--muted { color: var(--of-text-muted); background-color: var(--of-surface-muted); }
 
 .closed-reason-select,
 .interview-round-select {
@@ -1810,6 +1816,8 @@
   border: 1px solid var(--of-line);
   border-radius: 0.85rem;
   text-align: start;
+  box-shadow: 0 1px 3px color-mix(in srgb, var(--of-text-strong) 4%, transparent), 0 0 0 1px color-mix(in srgb, var(--of-text-strong) 2%, transparent);
+  transition: transform 180ms cubic-bezier(0.2, 0, 0, 1), box-shadow 180ms cubic-bezier(0.2, 0, 0, 1), border-color 180ms ease;
 }
 
 .board-card-main {
@@ -1853,8 +1861,24 @@
 .board-jd-entry.has-content { color: var(--of-success); background: var(--of-success-soft); }
 .board-jd-entry:hover,
 .board-interview-entry:hover { background: var(--of-brand-100); }
-.board-card:hover { border-color: var(--of-brand-300); }
-.board-empty { padding: 1.2rem 0.5rem; color: var(--of-text-subtle); font-size: 0.75rem; text-align: center; }
+.board-card:hover {
+  border-color: var(--of-brand-400);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px -4px color-mix(in srgb, var(--of-text-strong) 12%, transparent), 0 3px 6px -2px color-mix(in srgb, var(--of-text-strong) 6%, transparent);
+}
+.board-empty {
+  display: flex;
+  min-height: 5rem;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem 0.65rem;
+  color: var(--of-text-subtle);
+  font-size: 0.78rem;
+  text-align: center;
+  border: 1.5px dashed color-mix(in srgb, var(--of-line) 85%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--of-surface-muted) 50%, transparent);
+}
 
 .interview-records-dialog {
   width: min(76rem, calc(100% - 2rem));
@@ -2931,9 +2955,9 @@
     font-weight: 620;
   }
   .mobile-stage-tabs button[aria-pressed="true"] {
-    color: var(--of-surface-raised);
-    background: var(--of-text-strong);
-    border-color: var(--of-text-strong);
+    color: var(--of-action-primary-text, #ffffff);
+    background: var(--of-action-primary, #3f56b8);
+    border-color: var(--of-action-primary, #3f56b8);
   }
   .application-table-wrap {
     overflow: visible;

@@ -103,6 +103,21 @@ export function AuthProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     const url = new URL(window.location.href);
     const handoffCode = url.searchParams.get("handoff");
+    const demoParam = url.searchParams.get("demo");
+    if (demoParam) {
+      let active = true;
+      createGuestSessionOnce()
+        .then((session) => {
+          if (!active) return;
+          url.searchParams.delete("demo");
+          window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+          establishSession(session, "guest");
+        })
+        .catch(() => undefined);
+      return () => {
+        active = false;
+      };
+    }
     if (handoffCode) {
       let active = true;
       exchangeHandoffOnce(handoffCode)

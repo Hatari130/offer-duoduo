@@ -528,3 +528,27 @@ img {
   max-width: 760px;
   margin: 1.5rem auto 0;
 }
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in srgb, var(--of-line-strong, #cbd2de) 50%, transparent) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--of-line-strong, #cbd2de) 55%, transparent);
+  border-radius: 999px;
+  transition: background-color var(--of-duration-fast, 140ms) ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--of-text-subtle, #687187);
+}

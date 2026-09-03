@@ -171,9 +171,8 @@ function OpportunityDeadline({ opportunity }: { opportunity: CampusHiringOpportu
 export function OpportunitiesPage() {
   const { status: authStatus, requestLogin } = useAuth();
   const isAuthenticated = authStatus === "authenticated";
-  const [cachedFeed] = useState(() => readCachedCampusHiringFeed());
-  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>(() => cachedFeed?.opportunities || []);
-  const [loading, setLoading] = useState(() => !cachedFeed);
+  const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [query, setQuery] = useState("");
   const [city, setCity] = useState("all");
@@ -189,7 +188,7 @@ export function OpportunitiesPage() {
     setError("");
     fetchCampusHiringFeed(signal)
       .then((result) => {
-        cacheCampusHiringFeed(result);
+        void cacheCampusHiringFeed(result);
         setOpportunities(result.opportunities);
         setPage(1);
       })
@@ -204,9 +203,16 @@ export function OpportunitiesPage() {
 
   useEffect(() => {
     const controller = new AbortController();
+    let active = true;
+    void readCachedCampusHiringFeed().then((cachedFeed) => {
+      if (!active || !cachedFeed) return;
+      setOpportunities(cachedFeed.opportunities);
+      setLoading(false);
+    });
     load(controller.signal);
     const timer = window.setInterval(() => load(), 10 * 60_000);
     return () => {
+      active = false;
       controller.abort();
       window.clearInterval(timer);
     };

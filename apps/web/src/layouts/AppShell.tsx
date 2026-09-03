@@ -384,6 +384,12 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
       <div className="workspace-quick-actions" role="group" aria-label="帮助、显示与反馈">
+        {isGuest && (
+          <AppLink href="/login" className="guest-login-link" title="登录工作台">
+            <LogIn aria-hidden="true" size={15} strokeWidth={2} />
+            <span>登录</span>
+          </AppLink>
+        )}
         <button className="feedback-trigger" type="button" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
           <MessageCircleMore aria-hidden="true" size={16} />共建反馈
         </button>
@@ -718,15 +724,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </div>
       )}
 
-      <div className={`workspace-shell${isGuest ? " workspace-shell--guest" : ""}`}>
-        {isGuest && (
-          <header className="guest-toolbar" aria-label="账户操作">
-            <AppLink href="/login" className="guest-login-link">
-              <LogIn aria-hidden="true" size={16} strokeWidth={2} />
-              登录
-            </AppLink>
-          </header>
-        )}
+      <div className="workspace-shell">
         <main
           id="main-content"
           className={`workspace-main${pathname.startsWith("/app/chat") ? " workspace-main--chat" : ""}`}

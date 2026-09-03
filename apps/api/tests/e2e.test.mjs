@@ -445,6 +445,48 @@ test("auth, chat streaming, applications and device pairing work end to end", as
   });
   assert.equal(createdApplication.response.status, 201);
   assert.equal(createdApplication.payload.data.item.revision, 1);
+
+  const otherUserApplication = await jsonRequest(app.baseUrl, "/v1/applications", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${loggedIn.payload.data.accessToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      application: sampleApplication({
+        id: "other-user-application",
+        company: "隐私科技",
+        position: "保密岗位",
+        sourceUrl: "https://private.example.com/job",
+        sourceHost: "private.example.com"
+      })
+    })
+  });
+  assert.equal(otherUserApplication.response.status, 201);
+
+  const personalApplicationStream = await fetch(`${app.baseUrl}/v1/conversations/${conversationId}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      content: "我投了哪些产品经理岗位，进度怎么样？",
+      clientMessageId: "e2e-personal-applications-message"
+    })
+  });
+  const personalApplicationBody = await personalApplicationStream.text();
+  assert.match(personalApplicationBody, /个人投递管理｜当前投递概览/);
+  assert.match(personalApplicationBody, /远航智能/);
+  assert.doesNotMatch(personalApplicationBody, /隐私科技|保密岗位/);
+
+  const applicationFollowUpStream = await fetch(`${app.baseUrl}/v1/conversations/${conversationId}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      content: "那下一步呢？",
+      clientMessageId: "e2e-personal-applications-follow-up"
+    })
+  });
+  assert.match(await applicationFollowUpStream.text(), /个人投递管理｜当前投递概览/);
+
   const applicationContext = await jsonRequest(app.baseUrl, "/v1/chat-context", { headers });
   assert.equal(applicationContext.payload.data.contexts[0].kind, "application");
   assert.match(applicationContext.payload.data.contexts[0].label, /远航智能/);

@@ -244,6 +244,9 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
   const project = profile.projects[index];
   const campusExperience = profile.campusExperiences[index];
   const award = profile.awards[index];
+  const language = profile.languages?.[index] || profile.languages?.[0];
+  const qualification = profile.qualifications?.[index] || profile.qualifications?.[0];
+  const familyMember = profile.familyMembers?.[index] || profile.familyMembers?.[0];
   return {
     fullName: profile.fullName,
     gender: profile.gender,
@@ -327,6 +330,23 @@ function profileValues(profile: PersonalProfile, repeatIndex = 0): Record<string
     awardName: award?.name || "",
     awardLevel: award?.level || "",
     awardDescription: award?.description || "",
+    languageName: language?.name || "",
+    languageCertificate: language?.certificate || "",
+    englishLevel: language?.englishLevel || "",
+    languageScore: language?.score || "",
+    languageProficiency: language?.proficiency || "",
+    listeningSpeaking: language?.listeningSpeaking || "",
+    readingWriting: language?.readingWriting || "",
+    qualificationDate: qualification?.date || "",
+    qualificationName: qualification?.name || "",
+    qualificationNumber: qualification?.number || "",
+    qualificationDescription: qualification?.description || "",
+    familyName: familyMember?.name || "",
+    familyRelation: familyMember?.relation || "",
+    familyPhone: familyMember?.phone || "",
+    familyCompany: familyMember?.company || "",
+    familyPosition: familyMember?.position || "",
+    familyPoliticalStatus: familyMember?.politicalStatus || "",
     selfIntroduction: profile.selfIntroduction,
     strengths: profile.strengths,
     careerPlan: profile.careerPlan,
@@ -341,7 +361,10 @@ function profileRepeatCounts(profile: PersonalProfile) {
     experience: profile.experiences.length,
     project: profile.projects.length,
     campus: profile.campusExperiences.length,
-    award: profile.awards.length
+    award: profile.awards.length,
+    language: profile.languages?.length || 0,
+    qualification: profile.qualifications?.length || 0,
+    family: profile.familyMembers?.length || 0
   };
 }
 
@@ -455,10 +478,12 @@ function profileFieldValue(
   return endKey ? `${value}${PROFILE_DATE_RANGE_SEPARATOR}${values[endKey] || ""}` : value;
 }
 
-const displayProfileFieldValue = (value: string) =>
-  value.includes(PROFILE_DATE_RANGE_SEPARATOR)
+const displayProfileFieldValue = (value: string, key?: string) => {
+  if (key === "idNumber" && value.length > 6) return `${value.slice(0, 3)}${"*".repeat(Math.max(4, value.length - 7))}${value.slice(-4)}`;
+  return value.includes(PROFILE_DATE_RANGE_SEPARATOR)
     ? value.split(PROFILE_DATE_RANGE_SEPARATOR).filter(Boolean).join(" — ")
     : value;
+};
 
 function comparableProfile(profile: PersonalProfile): string {
   const { updatedAt: _updatedAt, ...content } = profile;
@@ -1023,7 +1048,7 @@ export default function ProfileView({
                   <input type="checkbox" checked={selectedFields.has(field.id)} disabled={!available} onChange={() => toggleField(field.id)} />
                   <span className="profile-match-check">{selectedFields.has(field.id) && <Check size={12} />}</span>
                   <span><strong>{field.key ? profileFieldName(field) : "待识别字段"}</strong><small>{field.section ? `${field.section} · ` : ""}{field.label}</small></span>
-                  <em>{available ? displayProfileFieldValue(value) : result?.reason || "资料未填写"}<small>{resultLabel}</small></em>
+                  <em>{available ? displayProfileFieldValue(value, field.key) : result?.reason || "资料未填写"}<small>{resultLabel}</small></em>
                 </label>
               );
             })}

@@ -599,7 +599,8 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-inline: clamp(1rem, 3vw, 2.5rem);
+  padding-inline-start: clamp(1rem, 3vw, 2.5rem);
+  padding-inline-end: 20.5rem;
   background: var(--of-surface, #fffdfb);
   border-block-end: 1px solid var(--of-line);
 }

@@ -6,12 +6,23 @@ import type {
 } from "../../infrastructure/storage/storage";
 
 const VALID_KINDS = new Set<StoredResumeKind>(["base", "job"]);
+const RETIRED_DIAGNOSTIC_EXTRA_KEYS = new Set(["parseCoverage", "resumeUnclassifiedText"]);
 
 const clampCoverage = (value: number) => Math.max(0, Math.min(1, value));
 
 function hasValue(value: unknown): boolean {
   if (typeof value === "string") return Boolean(value.trim());
   return value !== undefined && value !== null && value !== false;
+}
+
+/** Removes parser diagnostics that older imports accidentally exposed as user fields. */
+export function stripResumeDiagnosticFields(profile: StoredResume["profile"]): StoredResume["profile"] {
+  const entries = Object.entries(profile.extraFields || {});
+  if (!entries.some(([key]) => RETIRED_DIAGNOSTIC_EXTRA_KEYS.has(key))) return profile;
+  return {
+    ...profile,
+    extraFields: Object.fromEntries(entries.filter(([key]) => !RETIRED_DIAGNOSTIC_EXTRA_KEYS.has(key)))
+  };
 }
 
 export function countResumeFields(resume: Pick<StoredResume, "profile">): number {
@@ -147,8 +158,10 @@ export function migrateResumeLibrary(input: StoredResume[]): StoredResume[] {
             : resume.parentResumeId) || (resume.masterResumeId ? basesByMaster.get(resume.masterResumeId) : undefined)
         : undefined;
       const source = normalizeSourceMetadata(sourceOwner, kind);
+      const profile = stripResumeDiagnosticFields(resume.profile);
+      const normalizedResume = profile === resume.profile ? resume : { ...resume, profile };
       return {
-        ...resume,
+        ...normalizedResume,
         kind,
         masterResumeId: undefined,
         parentResumeId,
@@ -160,7 +173,7 @@ export function migrateResumeLibrary(input: StoredResume[]): StoredResume[] {
         assets,
         portraitAssetId: resume.portraitAssetId || legacyMaster?.portraitAssetId,
         sourceAssetsInherited: kind === "job" && Boolean(!resume.assets && assets?.length),
-        parse: normalizeParseMetadata(resume),
+        parse: normalizeParseMetadata(normalizedResume),
         source: source ? { ...source, storageStatus: sourcePdf ? (kind === "base" ? "stored" : "referenced") : "missing" } : source
       } satisfies StoredResume;
     });
@@ -194,6 +207,7 @@ export function dehydrateResumeLibrary(input: StoredResume[]): StoredResume[] {
       sourceAssetsInherited: _sourceAssetsInherited,
       ...persisted
     } = resume;
+    persisted.profile = stripResumeDiagnosticFields(persisted.profile);
     if (resume.kind === "job" && resume.parentResumeId) {
       delete persisted.sourcePdf;
       delete persisted.assets;

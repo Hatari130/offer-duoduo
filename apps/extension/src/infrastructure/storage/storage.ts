@@ -12,7 +12,8 @@ import {
   countResumeFields,
   dehydrateResumeLibrary,
   migrateResumeLibrary,
-  resolveActiveResumeId
+  resolveActiveResumeId,
+  stripResumeDiagnosticFields
 } from "@/features/resumes/resumeLifecycle";
 
 export const JOBS_KEY = "offerflow.jobs";
@@ -285,14 +286,14 @@ export async function saveSettings(settings: OfferFlowSettings): Promise<void> {
 export async function loadProfile(): Promise<PersonalProfile> {
   if (!hasChromeStorage()) {
     const value = localStorage.getItem(PROFILE_KEY);
-    return value ? { ...EMPTY_PROFILE, ...JSON.parse(value) } : { ...EMPTY_PROFILE };
+    return value ? stripResumeDiagnosticFields({ ...EMPTY_PROFILE, ...JSON.parse(value) }) : { ...EMPTY_PROFILE };
   }
   const result = await chrome.storage.local.get(PROFILE_KEY);
-  return { ...EMPTY_PROFILE, ...(result[PROFILE_KEY] as PersonalProfile | undefined) };
+  return stripResumeDiagnosticFields({ ...EMPTY_PROFILE, ...(result[PROFILE_KEY] as PersonalProfile | undefined) });
 }
 
 export async function saveProfile(profile: PersonalProfile): Promise<void> {
-  const next = { ...profile, updatedAt: new Date().toISOString() };
+  const next = { ...stripResumeDiagnosticFields(profile), updatedAt: new Date().toISOString() };
   if (!hasChromeStorage()) {
     localStorage.setItem(PROFILE_KEY, JSON.stringify(next));
     return;

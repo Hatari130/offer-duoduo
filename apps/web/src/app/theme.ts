@@ -17,6 +17,15 @@ export function readStoredColorTheme(): ColorTheme | undefined {
 }
 
 export function getInitialColorTheme(): ColorTheme {
+  try {
+    const urlTheme = typeof window !== "undefined" ? new URL(window.location.href).searchParams.get("theme") : null;
+    if (urlTheme === "light" || urlTheme === "dark") {
+      persistColorTheme(urlTheme);
+      return urlTheme;
+    }
+  } catch {
+    // Ignore URL parse error in restricted environments
+  }
   const storedTheme = readStoredColorTheme();
   return resolveColorTheme(storedTheme || null, window.matchMedia?.("(prefers-color-scheme: dark)").matches ?? false);
 }

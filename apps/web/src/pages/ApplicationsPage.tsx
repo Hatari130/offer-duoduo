@@ -109,12 +109,15 @@ export function ApplicationsPage() {
   const [query, setQuery] = useState("");
   const [stage, setStage] = useState<"all" | ApplicationStage>("all");
   const [sort, setSort] = useState<{ key: SortKey; direction: SortDirection }>();
-  const [view, setView] = useState<ViewMode>("table");
+  const [view, setView] = useState<ViewMode>(() => {
+    if (typeof window === "undefined") return "table";
+    const param = new URL(window.location.href).searchParams.get("view");
+    return param === "board" ? "board" : "table";
+  });
   const [exporting, setExporting] = useState(false);
   const [expandedEmptyStages, setExpandedEmptyStages] = useState<Set<ApplicationStage>>(() => new Set());
   const [dialog, setDialog] = useState<{ mode: "create" } | { mode: "edit"; item: ApplicationSyncItem }>();
   const [interviewDialog, setInterviewDialog] = useState<ApplicationSyncItem>();
-
   useEffect(() => {
     if (!status) return;
     const timer = window.setTimeout(() => setStatus(""), 2500);
