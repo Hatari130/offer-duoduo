@@ -1573,11 +1573,11 @@
 
   const pupumallRepeatEntrySelector = "[class*='NewFormBtn__'] > [class*='FormContainer__'] > [class*='FormItemBox__']";
   const repeatEntrySelectors = {
-    education: `.create-education,.education-entry,[data-education-entry],.resumeEditForm-item.resumeEditForm-education,[data-nav-id='block-educationInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    experience: `.create-empirical,.experience-entry,.work-entry,[data-experience-entry],.resumeEditForm-item.resumeEditForm-career,.resumeEditForm-item.resumeEditForm-internship,[data-nav-id='block-experienceInfo'] > [class*='apply-fields-'][class*='multi-'],[data-nav-id='block-practiceInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    project: `.project-entry,[data-project-entry],.resumeEditForm-item.resumeEditForm-project,[data-nav-id='block-projectInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    campus: `.campus-entry,[data-campus-entry],.resumeEditForm-item.resumeEditForm-campus,.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    award: `.award-entry,[data-award-entry],.resumeEditForm-item.resumeEditForm-award,[data-nav-id='block-awardInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`
+    education: `[way-repeat='jyjl'],.create-education,.education-entry,[data-education-entry],.resumeEditForm-item.resumeEditForm-education,[data-nav-id='block-educationInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
+    experience: `[way-repeat='sxjl'],[way-repeat='gzjl'],.create-empirical,.experience-entry,.work-entry,[data-experience-entry],.resumeEditForm-item.resumeEditForm-career,.resumeEditForm-item.resumeEditForm-internship,[data-nav-id='block-experienceInfo'] > [class*='apply-fields-'][class*='multi-'],[data-nav-id='block-practiceInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
+    project: `[way-repeat='xmjl'],.project-entry,[data-project-entry],.resumeEditForm-item.resumeEditForm-project,[data-nav-id='block-projectInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
+    campus: `[way-repeat='zxjl'],.campus-entry,[data-campus-entry],.resumeEditForm-item.resumeEditForm-campus,.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
+    award: `[way-repeat='jcqk'],.award-entry,[data-award-entry],.resumeEditForm-item.resumeEditForm-award,[data-nav-id='block-awardInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`
   };
 
   // ATSX gives every repeated record a native path such as
@@ -1585,6 +1585,40 @@
   // than DOM order: adding another card or rerendering the section cannot make
   // fields from two records share an occurrence counter.
   const indexedRepeatEntryContext = (element) => {
+    const wayRepeatContainer = element.closest?.("[way-repeat]");
+    const wayRepeat = wayRepeatContainer?.getAttribute?.("way-repeat") || "";
+    const wayData = element.getAttribute?.("way-data") || "";
+    const wayScope = wayRepeat || wayData.split(".")[0];
+    const wayGroupMap = {
+      jyjl: { group: "education", kind: "education" },
+      sxjl: { group: "experience", kind: "internship" },
+      gzjl: { group: "experience", kind: "work" },
+      xmjl: { group: "project", kind: "project" },
+      zxjl: { group: "campus", kind: "campus" },
+      yynl: { group: "language", kind: "language" },
+      jtgx: { group: "family", kind: "family" }
+    };
+    if (wayScope && wayGroupMap[wayScope]) {
+      const { group, kind } = wayGroupMap[wayScope];
+      const keyAttr = element.getAttribute?.("key") || element.closest?.("[key]")?.getAttribute?.("key");
+      let index = /^\d+$/.test(keyAttr || "") ? Number.parseInt(keyAttr, 10) : undefined;
+      if (index === undefined && wayRepeatContainer?.parentElement) {
+        const siblings = Array.from(wayRepeatContainer.parentElement.children)
+          .filter((c) => c.getAttribute?.("way-repeat") === wayScope);
+        const domIndex = siblings.indexOf(wayRepeatContainer);
+        if (domIndex >= 0) index = domIndex;
+      }
+      if (Number.isInteger(index)) {
+        return {
+          group,
+          kind,
+          index,
+          source: "attribute",
+          fingerprint: `${group}:microdone:${kind}:${index}`
+        };
+      }
+    }
+
     const attributes = [
       "id", "name", "data-cy", "data-field", "data-question",
       "data-form-field-id", "data-form-field-name"
@@ -2172,14 +2206,41 @@
     return label.length >= 2;
   };
 
+  const resolveTargetDocument = () => {
+    const directInputs = document.querySelectorAll(
+      "input:not([type='hidden']), select, textarea, [contenteditable='true'], [role='combobox']"
+    );
+    if (directInputs.length >= 3 || document.querySelector(".form1Class, [way-repeat], #jbxxform")) {
+      return document;
+    }
+    const iframes = Array.from(document.querySelectorAll("iframe, frame"));
+    for (const iframe of iframes) {
+      try {
+        const subDoc = iframe.contentDocument;
+        if (!subDoc) continue;
+        const subInputs = subDoc.querySelectorAll(
+          "input:not([type='hidden']), select, textarea, [contenteditable='true'], [role='combobox'], .form1Class, [way-repeat], #jbxxform"
+        );
+        if (subInputs.length >= 2) {
+          return subDoc;
+        }
+      } catch {
+        // Cross-origin iframe, ignore
+      }
+    }
+    return document;
+  };
+
   const scanApplicationForm = () => {
-    const adapter = window.OfferFlowFormAdapters?.resolve?.(location) || {
+    const targetDoc = resolveTargetDocument();
+    const targetLocation = targetDoc.defaultView?.location || location;
+    const adapter = window.OfferFlowFormAdapters?.resolve?.(targetLocation) || {
       id: "generic",
       name: "通用表单",
       version: "builtin",
       compiled: []
     };
-    document.querySelectorAll("[data-offerflow-field-id]").forEach((element) => {
+    targetDoc.querySelectorAll("[data-offerflow-field-id]").forEach((element) => {
       delete element.dataset.offerflowFieldId;
     });
     const selector = [
@@ -2202,6 +2263,7 @@
       ".ivu-select-dropdown", ".next-menu-popup", ".next-overlay-wrapper",
       ".semi-portal", ".arco-select-popup", ".t-popup", ".t-select__dropdown",
       ".ihr_base_picker-panel", ".ihr_dict_picker-panel", ".ihr_school_picker-panel",
+      ".bootstrap-select .dropdown-menu", ".dropdown-menu.inner",
       "[class*='sd-Dropdown-dropdown-']",
       "[role='listbox']"
     ].join(",");
@@ -2214,6 +2276,11 @@
       if (atsxControl) return atsxControl;
       const antControl = antSelectControl(element);
       if (antControl) return antControl;
+      const bsSelect = element.closest?.(".bootstrap-select");
+      if (bsSelect) {
+        const nativeSelect = bsSelect.querySelector("select") || bsSelect.parentElement?.querySelector("select");
+        if (nativeSelect) return nativeSelect;
+      }
       const driven = formControlDrivers?.identify?.(element);
       if (driven) {
         return driven.root.querySelector?.("[role='combobox'],input:not([type='hidden'])") || driven.root;
@@ -2224,7 +2291,7 @@
       }
       return element;
     };
-    const elements = Array.from(document.querySelectorAll(selector))
+    const elements = Array.from(targetDoc.querySelectorAll(selector))
       .filter((element) => !element.closest?.(transientPopupSelector))
       .map(canonicalElement)
       .filter((element, index, all) => {
@@ -2233,7 +2300,12 @@
         if (adapter.id === "tencent" && element.matches?.(".telephone-region")) return false;
         if (element.matches("input,textarea") && element.closest(checkboxSelector)) return false;
         if (element instanceof HTMLInputElement && element.type === "radio" && element.closest(radioGroupSelector)) return false;
-        return element.getClientRects().length > 0;
+        if (element.getClientRects().length > 0) return true;
+        if (element instanceof HTMLSelectElement) {
+          const bsContainer = element.closest?.(".bootstrap-select") || element.parentElement?.querySelector?.(".bootstrap-select");
+          if (bsContainer && bsContainer.getClientRects().length > 0) return true;
+        }
+        return false;
       });
     const seenRadioGroups = new Set();
     const anonymousRadioGroups = new WeakMap();
@@ -4418,7 +4490,7 @@
     if (compoundDate?.engine === "moka") return fillMokaDate(element, value);
     if (isMokaManagedDateInput(element)) return fillMokaManagedDate(element, value);
     const sharedDriver = formControlDrivers?.identify?.(element);
-    const sharedDriverIds = new Set(["moka", "feishu", "element", "iview", "fusion", "semi", "arco", "tdesign", "mdesign", "generic"]);
+    const sharedDriverIds = new Set(["moka", "feishu", "element", "iview", "fusion", "semi", "arco", "tdesign", "mdesign", "bootstrap", "generic"]);
     if (sharedDriver && sharedDriverIds.has(sharedDriver.id)) {
       const driven = await formControlDrivers.fill(element, value, {
         click: clickControlInUserOrder,
@@ -4441,6 +4513,23 @@
       element.value = option.value;
       // React 受控 <select> 同样用 _valueTracker 判断变化，设回旧值确保 onChange 触发
       element._valueTracker?.setValue?.(oldValue);
+      const win = element.ownerDocument?.defaultView || window;
+      const bsContainer = element.closest?.(".bootstrap-select") || element.parentElement?.querySelector?.(".bootstrap-select");
+      if (bsContainer || element.classList?.contains("selectpicker")) {
+        try {
+          if (typeof win.$ === "function") {
+            win.$(element).val(option.value).selectpicker?.("refresh");
+          }
+        } catch {}
+      }
+      const wayKey = element.getAttribute?.("way-data");
+      if (wayKey && typeof win.way?.set === "function") {
+        try { win.way.set(wayKey, option.value); } catch {}
+      }
+      const form = element.form || element.closest?.("form");
+      if (form && typeof win.$ === "function") {
+        try { win.$(form).bootstrapValidator?.("revalidateField", element.name || element.id); } catch {}
+      }
     } else if (element instanceof HTMLInputElement && element.type === "radio") {
       const container = element.closest(".ant-radio-group,fieldset,[role='radiogroup'],[class~='radio-group'],[class$='-radio-group']");
       const radios = container
@@ -4565,6 +4654,15 @@
       // 检测到"实际值 ≠ 跟踪值"而触发 onChange（防止赋值被 React 回滚/忽略）
       element._valueTracker?.setValue?.(oldValue);
       dispatchInputEvents(element);
+      const win = element.ownerDocument?.defaultView || window;
+      const wayKey = element.getAttribute?.("way-data");
+      if (wayKey && typeof win.way?.set === "function") {
+        try { win.way.set(wayKey, value); } catch {}
+      }
+      const form = element.form || element.closest?.("form");
+      if (form && typeof win.$ === "function") {
+        try { win.$(form).bootstrapValidator?.("revalidateField", element.name || element.id); } catch {}
+      }
       if (element.closest?.(".school-select")) {
         const selected = await fillTencentListControl(element, value);
         if (!selected) return false;
@@ -4626,8 +4724,11 @@
   const resolveFieldElement = (field) => {
     const runtimeElement = formRuntime?.resolveElement?.(field);
     if (runtimeElement) return runtimeElement;
+    const targetDoc = resolveTargetDocument();
     try {
-      return document.querySelector(`[data-offerflow-field-id="${CSS.escape(field.id)}"]`) || undefined;
+      return targetDoc.querySelector(`[data-offerflow-field-id="${CSS.escape(field.id)}"]`) ||
+        document.querySelector(`[data-offerflow-field-id="${CSS.escape(field.id)}"]`) ||
+        undefined;
     } catch {
       return undefined;
     }

@@ -5,7 +5,13 @@ import type {
   ApplicationSyncItem
 } from "@offerflow/contracts";
 import type { JobApplication } from "@offerflow/domain";
-import { loadJobs, loadResumeLibrary, saveJobs } from "@/infrastructure/storage/storage";
+import {
+  loadJobs,
+  loadResumeLibrary,
+  saveJobs,
+  saveResumeLibrary
+} from "@/infrastructure/storage/storage";
+import { mergeRemoteResumeTemplates } from "./resumeTemplateSync";
 import {
   clearCloudSyncStorage,
   clearCloudDataOwner,
@@ -299,10 +305,13 @@ async function syncResumeTemplates(client: ReturnType<typeof createApiClient>): 
       name: resume.name,
       sourceFileName: resume.sourceFileName,
       profile: resume.profile,
+      origin: "extension" as const,
       createdAt: resume.createdAt,
       updatedAt: resume.updatedAt
     }));
-  await client.resumes.syncTemplates({ templates });
+  const response = await client.resumes.syncTemplates({ templates });
+  const nextLibrary = mergeRemoteResumeTemplates(library, response.templates);
+  if (JSON.stringify(nextLibrary) !== JSON.stringify(library)) await saveResumeLibrary(nextLibrary);
 }
 
 async function performCloudSync(): Promise<CloudSyncOverview> {

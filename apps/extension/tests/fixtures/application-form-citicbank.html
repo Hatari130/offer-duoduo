@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>中信银行招聘官网</title>
+    <style>
+      body { font: 14px/1.5 Arial, sans-serif; }
+      .form-control { display: block; width: 100%; height: 34px; padding: 6px 12px; }
+      .selectpicker { display: none; }
+      .bootstrap-select { position: relative; display: inline-block; width: 100%; height: 34px; }
+      .dropdown-toggle { width: 100%; height: 34px; text-align: left; }
+      .table-bordered { width: 100%; border-collapse: collapse; }
+      .table-bordered td { border: 1px solid #ddd; padding: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="form1Class">
+      <form id="jbxxform" class="form-horizontal">
+        <table class="table table-bordered">
+          <tbody>
+            <tr>
+              <td class="col-md-3">
+                <div><span style="color:red;">*</span>姓名</div>
+                <input type="text" id="a0101" name="a0101" way-data="grjbxx.a0101" class="form-control" />
+              </td>
+              <td class="col-md-3">
+                <div><span style="color:red;">*</span>移动电话</div>
+                <input type="text" id="a0118" name="a0118" way-data="grjbxx.a0118" class="form-control" />
+              </td>
+              <td class="col-md-3">
+                <div><span style="color:red;">*</span>性别</div>
+                <div class="btn-group bootstrap-select form-control">
+                  <select id="a0102" name="a0102" class="form-control selectpicker" way-data="grjbxx.a0102">
+                    <option value="">请选择</option>
+                    <option value="1">男</option>
+                    <option value="2">女</option>
+                  </select>
+                  <button type="button" class="btn dropdown-toggle selectpicker btn-default" data-toggle="dropdown">
+                    <span class="filter-option pull-left">请选择</span>
+                  </button>
+                </div>
+              </td>
+              <td class="col-md-3">
+                <div>身高</div>
+                <input type="text" id="a0213" name="a0213" way-data="grjbxx.a0213" class="form-control" />
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- 教育经历模块 -->
+        <div id="jyjlModule">
+          <div way-repeat="jyjl" key="0">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td class="col-md-3">
+                    <div><span style="color:red;">*</span>毕业院校</div>
+                    <input type="text" id="jyjlbyyx_0" name="byyx" way-data="jyjl.byyx" key="0" class="form-control" />
+                  </td>
+                  <td class="col-md-3">
+                    <div><span style="color:red;">*</span>入学时间</div>
+                    <input type="text" id="jyjlrxsj_0" name="rxsj" way-data="jyjl.rxsj" key="0" class="form-control" placeholder="请保证您的格式为yyyy-mm-dd" />
+                  </td>
+                  <td class="col-md-3">
+                    <div><span style="color:red;">*</span>毕业时间</div>
+                    <input type="text" id="jyjlbysj_0" name="bysj" way-data="jyjl.bysj" key="0" class="form-control" placeholder="请保证您的格式为yyyy-mm-dd" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <span class="add_more2 addFontClass" way-action-push="jyjl" id="jyjlAddId" onclick="addEducation()">+添加教育经历</span>
+        </div>
+      </form>
+    </div>
+
+    <script>
+      window.way = {
+        data: {},
+        set(k, v) {
+          window.way.data[k] = v;
+        },
+        get(k) {
+          return window.way.data[k];
+        }
+      };
+      let addClicks = 0;
+      function addEducation() {
+        addClicks += 1;
+        const count = document.querySelectorAll("[way-repeat='jyjl']").length;
+        const clone = document.querySelector("[way-repeat='jyjl']").cloneNode(true);
+        clone.setAttribute("key", String(count));
+        clone.querySelectorAll("input").forEach((inp) => {
+          inp.setAttribute("key", String(count));
+          inp.value = "";
+        });
+        document.querySelector("#jyjlModule").insertBefore(clone, document.querySelector("#jyjlAddId"));
+      }
+
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script>
+      const citicAdapter = window.OfferFlowFormAdapters.resolve({
+        hostname: "job.citicbank.com",
+        pathname: "/CustStyle/zpmhys/addSchoolResume4.html"
+      });
+      window.OfferFlowFormAdapters.resolve = () => citicAdapter;
+    </script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const repeatCounts = { education: 2 };
+      const snapshots = [
+        {
+          fullName: "张三",
+          phone: "13800138000",
+          gender: "男",
+          height: "178",
+          school: "南京大学",
+          educationStartDate: "2024-09-01",
+          educationEndDate: "2027-06-30"
+        },
+        {
+          school: "北京林业大学",
+          educationStartDate: "2018-09-01",
+          educationEndDate: "2023-06-30"
+        }
+      ];
+
+      listener({
+        type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2",
+        expandRepeaters: true,
+        repeatCounts
+      }, {}, (scan) => {
+        listener({
+          type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+          fields: scan.fields,
+          values: {},
+          fieldValues: {},
+          profileSnapshots: snapshots,
+          repeatCounts,
+          fillDynamicFields: true,
+          maxRounds: 5,
+          delayMs: 0
+        }, {}, (fill) => {
+          document.body.dataset.ready = "true";
+          document.body.dataset.result = encodeURIComponent(JSON.stringify({
+            ok: true,
+            data: {
+              scan,
+              fill,
+              addClicks,
+              name: document.querySelector("#a0101")?.value || "",
+              phone: document.querySelector("#a0118")?.value || "",
+              height: document.querySelector("#a0213")?.value || "",
+              gender: document.querySelector("#a0102")?.value || "",
+              wayData: window.way.data,
+              education: Array.from(document.querySelectorAll("[way-repeat='jyjl']")).map((card) => ({
+                school: card.querySelector("input[name='byyx']")?.value || "",
+                start: card.querySelector("input[name='rxsj']")?.value || "",
+                end: card.querySelector("input[name='bysj']")?.value || ""
+              }))
+            }
+          }));
+        });
+      });
+    </script>
+  </body>
+</html>

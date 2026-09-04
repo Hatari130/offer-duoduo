@@ -14,6 +14,7 @@ import type {
   ConversationListResponse,
   ConversationResponse,
   CreateApplicationRequest,
+  CreateResumeTemplateRequest,
   CreateTailorTaskRequest,
   CreateTailorTaskResponse,
   CreateConversationRequest,
@@ -39,6 +40,7 @@ import type {
   ResumeVersionResponse,
   ResumeVersionListResponse,
   ResumeTemplateListResponse,
+  ResumeTemplateResponse,
   SyncResumeTemplatesRequest,
   RegisterRequest,
   ResetPasswordRequest,
@@ -51,6 +53,7 @@ import type {
   UpdateApplicationRequest,
   UpdateAccountAvatarRequest,
   UpdateResumeVersionRequest,
+  UpdateResumeTemplateRequest,
   VerifyEmailVerificationCodeRequest
 } from "@offerflow/contracts";
 import type { CreateInterviewRecordFromTranscriptRequest } from "@offerflow/contracts";
@@ -320,6 +323,25 @@ export function createApiClient(options: ApiClientOptions) {
 
   const resumes = {
     listTemplates: () => request<ResumeTemplateListResponse>("/v1/resume-templates"),
+    createTemplate: (body: CreateResumeTemplateRequest) =>
+      request<ResumeTemplateResponse>("/v1/resume-templates", {
+        method: "POST",
+        body: JSON.stringify(body)
+      }),
+    getTemplate: (templateId: string) =>
+      request<ResumeTemplateResponse>(
+        `/v1/resume-templates/${encodeURIComponent(templateId)}`
+      ),
+    updateTemplate: (templateId: string, body: UpdateResumeTemplateRequest) =>
+      request<ResumeTemplateResponse>(
+        `/v1/resume-templates/${encodeURIComponent(templateId)}`,
+        { method: "PATCH", body: JSON.stringify(body) }
+      ),
+    removeTemplate: (templateId: string) =>
+      request<{ deleted: true }>(
+        `/v1/resume-templates/${encodeURIComponent(templateId)}`,
+        { method: "DELETE" }
+      ),
     syncTemplates: (body: SyncResumeTemplatesRequest) =>
       request<ResumeTemplateListResponse>("/v1/resume-templates/sync", {
         method: "POST",

@@ -186,3 +186,20 @@ test("company archives are stored in the versioned structured format", async () 
   assert.equal(stored?.companies?.["stored-company"]?.basePlatformId, "moka");
   assert.deepEqual(stored?.companies?.["stored-company"]?.hosts, ["^jobs\\.stored-company\\.test$"]);
 });
+
+test("CITIC Bank routes to its company form adapter and matches Microdone fields", () => {
+  const adapter = formAdapters.resolve(locationLike("job.citicbank.com", "/CustStyle/zpmhys/addSchoolResume4.html"));
+  assert.equal(adapter.route.layer, "company");
+  assert.equal(adapter.route.companyId, "citicbank");
+  assert.equal(adapter.id, "citicbank");
+  assert.equal(formAdapters.match(element({ id: "a0101", name: "a0101", "way-data": "grjbxx.a0101" }), "姓名", adapter)?.key, "fullName");
+  assert.equal(formAdapters.match(element({ id: "a0118", name: "a0118", "way-data": "grjbxx.a0118" }), "移动电话", adapter)?.key, "phone");
+  assert.equal(formAdapters.match(element({ id: "a0102", name: "a0102" }), "性别", adapter)?.key, "gender");
+  assert.equal(formAdapters.match(element({ id: "a0213", name: "a0213" }), "身高", adapter)?.key, "height");
+  assert.equal(formAdapters.match(element({ id: "jyjlbyyx0", name: "byyx", "way-data": "jyjl.byyx" }), "毕业院校", adapter)?.key, "school");
+  assert.equal(formAdapters.match(element({ name: "rxsj", "way-data": "jyjl.rxsj" }), "入学时间", adapter)?.key, "educationStartDate");
+  assert.equal(formAdapters.match(element({ name: "bysj", "way-data": "jyjl.bysj" }), "毕业时间", adapter)?.key, "educationEndDate");
+  assert.equal(formAdapters.match(element({ name: "rzsj", "way-data": "sxjl.rzsj" }), "入职时间", adapter)?.key, "experienceStartDate");
+  assert.equal(formAdapters.match(element({ name: "lzsj", "way-data": "sxjl.lzsj" }), "离职时间", adapter)?.key, "experienceEndDate");
+  assert.equal(formAdapters.match(element({ name: "gzdw", "way-data": "sxjl.gzdw" }), "单位名称", adapter)?.key, "experienceOrganization");
+});

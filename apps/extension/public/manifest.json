@@ -8,7 +8,8 @@
     "identity",
     "storage",
     "unlimitedStorage",
-    "scripting"
+    "scripting",
+    "tabs"
   ],
   "host_permissions": [
     "http://*/*",
@@ -36,7 +37,9 @@
     {
       "matches": ["http://*/*", "https://*/*"],
       "js": ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "all_frames": true,
+      "match_about_blank": true
     }
   ],
   "web_accessible_resources": [

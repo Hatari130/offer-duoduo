@@ -377,6 +377,64 @@
       ]
     },
     {
+      id: "citicbank",
+      name: "中信银行招聘",
+      hosts: [/^job\.citicbank\.com$/i],
+      markers: [
+        ".form1Class",
+        "[way-repeat]",
+        "#jbxxform",
+        ".resume_table1"
+      ],
+      mappings: [
+        ["fullName", "姓名|真实姓名|candidateName|a0101"],
+        ["countryRegion", "国籍/地区|国籍|所在国家|nationality|BM_AD"],
+        ["height", "身高|a0213"],
+        ["weight", "体重|weight"],
+        ["phone", "移动电话|手机号码|手机号|联系电话|a0118"],
+        ["gender", "性别|a0102|BM_ZXXB"],
+        ["birthDate", "出生日期|出生年月|a0107|birthday"],
+        ["email", "电子邮箱|邮箱|电子邮件|email"],
+        ["idNumber", "证件号码|身份证号|身份证号码|a0177"],
+        ["idType", "证件类型|身份证类型|yxsfzjlx|a0171|BM_MHZJLX"],
+        ["politicalStatus", "政治面貌|a0141|BM_BG"],
+        ["maritalStatus", "婚姻状况|a0124|BM_AT"],
+        ["nationality", "民族|nation|a0117|BM_AE"],
+        ["healthStatus", "健康状况|健康情况|healthStatus|BM_JKZK"],
+        ["nativePlace", "生源地|籍贯|户籍|origin|a0111"],
+        ["currentCity", "现居住地|通讯地址|常住地|现居城市|a0202"],
+        ["selfIntroduction", "自我评价|自我介绍|个人简介|a0209"],
+        ["educationForm", "学习形式|培养方式|教育形式|xxxs|BM_XXXS|learnMode|BM_XXMODE"],
+        ["degree", "学历|最高学历|xl|BM_XL"],
+        ["school", "毕业院校|学校名称|学校|byyx|byyxqt|BM_XXDX"],
+        ["educationStartDate", "入学时间|起止时间|学习时间|rxsj"],
+        ["educationEndDate", "毕业时间|bysj"],
+        ["graduationDate", "毕业时间|bysj"],
+        ["faculty", "院系|所属院系|department"],
+        ["major", "专业名称|所学专业|专业|sxzy"],
+        ["educationDegree", "学位|最高学位|xw|BM_ZXXW"],
+        ["experienceStartDate", "入职时间|开始时间|rzsj"],
+        ["experienceEndDate", "离职时间|结束时间|lzsj"],
+        ["experienceOrganization", "单位名称|工作单位|企业名称|公司名称|gzdw"],
+        ["experienceTitle", "岗位名称|职位名称|岗位|职务|rzgw|zw"],
+        ["experienceDescription", "工作描述|职责|工作职责|实习内容|gzms"],
+        ["projectStartDate", "开始时间|startDate"],
+        ["projectEndDate", "结束时间|endDate"],
+        ["projectName", "项目名称|projName"],
+        ["projectDescription", "项目内容|项目描述|contents"],
+        ["projectRole", "项目职责|resp"],
+        ["projectPerformance", "项目成果|projectResult"],
+        ["languageName", "外语语种|语种|languages|BM_YY"],
+        ["languageScore", "外语成绩|成绩|分数|results"],
+        ["languageCertificate", "考试类型|等级|test_type"],
+        ["familyRelation", "称谓|与本人关系|家庭关系|BM_YBRGX|ybrgx"],
+        ["familyName", "姓名|成员姓名|cyxm"],
+        ["familyPhone", "联系电话|电话|phoneNumber"],
+        ["familyOrganization", "工作单位|单位|gzdw"],
+        ["familyTitle", "职务|岗位|gzzw"]
+      ]
+    },
+    {
       id: "generic",
       name: "通用表单",
       hosts: [],
@@ -391,7 +449,7 @@
     mappings: commonMappings
   });
   for (const adapter of adapters) {
-    if (["generic", "xiaomi", "tencent", "pupumall"].includes(adapter.id)) continue;
+    if (["generic", "xiaomi", "tencent", "pupumall", "midea", "citicbank"].includes(adapter.id)) continue;
     registry?.registerPlatform({
       id: adapter.id,
       name: adapter.name,
@@ -446,6 +504,15 @@
     formAdapterId: "midea",
     mappings: adapters.find((adapter) => adapter.id === "midea")?.mappings || [],
     priority: 90
+  });
+  registry?.registerCompany({
+    id: "citicbank",
+    name: "中信银行招聘",
+    hosts: [/^job\.citicbank\.com$/i],
+    basePlatformId: "generic",
+    formAdapterId: "citicbank",
+    mappings: adapters.find((adapter) => adapter.id === "citicbank")?.mappings || [],
+    priority: 95
   });
   registry?.registerCompany({
     id: "duxiaoman",
@@ -553,7 +620,8 @@
       const attributes = element
         ? [
             "name", "id", "placeholder", "aria-label", "data-nc-label", "data-field", "data-question",
-            "data-form-field-id", "data-form-field-name", "data-form-field-i18n-name"
+            "data-form-field-id", "data-form-field-name", "data-form-field-i18n-name",
+            "way-data", "tablename", "tableName"
           ]
             .map((name) => element.getAttribute?.(name) || "")
             .filter(Boolean)
@@ -587,7 +655,8 @@
     const attributes = element
       ? [
           "name", "id", "placeholder", "aria-label", "data-nc-label", "data-field", "data-question",
-          "data-form-field-id", "data-form-field-name", "data-form-field-i18n-name"
+          "data-form-field-id", "data-form-field-name", "data-form-field-i18n-name",
+          "way-data", "tablename", "tableName"
         ]
           .map((name) => element.getAttribute?.(name) || "")
           .filter(Boolean)

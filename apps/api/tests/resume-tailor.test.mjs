@@ -170,3 +170,84 @@ test("extension handoff creates, opens and autosaves a tailored resume version",
   });
   assert.equal(conflict.response.status, 409);
 });
+
+test("web-authored field resumes can be edited and synchronized back to the extension", async (t) => {
+  const app = await startTestServer();
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+  });
+
+  const auth = await jsonRequest(app.baseUrl, "/v1/auth/demo", { method: "POST" });
+  const token = auth.payload.data.accessToken;
+  const headers = { "Content-Type": "application/json", Authorization: `Bearer ${token}` };
+  const id = "resume-web-1";
+  const now = "2026-09-03T08:00:00.000Z";
+  const document = {
+    schemaVersion: 1,
+    id,
+    title: "产品经理通用简历",
+    profile: profile(),
+    template: {
+      templateId: "clarity",
+      accentColor: "#ad6042",
+      pageSize: "A4",
+      pageLimit: 1,
+      sectionOrder: ["summary", "education", "experience", "projects", "campus", "awards", "skills"],
+      hiddenSections: []
+    },
+    createdAt: now,
+    updatedAt: now
+  };
+
+  const created = await jsonRequest(app.baseUrl, "/v1/resume-templates", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ id, name: document.title, document })
+  });
+  assert.equal(created.response.status, 201);
+  assert.equal(created.payload.data.template.origin, "web");
+  assert.equal(created.payload.data.template.profile.fullName, "陈城");
+
+  const editedDocument = structuredClone(created.payload.data.template.document);
+  editedDocument.profile.targetRole = "AI 产品经理";
+  editedDocument.template.templateId = "editorial";
+  const updated = await jsonRequest(app.baseUrl, `/v1/resume-templates/${id}`, {
+    method: "PATCH",
+    headers,
+    body: JSON.stringify({ name: "AI 产品经理通用简历", document: editedDocument })
+  });
+  assert.equal(updated.response.status, 200);
+  assert.equal(updated.payload.data.template.profile.targetRole, "AI 产品经理");
+
+  const stalePluginSync = await jsonRequest(app.baseUrl, "/v1/resume-templates/sync", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ templates: [{ id, name: "旧插件简历", profile: profile(), origin: "extension", createdAt: now, updatedAt: now }] })
+  });
+  assert.equal(stalePluginSync.payload.data.templates[0].name, "AI 产品经理通用简历");
+
+  const newerProfile = profile();
+  newerProfile.phone = "13900000000";
+  const future = "2099-01-01T00:00:00.000Z";
+  const newerPluginSync = await jsonRequest(app.baseUrl, "/v1/resume-templates/sync", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ templates: [{ id, name: "插件修改后的简历", profile: newerProfile, origin: "extension", createdAt: now, updatedAt: future }] })
+  });
+  const synced = newerPluginSync.payload.data.templates[0];
+  assert.equal(synced.profile.phone, "13900000000");
+  assert.equal(synced.document.profile.phone, "13900000000");
+  assert.equal(synced.document.template.templateId, "editorial");
+
+  const removed = await jsonRequest(app.baseUrl, `/v1/resume-templates/${id}`, { method: "DELETE", headers });
+  assert.equal(removed.response.status, 200);
+  const afterDelete = await jsonRequest(app.baseUrl, "/v1/resume-templates", { headers });
+  assert.equal(afterDelete.payload.data.templates.length, 0);
+  const deletionSync = await jsonRequest(app.baseUrl, "/v1/resume-templates/sync", {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ templates: [{ id, name: "插件修改后的简历", profile: newerProfile, origin: "extension", createdAt: now, updatedAt: future }] })
+  });
+  assert.ok(deletionSync.payload.data.templates[0].deletedAt);
+});

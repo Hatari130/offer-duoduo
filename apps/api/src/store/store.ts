@@ -5,10 +5,12 @@ import type {
   ApplicationSyncRequest,
   ApplicationSyncResponse,
   AvatarKey,
+  CreateResumeTemplateRequest,
   CreateTailorTaskRequest,
   ResumeTemplateRecord,
   ResumeVersionRecord,
-  SessionUser
+  SessionUser,
+  UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
 import type { ProductFeedbackCategory } from "@offerflow/contracts";
 import type {
@@ -206,7 +208,11 @@ export interface OfferFlowStore {
   ): Awaitable<{ task: TailorTask; version: ResumeVersionRecord } | undefined>;
   getResumeVersion(userId: string, versionId: string): Awaitable<ResumeVersionRecord | undefined>;
   listResumeVersions(userId: string): Awaitable<ResumeVersionRecord[]>;
-  listResumeTemplates(userId: string): Awaitable<ResumeTemplateRecord[]>;
+  listResumeTemplates(userId: string, includeDeleted?: boolean): Awaitable<ResumeTemplateRecord[]>;
+  createResumeTemplate(userId: string, request: CreateResumeTemplateRequest): Awaitable<ResumeTemplateRecord>;
+  getResumeTemplate(userId: string, templateId: string): Awaitable<ResumeTemplateRecord | undefined>;
+  updateResumeTemplate(userId: string, templateId: string, request: UpdateResumeTemplateRequest): Awaitable<ResumeTemplateRecord>;
+  deleteResumeTemplate(userId: string, templateId: string): Awaitable<void>;
   syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): Awaitable<ResumeTemplateRecord[]>;
   updateResumeVersion(
     userId: string,

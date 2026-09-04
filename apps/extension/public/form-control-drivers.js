@@ -152,6 +152,33 @@
         "input[role='combobox']",
         "input[class*='search_input']"
       ]
+    },
+    {
+      id: "bootstrap",
+      roots: ".bootstrap-select",
+      opener: "button.dropdown-toggle,button[data-toggle='dropdown']",
+      popups: [
+        ".dropdown-menu.inner",
+        ".dropdown-menu.open",
+        ".bootstrap-select .dropdown-menu",
+        ".dropdown-menu"
+      ],
+      options: [
+        "ul.dropdown-menu.inner li:not(.disabled) a",
+        "ul.dropdown-menu li:not(.disabled) a",
+        "li:not(.disabled) a",
+        "[role='option']"
+      ],
+      selected: [
+        ".filter-option-inner-inner",
+        ".filter-option",
+        "button .filter-option"
+      ],
+      search: [
+        ".bs-searchbox input",
+        "input[type='search']",
+        "input[type='text']"
+      ]
     }
   ];
 

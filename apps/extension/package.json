@@ -12,7 +12,7 @@
     "test:pdf-fidelity": "node scripts/check-pdf-fidelity.mjs",
     "test:extension-pdf-flow": "node scripts/check-extension-pdf-flow.mjs",
     "test:tailor": "node --experimental-transform-types --test tests/pdf-editable-blocks.test.mjs tests/pdf-backed-html.test.mjs tests/source-pdf-reference.test.mjs tests/tailor-render.test.mts",
-    "test:sync": "node --experimental-transform-types --test tests/cloud-sync-outbox.test.mjs",
+    "test:sync": "node --experimental-transform-types --test tests/cloud-sync-outbox.test.mjs tests/resume-template-sync.test.mjs",
     "validate:build": "node scripts/validate-build.mjs",
     "typecheck": "tsc -p tsconfig.app.json --pretty false && tsc -p tsconfig.node.json --pretty false"
   },

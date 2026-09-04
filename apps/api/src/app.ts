@@ -10,6 +10,7 @@ import type {
   ChatStreamEvent,
   CreateApplicationRequest,
   CreateInterviewRecordFromTranscriptRequest,
+  CreateResumeTemplateRequest,
   CreateTailorTaskRequest,
   CreateConversationRequest,
   MessageFeedbackRequest,
@@ -17,13 +18,15 @@ import type {
   SendMessageRequest,
   SessionUser,
   UpdateConversationRequest,
-  UpdateApplicationRequest
+  UpdateApplicationRequest,
+  UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
 import {
   MAX_INTERVIEW_AUDIO_BYTES,
   isApplicationSyncRequest,
   isCreateProductFeedbackRequest,
   isCreateInterviewRecordFromTranscriptRequest,
+  isCreateResumeTemplateRequest,
   isCreateTailorTaskRequest,
   isExchangeHandoffRequest,
   isExchangeDeviceCodeRequest,
@@ -41,6 +44,7 @@ import {
   isUpdateAccountAvatarRequest,
   normalizeMimeType,
   isUpdateConversationRequest,
+  isUpdateResumeTemplateRequest,
   isUpdateResumeVersionRequest,
   isSyncResumeTemplatesRequest
 } from "@offerflow/contracts";
@@ -1208,6 +1212,14 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         success(response, { templates: await store.listResumeTemplates(userId) });
         return;
       }
+      if (method === "POST" && path === "/v1/resume-templates") {
+        const body = (await readJson(request)) as CreateResumeTemplateRequest;
+        if (!isCreateResumeTemplateRequest(body)) {
+          throw new HttpError(400, "INVALID_RESUME_TEMPLATE", "简历名称或字段内容不完整");
+        }
+        success(response, { template: await store.createResumeTemplate(userId, body) }, 201);
+        return;
+      }
       if (method === "POST" && path === "/v1/resume-templates/sync") {
         const body = await readJson(request);
         if (!isSyncResumeTemplatesRequest(body)) {
@@ -1215,6 +1227,29 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         }
         success(response, { templates: await store.syncResumeTemplates(userId, body.templates) });
         return;
+      }
+      const resumeTemplateMatch = path.match(/^\/v1\/resume-templates\/([^/]+)$/);
+      if (resumeTemplateMatch) {
+        const templateId = decodePath(resumeTemplateMatch[1]);
+        if (method === "GET") {
+          const template = await store.getResumeTemplate(userId, templateId);
+          if (!template) throw new HttpError(404, "RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历");
+          success(response, { template });
+          return;
+        }
+        if (method === "PATCH") {
+          const body = (await readJson(request)) as UpdateResumeTemplateRequest;
+          if (!isUpdateResumeTemplateRequest(body)) {
+            throw new HttpError(400, "INVALID_RESUME_TEMPLATE", "简历名称或字段内容不完整");
+          }
+          success(response, { template: await store.updateResumeTemplate(userId, templateId, body) });
+          return;
+        }
+        if (method === "DELETE") {
+          await store.deleteResumeTemplate(userId, templateId);
+          success(response, { deleted: true as const });
+          return;
+        }
       }
       if (method === "GET" && path === "/v1/resume-versions") {
         success(response, { versions: await store.listResumeVersions(userId) });

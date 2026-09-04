@@ -9,10 +9,12 @@ import type {
   ApplicationSyncRequest,
   ApplicationSyncResponse,
   AvatarKey,
+  CreateResumeTemplateRequest,
   CreateTailorTaskRequest,
   ResumeTemplateRecord,
   ResumeVersionRecord,
-  SessionUser
+  SessionUser,
+  UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
 import { isAvatarKey } from "@offerflow/contracts";
 import {
@@ -1039,25 +1041,125 @@ export class PostgresStore implements OfferFlowStore {
     return result.rows.map((row) => row.payload);
   }
 
-  async listResumeTemplates(userId: string): Promise<ResumeTemplateRecord[]> {
+  async listResumeTemplates(userId: string, includeDeleted = false): Promise<ResumeTemplateRecord[]> {
     const result = await this.pool.query(
-      "SELECT payload FROM resume_templates WHERE user_id=$1 ORDER BY updated_at DESC",
-      [userId]
+      `SELECT payload FROM resume_templates
+       WHERE user_id=$1 AND ($2::boolean OR payload->>'deletedAt' IS NULL)
+       ORDER BY updated_at DESC`,
+      [userId, includeDeleted]
     );
     return result.rows.map((row) => row.payload as ResumeTemplateRecord);
   }
 
+  async createResumeTemplate(userId: string, request: CreateResumeTemplateRequest): Promise<ResumeTemplateRecord> {
+    const now = new Date().toISOString();
+    const template: ResumeTemplateRecord = {
+      id: request.id,
+      name: request.name.trim(),
+      profile: structuredClone(request.document.profile),
+      document: {
+        ...structuredClone(request.document),
+        id: request.id,
+        title: request.name.trim(),
+        createdAt: now,
+        updatedAt: now
+      },
+      origin: "web",
+      createdAt: now,
+      updatedAt: now
+    };
+    const result = await this.pool.query(
+      `INSERT INTO resume_templates (id,user_id,payload,created_at,updated_at)
+       VALUES ($1,$2,$3::jsonb,$4,$5)
+       ON CONFLICT (id,user_id) DO NOTHING
+       RETURNING id`,
+      [template.id, userId, json(template), now, now]
+    );
+    if (!result.rowCount) throw new StoreError("RESUME_TEMPLATE_EXISTS", "这份简历已经存在", 409);
+    return template;
+  }
+
+  async getResumeTemplate(userId: string, templateId: string): Promise<ResumeTemplateRecord | undefined> {
+    const result = await this.pool.query(
+      "SELECT payload FROM resume_templates WHERE id=$1 AND user_id=$2",
+      [templateId, userId]
+    );
+    const template = result.rows[0]?.payload as ResumeTemplateRecord | undefined;
+    return template && !template.deletedAt ? template : undefined;
+  }
+
+  async updateResumeTemplate(userId: string, templateId: string, request: UpdateResumeTemplateRequest): Promise<ResumeTemplateRecord> {
+    if (request.document.id !== templateId) {
+      throw new StoreError("INVALID_RESUME_DOCUMENT", "简历文档与当前通用简历不匹配", 400);
+    }
+    const current = await this.getResumeTemplate(userId, templateId);
+    if (!current) throw new StoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+    const now = new Date().toISOString();
+    const template: ResumeTemplateRecord = {
+      ...current,
+      name: request.name.trim(),
+      profile: structuredClone(request.document.profile),
+      document: {
+        ...structuredClone(request.document),
+        id: templateId,
+        title: request.name.trim(),
+        updatedAt: now
+      },
+      updatedAt: now
+    };
+    const result = await this.pool.query(
+      "UPDATE resume_templates SET payload=$3::jsonb,updated_at=$4 WHERE id=$1 AND user_id=$2",
+      [templateId, userId, json(template), now]
+    );
+    if (!result.rowCount) throw new StoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+    return template;
+  }
+
+  async deleteResumeTemplate(userId: string, templateId: string): Promise<void> {
+    const current = await this.getResumeTemplate(userId, templateId);
+    if (!current) throw new StoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+    const now = new Date(Math.max(Date.now(), Date.parse(current.updatedAt) + 1)).toISOString();
+    const deleted = { ...current, updatedAt: now, deletedAt: now };
+    const result = await this.pool.query(
+      "UPDATE resume_templates SET payload=$3::jsonb,updated_at=$4 WHERE id=$1 AND user_id=$2",
+      [templateId, userId, json(deleted), now]
+    );
+    if (!result.rowCount) throw new StoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+  }
+
   async syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): Promise<ResumeTemplateRecord[]> {
-    if (!templates.length) return this.listResumeTemplates(userId);
+    if (!templates.length) return this.listResumeTemplates(userId, true);
     const client = await this.pool.connect();
     try {
       await client.query("BEGIN");
       for (const template of templates) {
+        const currentResult = await client.query(
+          "SELECT payload FROM resume_templates WHERE id=$1 AND user_id=$2 FOR UPDATE",
+          [template.id, userId]
+        );
+        const current = currentResult.rows[0]?.payload as ResumeTemplateRecord | undefined;
+        if (current && current.updatedAt.localeCompare(template.updatedAt) > 0) continue;
+        const mergedDocument = template.document
+          ? structuredClone(template.document)
+          : current?.document
+            ? {
+                ...structuredClone(current.document),
+                title: template.name,
+                profile: structuredClone(template.profile),
+                updatedAt: template.updatedAt
+              }
+            : undefined;
+        const merged: ResumeTemplateRecord = {
+          ...current,
+          ...template,
+          document: mergedDocument,
+          origin: current?.origin || template.origin || "extension"
+        };
         await client.query(
           `INSERT INTO resume_templates (id,user_id,payload,created_at,updated_at)
            VALUES ($1,$2,$3::jsonb,$4,$5)
            ON CONFLICT (id,user_id) DO UPDATE SET payload=EXCLUDED.payload, updated_at=EXCLUDED.updated_at`,
-          [template.id, userId, json(template), template.createdAt, template.updatedAt]
+          [template.id, userId, json(merged), template.createdAt, template.updatedAt]
         );
       }
       await client.query("COMMIT");
@@ -1067,7 +1169,7 @@ export class PostgresStore implements OfferFlowStore {
     } finally {
       client.release();
     }
-    return this.listResumeTemplates(userId);
+    return this.listResumeTemplates(userId, true);
   }
 
   async updateResumeVersion(userId: string, versionId: string, document: ResumeDocument, expectedRevision: number): Promise<ResumeVersionRecord> {

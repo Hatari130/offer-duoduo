@@ -81,6 +81,9 @@ const hotjobFormPath = fileURLToPath(
 const pupumallFormPath = fileURLToPath(
   new URL("./fixtures/application-form-pupumall.html", import.meta.url)
 );
+const citicbankFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-citicbank.html", import.meta.url)
+);
 const profileDirectory = mkdtempSync(join(tmpdir(), "offerflow-dom-test-"));
 
 const runFixture = (fixture, virtualTimeBudget = 2500) => {
@@ -588,6 +591,23 @@ try {
   ]);
   assert.equal(pupumallForm.fill.results.every((result) => result.status === "filled"), true);
   console.log("DOM form fixture passed: Pupumall summary editors open, save and advance through repeated records exactly once.");
+
+  const citicbankForm = runFixture(citicbankFormPath, 10000);
+  assert.equal(citicbankForm.scan.platform.id, "citicbank", "job.citicbank.com must resolve CITIC Bank adapter");
+  assert.equal(citicbankForm.name, "张三", "CITIC Bank a0101 must be filled with full name");
+  assert.equal(citicbankForm.phone, "13800138000", "CITIC Bank a0118 must be filled with phone number");
+  assert.equal(citicbankForm.gender, "1", "CITIC Bank a0102 selectpicker must select gender value");
+  assert.equal(citicbankForm.height, "178", "CITIC Bank a0213 must be filled with height");
+  assert.equal(citicbankForm.wayData["grjbxx.a0101"], "张三", "way.js grjbxx.a0101 must receive two-way bound name");
+  assert.equal(citicbankForm.wayData["grjbxx.a0118"], "13800138000", "way.js grjbxx.a0118 must receive two-way bound phone");
+  assert.equal(citicbankForm.wayData["grjbxx.a0102"], "1", "way.js grjbxx.a0102 must receive two-way bound gender");
+  assert.equal(citicbankForm.addClicks, 1, "CITIC Bank +添加教育经历 must expand the second record");
+  assert.deepEqual(citicbankForm.education, [
+    { school: "南京大学", start: "2024-09-01", end: "2027-06-30" },
+    { school: "北京林业大学", start: "2018-09-01", end: "2023-06-30" }
+  ], "Microdone way-repeat education cards must be independently mapped and filled");
+  assert.equal(citicbankForm.fill.results.every((result) => result.status === "filled"), true);
+  console.log("DOM form fixture passed: CITIC Bank Microdone HR way.js binding, bootstrap-select and repeat education fill correctly.");
 
   const reinjectionForm = runFixture(reinjectionFormPath, 4000);
   assert.equal(reinjectionForm.listenerCount, 1, "reinjecting a new extension session must replace the stale listener");

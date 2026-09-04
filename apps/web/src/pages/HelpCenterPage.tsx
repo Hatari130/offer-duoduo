@@ -54,8 +54,8 @@ const featureGuides = [
   {
     icon: FileText,
     title: "简历中心",
-    description: "集中查看为不同岗位生成的定制简历版本，保留岗位差异，避免多个文件散落在本地。",
-    tip: "简历定制仍在内测中。生成后请核对事实、时间和成果表述，再用于投递。",
+    description: "直接制作字段化通用简历，并集中管理为不同岗位生成的定制版本。",
+    tip: "网页和插件共享姓名、教育、经历与项目字段；定岗修改后请核对事实、时间和成果表述。",
     href: "/app/resumes",
     action: "打开简历中心"
   },
@@ -180,7 +180,7 @@ export function HelpCenterPage() {
               </details>
               <details>
                 <summary>为什么简历中心里没有我的普通简历？</summary>
-                <p>简历中心当前主要保存岗位定制版本。完成一次岗位定制后，对应版本会出现在这里；该功能仍在内测中。</p>
+                <p>现在可以在简历中心直接点击“制作新简历”，从空白字段开始录入；已连接的浏览器插件下次同步后也会出现这份通用简历。</p>
               </details>
               <details>
                 <summary>插件识别或辅助填写不准确怎么办？</summary>

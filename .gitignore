@@ -16,3 +16,4 @@ coverage/
 .tmp/
 apps/api/data/campus-hiring.json
 web-preview*.log
+cookies.txt

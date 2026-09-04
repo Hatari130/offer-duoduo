@@ -490,40 +490,118 @@ function comparableProfile(profile: PersonalProfile): string {
   return JSON.stringify(content);
 }
 
+async function getActiveRecruitmentTab() {
+  const [lastFocused] = await chrome.tabs.query({ active: true, lastFocusedWindow: true });
+  if (lastFocused?.id) return lastFocused;
+  const [current] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (current?.id) return current;
+  const [anyTab] = await chrome.tabs.query({ active: true });
+  return anyTab;
+}
+
 async function activeTabMessage(message: unknown) {
   try {
     if (typeof chrome === "undefined" || !chrome.tabs) {
       throw new Error("请在已加载扩展的招聘网页中使用");
     }
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!tab?.id || !tab.url?.startsWith("http")) throw new Error("当前页面不支持表单填写");
+    const tab = await getActiveRecruitmentTab();
+    if (!tab?.id) throw new Error("未找到当前页面，请在浏览器中切换到网申标签页");
+    if (tab.url && !tab.url.startsWith("http")) throw new Error("当前页面不支持表单填写");
     const payload: Record<string, unknown> = message && typeof message === "object"
       ? { ...(message as Record<string, unknown>) }
       : { value: message };
     if (payload.type === "OFFERFLOW_SCAN_APPLICATION_FORM") payload.type = "OFFERFLOW_SCAN_APPLICATION_FORM_V2";
     if (payload.type === "OFFERFLOW_FILL_APPLICATION_FORM") payload.type = "OFFERFLOW_FILL_APPLICATION_FORM_V2";
 
-    // An unpacked extension reload does not replace content scripts already
-    // living in an open recruitment tab. Always inject the current artifact;
-    // content.js is version-guarded, so this is idempotent.
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (sessionId: string) => {
-        (globalThis as typeof globalThis & { __offerflowDesiredContentSession?: string })
-          .__offerflowDesiredContentSession = sessionId;
-      },
-      args: [FORM_CONTENT_SESSION_ID]
-    });
-    await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"]
-    });
-    const response = await chrome.tabs.sendMessage(tab.id, payload);
+    // Top frame reinjection
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (sessionId: string) => {
+          (globalThis as typeof globalThis & { __offerflowDesiredContentSession?: string })
+            .__offerflowDesiredContentSession = sessionId;
+        },
+        args: [FORM_CONTENT_SESSION_ID]
+      });
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"]
+      });
+    } catch (e) {
+      console.warn("Top-frame script reinjection warning:", e);
+    }
+
+    // Subframe reinjection (safe, errors ignored)
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: true },
+        files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "form-runtime.js", "form-control-drivers.js", "content.js"]
+      });
+    } catch {
+      // Subframes might be cross-origin or sandboxed
+    }
+
+    let targetFrameId: number | undefined;
+    try {
+      const probeResults = await chrome.scripting.executeScript({
+        target: { tabId: tab.id, allFrames: true },
+        func: () => {
+          const formSelectors = "input, select, textarea, [contenteditable='true'], [role='combobox'], [role='textbox'], [role='radio'], [role='checkbox'], .selectpicker, .bootstrap-select";
+          const elements = Array.from(document.querySelectorAll(formSelectors));
+          const visibleElements = elements.filter((el) => {
+            if ((el as HTMLInputElement).type === "hidden" && !(el.classList.contains("selectpicker") || el.closest(".bootstrap-select"))) return false;
+            if (el.closest(".modal:not(.in):not(.show)")) return false;
+            const rect = el.getBoundingClientRect();
+            return (rect.width > 0 && rect.height > 0) || Boolean(el.closest(".bootstrap-select, .selectpicker"));
+          });
+          return {
+            isTop: window === window.top,
+            count: visibleElements.length,
+            hasResumeMarkers: Boolean(
+              document.querySelector(".form1Class, [way-repeat], #jbxxform, #main_right, [class*='resume'], [class*='apply']")
+            )
+          };
+        }
+      });
+      if (Array.isArray(probeResults) && probeResults.length > 0) {
+        const candidates = probeResults
+          .filter((r) => r.result && typeof r.result === "object")
+          .map((r) => {
+            const res = r.result as { count: number; hasResumeMarkers: boolean; isTop: boolean };
+            let score = res.count;
+            if (res.hasResumeMarkers) score += 1000;
+            if (res.isTop && res.count < 3) score -= 500;
+            return { frameId: r.frameId, score };
+          })
+          .sort((a, b) => b.score - a.score);
+        if (candidates[0] && candidates[0].score > 0) {
+          targetFrameId = candidates[0].frameId;
+        }
+      }
+    } catch {
+      targetFrameId = undefined;
+    }
+
+    let response: any;
+    if (typeof targetFrameId === "number") {
+      try {
+        response = await chrome.tabs.sendMessage(tab.id, payload, { frameId: targetFrameId });
+      } catch (e) {
+        console.warn(`Direct sendMessage to frameId ${targetFrameId} failed, trying broadcast:`, e);
+      }
+    }
+    if (!response || (Array.isArray(response.fields) && response.fields.length === 0)) {
+      const broadcastResponse = await chrome.tabs.sendMessage(tab.id, payload);
+      if (!response || (Array.isArray(broadcastResponse?.fields) && broadcastResponse.fields.length > 0)) {
+        response = broadcastResponse;
+      }
+    }
+
     if (
       (payload.type === "OFFERFLOW_SCAN_APPLICATION_FORM_V2" || payload.type === "OFFERFLOW_FILL_APPLICATION_FORM_V2") &&
       response?.runtimeVersion !== FORM_CONTENT_RUNTIME_VERSION
     ) {
-      throw new Error("招聘页面仍在使用旧版填写脚本，请重新加载插件后重试");
+      throw new Error("招聘页面仍在使用旧版填写脚本，请刷新招聘网页或重新加载插件后重试");
     }
     return response;
   } catch (error) {
@@ -990,8 +1068,15 @@ export default function ProfileView({
       <div className="profile-autofill-card">
         <span><ScanLine size={20} /></span>
         <div><strong>填写当前网申</strong><small>自动匹配并填写，缺少资料自动跳过</small></div>
-        <button onClick={scan} disabled={busy}>自动填写</button>
+        <button onClick={scan} disabled={busy}>{busy ? "正在识别..." : "自动填写"}</button>
       </div>
+
+      {status && (
+        <button className="profile-status" onClick={() => setStatus("")}>
+          <span>{status}</span>
+          <X size={13} />
+        </button>
+      )}
 
       <ProfileSection
         sectionKey="basic"
@@ -1017,7 +1102,7 @@ export default function ProfileView({
         </div>
       </ProfileSection>
 
-      {status && <button className="profile-status" onClick={() => setStatus("")}><span>{status}</span><X size={13} /></button>}
+
 
       {fields.length > 0 && (
         <div className="profile-match-panel">

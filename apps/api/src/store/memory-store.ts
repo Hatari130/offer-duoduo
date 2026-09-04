@@ -10,10 +10,12 @@ import type {
   ApplicationSyncRequest,
   ApplicationSyncResponse,
   AvatarKey,
+  CreateResumeTemplateRequest,
   CreateTailorTaskRequest,
   ResumeTemplateRecord,
   ResumeVersionRecord,
-  SessionUser
+  SessionUser,
+  UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
 import { isAvatarKey } from "@offerflow/contracts";
 import {
@@ -1265,22 +1267,110 @@ export class MemoryStore implements OfferFlowStore {
       .sort((left, right) => right.version.updatedAt.localeCompare(left.version.updatedAt));
   }
 
-  listResumeTemplates(userId: string): ResumeTemplateRecord[] {
+  listResumeTemplates(userId: string, includeDeleted = false): ResumeTemplateRecord[] {
     return [...this.resumeTemplates.values()]
-      .filter((stored) => stored.userId === userId)
+      .filter((stored) => stored.userId === userId && (includeDeleted || !stored.template.deletedAt))
       .map((stored) => clone(stored.template))
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 
+  createResumeTemplate(userId: string, request: CreateResumeTemplateRequest): ResumeTemplateRecord {
+    const key = `${userId}:${request.id}`;
+    if (this.resumeTemplates.has(key)) {
+      throw new MemoryStoreError("RESUME_TEMPLATE_EXISTS", "这份简历已经存在", 409);
+    }
+    const now = new Date().toISOString();
+    const template: ResumeTemplateRecord = {
+      id: request.id,
+      name: request.name.trim(),
+      profile: clone(request.document.profile),
+      document: {
+        ...clone(request.document),
+        id: request.id,
+        title: request.name.trim(),
+        createdAt: now,
+        updatedAt: now
+      },
+      origin: "web",
+      createdAt: now,
+      updatedAt: now
+    };
+    this.resumeTemplates.set(key, { userId, template });
+    this.persist();
+    return clone(template);
+  }
+
+  getResumeTemplate(userId: string, templateId: string): ResumeTemplateRecord | undefined {
+    const stored = this.resumeTemplates.get(`${userId}:${templateId}`);
+    return stored && !stored.template.deletedAt ? clone(stored.template) : undefined;
+  }
+
+  updateResumeTemplate(userId: string, templateId: string, request: UpdateResumeTemplateRequest): ResumeTemplateRecord {
+    const key = `${userId}:${templateId}`;
+    const stored = this.resumeTemplates.get(key);
+    if (!stored) throw new MemoryStoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+    if (request.document.id !== templateId) {
+      throw new MemoryStoreError("INVALID_RESUME_DOCUMENT", "简历文档与当前通用简历不匹配", 400);
+    }
+    const now = new Date().toISOString();
+    const template: ResumeTemplateRecord = {
+      ...stored.template,
+      name: request.name.trim(),
+      profile: clone(request.document.profile),
+      document: {
+        ...clone(request.document),
+        id: templateId,
+        title: request.name.trim(),
+        updatedAt: now
+      },
+      updatedAt: now
+    };
+    this.resumeTemplates.set(key, { userId, template });
+    this.persist();
+    return clone(template);
+  }
+
+  deleteResumeTemplate(userId: string, templateId: string): void {
+    const key = `${userId}:${templateId}`;
+    const stored = this.resumeTemplates.get(key);
+    if (!stored || stored.template.deletedAt) {
+      throw new MemoryStoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+    }
+    const now = new Date(Math.max(Date.now(), Date.parse(stored.template.updatedAt) + 1)).toISOString();
+    this.resumeTemplates.set(key, {
+      userId,
+      template: { ...stored.template, updatedAt: now, deletedAt: now }
+    });
+    this.persist();
+  }
+
   syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): ResumeTemplateRecord[] {
     for (const template of templates) {
-      this.resumeTemplates.set(`${userId}:${template.id}`, {
+      const key = `${userId}:${template.id}`;
+      const current = this.resumeTemplates.get(key)?.template;
+      if (current && current.updatedAt.localeCompare(template.updatedAt) > 0) continue;
+      const mergedDocument = template.document
+        ? clone(template.document)
+        : current?.document
+          ? {
+              ...clone(current.document),
+              title: template.name,
+              profile: clone(template.profile),
+              updatedAt: template.updatedAt
+            }
+          : undefined;
+      this.resumeTemplates.set(key, {
         userId,
-        template: clone(template)
+        template: clone({
+          ...current,
+          ...template,
+          document: mergedDocument,
+          origin: current?.origin || template.origin || "extension"
+        })
       });
     }
     this.persist();
-    return this.listResumeTemplates(userId);
+    return this.listResumeTemplates(userId, true);
   }
 
   updateResumeVersion(

@@ -26,6 +26,7 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/companies/, "公司投递一键直达"],
   [/^\/app\/applications/, "个人投递管理"],
   [/^\/app\/resumes\/tailor/, "岗位定制简历"],
+  [/^\/app\/resumes\/edit/, "制作简历"],
   [/^\/app\/resumes/, "简历中心"],
   [/^\/app\/settings/, "设置与设备同步"],
   [/^\/browser-extension/, "浏览器插件"],
@@ -100,6 +101,8 @@ export function App() {
   if (pathname === "/login") return <LoginPage />;
   const tailorMatch = pathname.match(/^\/app\/resumes\/tailor\/([^/]+)$/);
   if (tailorMatch && !protectedReason) return <ResumeStudioPage taskId={decodeURIComponent(tailorMatch[1])} />;
+  const resumeEditMatch = pathname.match(/^\/app\/resumes\/edit\/([^/]+)$/);
+  if (resumeEditMatch && !protectedReason) return <ResumeStudioPage templateId={decodeURIComponent(resumeEditMatch[1])} />;
 
   let page: React.ReactNode;
   if (protectedReason) page = <ChatPage />;

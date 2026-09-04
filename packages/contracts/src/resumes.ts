@@ -27,8 +27,13 @@ export interface ResumeTemplateRecord {
   name: string;
   sourceFileName?: string;
   profile: PersonalProfile;
+  /** Web-authored resumes keep their presentation settings here while
+   * `profile` remains the canonical field payload consumed by the extension. */
+  document?: ResumeDocument;
+  origin?: "web" | "extension";
   createdAt: string;
   updatedAt: string;
+  deletedAt?: string;
 }
 
 export interface ResumeTemplateListResponse {
@@ -37,6 +42,21 @@ export interface ResumeTemplateListResponse {
 
 export interface SyncResumeTemplatesRequest {
   templates: ResumeTemplateRecord[];
+}
+
+export interface CreateResumeTemplateRequest {
+  id: string;
+  name: string;
+  document: ResumeDocument;
+}
+
+export interface UpdateResumeTemplateRequest {
+  name: string;
+  document: ResumeDocument;
+}
+
+export interface ResumeTemplateResponse {
+  template: ResumeTemplateRecord;
 }
 
 export interface CreateTailorTaskRequest {
@@ -119,6 +139,35 @@ export function isUpdateResumeVersionRequest(value: unknown): value is UpdateRes
   );
 }
 
+function isResumeDocument(value: unknown): value is ResumeDocument {
+  return isRecord(value)
+    && value.schemaVersion === 1
+    && typeof value.id === "string"
+    && typeof value.title === "string"
+    && isRecord(value.profile)
+    && isRecord(value.template);
+}
+
+export function isCreateResumeTemplateRequest(value: unknown): value is CreateResumeTemplateRequest {
+  return isRecord(value)
+    && typeof value.id === "string"
+    && value.id.trim().length > 0
+    && value.id.length <= 160
+    && typeof value.name === "string"
+    && value.name.trim().length > 0
+    && value.name.length <= 120
+    && isResumeDocument(value.document)
+    && value.document.id === value.id;
+}
+
+export function isUpdateResumeTemplateRequest(value: unknown): value is UpdateResumeTemplateRequest {
+  return isRecord(value)
+    && typeof value.name === "string"
+    && value.name.trim().length > 0
+    && value.name.length <= 120
+    && isResumeDocument(value.document);
+}
+
 export function isSyncResumeTemplatesRequest(value: unknown): value is SyncResumeTemplatesRequest {
   return isRecord(value)
     && Array.isArray(value.templates)
@@ -127,6 +176,8 @@ export function isSyncResumeTemplatesRequest(value: unknown): value is SyncResum
       && typeof template.id === "string"
       && typeof template.name === "string"
       && isRecord(template.profile)
+      && (template.document === undefined || isResumeDocument(template.document))
+      && (template.origin === undefined || template.origin === "web" || template.origin === "extension")
       && typeof template.createdAt === "string"
       && typeof template.updatedAt === "string"
       && (template.sourceFileName === undefined || typeof template.sourceFileName === "string"));

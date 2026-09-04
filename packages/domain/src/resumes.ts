@@ -31,7 +31,7 @@ export interface ResumeTemplateDefinition {
 }
 
 export const RESUME_TEMPLATES: readonly ResumeTemplateDefinition[] = [
-  { id: "clarity", name: "清晰", description: "现代单栏，层级清楚", bestFor: "产品、技术、运营" },
+  { id: "clarity", name: "经典单栏", description: "黑白高密度，右上证件照", bestFor: "产品、技术、校招" },
   { id: "editorial", name: "编辑部", description: "克制衬线，强调经历叙事", bestFor: "研究、咨询、品牌" },
   { id: "compact", name: "紧凑", description: "高密度单栏，容量更高", bestFor: "经历丰富、两页简历" }
 ] as const;
