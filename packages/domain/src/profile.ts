@@ -88,6 +88,13 @@ export interface ResumeEvidenceLocation {
   confidence?: number;
 }
 
+/** Optional inline formatting within one semantic description block. */
+export interface ResumeInlineText {
+  text: string;
+  bold?: boolean;
+  href?: string;
+}
+
 /**
  * A resume description is not a list of visual lines. These blocks preserve
  * the semantic hierarchy that templates and the tailoring model need.
@@ -100,6 +107,11 @@ export interface ResumeContentBlock {
   title?: string;
   children?: ResumeContentBlock[];
   evidence?: ResumeEvidenceLocation[];
+  /** Optional presentation of the full label + text. Plain text remains
+   * authoritative; ignore these runs if their text no longer matches it. */
+  inline?: ResumeInlineText[];
+  /** An explicitly numbered list item; absent means a normal bullet. */
+  listOrder?: number;
 }
 
 export interface ProfileAward {

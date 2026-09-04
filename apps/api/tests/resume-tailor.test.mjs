@@ -212,6 +212,18 @@ test("web-authored field resumes can be edited and synchronized back to the exte
   const editedDocument = structuredClone(created.payload.data.template.document);
   editedDocument.profile.targetRole = "AI 产品经理";
   editedDocument.template.templateId = "editorial";
+  const contentBlocks = [{
+    id: "experience-detail-1", kind: "paragraph", text: "负责用户访谈与产品迭代。",
+    inline: [{ text: "负责用户访谈", bold: true }, { text: "与产品迭代。" }],
+    evidence: [{ source: "manual", sourceText: "用户访谈记录" }]
+  }, {
+    id: "experience-detail-2", kind: "bullet", text: "项目介绍", listOrder: 1,
+    inline: [{ text: "项目介绍", href: "https://example.com/project" }]
+  }];
+  editedDocument.profile.experiences = [{
+    id: "experience-web-1", kind: "internship", organization: "示例科技", title: "产品实习生",
+    startDate: "2026-02", endDate: "2026-06", description: "负责用户访谈与产品迭代。\n• 项目介绍", contentBlocks
+  }];
   const updated = await jsonRequest(app.baseUrl, `/v1/resume-templates/${id}`, {
     method: "PATCH",
     headers,
@@ -219,6 +231,8 @@ test("web-authored field resumes can be edited and synchronized back to the exte
   });
   assert.equal(updated.response.status, 200);
   assert.equal(updated.payload.data.template.profile.targetRole, "AI 产品经理");
+  assert.deepEqual(updated.payload.data.template.profile.experiences[0].contentBlocks, contentBlocks);
+  assert.deepEqual(updated.payload.data.template.document.profile.experiences[0].contentBlocks, contentBlocks);
 
   const stalePluginSync = await jsonRequest(app.baseUrl, "/v1/resume-templates/sync", {
     method: "POST",
@@ -226,6 +240,7 @@ test("web-authored field resumes can be edited and synchronized back to the exte
     body: JSON.stringify({ templates: [{ id, name: "旧插件简历", profile: profile(), origin: "extension", createdAt: now, updatedAt: now }] })
   });
   assert.equal(stalePluginSync.payload.data.templates[0].name, "AI 产品经理通用简历");
+  assert.deepEqual(stalePluginSync.payload.data.templates[0].profile.experiences[0].contentBlocks, contentBlocks);
 
   const newerProfile = profile();
   newerProfile.phone = "13900000000";

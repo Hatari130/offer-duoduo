@@ -12,7 +12,6 @@ import type {
   ProfileAward,
   ProfileCampusExperience,
   ProfileEducation,
-  ProfileExperience,
   ProfileProject,
   ResumeAsset,
   ResumeContentBlock,
@@ -68,6 +67,8 @@ import { api } from "../app/api";
 import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
 import { calculateResumePreviewScale } from "../features/resumes/resumePreviewLayout";
+import ExperienceEditor from "../features/resumes/ExperienceEditor";
+import { blockInlineText } from "../features/resumes/descriptionDocument";
 
 type StudioTab = "preview" | "editor";
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -552,6 +553,13 @@ function PreviewSection({ title, step, selected, onSelect, children }: { title: 
   return <section className={`resume-preview-section ${selected ? "is-selected" : ""}`}><h2><button type="button" onClick={() => onSelect(step)} aria-label={`编辑${title}`} aria-current={selected ? "step" : undefined}>{title}</button></h2><div>{children}</div></section>;
 }
 
+function ResumeBlockText({ block }: { block: ResumeContentBlock }) {
+  return <span className="resume-rich-inline">{blockInlineText(block).map((run, index) => {
+    const text = run.bold ? <strong>{run.text}</strong> : run.text;
+    return run.href ? <a key={index} href={run.href} target="_blank" rel="noreferrer">{text}</a> : <span key={index}>{text}</span>;
+  })}</span>;
+}
+
 function ResumeBlocks({ blocks }: { blocks?: ResumeContentBlock[] }) {
   if (!blocks?.length) return null;
   const nodes: ReactNode[] = [];
@@ -560,14 +568,20 @@ function ResumeBlocks({ blocks }: { blocks?: ResumeContentBlock[] }) {
     const block = blocks[index]!;
     if (block.kind === "bullet") {
       const bullets: ResumeContentBlock[] = [];
-      while (blocks[index]?.kind === "bullet") bullets.push(blocks[index++]!);
-      nodes.push(<ul key={`bullets-${bullets[0]?.id}`}>{bullets.map((item) => <li key={item.id}>{item.label && <strong>{item.label}：</strong>}{item.text}</li>)}</ul>);
+      const ordered = Boolean(block.listOrder);
+      let expectedOrder = block.listOrder;
+      while (blocks[index]?.kind === "bullet" && Boolean(blocks[index]?.listOrder) === ordered && (!ordered || blocks[index]?.listOrder === expectedOrder)) {
+        bullets.push(blocks[index++]!);
+        if (expectedOrder) expectedOrder++;
+      }
+      const ListTag = ordered ? "ol" : "ul";
+      nodes.push(<ListTag start={ordered ? block.listOrder : undefined} key={`bullets-${bullets[0]?.id}`}>{bullets.map((item) => <li key={item.id}><ResumeBlockText block={item} /></li>)}</ListTag>);
       continue;
     }
     if (block.kind === "project") {
       nodes.push(<div className="resume-content-project" key={block.id}><h3>{block.title}</h3><ResumeBlocks blocks={block.children} /></div>);
     } else {
-      nodes.push(<p className="resume-content-paragraph" key={block.id}>{block.label && <strong>{block.label}：</strong>}{block.text}</p>);
+      nodes.push(<p className="resume-content-paragraph" key={block.id}>{block.text || block.label ? <ResumeBlockText block={block} /> : <br />}</p>);
     }
     index += 1;
   }
@@ -1443,6 +1457,14 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                     key={item.id}
                     item={item}
                     index={index}
+                    count={profile.experiences.length}
+                    onMove={(direction) => {
+                      const entries = [...profile.experiences];
+                      const destination = index + direction;
+                      if (destination < 0 || destination >= entries.length) return;
+                      entries.splice(destination, 0, entries.splice(index, 1)[0]!);
+                      updateProfile("experiences", entries);
+                    }}
                     isExpanded={activeExpId === item.id}
                     onToggle={() => setExpandedExpId(activeExpId === item.id ? "none" : item.id)}
                     onChange={(next) =>
@@ -2588,122 +2610,6 @@ function EducationEditor({
             aria-label="排名或核心课程"
           />
         </div>
-      </div>
-    </CollapsibleEntryCard>
-  );
-}
-
-function ExperienceEditor({
-  item,
-  index,
-  isExpanded,
-  onToggle,
-  onChange,
-  onDelete
-}: {
-  item: ProfileExperience;
-  index: number;
-  isExpanded: boolean;
-  onToggle: () => void;
-  onChange: (item: ProfileExperience) => void;
-  onDelete: () => void;
-}) {
-  const field = (key: keyof ProfileExperience) => (value: string) => onChange({ ...item, [key]: value });
-  const kind = resolveProfileExperienceKind(item);
-  const subtitle = [item.department, item.title].filter(Boolean).join(" · ");
-  const dateRange = [item.startDate, item.isCurrent ? "至今" : item.endDate].filter(Boolean).join(" - ");
-  const bulletCount = item.contentBlocks?.length || 0;
-  const badge = [kind === "internship" ? "实习" : "全职", bulletCount > 0 ? `${bulletCount}条要点` : ""].filter(Boolean).join(" · ");
-
-  return (
-    <CollapsibleEntryCard
-      index={index}
-      title={item.organization || `工作经历 ${index + 1}`}
-      subtitle={subtitle}
-      dateRange={dateRange}
-      badge={badge}
-      badgeType={kind === "internship" ? "brand" : "default"}
-      isExpanded={isExpanded}
-      onToggle={onToggle}
-      onDelete={onDelete}
-    >
-      <div className="resume-doc-card-body">
-        <div className="resume-doc-row resume-doc-row--header">
-          <input
-            className="resume-doc-title-input"
-            value={item.organization}
-            onChange={(e) => field("organization")(e.target.value)}
-            placeholder="公司 / 组织名称（例如：腾讯科技）"
-            aria-label="公司或组织名称"
-          />
-          <div className="resume-doc-type-pill">
-            <select
-              value={kind}
-              onChange={(e) => onChange({ ...item, kind: e.target.value as ProfileExperience["kind"] })}
-              aria-label="经历类型"
-            >
-              <option value="internship">实习经历</option>
-              <option value="work">全职工作</option>
-            </select>
-          </div>
-        </div>
-
-        <div className="resume-doc-meta-bar">
-          <div className="resume-doc-meta-item">
-            <BriefcaseBusiness size={13} className="resume-doc-meta-icon" />
-            <input
-              className="resume-doc-inline-input"
-              value={item.title}
-              onChange={(e) => field("title")(e.target.value)}
-              placeholder="职位 / 岗位（例如：产品经理实习生）"
-              aria-label="职位"
-            />
-          </div>
-          <span className="resume-doc-sep">·</span>
-          <div className="resume-doc-meta-item">
-            <input
-              className="resume-doc-inline-input"
-              value={item.department}
-              onChange={(e) => field("department")(e.target.value)}
-              placeholder="部门 / 业务线（例如：微信事业群）"
-              aria-label="部门"
-            />
-          </div>
-          <span className="resume-doc-sep">|</span>
-          <div className="resume-doc-meta-item resume-doc-meta-dates">
-            <input
-              className="resume-doc-date-input"
-              value={item.startDate}
-              onChange={(e) => field("startDate")(e.target.value)}
-              placeholder="开始 (2024.03)"
-              aria-label="开始时间"
-            />
-            <span className="resume-doc-dash">-</span>
-            <input
-              className="resume-doc-date-input"
-              value={item.isCurrent ? "至今" : item.endDate}
-              disabled={item.isCurrent}
-              onChange={(e) => field("endDate")(e.target.value)}
-              placeholder="结束 (2024.09)"
-              aria-label="结束时间"
-            />
-            <label className="resume-doc-current-toggle" title="设为至今在任">
-              <input
-                type="checkbox"
-                checked={item.isCurrent}
-                onChange={(e) =>
-                  onChange({ ...item, isCurrent: e.target.checked, endDate: e.target.checked ? "至今" : "" })
-                }
-              />
-              <span>至今</span>
-            </label>
-          </div>
-        </div>
-
-        <ContentBlocksEditor
-          blocks={item.contentBlocks}
-          onChange={(blocks) => onChange(updateEntryBlocks(item, blocks))}
-        />
       </div>
     </CollapsibleEntryCard>
   );
