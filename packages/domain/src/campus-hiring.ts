@@ -82,7 +82,7 @@ function normalizeItem(value: unknown): CampusHiringOpportunity | undefined {
   const deadlineLabel = text(item.deadline) || undefined;
   const deadline = normalizedDeadline(item.deadline);
   const sourceUpdatedAt = text(item.updatedAt) || undefined;
-  const openAt = normalizedDeadline(item.openAt) || normalizedDeadline(sourceUpdatedAt);
+  const openAt = normalizedDeadline(item.openAt);
   const targetCohort = text(item.targetCohort);
   const companyType = text(item.companyType)
     || text(item.companyNature)

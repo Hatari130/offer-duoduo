@@ -22,6 +22,7 @@ import {
   type CampusHiringOpportunity
 } from "../features/opportunities/campusHiringFeed";
 import { opportunityPageRequiresLogin } from "../features/opportunities/paginationAccess";
+import { crawlDateKey, latestCrawlDateKey } from "../features/opportunities/latestCrawl";
 import { useAuth } from "../app/AuthContext";
 import { navigate } from "../app/router";
 
@@ -219,13 +220,12 @@ export function OpportunitiesPage() {
   }, []);
 
   const dashboard = useMemo(() => {
-    const latestOpenAt = opportunities.reduce<string | undefined>((latest, opportunity) => {
-      if (!opportunity.openAt) return latest;
-      return !latest || opportunity.openAt > latest ? opportunity.openAt : latest;
-    }, undefined);
+    const latestCrawledOn = latestCrawlDateKey(opportunities);
     return {
-      latestOpenAt,
-      latestCount: latestOpenAt ? opportunities.filter((opportunity) => opportunity.openAt === latestOpenAt).length : 0,
+      latestCrawledOn,
+      latestCount: latestCrawledOn
+        ? opportunities.filter((opportunity) => crawlDateKey(opportunity.updatedAt) === latestCrawledOn).length
+        : 0,
       openCount: opportunities.filter((opportunity) => isOpenOpportunity(opportunity.status)).length,
       closingCount: opportunities.filter((opportunity) => opportunity.status === "closing").length,
       ongoingCount: opportunities.filter((opportunity) => opportunity.status === "ongoing").length
@@ -264,7 +264,7 @@ export function OpportunitiesPage() {
       const matchesBatch = batch === "all" || opportunity.batch === batch;
       const matchesCompanyType = companyType === "all" || opportunity.companyType === companyType;
       const matchesQuickFilter = quickFilter === "all"
-        || (quickFilter === "latest" && opportunity.openAt === dashboard.latestOpenAt)
+        || (quickFilter === "latest" && crawlDateKey(opportunity.updatedAt) === dashboard.latestCrawledOn)
         || (quickFilter === "open" && isOpenOpportunity(opportunity.status))
         || (quickFilter === "closing" && opportunity.status === "closing")
         || (quickFilter === "ongoing" && opportunity.status === "ongoing");
@@ -281,7 +281,7 @@ export function OpportunitiesPage() {
       if (!right.openAt) return -1;
       return right.openAt.localeCompare(left.openAt);
     });
-  }, [batch, city, cohort, companyType, dashboard.latestOpenAt, industry, opportunities, query, quickFilter]);
+  }, [batch, city, cohort, companyType, dashboard.latestCrawledOn, industry, opportunities, query, quickFilter]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, totalPages);

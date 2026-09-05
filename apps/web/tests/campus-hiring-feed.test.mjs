@@ -32,3 +32,29 @@ test("preserves company nature for enterprise filtering", () => {
 
   assert.equal(snapshot.opportunities[0]?.companyType, "国企");
 });
+
+test("keeps crawl date separate from the opportunity open date", () => {
+  const snapshot = normalizeCampusHiringFeed({
+    items: [{
+      id: "separate-dates",
+      company: "示例企业",
+      positions: "产品经理",
+      city: "上海",
+      applyUrl: "https://example.com/apply",
+      updatedAt: "2026-09-05",
+      openAt: "2026/9/2"
+    }, {
+      id: "crawl-date-only",
+      company: "另一家企业",
+      positions: "研发工程师",
+      city: "北京",
+      applyUrl: "https://example.com/jobs",
+      updatedAt: "2026-09-05"
+    }]
+  });
+
+  assert.equal(snapshot.opportunities[0]?.updatedAt, "2026-09-05");
+  assert.equal(snapshot.opportunities[0]?.openAt, "2026-09-02");
+  assert.equal(snapshot.opportunities[1]?.updatedAt, "2026-09-05");
+  assert.equal(snapshot.opportunities[1]?.openAt, undefined);
+});
