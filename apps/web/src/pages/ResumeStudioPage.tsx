@@ -16,14 +16,13 @@ import type {
   ResumeAsset,
   ResumeContentBlock,
   ResumeDocument,
-  ResumeSectionKey,
+  ResumeStudioSectionKey,
   ResumeTailorProposal
 } from "@offerflow/domain";
 import {
   createResumeDocument,
   hydrateResumeProfileSemantics,
   resolveProfileExperienceKind,
-  RESUME_SECTIONS,
   RESUME_TEMPLATES,
   serializeResumeContentBlocks
 } from "@offerflow/domain";
@@ -69,6 +68,12 @@ import { navigate, startUiTransition } from "../app/router";
 import { calculateResumePreviewScale } from "../features/resumes/resumePreviewLayout";
 import ExperienceEditor from "../features/resumes/ExperienceEditor";
 import { blockInlineText } from "../features/resumes/descriptionDocument";
+import {
+  isStudioSectionHidden,
+  moveStudioSection,
+  normalizeStudioSectionOrder,
+  toggleStudioSectionHidden
+} from "../features/resumes/resumeStudioSections";
 
 type StudioTab = "preview" | "editor";
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -76,7 +81,8 @@ type SaveState = "idle" | "saving" | "saved" | "error";
 export type ResumeStepKey =
   | "personal"
   | "education"
-  | "experience"
+  | "internship"
+  | "work"
   | "projects"
   | "skills"
   | "summary"
@@ -86,7 +92,7 @@ export type ResumeStepKey =
 
 export interface StepMeta {
   key: ResumeStepKey;
-  sectionKey?: ResumeSectionKey;
+  sectionKey?: ResumeStudioSectionKey;
   label: string;
   shortLabel: string;
   description: string;
@@ -95,7 +101,8 @@ export interface StepMeta {
 const STEP_METAS: Record<ResumeStepKey, StepMeta> = {
   personal: { key: "personal", label: "个人信息", shortLabel: "信息", description: "姓名、联系方式与求职意向" },
   education: { key: "education", sectionKey: "education", label: "教育背景", shortLabel: "教育", description: "学校、专业、学历和在校时间" },
-  experience: { key: "experience", sectionKey: "experience", label: "工作/实习", shortLabel: "经历", description: "工作与实习中的行动和量化结果" },
+  internship: { key: "internship", sectionKey: "internship", label: "实习经历", shortLabel: "实习", description: "实习中的行动、成果与量化结果" },
+  work: { key: "work", sectionKey: "work", label: "工作经历", shortLabel: "工作", description: "正式工作中的职责、成果与量化结果" },
   projects: { key: "projects", sectionKey: "projects", label: "项目经历", shortLabel: "项目", description: "项目成果、职责与技术产物" },
   skills: { key: "skills", sectionKey: "skills", label: "专业技能", shortLabel: "技能", description: "岗位相关的专业技能、工具与关键词" },
   summary: { key: "summary", sectionKey: "summary", label: "个人简介", shortLabel: "简介", description: "用简洁证据总结核心优势" },
@@ -141,8 +148,9 @@ function isResumeStepComplete(document: ResumeDocument, step: ResumeStepKey): bo
       return Boolean(profile.fullName && (profile.phone || profile.email));
     case "education":
       return profile.education.some((item) => Boolean(item.school));
-    case "experience":
-      return profile.experiences.some((item) => Boolean(item.organization || item.title));
+    case "internship":
+    case "work":
+      return profile.experiences.some((item) => resolveProfileExperienceKind(item) === step && Boolean(item.organization || item.title));
     case "projects":
       return profile.projects.some((item) => Boolean(item.name));
     case "skills":
@@ -318,12 +326,11 @@ function ResumePreview({
         .filter(Boolean)
     : [];
 
-  const sectionOrder = template.sectionOrder?.length ? template.sectionOrder : RESUME_SECTIONS;
-  const hiddenSet = new Set(template.hiddenSections || []);
+  const sectionOrder = normalizeStudioSectionOrder(template);
   const pageLimit = template.pageLimit || 1;
 
-  const renderSection = (key: ResumeSectionKey) => {
-    if (hiddenSet.has(key)) return null;
+  const renderSection = (key: ResumeStudioSectionKey) => {
+    if (isStudioSectionHidden(template, key)) return null;
 
     switch (key) {
       case "summary":
@@ -360,24 +367,36 @@ function ResumePreview({
           </PreviewSection>
         ) : null;
 
-      case "experience":
-        return internships.length > 0 || workExperiences.length > 0 ? (
+      case "internship":
+        return internships.length > 0 ? (
           <PreviewSection
-            key="experience"
-            title="工作与实习经历"
-            step="experience"
-            selected={activeStep === "experience"}
+            key="internship"
+            title="实习经历"
+            step="internship"
+            selected={activeStep === "internship"}
             onSelect={onSelectStep}
           >
             {internships.map((item) => (
               <PreviewEntry
                 key={item.id}
                 title={[item.organization, item.department].filter(Boolean).join("｜")}
-                middle={item.title ? `${item.title} (实习)` : "实习"}
+                middle={item.title}
                 meta={displayDateRange(item.startDate, item.endDate, item.isCurrent)}
                 blocks={item.contentBlocks}
               />
             ))}
+          </PreviewSection>
+        ) : null;
+
+      case "work":
+        return workExperiences.length > 0 ? (
+          <PreviewSection
+            key="work"
+            title="工作经历"
+            step="work"
+            selected={activeStep === "work"}
+            onSelect={onSelectStep}
+          >
             {workExperiences.map((item) => (
               <PreviewEntry
                 key={item.id}
@@ -917,28 +936,14 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
     );
   };
 
-  const moveSectionOrder = (sectionKey: ResumeSectionKey, direction: -1 | 1) => {
+  const moveSectionOrder = (sectionKey: ResumeStudioSectionKey, direction: -1 | 1) => {
     if (!document) return;
-    const currentOrder = [...(document.template.sectionOrder?.length ? document.template.sectionOrder : RESUME_SECTIONS)];
-    const index = currentOrder.indexOf(sectionKey);
-    if (index < 0) return;
-    const target = index + direction;
-    if (target < 0 || target >= currentOrder.length) return;
-    const temp = currentOrder[index]!;
-    currentOrder[index] = currentOrder[target]!;
-    currentOrder[target] = temp;
-    updateTemplate({ sectionOrder: currentOrder });
+    updateTemplate({ studioSectionOrder: moveStudioSection(document.template, sectionKey, direction) });
   };
 
-  const toggleSectionHidden = (sectionKey: ResumeSectionKey) => {
+  const toggleSectionHidden = (sectionKey: ResumeStudioSectionKey) => {
     if (!document) return;
-    const hidden = new Set(document.template.hiddenSections || []);
-    if (hidden.has(sectionKey)) {
-      hidden.delete(sectionKey);
-    } else {
-      hidden.add(sectionKey);
-    }
-    updateTemplate({ hiddenSections: Array.from(hidden) });
+    updateTemplate(toggleStudioSectionHidden(document.template, sectionKey));
   };
 
   const generateProposal = async () => {
@@ -1033,14 +1038,19 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
   }
 
   const profile = document.profile;
-  const activeExpId = expandedExpId === "none" ? null : (expandedExpId ?? profile.experiences[0]?.id ?? null);
+  const editingExperienceKind = activeStep === "internship" || activeStep === "work" ? activeStep : null;
+  const editingExperiences = editingExperienceKind
+    ? profile.experiences.filter(item => resolveProfileExperienceKind(item) === editingExperienceKind)
+    : [];
+  const activeExpId = expandedExpId === "none"
+    ? null
+    : (editingExperiences.some(item => item.id === expandedExpId) ? expandedExpId : editingExperiences[0]?.id ?? null);
   const activeEduId = expandedEduId === "none" ? null : (expandedEduId ?? profile.education[0]?.id ?? null);
   const activeProjId = expandedProjId === "none" ? null : (expandedProjId ?? profile.projects[0]?.id ?? null);
   const activeCampusId = expandedCampusId === "none" ? null : (expandedCampusId ?? profile.campusExperiences[0]?.id ?? null);
   const activeAwardId = expandedAwardId === "none" ? null : (expandedAwardId ?? profile.awards[0]?.id ?? null);
   const activeStepMeta = STEP_METAS[activeStep];
-  const sectionOrder = document.template.sectionOrder?.length ? document.template.sectionOrder : RESUME_SECTIONS;
-  const hiddenSections = new Set(document.template.hiddenSections || []);
+  const sectionOrder = normalizeStudioSectionOrder(document.template);
   const pageLimit = document.template.pageLimit || 1;
   const pageLimitHeightMm = pageLimit * 297;
   const isOverflowing = paperHeightMm > pageLimitHeightMm + 6;
@@ -1048,7 +1058,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
   const fillPercent = Math.min(200, Math.round((paperHeightMm / pageLimitHeightMm) * 100));
   const allStepKeys: ResumeStepKey[] = [
     "personal",
-    ...(sectionOrder as ResumeStepKey[]),
+    ...sectionOrder,
     "portrait"
   ];
   const currentStepIdx = allStepKeys.indexOf(activeStep);
@@ -1162,7 +1172,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
             {sectionOrder.map((secKey, index) => {
               const meta = RESUME_STEPS.find((s) => s.sectionKey === secKey);
               if (!meta) return null;
-              const isHidden = hiddenSections.has(secKey);
+              const isHidden = isStudioSectionHidden(document.template, secKey);
               const isComplete = isResumeStepComplete(document, meta.key);
 
               return (
@@ -1189,8 +1199,9 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                       disabled={index === 0}
                       onClick={() => moveSectionOrder(secKey, -1)}
                       title="上移此模块"
+                      aria-label={`上移${meta.label}`}
                     >
-                      <ArrowUp size={12} />
+                      <ArrowUp size={12} aria-hidden="true" />
                     </button>
                     <button
                       type="button"
@@ -1198,16 +1209,18 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                       disabled={index === sectionOrder.length - 1}
                       onClick={() => moveSectionOrder(secKey, 1)}
                       title="下移此模块"
+                      aria-label={`下移${meta.label}`}
                     >
-                      <ArrowDown size={12} />
+                      <ArrowDown size={12} aria-hidden="true" />
                     </button>
                     <button
                       type="button"
                       className={`resume-rail-btn ${isHidden ? "is-hidden-btn" : ""}`}
                       onClick={() => toggleSectionHidden(secKey)}
                       title={isHidden ? "取消隐藏，显示在简历中" : "从简历中隐藏此模块"}
+                      aria-label={isHidden ? `显示${meta.label}` : `隐藏${meta.label}`}
                     >
-                      {isHidden ? <EyeOff size={12} /> : <Eye size={12} />}
+                      {isHidden ? <EyeOff size={12} aria-hidden="true" /> : <Eye size={12} aria-hidden="true" />}
                     </button>
                   </div>
                 </div>
@@ -1426,14 +1439,14 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
               </EditorSection>
             )}
 
-            {activeStep === "experience" && (
+            {editingExperienceKind && (
               <EditorSection
                 icon={<BriefcaseBusiness size={18} />}
-                title="工作与实习经历"
-                description={`${profile.experiences.length} 段经历`}
+                title={editingExperienceKind === "internship" ? "实习经历" : "工作经历"}
+                description={`${editingExperiences.length} 段经历`}
                 action={
                   <AddButton
-                    label="添加经历"
+                    label={editingExperienceKind === "internship" ? "添加实习" : "添加工作"}
                     onClick={() => {
                       const newId = makeId("exp");
                       updateProfile("experiences", [
@@ -1442,6 +1455,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                           id: newId,
                           organization: "",
                           title: "",
+                          kind: editingExperienceKind,
                           startDate: "",
                           endDate: "",
                           description: ""
@@ -1452,17 +1466,20 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                   />
                 }
               >
-                {profile.experiences.map((item, index) => (
+                {editingExperiences.map((item, index) => (
                   <ExperienceEditor
                     key={item.id}
                     item={item}
                     index={index}
-                    count={profile.experiences.length}
+                    count={editingExperiences.length}
                     onMove={(direction) => {
                       const entries = [...profile.experiences];
                       const destination = index + direction;
-                      if (destination < 0 || destination >= entries.length) return;
-                      entries.splice(destination, 0, entries.splice(index, 1)[0]!);
+                      if (destination < 0 || destination >= editingExperiences.length) return;
+                      const sourceIndex = entries.findIndex(entry => entry.id === item.id);
+                      const destinationIndex = entries.findIndex(entry => entry.id === editingExperiences[destination]?.id);
+                      if (sourceIndex < 0 || destinationIndex < 0) return;
+                      [entries[sourceIndex], entries[destinationIndex]] = [entries[destinationIndex]!, entries[sourceIndex]!];
                       updateProfile("experiences", entries);
                     }}
                     isExpanded={activeExpId === item.id}
@@ -1481,10 +1498,10 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                     }
                   />
                 ))}
-                {!profile.experiences.length && (
+                {!editingExperiences.length && (
                   <EmptyStep
-                    label="还没有工作或实习经历"
-                    action="添加经历"
+                    label={editingExperienceKind === "internship" ? "还没有实习经历" : "还没有工作经历"}
+                    action={editingExperienceKind === "internship" ? "添加实习" : "添加工作"}
                     onClick={() => {
                       const newId = makeId("exp");
                       updateProfile("experiences", [
@@ -1492,6 +1509,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                           id: newId,
                           organization: "",
                           title: "",
+                          kind: editingExperienceKind,
                           startDate: "",
                           endDate: "",
                           description: ""

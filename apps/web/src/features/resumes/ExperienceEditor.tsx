@@ -1,6 +1,6 @@
 import { lazy, Suspense, useId } from "react";
 import { ArrowDown, ArrowUp, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
-import { resolveProfileExperienceKind, serializeResumeContentBlocks, type ProfileExperience } from "@offerflow/domain";
+import { serializeResumeContentBlocks, type ProfileExperience } from "@offerflow/domain";
 import { experienceDateError, monthInputValue } from "./descriptionDocument";
 
 const DescriptionEditor = lazy(() => import("./DescriptionEditor"));
@@ -16,7 +16,6 @@ export default function ExperienceEditor({ item, index, count, isExpanded, onTog
   onMove: (direction: -1 | 1) => void;
 }) {
   const id = useId();
-  const kind = resolveProfileExperienceKind(item);
   const error = experienceDateError(item.startDate, item.endDate, item.isCurrent);
   const title = item.organization || `经历 ${index + 1}`;
   const update = (key: keyof ProfileExperience, value: string | boolean) => onChange({ ...item, [key]: value });
@@ -46,7 +45,6 @@ export default function ExperienceEditor({ item, index, count, isExpanded, onTog
         {error && <p id={`${id}-date-error`} className="resume-experience-error">{error}</p>}
         <div className="resume-experience-date-options">
           <label><input type="checkbox" checked={Boolean(item.isCurrent)} onChange={event => onChange({ ...item, isCurrent: event.target.checked, endDate: !event.target.checked && item.endDate === "至今" ? "" : item.endDate })} /><span>至今</span></label>
-          <label><span>类型</span><select value={kind} onChange={event => update("kind", event.target.value)}><option value="internship">实习</option><option value="work">工作</option></select></label>
         </div>
       </fieldset>
       <Suspense fallback={<p role="status">正在载入描述编辑器…</p>}><DescriptionEditor blocks={item.contentBlocks} onChange={contentBlocks => onChange({ ...item, contentBlocks, description: serializeResumeContentBlocks(contentBlocks) })} /></Suspense>

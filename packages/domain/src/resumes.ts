@@ -1,4 +1,4 @@
-import type { PersonalProfile, ResumeContentBlock } from "./profile.ts";
+import type { PersonalProfile, ProfileExperienceKind, ResumeContentBlock } from "./profile.ts";
 
 export const RESUME_SECTIONS = [
   "summary",
@@ -12,6 +12,19 @@ export const RESUME_SECTIONS = [
 
 export type ResumeSectionKey = (typeof RESUME_SECTIONS)[number];
 
+export const RESUME_STUDIO_SECTIONS = [
+  "summary",
+  "education",
+  "internship",
+  "work",
+  "projects",
+  "campus",
+  "awards",
+  "skills"
+] as const;
+
+export type ResumeStudioSectionKey = (typeof RESUME_STUDIO_SECTIONS)[number];
+
 export interface ResumeTemplateSettings {
   templateId: ResumeTemplateId;
   accentColor: string;
@@ -19,6 +32,10 @@ export interface ResumeTemplateSettings {
   pageLimit: 1 | 2;
   sectionOrder: ResumeSectionKey[];
   hiddenSections: ResumeSectionKey[];
+  /** Web editor order after splitting the legacy experience section by kind. */
+  studioSectionOrder?: ResumeStudioSectionKey[];
+  /** Experience kinds hidden in the rendered resume. Work is hidden by default. */
+  hiddenExperienceKinds?: ProfileExperienceKind[];
 }
 
 export type ResumeTemplateId = "clarity" | "editorial" | "compact";
@@ -136,7 +153,9 @@ export const DEFAULT_RESUME_TEMPLATE: ResumeTemplateSettings = {
   pageSize: "A4",
   pageLimit: 1,
   sectionOrder: [...RESUME_SECTIONS],
-  hiddenSections: []
+  hiddenSections: [],
+  studioSectionOrder: [...RESUME_STUDIO_SECTIONS],
+  hiddenExperienceKinds: ["work"]
 };
 
 const PROJECT_HEADING = /^项目(?:[一二三四五六七八九十]|\d+)[\s、.．:：-]*(.+)$/i;

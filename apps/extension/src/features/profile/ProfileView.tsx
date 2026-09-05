@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { matchFormFields } from "@/integrations/deepseek/deepseek";
 import { normalizeRepeatableFormFields } from "@/features/profile/repeatableFormFields";
+import { prepareAutofillPersistence, profileStorageWarning } from "@/features/profile/autofillPersistence";
 import {
   ACTIVE_RESUME_KEY,
   applyResumeFixedProfile,
@@ -625,6 +626,7 @@ export default function ProfileView({
 }) {
   const [draft, setDraft] = useState(profile);
   const [status, setStatus] = useState("");
+  const [storageWarning, setStorageWarning] = useState<string>();
   const [fields, setFields] = useState<FormFieldMatch[]>([]);
   const [platform, setPlatform] = useState<FormScanResponse["platform"]>();
   const [selectedFields, setSelectedFields] = useState<Set<string>>(new Set());
@@ -806,8 +808,17 @@ export default function ProfileView({
     setBusy(true);
     try {
       await persistDraft();
+      setStorageWarning(undefined);
       setOpenSections(COLLAPSED_SECTIONS);
       setStatus("个人资料与简历中心已同步 · 已收起各资料分组");
+    } catch (error) {
+      const warning = profileStorageWarning(error);
+      if (warning) {
+        setStorageWarning(warning);
+        setStatus("");
+      } else {
+        setStatus(error instanceof Error ? error.message : "保存失败，请重试");
+      }
     } finally {
       setBusy(false);
     }
@@ -818,7 +829,10 @@ export default function ProfileView({
     setStatus("");
     setFillProgress(undefined);
     try {
-      await persistDraft();
+      setStorageWarning(await prepareAutofillPersistence(
+        hasPendingChanges || !currentResume || Boolean(storageWarning),
+        persistDraft
+      ));
       const response = (await activeTabMessage({
         type: "OFFERFLOW_SCAN_APPLICATION_FORM",
         expandRepeaters: false,
@@ -1053,14 +1067,14 @@ export default function ProfileView({
             <span><FileCheck2 size={16} /></span>
             <div>
               <strong>当前网申简历</strong>
-              <small>{hasPendingChanges ? "有修改待保存" : "已与简历中心同步"}</small>
+              <small>{storageWarning ? "资料未完整保存" : hasPendingChanges ? "有修改待保存" : "已与简历中心同步"}</small>
             </div>
           </div>
           <select value={activeResumeId} onChange={(event) => void selectResume(event.target.value)} disabled={busy}>
             {resumeLibrary.map((resume) => <option key={resume.id} value={resume.id}>{resume.name}</option>)}
           </select>
-          <span className={`profile-sync-state ${hasPendingChanges ? "pending" : "synced"}`}>
-            {hasPendingChanges ? "待保存" : "已同步"}
+          <span className={`profile-sync-state ${hasPendingChanges || storageWarning ? "pending" : "synced"}`}>
+            {hasPendingChanges || storageWarning ? "待保存" : "已同步"}
           </span>
         </div>
       )}
@@ -1070,6 +1084,12 @@ export default function ProfileView({
         <div><strong>填写当前网申</strong><small>自动匹配并填写，缺少资料自动跳过</small></div>
         <button onClick={scan} disabled={busy}>{busy ? "正在识别..." : "自动填写"}</button>
       </div>
+
+      {storageWarning && (
+        <div className="profile-status" role="alert">
+          <span>{storageWarning} 自动填写仍可使用当前页面中的资料。</span>
+        </div>
+      )}
 
       {status && (
         <button className="profile-status" onClick={() => setStatus("")}>
