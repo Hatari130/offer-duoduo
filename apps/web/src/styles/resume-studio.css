@@ -313,39 +313,10 @@
   display: grid;
   min-height: 0;
   min-width: 0;
-  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto;
   background: var(--studio-surface);
   border-inline-end: 1px solid var(--studio-line);
   overflow: hidden;
-}
-
-.resume-editor-heading {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 0.75rem 1rem 0.65rem;
-  border-block-end: 1px solid var(--studio-line);
-}
-.resume-editor-eyebrow {
-  display: block;
-  font-size: 0.7rem;
-  font-weight: 750;
-  color: #2563eb;
-  letter-spacing: 0.04em;
-  margin-block-end: 0.15rem;
-}
-.resume-editor-heading h1 {
-  margin: 0;
-  font-family: var(--of-font-display, "Source Han Serif SC", "Songti SC", serif);
-  font-size: 1.2rem;
-  line-height: 1.35;
-}
-.resume-editor-heading p {
-  margin: 0.25rem 0 0;
-  color: var(--studio-muted);
-  font-size: 0.78rem;
-  line-height: 1.45;
 }
 
 .resume-editor-scroll {

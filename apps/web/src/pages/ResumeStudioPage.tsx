@@ -1049,7 +1049,6 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
   const activeProjId = expandedProjId === "none" ? null : (expandedProjId ?? profile.projects[0]?.id ?? null);
   const activeCampusId = expandedCampusId === "none" ? null : (expandedCampusId ?? profile.campusExperiences[0]?.id ?? null);
   const activeAwardId = expandedAwardId === "none" ? null : (expandedAwardId ?? profile.awards[0]?.id ?? null);
-  const activeStepMeta = STEP_METAS[activeStep];
   const sectionOrder = normalizeStudioSectionOrder(document.template);
   const pageLimit = document.template.pageLimit || 1;
   const pageLimitHeightMm = pageLimit * 297;
@@ -1247,14 +1246,6 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
           className={`resume-editor-pane ${activeTab === "editor" ? "is-mobile-active" : ""}`}
           aria-label="简历内容编辑"
         >
-          <header className="resume-editor-heading">
-            <div>
-              <span className="resume-editor-eyebrow">当前正在编辑</span>
-              <h1>{activeStepMeta.label}</h1>
-              <p>{activeStepMeta.description}</p>
-            </div>
-          </header>
-
           <div className="resume-editor-scroll">
             {error && (
               <div className="resume-studio-alert" role="alert">
