@@ -50,7 +50,7 @@ interface DeadlineCopy {
 }
 
 type PaginationItem = number | "start-ellipsis" | "end-ellipsis";
-type OpportunityQuickFilter = "all" | "latest" | "open" | "closing" | "ongoing";
+type OpportunityQuickFilter = "all" | "latest" | "closing";
 
 function paginationItems(currentPage: number, totalPages: number): PaginationItem[] {
   if (totalPages <= 7) {
@@ -227,8 +227,7 @@ export function OpportunitiesPage() {
         ? opportunities.filter((opportunity) => crawlDateKey(opportunity.updatedAt) === latestCrawledOn).length
         : 0,
       openCount: opportunities.filter((opportunity) => isOpenOpportunity(opportunity.status)).length,
-      closingCount: opportunities.filter((opportunity) => opportunity.status === "closing").length,
-      ongoingCount: opportunities.filter((opportunity) => opportunity.status === "ongoing").length
+      closingCount: opportunities.filter((opportunity) => opportunity.status === "closing").length
     };
   }, [opportunities]);
 
@@ -265,9 +264,7 @@ export function OpportunitiesPage() {
       const matchesCompanyType = companyType === "all" || opportunity.companyType === companyType;
       const matchesQuickFilter = quickFilter === "all"
         || (quickFilter === "latest" && crawlDateKey(opportunity.updatedAt) === dashboard.latestCrawledOn)
-        || (quickFilter === "open" && isOpenOpportunity(opportunity.status))
-        || (quickFilter === "closing" && opportunity.status === "closing")
-        || (quickFilter === "ongoing" && opportunity.status === "ongoing");
+        || (quickFilter === "closing" && opportunity.status === "closing");
       return matchesQuery
         && matchesCity
         && matchesIndustry
@@ -438,14 +435,8 @@ export function OpportunitiesPage() {
         <button type="button" aria-pressed={quickFilter === "latest"} onClick={() => selectQuickFilter("latest")}>
           最新发布 <span>{dashboard.latestCount.toLocaleString("zh-CN")}</span>
         </button>
-        <button type="button" aria-pressed={quickFilter === "open"} onClick={() => selectQuickFilter("open")}>
-          开放投递 <span>{dashboard.openCount.toLocaleString("zh-CN")}</span>
-        </button>
         <button type="button" aria-pressed={quickFilter === "closing"} onClick={() => selectQuickFilter("closing")}>
           即将截止 <span>{dashboard.closingCount.toLocaleString("zh-CN")}</span>
-        </button>
-        <button type="button" aria-pressed={quickFilter === "ongoing"} onClick={() => selectQuickFilter("ongoing")}>
-          持续招聘 <span>{dashboard.ongoingCount.toLocaleString("zh-CN")}</span>
         </button>
       </nav>
 
