@@ -1036,7 +1036,7 @@
 .resume-description-label { display: block; margin-block-end: 0.3rem; color: var(--studio-muted); font-size: 0.82rem; font-weight: 650; }
 .resume-description-editor { min-width: 0; overflow: hidden; background: white; border: 1px solid var(--studio-control-line); border-radius: 0.65rem; }
 .resume-description-editor:focus-within { border-color: var(--studio-primary); }
-.resume-description-toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; padding: 0.2rem 0.35rem; gap: 0.05rem; }
+.resume-description-toolbar { display: inline-flex; flex-wrap: wrap; gap: 0.05rem; margin: 0.35rem 0.45rem 0; padding: 0.12rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 0.55rem; }
 .resume-description-toolbar button { display: grid; place-items: center; width: 2.5rem; min-height: 2.5rem; padding: 0; border: 0; border-radius: 0.4rem; color: var(--studio-muted); background: transparent; }
 .resume-description-toolbar button:hover:not(:disabled) { color: var(--studio-ink); background: #e8ebef; }
 .resume-description-toolbar button:disabled { opacity: 0.35; cursor: default; }
