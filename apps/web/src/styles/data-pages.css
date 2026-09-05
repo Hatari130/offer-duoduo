@@ -360,7 +360,6 @@
   align-items: center;
   gap: 0.65rem;
   padding: 0.7rem 0.8rem;
-  background: var(--of-surface-raised);
   border: 1px solid var(--of-line-subtle);
   border-radius: 0.88rem;
   box-shadow: 0 1px 2px rgb(23 23 20 / 0.03);
@@ -395,23 +394,21 @@
   font-variant-numeric: tabular-nums;
 }
 
-.opportunity-metric em {
-  min-width: 0;
-  overflow: hidden;
-  color: var(--of-text-subtle);
-  font-size: 0.68rem;
-  font-style: normal;
-  line-height: 1.2;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.opportunity-metric--latest {
+  background: color-mix(in srgb, var(--of-info-soft) 76%, var(--of-surface-raised));
+  border-color: color-mix(in srgb, var(--of-info) 18%, var(--of-line-subtle));
 }
-
-.opportunity-metric--latest { border-color: color-mix(in srgb, var(--of-info) 18%, var(--of-line-subtle)); }
-.opportunity-metric--latest .opportunity-metric__icon { color: var(--of-info); background: var(--of-info-soft); }
-.opportunity-metric--open { border-color: color-mix(in srgb, var(--of-success) 18%, var(--of-line-subtle)); }
-.opportunity-metric--open .opportunity-metric__icon { color: var(--of-success); background: var(--of-success-soft); }
-.opportunity-metric--closing { border-color: color-mix(in srgb, var(--of-warning) 20%, var(--of-line-subtle)); }
-.opportunity-metric--closing .opportunity-metric__icon { color: var(--of-warning); background: var(--of-warning-soft); }
+.opportunity-metric--latest .opportunity-metric__icon { color: var(--of-info); background: color-mix(in srgb, var(--of-info-soft) 88%, var(--of-info) 12%); }
+.opportunity-metric--open {
+  background: color-mix(in srgb, var(--of-success-soft) 76%, var(--of-surface-raised));
+  border-color: color-mix(in srgb, var(--of-success) 18%, var(--of-line-subtle));
+}
+.opportunity-metric--open .opportunity-metric__icon { color: var(--of-success); background: color-mix(in srgb, var(--of-success-soft) 88%, var(--of-success) 12%); }
+.opportunity-metric--closing {
+  background: color-mix(in srgb, var(--of-warning-soft) 76%, var(--of-surface-raised));
+  border-color: color-mix(in srgb, var(--of-warning) 20%, var(--of-line-subtle));
+}
+.opportunity-metric--closing .opportunity-metric__icon { color: var(--of-warning); background: color-mix(in srgb, var(--of-warning-soft) 88%, var(--of-warning) 12%); }
 .opportunity-filter-panel {
   position: sticky;
   inset-block-start: 0.75rem;

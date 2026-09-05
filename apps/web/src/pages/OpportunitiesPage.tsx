@@ -350,15 +350,15 @@ export function OpportunitiesPage() {
         <div className="opportunity-metrics" aria-label="校招数据概览">
           <article className="opportunity-metric opportunity-metric--latest">
             <span className="opportunity-metric__icon"><Sparkles aria-hidden="true" size={21} strokeWidth={1.8} /></span>
-            <span><small>最新发布</small><strong>{dashboard.latestCount.toLocaleString("zh-CN")}</strong><em>{dashboard.latestOpenAt ? `${dateLabel(dashboard.latestOpenAt)} 开放` : "等待更新"}</em></span>
+            <span><small>最新发布</small><strong>{dashboard.latestCount.toLocaleString("zh-CN")}</strong></span>
           </article>
           <article className="opportunity-metric opportunity-metric--open">
             <span className="opportunity-metric__icon"><BriefcaseBusiness aria-hidden="true" size={21} strokeWidth={1.8} /></span>
-            <span><small>开放投递</small><strong>{dashboard.openCount.toLocaleString("zh-CN")}</strong><em>可继续投递</em></span>
+            <span><small>开放投递</small><strong>{dashboard.openCount.toLocaleString("zh-CN")}</strong></span>
           </article>
           <article className="opportunity-metric opportunity-metric--closing">
             <span className="opportunity-metric__icon"><AlarmClock aria-hidden="true" size={21} strokeWidth={1.8} /></span>
-            <span><small>即将截止</small><strong>{dashboard.closingCount.toLocaleString("zh-CN")}</strong><em>3 天内截止</em></span>
+            <span><small>即将截止</small><strong>{dashboard.closingCount.toLocaleString("zh-CN")}</strong></span>
           </article>
         </div>
       </header>
