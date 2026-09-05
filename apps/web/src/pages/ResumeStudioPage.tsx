@@ -87,8 +87,7 @@ export type ResumeStepKey =
   | "skills"
   | "summary"
   | "campus"
-  | "awards"
-  | "portrait";
+  | "awards";
 
 export interface StepMeta {
   key: ResumeStepKey;
@@ -107,8 +106,7 @@ const STEP_METAS: Record<ResumeStepKey, StepMeta> = {
   skills: { key: "skills", sectionKey: "skills", label: "专业技能", shortLabel: "技能", description: "岗位相关的专业技能、工具与关键词" },
   summary: { key: "summary", sectionKey: "summary", label: "个人简介", shortLabel: "简介", description: "用简洁证据总结核心优势" },
   campus: { key: "campus", sectionKey: "campus", label: "校园经历", shortLabel: "在校", description: "社团干部、活动实践与组织协作" },
-  awards: { key: "awards", sectionKey: "awards", label: "荣誉奖项", shortLabel: "奖项", description: "奖学金、竞赛荣誉与专业资质" },
-  portrait: { key: "portrait", label: "照片与排版", shortLabel: "照片", description: "简历证件照片与版式附件" }
+  awards: { key: "awards", sectionKey: "awards", label: "荣誉奖项", shortLabel: "奖项", description: "奖学金、竞赛荣誉与专业资质" }
 };
 
 const RESUME_STEPS: readonly StepMeta[] = Object.values(STEP_METAS);
@@ -161,8 +159,6 @@ function isResumeStepComplete(document: ResumeDocument, step: ResumeStepKey): bo
       return profile.campusExperiences.length > 0;
     case "awards":
       return profile.awards.length > 0;
-    case "portrait":
-      return Boolean(document.portraitAssetId);
   }
 }
 
@@ -1057,8 +1053,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
   const fillPercent = Math.min(200, Math.round((paperHeightMm / pageLimitHeightMm) * 100));
   const allStepKeys: ResumeStepKey[] = [
     "personal",
-    ...sectionOrder,
-    "portrait"
+    ...sectionOrder
   ];
   const currentStepIdx = allStepKeys.indexOf(activeStep);
   const prevStepKey = currentStepIdx > 0 ? allStepKeys[currentStepIdx - 1] : null;
@@ -1225,18 +1220,6 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                 </div>
               );
             })}
-
-            <div
-              className={`resume-rail-item ${activeStep === "portrait" ? "is-active" : ""}`}
-              onClick={() => setActiveStep("portrait")}
-              role="button"
-              tabIndex={0}
-            >
-              <span className="resume-rail-badge">
-                {isResumeStepComplete(document, "portrait") ? <Check size={12} /> : "图"}
-              </span>
-              <strong className="resume-rail-label">证件照与排版</strong>
-            </div>
           </div>
         </nav>
 
@@ -1299,23 +1282,31 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
 
             {activeStep === "personal" && (
               <EditorSection icon={<UserRound size={18} />} title="个人信息" description="简历抬头与联系方式">
-                <div className="resume-fields-grid resume-document-name">
-                  <TextField
-                    wide
-                    label="简历名称"
-                    value={document.title}
-                    onChange={(value) =>
-                      setDocument((current) =>
-                        current
-                          ? {
-                              ...current,
-                              title: value || "未命名简历",
-                              updatedAt: new Date().toISOString()
-                            }
-                          : current
-                      )
-                    }
-                    placeholder="例如：产品经理通用简历"
+                <div className="resume-personal-top">
+                  <div className="resume-fields-grid resume-document-name">
+                    <TextField
+                      wide
+                      label="简历名称"
+                      value={document.title}
+                      onChange={(value) =>
+                        setDocument((current) =>
+                          current
+                            ? {
+                                ...current,
+                                title: value || "未命名简历",
+                                updatedAt: new Date().toISOString()
+                              }
+                            : current
+                        )
+                      }
+                      placeholder="例如：产品经理通用简历"
+                    />
+                  </div>
+                  <PortraitAssetPicker
+                    assets={document.assets}
+                    selectedId={document.portraitAssetId}
+                    onChange={updateAssets}
+                    onError={setError}
                   />
                 </div>
                 <div className="resume-fields-grid">
@@ -1755,14 +1746,6 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
               </EditorSection>
             )}
 
-            {activeStep === "portrait" && (
-              <PortraitAssetPicker
-                assets={document.assets}
-                selectedId={document.portraitAssetId}
-                onChange={updateAssets}
-                onError={setError}
-              />
-            )}
           </div>
           <footer className="resume-editor-footer">
             <button

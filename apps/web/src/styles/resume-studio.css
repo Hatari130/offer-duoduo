@@ -930,6 +930,26 @@
 
 .resume-fields-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.8rem; }
 .resume-document-name { padding-block-end: 0.9rem; margin-block-end: 0.9rem; border-block-end: 1px solid var(--studio-line); }
+.resume-personal-top {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(10.75rem, 13.5rem);
+  align-items: start;
+  gap: 0.9rem;
+  padding-block-end: 0.9rem;
+  margin-block-end: 0.9rem;
+  border-block-end: 1px solid var(--studio-line);
+}
+.resume-personal-top .resume-document-name { padding: 0; margin: 0; border: 0; }
+.resume-personal-top .resume-portrait-picker {
+  grid-column: auto;
+  margin: 0;
+  padding: 0.75rem;
+  background: var(--studio-raised);
+}
+.resume-personal-top .resume-portrait-picker > header { align-items: flex-start; }
+.resume-personal-top .resume-portrait-picker > header small { line-height: 1.35; }
+.resume-personal-top .resume-portrait-upload { min-height: 2.4rem; padding-inline: 0.55rem; }
+.resume-personal-top .resume-portrait-assets { gap: 0.45rem; }
 .resume-field { display: grid; min-width: 0; gap: 0.35rem; }
 .resume-field--wide { grid-column: 1 / -1; }
 .resume-field > span { color: var(--studio-muted); font-size: 0.8125rem; font-weight: 680; }
@@ -2044,6 +2064,7 @@
   .resume-field textarea,
   .resume-field select { font-size: 1rem; }
   .resume-fields-grid { grid-template-columns: 1fr; }
+  .resume-personal-top { grid-template-columns: 1fr; }
   .resume-field--wide { grid-column: auto; }
   .resume-editor-scroll { padding-inline: 0.75rem; }
   .resume-editor-section > header { grid-template-columns: auto minmax(0, 1fr); }
