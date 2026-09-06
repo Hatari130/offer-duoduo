@@ -1,0 +1,82 @@
+/* A quiet, task-first welcome surface. Shares the site's theme tokens. */
+.chat-page--empty {
+  background: var(--of-surface);
+}
+.chat-page--empty::before, html[data-theme="dark"] .chat-page--empty::before {
+  background: radial-gradient(ellipse 65% 45% at 50% 15%, color-mix(in oklch, var(--of-brand-100) 35%, transparent), transparent 85%);
+}
+.chat-welcome { max-width: 64rem; padding-block-start: clamp(3rem, 9vh, 6rem); }
+.chat-welcome::before, .chat-welcome .chat-atmosphere { display: none; }
+.chat-welcome .companion-hero-badge { box-shadow: none; background: transparent; border-color: transparent; margin-block-end: 1rem; }
+.chat-welcome h1 {
+  color: var(--of-text);
+  font-size: clamp(1.8rem, 2.6vw, 2.65rem);
+  font-weight: 650;
+  letter-spacing: -0.035em;
+  line-height: 1.3;
+  text-shadow: none;
+}
+html[data-theme="dark"] .chat-welcome h1 { text-shadow: none; }
+.chat-welcome > p { color: var(--of-text-subtle); font-size: 1rem; margin-block: 0.8rem 2rem; }
+.chat-welcome > .composer-shell, .chat-welcome .recommendation-section { width: min(100%, 48rem); margin-inline: auto; }
+.chat-welcome > .composer-shell { padding: 1.1rem; border-radius: 1.25rem; }
+.chat-welcome > .composer-shell textarea { min-height: 5rem; font-size: 1.05rem; }
+.composer-shell, .composer-shell:hover {
+  background: var(--of-surface);
+  backdrop-filter: none;
+  box-shadow: 0 5px 24px -12px rgb(40 65 110 / 0.18);
+}
+.composer-shell:focus-within {
+  background: var(--of-surface);
+  border-color: var(--of-brand-500);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--of-brand-500) 12%, transparent);
+}
+.composer-toolbar { position: relative; gap: 0.75rem; align-items: end; }
+.composer-toolbar .composer-material-actions { min-width: 0; display: flex; flex-wrap: wrap; gap: 0.25rem 0.65rem; align-items: center; }
+.composer-upload-button, .composer-material-actions .chat-context-trigger {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+  min-height: 2.5rem; padding: 0.4rem 0.5rem; color: var(--of-text-subtle);
+  background: transparent; border: 0; border-radius: 0.5rem; font: inherit; font-size: 0.8rem; cursor: pointer;
+}
+.composer-upload-button:hover:not(:disabled), .composer-material-actions .chat-context-trigger:hover { color: var(--of-brand-600); background: var(--of-surface-muted); }
+.composer-upload-button:disabled { opacity: 0.55; cursor: default; }
+.composer-material-actions .chat-context { position: static; width: auto; padding: 0; border: 0; background: transparent; }
+.composer-material-actions .chat-context-row { flex-wrap: wrap; gap: 0.4rem; }
+.composer-material-actions .chat-context-chips { flex-basis: 100%; order: 2; flex-wrap: wrap; white-space: normal; }
+.composer-material-actions .chat-context-chip { max-width: 100%; }
+.composer-material-actions .chat-context-chip > span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.composer-material-actions .chat-context-popover { inset: calc(100% + 0.8rem) auto auto 0; width: min(31rem, 100%); }
+.thread-composer .composer-material-actions .chat-context-popover { inset: auto auto calc(100% + 0.8rem) 0; }
+.composer-send { flex-shrink: 0; }
+.chat-welcome .recommendation-section { margin-block-start: 2.1rem; text-align: start; }
+.chat-welcome .recommendation-section > header { margin: 0; padding: 0; }
+.chat-welcome .recommendation-label { color: var(--of-text); font-size: 0.88rem; font-weight: 600; }
+.task-entry-hint { margin: 0.4rem 0 1rem; color: var(--of-text-subtle); font-size: 0.8rem; }
+.chat-welcome .recommendation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin: 0; padding: 0; overflow: visible; }
+.chat-task-card {
+  display: flex; align-items: center; gap: 0.9rem; min-width: 0; padding: 1.2rem;
+  text-align: start; color: var(--of-text); background: var(--of-surface);
+  border: 1px solid var(--of-line); border-radius: 0.9rem; font: inherit; cursor: pointer;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+.chat-task-card:hover:not(:disabled) { border-color: var(--of-brand-400); background: var(--of-surface-muted); }
+.chat-task-icon { display: grid; place-items: center; flex-shrink: 0; width: 2.5rem; height: 2.5rem; color: var(--of-brand-600); background: var(--of-brand-50); border-radius: 0.7rem; }
+.chat-task-copy { display: grid; min-width: 0; gap: 0.4rem; flex: 1; }
+.chat-task-copy strong { font-size: 0.95rem; font-weight: 600; }
+.chat-task-copy > span { color: var(--of-text-subtle); font-size: 0.8rem; line-height: 1.5; }
+.chat-task-card > svg { flex-shrink: 0; color: var(--of-text-subtle); }
+.chat-task-card:focus-visible, .composer-upload-button:focus-visible, .chat-context-trigger:focus-visible { outline: 2px solid var(--of-brand-500); outline-offset: 3px; }
+.chat-welcome .chat-disclaimer { display: block; margin-block-start: 1.5rem; color: var(--of-text-subtle); }
+@media (max-width: 620px) {
+  .chat-welcome { padding: 2rem 1rem calc(2rem + env(safe-area-inset-bottom)); }
+  .chat-welcome h1 { font-size: 1.8rem; }
+  .chat-welcome > p { font-size: 0.9rem; }
+  .chat-welcome .recommendation-grid { grid-template-columns: minmax(0, 1fr); }
+  .chat-task-card { padding: 0.9rem; }
+  .chat-welcome > .composer-shell { padding: 0.8rem; }
+  .chat-welcome > .composer-shell textarea { font-size: 1rem; }
+  .composer-material-actions .chat-context-trigger { margin-inline-start: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-task-card { transition: none; }
+}

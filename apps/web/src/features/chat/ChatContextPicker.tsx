@@ -58,8 +58,7 @@ export function ChatContextPicker({ options, selected, loading, onChange }: Chat
   return (
     <div className="chat-context" ref={shellRef}>
       <div className="chat-context-row">
-        <span className="chat-context-label">本轮参考</span>
-        <div className="chat-context-chips">
+        {selected.length > 0 && <div className="chat-context-chips">
           {selected.map((item) => (
             <span className="chat-context-chip" key={`${item.kind}:${item.id}`}>
               <span>{item.label}</span>
@@ -72,8 +71,7 @@ export function ChatContextPicker({ options, selected, loading, onChange }: Chat
               </button>
             </span>
           ))}
-          {!selected.length && <span className="chat-context-empty">尚未选择个人材料</span>}
-        </div>
+        </div>}
         <button
           className="chat-context-trigger"
           type="button"
@@ -82,7 +80,7 @@ export function ChatContextPicker({ options, selected, loading, onChange }: Chat
           onClick={() => setOpen((current) => !current)}
         >
           <Plus aria-hidden="true" size={14} />
-          选择材料
+          {selected.length ? `已选 ${selected.length} 项材料` : "选择已有材料"}
         </button>
       </div>
 

@@ -96,13 +96,12 @@ export function ChatComposer({
     if (event.nativeEvent.isComposing) return;
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      if (value.trim() && !streaming) onSubmit();
+      if (value.trim() && !streaming && !parsing) onSubmit();
     }
   };
 
   return (
     <div className="composer-shell">
-      {contextSlot && <div className="composer-context-strip">{contextSlot}</div>}
       {attachments.length > 0 && (
         <div className="composer-attachments" aria-label="待发送附件">
           {attachments.map((attachment) => (
@@ -132,10 +131,10 @@ export function ChatComposer({
           onChange(event.target.value);
         }}
         onKeyDown={handleKeyDown}
-        placeholder="跟小鲤说说你想推进什么，或哪里卡住了…"
+        placeholder="说说你想推进什么，也可以粘贴岗位描述。"
       />
       <div className="composer-toolbar">
-        <div>
+        <div className="composer-material-actions">
           <input
             ref={fileRef}
             hidden
@@ -145,9 +144,9 @@ export function ChatComposer({
             onChange={(event) => void addFiles(event)}
           />
           <button
-            className="composer-icon-button"
+            className="composer-upload-button"
             type="button"
-            aria-label={parsing ? "正在解析附件" : "添加 TXT、Markdown 或 PDF 资料"}
+            aria-label={parsing ? "正在解析附件" : "上传文件：TXT、Markdown 或 PDF"}
             title={parsing ? "正在解析附件…" : "添加 TXT / Markdown（≤200 KB）或 PDF（≤8 MB）资料"}
             onClick={() => {
               if (onAttachmentRequest && !onAttachmentRequest()) return;
@@ -160,7 +159,9 @@ export function ChatComposer({
             ) : (
               <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />
             )}
+            <span>{parsing ? "解析中…" : "上传文件"}</span>
           </button>
+          {contextSlot}
         </div>
         {streaming ? (
           <button className="composer-send is-stop" type="button" onClick={onStop} aria-label="停止生成">
@@ -171,7 +172,7 @@ export function ChatComposer({
             className="composer-send"
             type="button"
             onClick={onSubmit}
-            disabled={!value.trim()}
+            disabled={!value.trim() || parsing}
             aria-label="发送问题"
           >
             <ArrowUp aria-hidden="true" size={19} strokeWidth={2.2} />

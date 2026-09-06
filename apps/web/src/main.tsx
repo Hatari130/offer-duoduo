@@ -17,6 +17,7 @@ import "./styles/resume-studio.css";
 import "./styles/browser-extension.css";
 import "./styles/help-center.css";
 import "./styles/theme.css";
+import "./styles/chat-home.css";
 
 applyColorTheme(getInitialColorTheme());
 

@@ -6,8 +6,8 @@ import type {
   ChatConversation,
   ChatMessage
 } from "@offerflow/domain";
-import { CAREER_CHAT_SUGGESTIONS, DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
-import { ArrowRight, Compass, FileSearch, PanelTop, ScanSearch, X } from "lucide-react";
+import { DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
+import { ArrowRight, CalendarDays, Compass, MessageCircle, PanelTop, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { createUuid } from "../app/id";
@@ -20,36 +20,28 @@ import { chatPendingMode, type ChatPendingMode } from "../features/chat/pendingM
 
 const recommendationCards = [
   {
-    prompt: CAREER_CHAT_SUGGESTIONS[0],
-    tag: "秋招规划",
-    title: "把秋招拆成一张可执行时间表",
-    description: "根据目标岗位和当前进度，明确每周重点。",
-    icon: Compass,
-    tone: "sky"
+    prompt: "帮我找适合我的校招岗位。目标方向：【岗位方向】，意向城市：【城市】，毕业年份：【年份】。",
+    title: "找适合我的岗位",
+    description: "从目标方向和意向城市开始",
+    icon: Compass
   },
   {
-    prompt: CAREER_CHAT_SUGGESTIONS[1],
-    tag: "简历提升",
-    title: "让项目经历更有说服力",
-    description: "用成果、行动和证据重写项目表达。",
-    icon: PanelTop,
-    tone: "sand"
+    prompt: "帮我修改一段简历，保留真实经历。目标岗位：【岗位】，需要修改的原文：【粘贴经历，或选择已有简历材料】。",
+    title: "改一段简历",
+    description: "把你的经历写得更清楚",
+    icon: PanelTop
   },
   {
-    prompt: CAREER_CHAT_SUGGESTIONS[2],
-    tag: "面试准备",
-    title: "拆解职业规划类高频问题",
-    description: "得到回答结构、追问方向和练习建议。",
-    icon: FileSearch,
-    tone: "mint"
+    prompt: "陪我练习一道【目标岗位】的面试题。请先出题，等我回答后再给具体反馈。",
+    title: "练一道面试题",
+    description: "先试着回答，再一起完善",
+    icon: MessageCircle
   },
   {
-    prompt: CAREER_CHAT_SUGGESTIONS[3],
-    tag: "岗位分析",
-    title: "从岗位描述提炼准备重点",
-    description: "识别核心能力、关键词和经验缺口。",
-    icon: ScanSearch,
-    tone: "lilac"
+    prompt: "帮我安排本周的求职计划。目标岗位：【岗位】，当前进度：【准备或投递阶段】，本周可用时间：【时间】。",
+    title: "安排本周求职",
+    description: "把目标拆成几件做得到的事",
+    icon: CalendarDays
   }
 ] as const;
 
@@ -58,6 +50,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [conversation, setConversation] = useState<ChatConversation>();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
+  const [taskHint, setTaskHint] = useState("");
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [contextOptions, setContextOptions] = useState<ChatContextOption[]>([]);
   const [selectedContext, setSelectedContext] = useState<ChatContextReference[]>([]);
@@ -69,6 +62,21 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [copiedMessageId, setCopiedMessageId] = useState<string>();
   const abortRef = useRef<AbortController>();
   const justCreatedRef = useRef<string>();
+
+  const prepareTask = (prompt: string) => {
+    if (streaming) return;
+    const next = draft.trim() ? `${draft}\n\n${prompt}` : prompt;
+    setDraft(next);
+    setTaskHint("已填入问题模板，补充括号里的内容后再发送。");
+    window.requestAnimationFrame(() => {
+      const input = document.getElementById("career-question") as HTMLTextAreaElement | null;
+      if (!input) return;
+      input.focus();
+      const start = next.indexOf("【", next.length - prompt.length);
+      if (start >= 0) input.setSelectionRange(start, next.indexOf("】", start) + 1);
+      input.scrollIntoView({ block: "nearest", behavior: "instant" });
+    });
+  };
 
   useEffect(() => {
     if (!conversationId) {
@@ -380,7 +388,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           </div>
           <h1 tabIndex={-1}>今天，我们先推进哪一步？</h1>
           <p>
-            找岗位、改简历、理思路，卡住时也可以先说说。{DEFAULT_CHAT_COMPANION.name}会陪你把下一步做小、做清楚。
+            找岗位、改简历、练面试。小鲤陪你从眼前的一小步开始。
           </p>
           <ChatComposer
             value={draft}
@@ -398,38 +406,32 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           <section className="recommendation-section" aria-label={`${DEFAULT_CHAT_COMPANION.name}可以陪你`}>
             <header>
               <div>
-                <span className="recommendation-label"><Compass aria-hidden="true" size={14} />{DEFAULT_CHAT_COMPANION.name}可以陪你</span>
+                <span className="recommendation-label">从一件具体的事开始</span>
               </div>
             </header>
+            <p className="task-entry-hint">选一个方向，补充后再发送</p>
             <div className="recommendation-grid">
               {recommendationCards.map((card) => {
                 const Icon = card.icon;
                 return (
                   <button
                     type="button"
-                    className="recommendation-bento-card"
-                    data-tone={card.tone}
+                    className="chat-task-card"
                     key={card.prompt}
-                    onClick={() => void send(card.prompt)}
+                    onClick={() => prepareTask(card.prompt)}
+                    disabled={streaming}
                   >
-                    <div className="recommendation-bento-card__header">
-                      <span className="recommendation-bento-card__icon-badge" aria-hidden="true">
-                        <Icon size={18} strokeWidth={2.2} />
-                      </span>
-                      <span className="recommendation-bento-card__tag">{card.tag}</span>
-                    </div>
-                    <div className="recommendation-bento-card__body">
+                    <span className="chat-task-icon" aria-hidden="true"><Icon size={21} strokeWidth={1.7} /></span>
+                    <span className="chat-task-copy">
                       <strong>{card.title}</strong>
-                      <p>{card.description}</p>
-                    </div>
-                    <div className="recommendation-bento-card__footer">
-                      <span>一起开始</span>
-                      <ArrowRight aria-hidden="true" size={13} className="recommendation-bento-card__arrow" />
-                    </div>
+                      <span>{card.description}</span>
+                    </span>
+                    <ArrowRight aria-hidden="true" size={16} />
                   </button>
                 );
               })}
             </div>
+            <span className="sr-only" role="status">{taskHint}</span>
           </section>
           <small className="chat-disclaimer">AI 回答可能不完整，重要招聘信息请以企业官方公告为准。</small>
         </div>
