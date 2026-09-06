@@ -1,4 +1,7 @@
 import {
+  lazy,
+  Suspense,
+  useId,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -67,13 +70,15 @@ import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
 import { calculateResumePreviewScale } from "../features/resumes/resumePreviewLayout";
 import ExperienceEditor from "../features/resumes/ExperienceEditor";
-import { blockInlineText } from "../features/resumes/descriptionDocument";
+import { blockInlineText, experienceDateError, monthInputValue } from "../features/resumes/descriptionDocument";
 import {
   isStudioSectionHidden,
   moveStudioSection,
   normalizeStudioSectionOrder,
   toggleStudioSectionHidden
 } from "../features/resumes/resumeStudioSections";
+
+const DescriptionEditor = lazy(() => import("../features/resumes/DescriptionEditor"));
 
 type StudioTab = "preview" | "editor";
 type SaveState = "idle" | "saving" | "saved" | "error";
@@ -1535,8 +1540,16 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
                     key={item.id}
                     item={item}
                     index={index}
+                    count={profile.projects.length}
                     isExpanded={activeProjId === item.id}
                     onToggle={() => setExpandedProjId(activeProjId === item.id ? "none" : item.id)}
+                    onMove={(direction) => {
+                      const entries = [...profile.projects];
+                      const destination = index + direction;
+                      if (destination < 0 || destination >= entries.length) return;
+                      [entries[index], entries[destination]] = [entries[destination]!, entries[index]!];
+                      updateProfile("projects", entries);
+                    }}
                     onChange={(next) =>
                       updateProfile(
                         "projects",
@@ -2610,37 +2623,53 @@ function EducationEditor({
 function ProjectEditor({
   item,
   index,
+  count,
   isExpanded,
   onToggle,
   onChange,
-  onDelete
+  onDelete,
+  onMove
 }: {
   item: ProfileProject;
   index: number;
+  count: number;
   isExpanded: boolean;
   onToggle: () => void;
   onChange: (item: ProfileProject) => void;
   onDelete: () => void;
+  onMove: (direction: -1 | 1) => void;
 }) {
+  const id = useId();
   const field = (key: keyof ProfileProject) => (value: string) => onChange({ ...item, [key]: value });
-  const subtitle = item.role;
+  const error = experienceDateError(item.startDate, item.endDate);
+  const name = item.name || `项目 ${index + 1}`;
   const dateRange = [item.startDate, item.endDate].filter(Boolean).join(" - ");
-  const bulletCount = item.contentBlocks?.length || 0;
-  const badge = bulletCount > 0 ? `${bulletCount}条要点` : undefined;
 
   return (
-    <CollapsibleEntryCard
-      index={index}
-      title={item.name || `项目 ${index + 1}`}
-      subtitle={subtitle}
-      dateRange={dateRange}
-      badge={badge}
-      badgeType="subtle"
-      isExpanded={isExpanded}
-      onToggle={onToggle}
-      onDelete={onDelete}
-    >
-      <div className="resume-doc-card-body">
+    <section className={`resume-entry-card resume-project-card ${isExpanded ? "is-expanded" : "is-collapsed"} ${error ? "has-error" : ""}`} aria-label={name}>
+      <header className="resume-entry-summary-bar resume-project-summary-bar">
+        <button className="resume-project-summary-main" type="button" onClick={onToggle} aria-expanded={isExpanded} aria-controls={`${id}-body`}>
+          <span className="resume-entry-title-row">
+            <span className="resume-entry-index-num">{String(index + 1).padStart(2, "0")}</span>
+            <strong className="resume-entry-summary-title">{name}</strong>
+            {item.role && <span className="resume-entry-badge badge-subtle">{item.role}</span>}
+            {isExpanded && <span className="resume-entry-editing-tag">编辑中</span>}
+          </span>
+          {dateRange && <span className="resume-entry-summary-sub"><span className="resume-entry-date-text">{dateRange}</span></span>}
+        </button>
+
+        <div className="resume-entry-summary-actions">
+          <button type="button" className="resume-project-move-btn" onClick={() => onMove(-1)} disabled={index === 0} aria-label={`上移${name}`} title="上移"><ArrowUp size={16} aria-hidden="true" /></button>
+          <button type="button" className="resume-project-move-btn" onClick={() => onMove(1)} disabled={index === count - 1} aria-label={`下移${name}`} title="下移"><ArrowDown size={16} aria-hidden="true" /></button>
+          <button type="button" className="resume-entry-toggle-btn" onClick={onToggle} aria-label={isExpanded ? `收起${name}` : `展开${name}`} aria-expanded={isExpanded} aria-controls={`${id}-body`}>
+            {isExpanded ? <><ChevronUp size={14} aria-hidden="true" /><span>收起</span></> : <><ChevronDown size={14} aria-hidden="true" /><span>编辑</span></>}
+          </button>
+          <button type="button" className="resume-entry-delete-btn" onClick={onDelete} aria-label={`删除${name}`} title="删除"><Trash2 size={16} aria-hidden="true" /></button>
+        </div>
+      </header>
+
+      {isExpanded && <div id={`${id}-body`} className="resume-entry-body">
+        <div className="resume-doc-card-body resume-project-doc-body">
         <div className="resume-doc-row resume-doc-row--header">
           <input
             className="resume-doc-title-input"
@@ -2660,8 +2689,8 @@ function ProjectEditor({
           </div>
         </div>
 
-        <div className="resume-doc-meta-bar">
-          <div className="resume-doc-meta-item">
+        <div className="resume-doc-meta-bar resume-project-meta-bar">
+          <div className="resume-doc-meta-item resume-project-role">
             <span className="resume-doc-meta-label">担任角色：</span>
             <input
               className="resume-doc-inline-input"
@@ -2673,31 +2702,17 @@ function ProjectEditor({
           </div>
           <span className="resume-doc-sep">|</span>
           <div className="resume-doc-meta-item resume-doc-meta-dates">
-            <input
-              className="resume-doc-date-input"
-              value={item.startDate}
-              onChange={(e) => field("startDate")(e.target.value)}
-              placeholder="开始 (2024.10)"
-              aria-label="开始时间"
-            />
+            <label><span className="sr-only">开始日期</span><input className="resume-doc-date-input resume-project-date-input" type={monthInputValue(item.startDate) || !item.startDate ? "month" : "text"} value={monthInputValue(item.startDate) || item.startDate} onChange={(event) => field("startDate")(event.target.value)} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-date-error` : undefined} /></label>
             <span className="resume-doc-dash">-</span>
-            <input
-              className="resume-doc-date-input"
-              value={item.endDate}
-              onChange={(e) => field("endDate")(e.target.value)}
-              placeholder="结束 (2025.02)"
-              aria-label="结束时间"
-            />
+            <label><span className="sr-only">结束日期</span><input className="resume-doc-date-input resume-project-date-input" type={monthInputValue(item.endDate) || !item.endDate ? "month" : "text"} value={monthInputValue(item.endDate) || item.endDate} onChange={(event) => field("endDate")(event.target.value)} aria-invalid={Boolean(error)} aria-describedby={error ? `${id}-date-error` : undefined} /></label>
           </div>
         </div>
+        {error && <p id={`${id}-date-error`} className="resume-project-error">{error}</p>}
 
-        <ContentBlocksEditor
-          blocks={item.contentBlocks}
-          allowProjects={false}
-          onChange={(blocks) => onChange(updateEntryBlocks(item, blocks))}
-        />
-      </div>
-    </CollapsibleEntryCard>
+        <Suspense fallback={<p role="status">正在载入描述编辑器…</p>}><DescriptionEditor blocks={item.contentBlocks} onChange={(blocks) => onChange(updateEntryBlocks(item, blocks))} /></Suspense>
+        </div>
+      </div>}
+    </section>
   );
 }
 
