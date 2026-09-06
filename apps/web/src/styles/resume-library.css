@@ -1,0 +1,32 @@
+.resume-library-page { max-width: 78rem; margin-inline: auto; }
+.resume-library-heading h1 { font-size: clamp(1.75rem, 2.5vw, 2rem); }
+.resume-library-welcome { display: grid; grid-template-columns: 1.1fr 0.9fr; align-items: center; gap: clamp(2rem, 5vw, 5rem); padding: clamp(2rem, 3vw, 3rem); background: var(--of-surface); border: 1px solid var(--of-line); border-radius: 1.25rem; }
+.resume-library-welcome__copy { min-width: 0; }
+.resume-library-welcome__eyebrow { color: var(--of-brand-700); font-size: 0.75rem; font-weight: 650; }
+.resume-library-welcome h2 { margin: 1rem 0; color: var(--of-text-strong); font-size: clamp(1.6rem, 2.6vw, 2.35rem); line-height: 1.45; letter-spacing: -0.035em; }
+.resume-library-welcome__copy > p { max-width: 25rem; margin: 0; color: var(--of-text-muted); font-size: 0.9rem; line-height: 1.9; }
+.resume-library-welcome__create { display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 2.9rem; margin-top: 1.75rem; }
+.resume-library-welcome__copy > small { display: block; margin-top: 0.85rem; color: var(--of-text-muted); font-size: 0.72rem; line-height: 1.7; }
+.resume-library-welcome__steps { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; margin-top: 2.3rem; color: var(--of-text-muted); font-size: 0.72rem; }
+.resume-library-welcome__create:focus-visible { outline: 3px solid var(--of-brand-700); outline-offset: 4px; }
+.resume-starter-preview { width: 100%; max-width: 21rem; min-width: 0; margin: 0; justify-self: center; }
+.resume-starter-preview figcaption { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; margin-bottom: 0.8rem; color: var(--of-text-muted); font-size: 0.7rem; }
+.resume-starter-paper { font-size: 0.72rem; line-height: 1.55; padding: 1.8rem 1.6rem; color: #293247; background: #fff; border: 1px solid #e0e4eb; border-radius: 3px; box-shadow: 0 12px 36px rgb(30 45 80 / 8%), 0 2px 5px rgb(30 45 80 / 4%); }
+.resume-starter-paper header { display: grid; gap: 0.35rem; padding-bottom: 0.65rem; }
+.resume-starter-paper header > strong { font-size: 1.35rem; letter-spacing: 0.1em; }
+.resume-starter-paper header > span { font-size: 0.75rem; }
+.resume-starter-paper small { color: #647084; font-size: 0.6rem; overflow-wrap: anywhere; }
+.resume-starter-paper section { margin-top: 1rem; }
+.resume-starter-paper h3 { margin: 0 0 0.65rem; padding-bottom: 0.3rem; border-bottom: 1px solid #cbd3e3; color: #384b83; font-size: 0.75rem; letter-spacing: 0.06em; }
+.resume-starter-paper section > strong { display: block; font-size: 0.68rem; }
+.resume-starter-paper p { margin: 0.3rem 0; font-size: 0.63rem; }
+.resume-starter-lines { display: grid; gap: 0.35rem; margin-top: 0.6rem; }
+.resume-starter-lines i { display: block; height: 3px; background: #e3e7ed; border-radius: 2px; }
+.resume-starter-lines i:last-child { width: 72%; }
+@media (max-width: 760px) {
+  .resume-library-welcome { grid-template-columns: minmax(0, 1fr); padding: 1.5rem; gap: 2rem; }
+  .resume-library-welcome h2 { font-size: 1.8rem; }
+  .resume-library-welcome__steps { margin-top: 1.5rem; }
+  .resume-library-welcome__create { width: 100%; }
+  .resume-starter-preview { max-width: 19rem; }
+}
