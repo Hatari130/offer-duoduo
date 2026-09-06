@@ -1042,6 +1042,408 @@ body {
   border-inline-start-color: var(--of-brand-600);
 }
 
+/* Resume Timeline Capsule & Drag-and-Drop ------------------------------- */
+
+.resume-manager-shell .resume-editor-entry {
+  position: relative;
+  margin-top: 10px;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid var(--of-line);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 4px 12px -4px rgba(16, 24, 40, 0.04);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
+  overflow: hidden;
+}
+
+.resume-manager-shell .resume-editor-entry:hover {
+  border-color: var(--of-line-strong);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06), 0 8px 16px -6px rgba(16, 24, 40, 0.06);
+}
+
+.resume-manager-shell .resume-editor-entry.is-dragging {
+  opacity: 0.45;
+  border: 1px dashed var(--of-brand-500);
+  background: var(--of-brand-50);
+  transform: scale(0.99);
+}
+
+.resume-manager-shell .resume-editor-entry.is-drag-over {
+  border-color: var(--of-brand-600);
+  box-shadow: 0 0 0 2px rgba(64, 88, 199, 0.25), 0 6px 16px -4px rgba(64, 88, 199, 0.2);
+  background: var(--of-brand-50);
+  transform: translateY(-1px);
+}
+
+.resume-manager-shell .resume-editor-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px 14px;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s ease;
+}
+
+.resume-manager-shell .resume-editor-entry-header:hover {
+  background-color: var(--of-brand-50);
+}
+
+.resume-manager-shell .resume-editor-entry.is-open .resume-editor-entry-header {
+  border-bottom: 1px solid var(--of-line-subtle);
+  background: #fcfdfe;
+}
+
+.resume-manager-shell .resume-editor-entry-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.resume-manager-shell .resume-editor-entry-drag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: var(--of-text-subtle);
+  cursor: grab;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s ease, background-color 0.15s ease;
+}
+
+.resume-manager-shell .resume-editor-entry-drag:hover {
+  color: var(--of-brand-600);
+  background: var(--of-brand-100);
+}
+
+.resume-manager-shell .resume-editor-entry-drag:active {
+  cursor: grabbing;
+}
+
+.resume-manager-shell .resume-editor-entry-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--of-brand-400);
+  flex-shrink: 0;
+}
+
+.resume-manager-shell .resume-editor-entry-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.resume-manager-shell .resume-editor-entry-date svg {
+  color: var(--of-brand-500);
+  flex-shrink: 0;
+}
+
+.resume-manager-shell .resume-editor-entry-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--of-text-strong);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-manager-shell .resume-editor-entry-subtitle {
+  font-size: 12px;
+  color: var(--of-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-manager-shell .resume-editor-entry-badge {
+  display: inline-block;
+  padding: 1px 6px;
+  background: var(--of-brand-100);
+  color: var(--of-brand-700);
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.resume-manager-shell .resume-editor-entry-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.resume-manager-shell .resume-editor-entry-toggle,
+.resume-manager-shell .resume-editor-entry-remove {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  color: var(--of-text-subtle);
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.resume-manager-shell .resume-editor-entry-toggle:hover {
+  color: var(--of-brand-600);
+  background: var(--of-brand-50);
+}
+
+.resume-manager-shell .resume-editor-entry-chevron {
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.resume-manager-shell .resume-editor-entry-chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.resume-manager-shell .resume-editor-entry-remove:hover {
+  color: var(--of-danger);
+  background: var(--of-danger-soft);
+}
+
+.resume-manager-shell .resume-editor-entry-reveal {
+  display: grid;
+  grid-template-rows: 0fr;
+  visibility: hidden;
+  transition:
+    grid-template-rows 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s linear 220ms;
+}
+
+.resume-manager-shell .resume-editor-entry.is-open .resume-editor-entry-reveal {
+  grid-template-rows: 1fr;
+  visibility: visible;
+  transition:
+    grid-template-rows 220ms cubic-bezier(0.2, 0.8, 0.2, 1),
+    visibility 0s;
+}
+
+.resume-manager-shell .resume-editor-entry-body {
+  overflow: hidden;
+  min-height: 0;
+  padding: 10px 14px 14px;
+}
+
+/* Section Header Actions & Toggle-All ----------------------------------- */
+
+.resume-manager-shell .resume-editor-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.resume-manager-shell .resume-editor-section-toggle-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  color: var(--of-text-muted);
+  background: var(--of-brand-50);
+  border: 1px solid var(--of-brand-200);
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.resume-manager-shell .resume-editor-section-toggle-all:hover {
+  color: var(--of-brand-700);
+  background: var(--of-brand-100);
+  border-color: var(--of-brand-300);
+}
+
+/* Save Status & Auto-save Feedback --------------------------------------- */
+
+.resume-manager-shell .resume-editor-save-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--of-text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.resume-manager-shell .resume-editor-save-status svg.spin {
+  animation: resume-spin 1s linear infinite;
+}
+
+@keyframes resume-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Brand Gradient & Elevation for Save Button ----------------------------- */
+
+.resume-manager-shell .resume-editor-save {
+  background: linear-gradient(135deg, var(--of-brand-600) 0%, var(--of-brand-500) 100%);
+  box-shadow: 0 1px 2px rgb(26 38 85 / 0.12), 0 4px 14px -3px rgb(64 88 199 / 0.45);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.resume-manager-shell .resume-editor-save:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--of-brand-700) 0%, var(--of-brand-600) 100%);
+  box-shadow: 0 2px 4px rgb(26 38 85 / 0.16), 0 6px 18px -3px rgb(64 88 199 / 0.6);
+  transform: translateY(-1px);
+}
+
+.resume-manager-shell .resume-editor-save:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+/* Double Focus Ring for Form Inputs ------------------------------------- */
+
+.resume-manager-shell .resume-editor-field input,
+.resume-manager-shell .resume-editor-field select,
+.resume-manager-shell .resume-editor-field textarea,
+.resume-manager-shell .resume-editor-extra-row input,
+.resume-manager-shell .resume-editor-extra-row textarea,
+.resume-manager-shell .resume-editor-archive-fields input {
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background-color 0.18s ease;
+}
+
+.resume-manager-shell .resume-editor-field input:focus,
+.resume-manager-shell .resume-editor-field select:focus,
+.resume-manager-shell .resume-editor-field textarea:focus,
+.resume-manager-shell .resume-editor-extra-row input:focus,
+.resume-manager-shell .resume-editor-extra-row textarea:focus,
+.resume-manager-shell .resume-editor-archive-fields input:focus {
+  outline: none;
+  border-color: var(--of-brand-600);
+  box-shadow: 0 0 0 1px var(--of-brand-600), 0 0 0 3.5px rgb(64 88 199 / 0.12);
+}
+
+/* Tabular Nums Polish --------------------------------------------------- */
+
+.resume-manager-shell .resume-editor-summary strong,
+.resume-manager-shell .resume-editor-summary span,
+.resume-manager-shell .resume-editor-section-head small {
+  font-variant-numeric: tabular-nums;
+}
+
+/* 5-Second Undo Toast --------------------------------------------------- */
+
+.resume-undo-toast {
+  position: fixed;
+  bottom: 24px;
+  right: 32px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  min-width: 300px;
+  max-width: 420px;
+  background: #1e293b;
+  color: #f8fafc;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.25), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  animation: resume-undo-slide-in 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes resume-undo-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.resume-undo-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+}
+
+.resume-undo-content span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #e2e8f0;
+}
+
+.resume-undo-content strong {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.resume-undo-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  background: var(--of-brand-600, #4058c7);
+  color: #ffffff;
+  border: 0;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.resume-undo-button:hover {
+  background: var(--of-brand-500, #5b73d6);
+}
+
+.resume-undo-button:active {
+  transform: scale(0.95);
+}
+
+.resume-undo-progress {
+  height: 3px;
+  background: var(--of-brand-400, #8298eb);
+  width: 100%;
+  animation: resume-undo-countdown 5s linear forwards;
+  transform-origin: left;
+}
+
+@keyframes resume-undo-countdown {
+  from {
+    transform: scaleX(1);
+  }
+  to {
+    transform: scaleX(0);
+  }
+}
+
+
 /* Tailored-resume workspace --------------------------------------------- */
 
 .review-shell {

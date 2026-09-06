@@ -580,7 +580,38 @@
   transform: rotate(180deg);
 }
 
+.resume-editor-section-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.resume-editor-section-toggle-all {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 8px;
+  color: #4d566b;
+  background: #f1f4fa;
+  border: 1px solid #dfe4ee;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.resume-editor-section-toggle-all:hover {
+  color: var(--blue);
+  background: #edf1ff;
+  border-color: #dbe3ff;
+}
+
 .resume-editor-section-action {
+  display: inline-flex;
+  align-items: center;
   gap: 5px;
   padding: 6px 8px;
   color: var(--blue);
@@ -590,6 +621,12 @@
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.resume-editor-section-action:hover {
+  background: #dfe8ff;
 }
 
 .resume-editor-section-reveal {
