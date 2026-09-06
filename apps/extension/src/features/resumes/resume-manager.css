@@ -1527,13 +1527,13 @@
 
 .resume-list-title > i {
   flex: 0 0 auto;
-  padding: 2px 4px;
-  color: #8b624d;
-  background: #fff0e8;
+  padding: 1px 6px;
+  color: var(--of-brand-700, #283b9b);
+  background: var(--of-brand-100, #edf1ff);
   border-radius: 4px;
-  font-size: 12px;
+  font-size: 11px;
   font-style: normal;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .resume-parse-health {
@@ -2550,8 +2550,8 @@
 
 /* Current accent and navigation refinements. */
 .resume-manager-shell {
-  --acid: #F98C53;
-  --blue: #F98C53;
+  --acid: var(--of-brand-600, #4058c7);
+  --blue: var(--of-brand-600, #4058c7);
 }
 
 .resume-manager-shell .resume-manager-mark,
@@ -2559,7 +2559,7 @@
 .resume-manager-shell .resume-activate-button,
 .resume-manager-shell .resume-editor-activate,
 .resume-manager-shell .resume-editor-save {
-  background: #F98C53;
+  background: var(--of-brand-600, #4058c7);
 }
 
 .resume-manager-shell .resume-total,
@@ -2569,9 +2569,9 @@
 .resume-manager-shell .resume-editor-section-icon,
 .resume-manager-shell .resume-active-dot,
 .resume-manager-shell .resume-current-badge {
-  color: #F98C53;
-  background: #FFF0E8;
-  border-color: #FFD3BB;
+  color: var(--of-brand-700, #283b9b);
+  background: var(--of-brand-100, #edf1ff);
+  border-color: var(--of-brand-200, #dbe3ff);
 }
 
 .resume-manager-shell .resume-new-card:hover,
@@ -2585,7 +2585,7 @@
 .resume-manager-shell .resume-editor-extra-row input:focus,
 .resume-manager-shell .resume-editor-extra-row textarea:focus,
 .resume-manager-shell .resume-editor-archive-fields input:focus {
-  border-color: #F98C53;
+  border-color: var(--of-brand-300, #b9c8ff);
 }
 
 .resume-manager-shell .resume-active-dot,
@@ -2598,17 +2598,16 @@
 .resume-manager-shell .resume-editor-secondary,
 .resume-manager-shell .resume-editor-add-row,
 .resume-manager-shell .resume-editor-empty-entry,
-.resume-manager-shell .resume-list-delete:hover,
 .resume-manager-shell .resume-folder-icon {
-  color: #F98C53;
+  color: var(--of-brand-600, #4058c7);
 }
 
 .resume-manager-shell .resume-editor-summary > i {
-  background: #FFE5D5;
+  background: var(--of-brand-100, #edf1ff);
 }
 
 .resume-manager-shell .resume-editor-summary > i b {
-  background: #F98C53;
+  background: var(--of-brand-600, #4058c7);
 }
 
 .resume-manager-shell .resume-editor-field input:focus,
@@ -2617,7 +2616,7 @@
 .resume-manager-shell .resume-editor-extra-row input:focus,
 .resume-manager-shell .resume-editor-extra-row textarea:focus,
 .resume-manager-shell .resume-editor-archive-fields input:focus {
-  box-shadow: 0 0 0 3px rgba(249, 140, 83, 0.2);
+  box-shadow: 0 0 0 3px rgba(64, 88, 199, 0.15);
 }
 
 .resume-list-actions {

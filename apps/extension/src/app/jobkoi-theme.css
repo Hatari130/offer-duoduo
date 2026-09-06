@@ -1055,7 +1055,6 @@ body {
   transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.15s ease;
   overflow: hidden;
 }
-
 .resume-manager-shell .resume-editor-entry:hover {
   border-color: var(--of-line-strong);
   box-shadow: 0 2px 6px rgba(16, 24, 40, 0.06), 0 8px 16px -6px rgba(16, 24, 40, 0.06);
@@ -1728,4 +1727,251 @@ body {
     :where(button, a, input, select, textarea):focus-visible {
     outline-color: Highlight;
   }
+}
+
+
+/* UI & Aesthetics Harmonization Overrides ------------------------------- */
+
+/* 1. Left Sidebar: Sleek selected card & actions */
+.resume-manager-shell .resume-list-item {
+  border: 1px solid transparent;
+  border-radius: 10px;
+  transition: all 0.18s ease;
+}
+
+.resume-manager-shell .resume-list-item:hover {
+  background: #ffffff;
+  border-color: var(--of-line);
+  box-shadow: 0 2px 6px rgba(16, 24, 40, 0.04);
+}
+
+.resume-manager-shell .resume-list-item.selected {
+  background: #ffffff !important;
+  border: 1px solid var(--of-brand-300, #b9c8ff) !important;
+  border-inline-start: 3.5px solid var(--of-brand-600, #4058c7) !important;
+  box-shadow: 0 4px 14px -4px rgba(64, 88, 199, 0.18), 0 1px 3px rgba(16, 24, 40, 0.04) !important;
+}
+
+.resume-manager-shell .resume-list-file {
+  color: var(--of-brand-600, #4058c7) !important;
+  background: var(--of-brand-100, #edf1ff) !important;
+  border-radius: 8px !important;
+}
+
+.resume-manager-shell .resume-list-title > i {
+  color: var(--of-brand-700, #283b9b) !important;
+  background: var(--of-brand-100, #edf1ff) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  border-radius: 4px !important;
+  padding: 1px 6px !important;
+}
+
+.resume-manager-shell .resume-active-dot {
+  color: #ffffff !important;
+  background: var(--of-brand-600, #4058c7) !important;
+  border: 0 !important;
+  border-radius: 50% !important;
+}
+
+.resume-manager-shell .resume-list-delete {
+  color: var(--of-text-subtle, #94a3b8) !important;
+  background: transparent !important;
+  border-radius: 6px !important;
+  transition: all 0.15s ease !important;
+}
+
+.resume-manager-shell .resume-list-delete:hover {
+  color: var(--of-danger, #e11d48) !important;
+  background: var(--of-danger-soft, #fee2e2) !important;
+}
+
+.resume-manager-shell .resume-group-empty {
+  color: var(--of-text-muted, #4d566b) !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+  border: 1px dashed var(--of-line-strong, #cbd5e1) !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+}
+
+.resume-manager-shell .resume-folder-icon {
+  color: var(--of-brand-600, #4058c7) !important;
+  background: var(--of-brand-100, #edf1ff) !important;
+  border-radius: 6px !important;
+}
+
+/* 2. Middle Progress Bar: Refined white card with vibrant brand bar */
+.resume-manager-shell .resume-editor-summary {
+  display: flex !important;
+  align-items: center !important;
+  gap: 16px !important;
+  padding: 14px 20px !important;
+  margin-bottom: 18px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--of-line, #dfe4ee) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 1px 3px rgba(16, 24, 40, 0.04), 0 6px 16px -6px rgba(16, 24, 40, 0.05) !important;
+}
+
+.resume-manager-shell .resume-editor-summary > div {
+  display: flex !important;
+  align-items: baseline !important;
+  gap: 6px !important;
+  flex-shrink: 0 !important;
+}
+
+.resume-manager-shell .resume-editor-summary > div strong {
+  font-size: 22px !important;
+  font-weight: 800 !important;
+  color: var(--of-brand-700, #283b9b) !important;
+  font-family: inherit !important;
+  font-variant-numeric: tabular-nums !important;
+  line-height: 1 !important;
+}
+
+.resume-manager-shell .resume-editor-summary > div span {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: var(--of-text-muted, #4d566b) !important;
+  white-space: nowrap !important;
+}
+
+.resume-manager-shell .resume-editor-summary > i {
+  flex: 1 !important;
+  height: 6px !important;
+  background: #edf1ff !important;
+  border-radius: 99px !important;
+  overflow: hidden !important;
+  margin: 0 4px !important;
+}
+
+.resume-manager-shell .resume-editor-summary > i b {
+  height: 100% !important;
+  background: linear-gradient(90deg, #4058c7, #5b73d6) !important;
+  border-radius: 99px !important;
+  box-shadow: 0 0 10px rgba(64, 88, 199, 0.35) !important;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.resume-manager-shell .resume-editor-summary-note {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  color: var(--of-text-muted, #4d566b) !important;
+  font-size: 11.5px !important;
+  white-space: nowrap !important;
+  flex-shrink: 0 !important;
+}
+
+.resume-manager-shell .resume-editor-summary-note svg {
+  color: var(--of-brand-500, #5b73d6) !important;
+  flex-shrink: 0 !important;
+}
+
+/* 3. Archive Input Badges: Integrated into header */
+.resume-manager-shell .resume-editor-archive-fields {
+  display: flex !important;
+  gap: 12px !important;
+  margin-top: 10px !important;
+}
+
+.resume-manager-shell .resume-editor-archive-fields label {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: #ffffff !important;
+  border: 1px solid var(--of-line, #dfe4ee) !important;
+  border-radius: 8px !important;
+  padding: 4px 10px 4px 10px !important;
+  box-shadow: 0 1px 2px rgba(16, 24, 40, 0.02) !important;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease !important;
+}
+
+.resume-manager-shell .resume-editor-archive-fields label:focus-within {
+  border-color: var(--of-brand-600, #4058c7) !important;
+  box-shadow: 0 0 0 1px #4058c7, 0 0 0 3px rgba(64, 88, 199, 0.12) !important;
+}
+
+.resume-manager-shell .resume-editor-archive-fields label span {
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: var(--of-text-muted, #4d566b) !important;
+  white-space: nowrap !important;
+}
+
+.resume-manager-shell .resume-editor-archive-fields label input {
+  border: 0 !important;
+  padding: 4px 0 !important;
+  background: transparent !important;
+  font-size: 12.5px !important;
+  color: var(--of-text, #101521) !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* 4. Form Fields & Input Depth: Crisp subtle off-white inputs inside white cards */
+.resume-manager-shell .resume-editor-field input,
+.resume-manager-shell .resume-editor-field select,
+.resume-manager-shell .resume-editor-field textarea,
+.resume-manager-shell .resume-editor-extra-row input,
+.resume-manager-shell .resume-editor-extra-row textarea {
+  background: #fbfcfe !important;
+  border: 1px solid #d6ddea !important;
+  border-radius: 8px !important;
+  padding: 8px 11px !important;
+  color: #0c1220 !important;
+  font-size: 13px !important;
+  transition: all 0.18s ease !important;
+}
+
+.resume-manager-shell .resume-editor-field input:hover,
+.resume-manager-shell .resume-editor-field select:hover,
+.resume-manager-shell .resume-editor-field textarea:hover {
+  background: #ffffff !important;
+  border-color: #b9c3d3 !important;
+}
+
+.resume-manager-shell .resume-editor-field input:focus,
+.resume-manager-shell .resume-editor-field select:focus,
+.resume-manager-shell .resume-editor-field textarea:focus,
+.resume-manager-shell .resume-editor-extra-row input:focus,
+.resume-manager-shell .resume-editor-extra-row textarea:focus {
+  background: #ffffff !important;
+  border-color: var(--of-brand-600, #4058c7) !important;
+  outline: none !important;
+  box-shadow: 0 0 0 1px var(--of-brand-600, #4058c7), 0 0 0 3.5px rgba(64, 88, 199, 0.12) !important;
+}
+
+.resume-manager-shell .resume-editor-field > span {
+  color: #475569 !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em !important;
+}
+
+.resume-manager-shell .resume-editor-field > span em {
+  color: #e11d48 !important;
+  margin-right: 2px !important;
+  font-style: normal !important;
+}
+
+/* 5. Section Header Title Polish */
+.resume-manager-shell .resume-editor-section-head > button:first-child strong {
+  font-size: 13.5px !important;
+  font-weight: 750 !important;
+  color: var(--of-text-strong, #0c1220) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  border-inline-start: 0 !important;
+  padding-inline-start: 0 !important;
+}
+
+.resume-manager-shell .resume-editor-section-head > button:first-child strong::before {
+  content: "";
+  display: inline-block;
+  width: 3.5px;
+  height: 14px;
+  background: linear-gradient(180deg, var(--of-brand-500, #5b73d6), var(--of-brand-700, #283b9b));
+  border-radius: 4px;
 }
