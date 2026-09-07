@@ -1,5 +1,6 @@
 export const WEB_CONTENT_SECURITY_POLICY: string;
 export const CAMPUS_HIRING_FEED_ORIGIN: string;
+export const COMPANY_LOGO_ORIGIN: string;
 export const WEB_SECURITY_HEADERS: Record<string, string>;
 export function webSecurityPlugin(): {
   name: string;

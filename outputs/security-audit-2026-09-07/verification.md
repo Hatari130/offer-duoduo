@@ -31,7 +31,7 @@
 
 ## 上线前仍需执行（本次未执行）
 
-1. 备份并部署新 API/Web/Admin 和插件。Web 的 CSP 已精确允许当前校招数据源 `https://shouna12358-png.github.io`；如以后更换 `VITE_CAMPUS_HIRING_FEED_URL` 的 origin，必须同步更新 CSP 和回归测试。
+1. 备份并部署新 API/Web/Admin 和插件。Web 的 CSP 已精确允许校招数据源 `https://shouna12358-png.github.io` 和企业 Logo 源 `https://logos.hunter.io`；如以后更换这两个来源的 origin，必须同步更新 CSP 和回归测试。
 2. 将 deploy/nginx-security-headers.conf 加到实际站点的 HTTPS HTML 响应位置，核对继承关系，经 nginx -t 后再重载；构建中的 meta 无法替代 frame-ancestors / HSTS 响应头。
 3. 用 node deploy/check-web-security.mjs https://实际域名/app/resumes 检查真实响应头，并完成登录、同步、AI、PDF 导出浏览器冒烟测试。
 4. 在预发布 PostgreSQL 上验证清理工具，再安排生产维护窗口。配置好 DATABASE_URL 后先运行 pnpm --filter @offerflow/api db:sanitize-resumes（只读）；核对计数、创建并验证受限访问备份后，另行授权运行 pnpm --filter @offerflow/api db:sanitize-resumes --apply --backup-confirmed。不要将连接串写进命令历史或报告。写入操作会移除历史多余字段及已删除模板内容，恢复依赖备份。
