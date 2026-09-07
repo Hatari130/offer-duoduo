@@ -145,10 +145,11 @@ button {
   background: var(--overlay-soft);
 }
 
+.overlay-header-tools .overlay-workspace-button,
 .overlay-header-tools .overlay-resume-button {
   width: auto;
-  min-width: 5.9rem;
   display: inline-flex;
+  align-items: center;
   gap: 0.38rem;
   padding-inline: 0.6rem;
   color: var(--overlay-text);
@@ -158,8 +159,18 @@ button {
   font-size: 0.75rem;
   font-weight: 720;
   white-space: nowrap;
+  cursor: pointer;
 }
 
+.overlay-header-tools .overlay-workspace-button {
+  min-width: 4.8rem;
+}
+
+.overlay-header-tools .overlay-resume-button {
+  min-width: 5.9rem;
+}
+
+.overlay-header-tools .overlay-workspace-button:hover,
 .overlay-header-tools .overlay-resume-button:hover {
   color: var(--of-brand-700);
   background: var(--of-brand-50);
@@ -2227,13 +2238,14 @@ button {
   height: 36px;
 }
 
+.overlay-shell .overlay-header-tools .overlay-workspace-button,
 .overlay-shell .overlay-header-tools .overlay-resume-button {
   width: auto;
   height: 36px;
 }
 
 .overlay-shell .overlay-scroll {
-  padding: 88px 22px 82px;
+  padding: 88px 22px 96px;
 }
 
 .overlay-shell .overlay-scroll--opportunities {

@@ -435,6 +435,80 @@
       ]
     },
     {
+      id: "cmbchina",
+      name: "招商银行招聘",
+      hosts: [/(^|\.)career\.cmbchina\.com$/i],
+      markers: [
+        ".ant-form",
+        "[id^='basicInfo_']",
+        ".time-cell",
+        ".ant-select-selector",
+        ".ant-picker"
+      ],
+      mappings: [
+        // 基本信息 (Basic Info)
+        ["fullName", "姓名|真实姓名|应聘者姓名|候选人姓名|basicinfo_name|basicInfo_name|NACHN"],
+        ["idType", "证件类型|身份证类型|证件类别|basicinfo_idcardtype|basicInfo_idCardType|ICTYP"],
+        ["idNumber", "证件号码|身份证号|身份证号码|basicinfo_idcardnumber|basicInfo_idCardNumber|ICNUM"],
+        ["gender", "性别|gender|sex|basicinfo_gender|basicInfo_gender|GESCH"],
+        ["birthDate", "出生日期|出生年月|生日|出生年月日|basicinfo_birthday|basicInfo_birthday|GBDAT"],
+        ["phone", "手机号|手机号码|联系电话|电话号码|移动电话|电话|basicinfo_phone|basicInfo_phone|mobile|TELNR"],
+        ["email", "邮箱|电子邮箱|电子邮件|邮件地址|basicinfo_email|basicInfo_email|email"],
+        ["nationality", "民族|国籍|basicinfo_nation|basicInfo_nation|nation|nationality"],
+        ["politicalStatus", "政治面貌|政治身份|basicinfo_politicalaffinity|basicInfo_politicalAffinity"],
+        ["weight", "体重|体重（公斤）|体重\\(公斤\\)|weight|basicinfo_weight|basicInfo_weight"],
+        ["height", "身高|身高（厘米）|身高\\(厘米\\)|height|basicinfo_height|basicInfo_height"],
+        ["currentSalary", "现税前年薪|当前年薪|税前年薪|basicinfo_currentsalary|basicInfo_currentSalary"],
+        ["expectedSalary", "期望税前年薪|期望年薪|期望薪资|basicinfo_expectedsalary|basicInfo_expectedSalary"],
+        ["currentCity", "现居住地|当前住址|居住城市|现居城市|所在地|basicinfo_currentresidence|basicInfo_currentResidence|LOCAT|STRAS"],
+        ["targetCities", "期望面试城市|面试城市|意向城市|期望工作城市|basicinfo_expectedinterviewcity|basicInfo_expectedInterviewCity"],
+        ["workYears", "工作年限|工作经验|从业年限|basicinfo_workyears|basicInfo_workYears"],
+        ["maritalStatus", "婚姻状况|婚姻|basicinfo_maritalstatus|basicInfo_maritalStatus"],
+        ["channel", "招聘信息来源|信息来源|basicinfo_channel|basicInfo_channel|otherChannel"],
+        ["selfIntroduction", "自我评价|自我介绍|个人简介|basicinfo_selfassessment|basicInfo_selfAssessment"],
+
+        // 教育经历 (Education)
+        ["school", "学校名称|毕业院校|就读学校|学校|collegeCode|schoolName|INSTI"],
+        ["degree", "学历|最高学历|教育程度|educationLevelCode|SLART"],
+        ["faculty", "院系|所属院系|学院|faculty"],
+        ["educationRank", "专业排名|排名|majorRanking"],
+        ["major", "专业名称|所学专业|主修专业|专业(?!排名)|majorCode|majorName|MAJNM"],
+        ["recruitmentType", "是否统招|全日制|全日制统招|fullEducation|AUSBI"],
+        ["educationStartDate", "起始时间|入学时间|学习时间|startDate"],
+        ["graduationDate", "毕业时间|预计毕业|离校时间|endDate"],
+        ["educationDescription", "毕业设计|毕业论文|graduationDesign"],
+
+        // 工作 / 实习经历 (Work & Internship Experience)
+        ["experienceOrganization", "单位名称|公司或组织|企业名称|工作单位|公司名称|companyName|company|ARBGB"],
+        ["experienceCity", "所在城市|工作城市|city"],
+        ["experienceTitle", "职位|职务|岗位名称|岗位|jobRequirements|position|POSNM"],
+        ["experienceDepartment", "所在部门|部门|jobDepartment"],
+        ["experienceDescription", "工作描述|职责|工作职责|实习内容|工作内容|jobResponsibilities|workDescription"],
+        ["referenceContact", "HR联系人|证明人|联系人|hrContact"],
+        ["referencePhone", "HR联系电话|证明人电话|联系电话|hrPhone"],
+
+        // 项目经验 (Projects)
+        ["projectName", "项目名称|projName|name"],
+        ["projectRole", "项目职务|项目职责|职责|职务|position|responsibility"],
+        ["projectDescription", "项目描述|项目内容|description"],
+
+        // 技能 / 荣誉 / 家庭 (Skills, Awards, Relatives)
+        ["languageCertificate", "最高英语水平|外语等级|英语等级|englishLevel"],
+        ["languageScore", "英语成绩|分数|englishScore"],
+        ["awardName", "奖项名称|荣誉名称|awardName"],
+        ["awardLevel", "奖项级别|级别|awardLevel"],
+        ["awardDate", "获奖时间|awardDate"],
+        ["familyRelation", "家庭关系|与本人关系|亲属关系|称谓|relationship|relativeType"],
+        ["familyName", "亲属姓名|姓名|成员姓名|name|FANAM"],
+        ["familyPhone", "亲属电话|联系电话|phone|TELNR"],
+        ["workInMerchantsGroup", "是否有亲属在招商局集团任职|亲属在招商局任职|亲属在招行任职|workInMerchantsGroup"],
+
+        // SAP HR 规范字段代码 (SAP Onboarding Codes)
+        ["nativePlace", "籍贯|户籍|ZZJGS|ZHUKO"],
+        ["address", "详细地址|家庭住址|通信地址|STRAS"]
+      ]
+    },
+    {
       id: "generic",
       name: "通用表单",
       hosts: [],
@@ -449,7 +523,7 @@
     mappings: commonMappings
   });
   for (const adapter of adapters) {
-    if (["generic", "xiaomi", "tencent", "pupumall", "midea", "citicbank"].includes(adapter.id)) continue;
+    if (["generic", "xiaomi", "tencent", "pupumall", "midea", "citicbank", "cmbchina"].includes(adapter.id)) continue;
     registry?.registerPlatform({
       id: adapter.id,
       name: adapter.name,
@@ -512,6 +586,15 @@
     basePlatformId: "generic",
     formAdapterId: "citicbank",
     mappings: adapters.find((adapter) => adapter.id === "citicbank")?.mappings || [],
+    priority: 95
+  });
+  registry?.registerCompany({
+    id: "cmbchina",
+    name: "招商银行招聘",
+    hosts: [/(^|\.)career\.cmbchina\.com$/i],
+    basePlatformId: "generic",
+    formAdapterId: "cmbchina",
+    mappings: adapters.find((adapter) => adapter.id === "cmbchina")?.mappings || [],
     priority: 95
   });
   registry?.registerCompany({
@@ -626,7 +709,10 @@
             .map((name) => element.getAttribute?.(name) || "")
             .filter(Boolean)
         : [];
-      const text = normalize([label, ...attributes].join(" "));
+      const formItemLabelFor = element?.closest?.(".ant-form-item,.el-form-item")?.querySelector?.("label[for]")?.getAttribute?.("for") || "";
+      if (formItemLabelFor) attributes.push(formItemLabelFor);
+      const tokenized = attributes.flatMap((attr) => attr.split(/[_\-\[\]\.]+/).filter((t) => t.length >= 2));
+      const text = normalize([label, ...attributes, ...tokenized].join(" "));
       for (const layer of routeLayers) {
         for (const entry of layer.mappings || []) {
           let pattern;
@@ -661,7 +747,10 @@
           .map((name) => element.getAttribute?.(name) || "")
           .filter(Boolean)
       : [];
-    const text = normalize([label, ...attributes].join(" "));
+    const formItemLabelFor = element?.closest?.(".ant-form-item,.el-form-item")?.querySelector?.("label[for]")?.getAttribute?.("for") || "";
+    if (formItemLabelFor) attributes.push(formItemLabelFor);
+    const tokenized = attributes.flatMap((attr) => attr.split(/[_\-\[\]\.]+/).filter((t) => t.length >= 2));
+    const text = normalize([label, ...attributes, ...tokenized].join(" "));
 
     // Check adapter rules first (confidence 0.96)
     for (const rule of adapterCandidates || []) {

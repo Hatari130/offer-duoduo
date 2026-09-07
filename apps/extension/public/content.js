@@ -1,4 +1,4 @@
-﻿(() => {
+(() => {
   // The OfferFlow web app mirrors synced applications in its own tables and
   // selects. Its stage options include “已结束”, which must never be captured
   // back as recruitment-page evidence (it would auto-close records via sync).
@@ -902,8 +902,10 @@
 
   const labelText = (label) => {
     if (!label) return "";
+    const title = clean(label.getAttribute?.("title") || "");
+    if (title && title.length <= 40) return title;
     const clone = label.cloneNode(true);
-    clone.querySelectorAll("input,select,textarea,button").forEach((control) => control.remove());
+    clone.querySelectorAll("input,select,textarea,button,.ant-tooltip,.ant-tooltip-trigger,svg,[role='tooltip'],[class*='tooltip']").forEach((control) => control.remove());
     return clean(clone.innerText || clone.textContent || "");
   };
 
@@ -1004,9 +1006,9 @@
     const labels = element.labels ? Array.from(element.labels) : [];
     const explicit = labels.map(labelText).find(Boolean) || "";
     const wrapping = element.closest("label");
-    const formItem = element.closest(".el-form-item,.md-form-item,[class~='form-item'],fieldset");
+    const formItem = element.closest(".el-form-item,.md-form-item,.ant-form-item,[class~='form-item'],fieldset");
     const structural = formItem?.querySelector(
-      "label.el-form-item__label,label.md-form-item__label,[class~='el-form-item__label'],[class~='md-form-item__label'],.form-item__text,[class*='form-item__text']"
+      "label.el-form-item__label,label.md-form-item__label,.ant-form-item-label label,[class~='el-form-item__label'],[class~='md-form-item__label'],.form-item__text,[class*='form-item__text']"
     );
     const labelledBy = ariaLabelledByText(element);
     const siteLabel = ancestorAttributeText(element, "data-nc-label");
@@ -1036,9 +1038,9 @@
     const explicit = element.labels
       ? Array.from(element.labels).map(labelText).find(Boolean)
       : "";
-    const formItem = element.closest(".el-form-item,.md-form-item,[class~='form-item'],fieldset");
+    const formItem = element.closest(".el-form-item,.md-form-item,.ant-form-item,[class~='form-item'],fieldset");
     const structural = formItem?.querySelector(
-      "label.el-form-item__label,label.md-form-item__label,[class~='el-form-item__label'],[class~='md-form-item__label'],.form-item__text,[class*='form-item__text']"
+      "label.el-form-item__label,label.md-form-item__label,.ant-form-item-label label,[class~='el-form-item__label'],[class~='md-form-item__label'],.form-item__text,[class*='form-item__text']"
     );
     const container = element.closest(
       '[class*="form-item"],[class*="formItem"],[class*="field"],[class*="control"],[class*="question"]'
@@ -1572,12 +1574,13 @@
   };
 
   const pupumallRepeatEntrySelector = "[class*='NewFormBtn__'] > [class*='FormContainer__'] > [class*='FormItemBox__']";
+  const cmbRepeatEntrySelector = ".item-box .list, .item-box [class*='list']";
   const repeatEntrySelectors = {
-    education: `[way-repeat='jyjl'],.create-education,.education-entry,[data-education-entry],.resumeEditForm-item.resumeEditForm-education,[data-nav-id='block-educationInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    experience: `[way-repeat='sxjl'],[way-repeat='gzjl'],.create-empirical,.experience-entry,.work-entry,[data-experience-entry],.resumeEditForm-item.resumeEditForm-career,.resumeEditForm-item.resumeEditForm-internship,[data-nav-id='block-experienceInfo'] > [class*='apply-fields-'][class*='multi-'],[data-nav-id='block-practiceInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    project: `[way-repeat='xmjl'],.project-entry,[data-project-entry],.resumeEditForm-item.resumeEditForm-project,[data-nav-id='block-projectInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    campus: `[way-repeat='zxjl'],.campus-entry,[data-campus-entry],.resumeEditForm-item.resumeEditForm-campus,.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`,
-    award: `[way-repeat='jcqk'],.award-entry,[data-award-entry],.resumeEditForm-item.resumeEditForm-award,[data-nav-id='block-awardInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector}`
+    education: `[way-repeat='jyjl'],.create-education,.education-entry,[data-education-entry],.resumeEditForm-item.resumeEditForm-education,[data-nav-id='block-educationInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector},${cmbRepeatEntrySelector}`,
+    experience: `[way-repeat='sxjl'],[way-repeat='gzjl'],.create-empirical,.experience-entry,.work-entry,[data-experience-entry],.resumeEditForm-item.resumeEditForm-career,.resumeEditForm-item.resumeEditForm-internship,[data-nav-id='block-experienceInfo'] > [class*='apply-fields-'][class*='multi-'],[data-nav-id='block-practiceInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector},${cmbRepeatEntrySelector}`,
+    project: `[way-repeat='xmjl'],.project-entry,[data-project-entry],.resumeEditForm-item.resumeEditForm-project,[data-nav-id='block-projectInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector},${cmbRepeatEntrySelector}`,
+    campus: `[way-repeat='zxjl'],.campus-entry,[data-campus-entry],.resumeEditForm-item.resumeEditForm-campus,.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector},${cmbRepeatEntrySelector}`,
+    award: `[way-repeat='jcqk'],.award-entry,[data-award-entry],.resumeEditForm-item.resumeEditForm-award,[data-nav-id='block-awardInfo'] > [class*='apply-fields-'][class*='multi-'],.form-cell > .form-cell-right > .form-cell-inner,${pupumallRepeatEntrySelector},${cmbRepeatEntrySelector}`
   };
 
   // ATSX gives every repeated record a native path such as
@@ -1628,20 +1631,42 @@
       for (const attribute of attributes) {
         const value = String(current.getAttribute?.(attribute) || "");
         const match = value.match(/(?:^|\.)(education|career|internship|project|campus|award)\[(\d+)](?:\.|$)/i);
-        if (!match) continue;
-        const namespace = match[1].toLowerCase();
-        const kind = namespace === "career" ? "work" : namespace;
-        const group = namespace === "career" || namespace === "internship"
-          ? "experience"
-          : namespace;
-        const index = Number.parseInt(match[2], 10);
-        return {
-          group,
-          kind,
-          index,
-          source: "attribute",
-          fingerprint: `${group}:atsx:${kind}:${index}`
-        };
+        if (match) {
+          const namespace = match[1].toLowerCase();
+          const kind = namespace === "career" ? "work" : namespace;
+          const group = namespace === "career" || namespace === "internship"
+            ? "experience"
+            : namespace;
+          const index = Number.parseInt(match[2], 10);
+          return {
+            group,
+            kind,
+            index,
+            source: "attribute",
+            fingerprint: `${group}:atsx:${kind}:${index}`
+          };
+        }
+        const antMatch = value.match(/(?:^|\.)(?:(education(?:history)?|workexperience|experience|internship|project(?:experience)?|campus|award|family)list|education|career|internship|project|campus|award|family)[_\[.](\d+)[_\]\.]/i);
+        if (antMatch) {
+          const rawNamespace = antMatch[1].toLowerCase();
+          const namespace = rawNamespace.replace(/(?:history|experience)?list$/i, "");
+          const kind = (namespace === "career" || namespace === "workexperience" || namespace === "work")
+            ? "work"
+            : namespace === "internship"
+              ? "internship"
+              : namespace;
+          const group = (kind === "work" || kind === "internship")
+            ? "experience"
+            : kind;
+          const index = Number.parseInt(antMatch[2], 10);
+          return {
+            group,
+            kind,
+            index,
+            source: "attribute",
+            fingerprint: `${group}:ant:${kind}:${index}`
+          };
+        }
       }
     }
     return undefined;
@@ -1806,7 +1831,59 @@
     };
   };
 
+  const cmbchinaRepeatEntryContext = (element, group) => {
+    const itemBox = element.closest?.(".item-box, [class*='item-box']");
+    if (!itemBox) return undefined;
+    const title = clean(
+      itemBox.querySelector(".item-name, [class*='item-name'], .title, h1, h2, h3, h4")?.innerText ||
+      itemBox.querySelector(".item-name, [class*='item-name']")?.textContent ||
+      ""
+    );
+    const groupPattern = group === "education"
+      ? /教育|学历|education/i
+      : group === "experience"
+        ? /工作|实习|实践|任职|experience|work/i
+        : group === "project"
+          ? /项目|project/i
+          : group === "award"
+            ? /荣誉|奖项|奖励|award/i
+            : group === "family"
+              ? /家庭|亲属|family/i
+              : undefined;
+    if (!groupPattern?.test(title)) return undefined;
+
+    const addItem = itemBox.querySelector(".add-item");
+    if (addItem?.parentElement) {
+      const cards = Array.from(addItem.parentElement.children).filter((child) =>
+        child !== addItem &&
+        !child.classList.contains("add-item") &&
+        Boolean(child.querySelector?.(".ant-form-item, .ant-row, input, select, textarea, [role='combobox']"))
+      );
+      const entry = cards.find((card) => card.contains(element));
+      if (entry) {
+        const index = cards.indexOf(entry);
+        const kind = group === "experience"
+          ? /实习|实践|intern/i.test(title)
+            ? "internship"
+            : "work"
+          : group;
+        return {
+          index,
+          kind,
+          source: "structural",
+          entry,
+          host: entry,
+          container: addItem.parentElement,
+          fingerprint: `${group}:cmbchina:${kind}:${index}`
+        };
+      }
+    }
+    return undefined;
+  };
+
   const repeatEntryContext = (element, group) => {
+    const cmbContext = cmbchinaRepeatEntryContext(element, group);
+    if (cmbContext) return cmbContext;
     const hotjobContext = hotjobRepeatEntryContext(element, group);
     if (hotjobContext) return hotjobContext;
     const beisenContext = beisenRepeatEntryContext(element, group);
@@ -2599,7 +2676,29 @@
         const style = window.getComputedStyle(element);
         if (style.display === "none" || style.visibility === "hidden" || style.pointerEvents === "none") return false;
         const text = clean(element.innerText || element.textContent || "");
-        return text && text.length <= 80 && pattern.test(text);
+        if (!text || text.length > 80) return false;
+        if (pattern.test(text)) return true;
+        if (/^\+?\s*添加\s*$/.test(text)) {
+          const container = element.closest("section, fieldset, [class*='section'], [class*='module'], [class*='block'], .item-box, [class*='item-box']");
+          const containerTitle = clean(
+            container?.querySelector(".item-name, [class*='item-name'], [class*='title'], h1, h2, h3, h4, .tit")?.innerText ||
+            container?.querySelector(".item-name, [class*='item-name']")?.textContent ||
+            ""
+          );
+          const titlePattern = group === "education"
+            ? /教育|学历|education/i
+            : group === "experience"
+              ? /工作|实习|实践|任职|experience|work/i
+              : group === "project"
+                ? /项目|project/i
+                : group === "campus"
+                  ? /在校|校园|campus/i
+                  : group === "award"
+                    ? /获奖|奖项|奖励|荣誉|award/i
+                    : undefined;
+          if (titlePattern && titlePattern.test(containerTitle)) return true;
+        }
+        return false;
       });
     return candidates.sort((left, right) => {
       const score = (candidate) => {
@@ -2999,12 +3098,130 @@
     return { scan, changed };
   };
 
+  const isElementVisible = (element) => {
+    if (!element) return false;
+    if (element.disabled || element.getAttribute?.("aria-disabled") === "true") return false;
+    const style = window.getComputedStyle?.(element);
+    if (style && (style.display === "none" || style.visibility === "hidden")) return false;
+    return true;
+  };
+
+  const cmbchinaSectionEntryCount = (section, group) => {
+    if (!section) return 0;
+    const addItem = section.querySelector(".add-item");
+    if (addItem?.parentElement) {
+      const cards = Array.from(addItem.parentElement.children).filter((child) =>
+        child !== addItem &&
+        !child.classList.contains("add-item") &&
+        Boolean(child.querySelector?.(".ant-form-item, .ant-row, input, select, textarea, [role='combobox']"))
+      );
+      if (cards.length > 0) return cards.length;
+    }
+    const anchorSelectors = {
+      education: "[id*='educationLevelCode'], [data-select-id*='educationLevelCode'], [name*='educationLevelCode'], [id*='collegeCode'], [id*='collegeName'], [id*='SLART']",
+      experience: "[id*='companyName'], [name*='companyName'], [id*='company'], [name*='company'], [id*='position'], [id*='ARBGB']",
+      project: "[id*='projName'], [name*='projName'], [id*='projectName'], [name*='projectName']",
+      award: "[id*='awardType'], [data-select-id*='awardType'], [id*='awardName'], [name*='awardName']",
+      family: "[id*='relationship'], [data-select-id*='relationship'], [name*='relationship'], [id*='FANAM']"
+    };
+    const selector = anchorSelectors[group];
+    if (selector) {
+      const anchors = Array.from(section.querySelectorAll(selector)).filter(isElementVisible);
+      if (anchors.length > 0) return anchors.length;
+    }
+    const removeItems = section.querySelectorAll(".remove-item");
+    if (removeItems.length > 0) return removeItems.length;
+    return section.querySelector(".ant-form-item, .ant-row") ? 1 : 0;
+  };
+
+  const cmbchinaSection = (titlePattern) => Array.from(
+    document.querySelectorAll(".item-box, [class*='item-box'], section, fieldset, .ant-card")
+  ).find((candidate) =>
+    titlePattern.test(clean(
+      candidate.querySelector(".item-name, [class*='item-name'], .title, h1, h2, h3, h4, .ant-card-head-title")?.innerText ||
+      candidate.querySelector(".item-name, [class*='item-name']")?.textContent ||
+      ""
+    ))
+  );
+
+  const ensureCmbchinaRepeatableEntries = async (repeatCounts, initialScan, repeatPlan) => {
+    const experiencePlan = repeatPlan?.experience || {};
+    const targets = [
+      { group: "education", title: /教育经历|教育背景|学历/, desired: repeatCounts?.education },
+      { group: "experience", title: /工作经历/, desired: experiencePlan.work },
+      { group: "experience", title: /实习经历|实践经历/, desired: experiencePlan.internship ?? repeatCounts?.experience },
+      { group: "project", title: /项目经[验历]/, desired: repeatCounts?.project },
+      { group: "award", title: /个人荣誉|荣誉奖项|获奖情况/, desired: repeatCounts?.award },
+      { group: "family", title: /家庭情况|家庭成员/, desired: repeatCounts?.family }
+    ];
+    let changed = false;
+    for (const target of targets) {
+      const desired = Math.max(0, Math.floor(Number(target.desired) || 0));
+      if (desired <= 0) continue;
+      let section = cmbchinaSection(target.title);
+      if (!section) continue;
+
+      const viewAdd = section.querySelector(".btn-add-zero");
+      if (viewAdd && isElementVisible(viewAdd)) {
+        clickControl(viewAdd);
+        await nextFrame();
+        await sleep(100);
+        section = cmbchinaSection(target.title) || section;
+        changed = true;
+      }
+
+      let current = cmbchinaSectionEntryCount(section, target.group);
+      let attempts = 0;
+      while (current < desired && attempts < desired + 2) {
+        section = cmbchinaSection(target.title) || section;
+        const allButtons = Array.from(section.querySelectorAll(".btn-add, .add-item, [class*='btn-add'], button, [role='button'], span, div"));
+        const visibleButtons = allButtons.filter(isElementVisible);
+        const addButton = visibleButtons
+          .filter((el) => /^\+?\s*添加\s*$/.test(clean(el.innerText || el.textContent || "")))
+          .sort((left, right) => {
+            if (left.contains(right)) return 1;
+            if (right.contains(left)) return -1;
+            return 0;
+          })[0];
+        if (!addButton) break;
+
+        try {
+          addButton.scrollIntoView?.({ behavior: "auto", block: "center", inline: "nearest" });
+        } catch {
+          // Ignore
+        }
+
+        clickControl(addButton);
+        attempts += 1;
+
+        let next = current;
+        for (let waitAttempt = 0; waitAttempt < 15 && next <= current; waitAttempt += 1) {
+          await nextFrame();
+          await sleep(60);
+          section = cmbchinaSection(target.title) || section;
+          next = cmbchinaSectionEntryCount(section, target.group);
+        }
+        if (next <= current) break;
+        changed = true;
+        current = next;
+      }
+    }
+    return changed;
+  };
+
   const ensureRepeatableEntries = async (repeatCounts, initialScan, repeatPlan) => {
     let scan = initialScan;
     let changed = false;
     if (scan?.platform?.id === "pupumall") {
       const pupumallChanged = await ensurePupumallRepeatableEntries(repeatCounts, repeatPlan);
       if (pupumallChanged) {
+        scan = scanApplicationForm();
+        changed = true;
+      }
+    }
+    if (scan?.platform?.id === "cmbchina") {
+      const cmbChanged = await ensureCmbchinaRepeatableEntries(repeatCounts, scan, repeatPlan);
+      if (cmbChanged) {
         scan = scanApplicationForm();
         changed = true;
       }
@@ -3036,7 +3253,7 @@
       changed = changed || result.changed;
     }
     for (const group of Object.keys(repeatableFieldKeys)) {
-      if (scan?.platform?.id === "pupumall") continue;
+      if (scan?.platform?.id === "pupumall" || scan?.platform?.id === "cmbchina") continue;
       if (
         group === "experience" &&
         ["beisen", "moka", "feishu-career"].includes(scan?.platform?.id)
@@ -4364,9 +4581,22 @@
 
   const isAntV4DateInput = (element) =>
     element instanceof HTMLInputElement &&
-    element.readOnly &&
-    Boolean(element.closest?.(".ant-picker")) &&
+    Boolean(element.closest?.(".ant-picker,.time-cell")) &&
     !element.classList.contains("ant-calendar-picker-input");
+
+  const commitAntV4DateInput = (element, dateStr) => {
+    const oldValue = element.value;
+    const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+    if (setter) setter.call(element, dateStr);
+    else element.value = dateStr;
+    element._valueTracker?.setValue?.(oldValue);
+    dispatchInputEvents(element);
+    element.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", keyCode: 13, code: "Enter", bubbles: true }));
+    element.dispatchEvent(new KeyboardEvent("keypress", { key: "Enter", keyCode: 13, code: "Enter", bubbles: true }));
+    element.dispatchEvent(new KeyboardEvent("keyup", { key: "Enter", keyCode: 13, code: "Enter", bubbles: true }));
+    element.dispatchEvent(new Event("change", { bubbles: true }));
+    element.blur?.();
+  };
 
   const visibleAntV4Picker = () => Array.from(document.querySelectorAll(".ant-picker-dropdown"))
     .filter(isActuallyVisible)
@@ -4375,6 +4605,7 @@
   const fillAntV4Date = async (element, value) => {
     const date = parseHotjobDate(element, value);
     if (!date) return false;
+    const dateStr = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
     element.focus?.({ preventScroll: true });
     clickControlInUserOrder(element);
     let popup;
@@ -4383,45 +4614,71 @@
       await sleep(45);
       popup = visibleAntV4Picker();
     }
-    if (!popup) return false;
+    if (!popup) {
+      commitAntV4DateInput(element, dateStr);
+      return true;
+    }
     const monthPanel = popup.querySelector(".ant-picker-month-panel");
     const currentYear = Number(clean(popup.querySelector(".ant-picker-year-btn")?.innerText || "").match(/\d{4}/)?.[0]);
-    if (!currentYear || Math.abs(date.year - currentYear) > 120) return false;
+    if (!currentYear || Math.abs(date.year - currentYear) > 120) {
+      commitAntV4DateInput(element, dateStr);
+      return true;
+    }
     const yearButtonSelector = date.year < currentYear
       ? ".ant-picker-header-super-prev-btn"
       : ".ant-picker-header-super-next-btn";
     for (let step = 0; step < Math.abs(date.year - currentYear); step += 1) {
       const button = popup.querySelector(yearButtonSelector);
-      if (!button) return false;
+      if (!button) {
+        commitAntV4DateInput(element, dateStr);
+        return true;
+      }
       clickControlInUserOrder(button);
       await nextFrame();
     }
     if (monthPanel) {
       const cell = popup.querySelector(`td.ant-picker-cell[title="${date.year}-${String(date.month).padStart(2, "0")}"]:not(.ant-picker-cell-disabled)`);
-      if (!cell) return false;
+      if (!cell) {
+        commitAntV4DateInput(element, dateStr);
+        return true;
+      }
       clickControlInUserOrder(cell.querySelector(".ant-picker-cell-inner") || cell);
     } else {
       const currentMonth = Number(clean(popup.querySelector(".ant-picker-month-btn")?.innerText || "").match(/\d{1,2}/)?.[0]);
-      if (!currentMonth) return false;
+      if (!currentMonth) {
+        commitAntV4DateInput(element, dateStr);
+        return true;
+      }
       const monthButtonSelector = date.month < currentMonth
         ? ".ant-picker-header-prev-btn"
         : ".ant-picker-header-next-btn";
       for (let step = 0; step < Math.abs(date.month - currentMonth); step += 1) {
         const button = popup.querySelector(monthButtonSelector);
-        if (!button) return false;
+        if (!button) {
+          commitAntV4DateInput(element, dateStr);
+          return true;
+        }
         clickControlInUserOrder(button);
         await nextFrame();
       }
       const title = `${date.year}-${String(date.month).padStart(2, "0")}-${String(date.day).padStart(2, "0")}`;
       const cell = popup.querySelector(`td.ant-picker-cell[title="${title}"]:not(.ant-picker-cell-disabled)`);
-      if (!cell) return false;
+      if (!cell) {
+        commitAntV4DateInput(element, dateStr);
+        return true;
+      }
       clickControlInUserOrder(cell.querySelector(".ant-picker-cell-inner") || cell);
     }
     await nextFrame();
     await sleep(55);
     const actual = String(element.value || "").match(/((?:19|20)\d{2})\D+(\d{1,2})(?:\D+(\d{1,2}))?/);
-    return Boolean(actual) && Number(actual[1]) === date.year && Number(actual[2]) === date.month &&
+    const verified = Boolean(actual) && Number(actual[1]) === date.year && Number(actual[2]) === date.month &&
       (monthPanel || Number(actual[3]) === date.day);
+    if (!verified) {
+      commitAntV4DateInput(element, dateStr);
+      return true;
+    }
+    return true;
   };
 
   const visibleAntV3Calendar = (element) => {
@@ -4571,7 +4828,19 @@
       const options = Array.from(element.querySelectorAll(
         ".phoenix-radio-group__radioItem,.ant-radio-wrapper,[class*='radio--withLabel'],[role='radio'],label.el-radio"
       ));
-      const target = options.find((option) => clean(option.innerText || option.textContent || "").toLowerCase().includes(normalized));
+      let target = options.find((option) => {
+        const text = clean(option.innerText || option.textContent || "").toLowerCase();
+        if (text && (text.includes(normalized) || normalized.includes(text))) return true;
+        const inputValue = clean(option.querySelector("input")?.value || "").toLowerCase();
+        if (inputValue && inputValue === normalized) return true;
+        return false;
+      });
+      if (!target && /^(1|true|yes|y|是|接受|愿意|同意|有|全日制)$/i.test(normalized)) {
+        target = options.find((option) => /^(是|yes|true|有|全日制|统一招生)$/i.test(clean(option.innerText || option.textContent || "")));
+      }
+      if (!target && /^(0|false|no|n|否|不接受|不愿意|不同意|无|非全日制)$/i.test(normalized)) {
+        target = options.find((option) => /^(否|no|false|无|非全日制)$/i.test(clean(option.innerText || option.textContent || "")));
+      }
       if (!target) return false;
       // Phoenix attaches React's onClick to the inner .phoenix-radio node,
       // while the outer radioItem is only a layout wrapper.
@@ -4784,8 +5053,154 @@
     Number.isInteger(field.repeatIndex) ? field.repeatIndex : ""
   ].join("|");
 
+  const ensureUnfilledHighlightStyle = (targetDoc = document) => {
+    const styleId = "offerflow-unfilled-highlight-style";
+    if (targetDoc.getElementById(styleId)) return;
+    const style = targetDoc.createElement("style");
+    style.id = styleId;
+    style.textContent = `
+      .offerflow-unfilled-label {
+        background-color: #ffccc7 !important;
+        color: #cf1322 !important;
+        border-radius: 2px !important;
+        padding: 1px 4px !important;
+        box-shadow: 0 0 0 1px #ffa39e !important;
+        display: inline-block !important;
+        transition: background-color 0.25s ease, color 0.25s ease !important;
+      }
+      .offerflow-unfilled-control {
+        border-color: #ff7875 !important;
+        box-shadow: 0 0 0 2px rgba(255, 77, 79, 0.2) !important;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease !important;
+      }
+    `;
+    (targetDoc.head || targetDoc.documentElement || targetDoc.body)?.appendChild(style);
+  };
+
+  const clearUnfilledHighlights = (targetDoc = document) => {
+    targetDoc.querySelectorAll(".offerflow-unfilled-label").forEach((el) => {
+      el.classList.remove("offerflow-unfilled-label");
+    });
+    targetDoc.querySelectorAll(".offerflow-unfilled-control").forEach((el) => {
+      el.classList.remove("offerflow-unfilled-control");
+    });
+  };
+
+  const resolveFieldLabelElement = (element) => {
+    if (!element) return null;
+    const doc = element.ownerDocument || document;
+    // 1. Explicit HTML labels
+    if (element.labels && element.labels.length > 0) {
+      return element.labels[0];
+    }
+    // 2. id matching label[for]
+    if (element.id) {
+      try {
+        const forLabel = doc.querySelector(`label[for="${CSS.escape(element.id)}"]`);
+        if (forLabel) return forLabel;
+      } catch {}
+    }
+    // 3. aria-labelledby
+    const labelledBy = element.getAttribute?.("aria-labelledby");
+    if (labelledBy) {
+      const byEl = doc.getElementById(labelledBy);
+      if (byEl) return byEl;
+    }
+    // 4. Wrapping label (e.g. checkbox or radio)
+    const wrappingLabel = element.closest?.("label");
+    if (wrappingLabel) return wrappingLabel;
+    // 5. Structural form item
+    const formItem = element.closest?.(
+      ".ant-form-item, .el-form-item, .md-form-item, .form-cell, .ud-formily-item, .atsx-form-item, [class~='form-item'], fieldset, [class*='form-item'], [class*='formItem'], [class*='form-group'], [class*='form_item'], [class*='formCell']"
+    );
+    if (formItem) {
+      const structural = formItem.querySelector(
+        ".ant-form-item-label label, label.el-form-item__label, label.md-form-item__label, .ant-form-item-label, .el-form-item__label, .ud-formily-item-label, .form-item__text, [class*='form-item__text'], .tit-wrap .tit, .tit p, .tit, label"
+      );
+      if (structural && structural !== element) return structural;
+    }
+    // 6. Previous sibling label or title element
+    let prev = element.previousElementSibling;
+    while (prev) {
+      if (prev.matches?.("label, [class*='label'], [class*='title'], [class*='tit'], [class*='name']")) {
+        return prev;
+      }
+      prev = prev.previousElementSibling;
+    }
+    // 7. Parent's previous sibling
+    const parentPrev = element.parentElement?.previousElementSibling;
+    if (parentPrev && parentPrev.matches?.("label, [class*='label'], [class*='title'], [class*='tit'], [class*='name']")) {
+      return parentPrev;
+    }
+    return null;
+  };
+
+  const isControlUnfilled = (element) => {
+    if (!element) return false;
+    if (element.disabled) return false;
+    if (element instanceof HTMLInputElement && element.type === "checkbox") {
+      return !element.checked;
+    }
+    if (element instanceof HTMLInputElement && element.type === "radio") {
+      return !element.checked;
+    }
+    if (element.matches?.(radioGroupSelector)) {
+      const hasChecked = Boolean(
+        element.querySelector("input[type='radio']:checked, .ant-radio-checked, .ant-radio-wrapper-checked, [aria-checked='true'], [class*='checked'], [class*='selected']")
+      );
+      return !hasChecked;
+    }
+    const val = clean(readControlValue(element));
+    if (!val) return true;
+    if (/^(请选择|点击选择|选择日期|请选择内容|请选择城市|请选择学历|select)$/i.test(val)) return true;
+    return false;
+  };
+
+  const highlightUnfilledFields = (fields, resultsByField, targetDoc = document) => {
+    ensureUnfilledHighlightStyle(targetDoc);
+    clearUnfilledHighlights(targetDoc);
+    let count = 0;
+    const seenElements = new Set();
+    for (const field of fields) {
+      const element = resolveFieldElement(field);
+      if (!element || seenElements.has(element)) continue;
+      seenElements.add(element);
+
+      const unfilled = isControlUnfilled(element);
+      if (!unfilled) continue;
+
+      count += 1;
+      const labelEl = resolveFieldLabelElement(element);
+      if (labelEl) {
+        labelEl.classList.add("offerflow-unfilled-label");
+      } else {
+        element.classList.add("offerflow-unfilled-control");
+      }
+
+      // Auto-clear highlight when the user enters or selects a value
+      const removeHighlight = () => {
+        if (!isControlUnfilled(element)) {
+          labelEl?.classList.remove("offerflow-unfilled-label");
+          element.classList.remove("offerflow-unfilled-control");
+          element.closest?.(".ant-select, .ant-picker, .ant-radio-group")?.classList.remove("offerflow-unfilled-control");
+          element.removeEventListener("input", removeHighlight);
+          element.removeEventListener("change", removeHighlight);
+        }
+      };
+      element.addEventListener("input", removeHighlight);
+      element.addEventListener("change", removeHighlight);
+      const container = element.closest?.(".ant-select, .ant-picker, .ant-radio-group, .cascader-plugins-wrap");
+      if (container && container !== element) {
+        container.addEventListener("click", removeHighlight);
+        container.addEventListener("change", removeHighlight);
+      }
+    }
+    return count;
+  };
+
   const fillApplicationForm = async (fields, values, options = {}) => {
-    const initialItems = Array.isArray(fields) ? fields : [];
+    clearUnfilledHighlights(document);
+    const initialItems = Array.isArray(fields) ? [...fields] : [];
     const profileValues = values || {};
     const fieldValues = options.fieldValues && typeof options.fieldValues === "object"
       ? options.fieldValues
@@ -4956,13 +5371,16 @@
         Boolean(field.fingerprint && blueprintsByFingerprint.has(field.fingerprint));
     };
 
+    let roundItems = initialItems;
     if (options.repeatCounts && Object.values(options.repeatCounts).some((count) => Number(count) > 0)) {
       const ensured = await ensureRepeatableEntriesSerialized(options.repeatCounts, options.repeatPlan);
       finalFields = ensured.scan.fields.map(hydrateField);
+      if (ensured.changed) {
+        roundItems = finalFields;
+      }
     }
 
-    sendFillProgress({ stage: "started", current: 0, total: initialItems.length });
-    let roundItems = initialItems;
+    sendFillProgress({ stage: "started", current: 0, total: roundItems.length });
     let previousSignature = roundItems.map(fieldTrackingKey).join("|");
 
     for (let round = 0; round < maxRounds; round += 1) {
@@ -5111,11 +5529,13 @@
       previousSignature = nextSignature;
     }
 
+    const unfilledCount = highlightUnfilledFields(finalFields, resultsByField, document);
     const results = Array.from(resultsByField.values());
     const filled = results.filter((result) => result.status === "filled").length;
     sendFillProgress({ stage: "done", current: processed, total: Math.max(initialItems.length, processed), filled });
     return {
       filled,
+      unfilled: unfilledCount,
       results,
       rounds,
       rescanned,
@@ -5270,6 +5690,12 @@
         .catch((error) => {
           sendResponse({ ok: false, error: error instanceof Error ? error.message : "表单填写失败" });
         });
+      return true;
+    }
+
+    if (message.type === "OFFERFLOW_CLEAR_HIGHLIGHTS") {
+      clearUnfilledHighlights(document);
+      sendResponse({ ok: true });
       return true;
     }
 

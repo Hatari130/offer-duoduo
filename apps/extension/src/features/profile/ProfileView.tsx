@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import {
   Check,
   ChevronDown,
@@ -835,7 +835,7 @@ export default function ProfileView({
       ));
       const response = (await activeTabMessage({
         type: "OFFERFLOW_SCAN_APPLICATION_FORM",
-        expandRepeaters: false,
+        expandRepeaters: true,
         repeatCounts: profileRepeatCounts(draft),
         repeatPlan: profileRepeatPlan(draft)
       })) as FormScanResponse;

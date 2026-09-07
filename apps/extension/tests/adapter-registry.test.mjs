@@ -33,7 +33,6 @@ const locationLike = (hostname, pathname = "/apply") => ({ hostname, pathname })
 const element = (attributes = {}) => ({
   getAttribute: (name) => attributes[name] || ""
 });
-
 test("unknown hosts resolve to the generic fallback", () => {
   const route = registry.resolve({ location: locationLike("unseen-company.example"), document: documentStub });
   assert.equal(route.layer, "generic");
@@ -202,4 +201,23 @@ test("CITIC Bank routes to its company form adapter and matches Microdone fields
   assert.equal(formAdapters.match(element({ name: "rzsj", "way-data": "sxjl.rzsj" }), "入职时间", adapter)?.key, "experienceStartDate");
   assert.equal(formAdapters.match(element({ name: "lzsj", "way-data": "sxjl.lzsj" }), "离职时间", adapter)?.key, "experienceEndDate");
   assert.equal(formAdapters.match(element({ name: "gzdw", "way-data": "sxjl.gzdw" }), "单位名称", adapter)?.key, "experienceOrganization");
+});
+
+test("CMB China routes to its company form adapter and matches Ant v4 / SAP fields", () => {
+  const adapter = formAdapters.resolve(locationLike("career.cmbchina.com", "/center/resume"));
+  assert.equal(adapter.route.layer, "company");
+  assert.equal(adapter.route.companyId, "cmbchina");
+  assert.equal(adapter.id, "cmbchina");
+  assert.equal(formAdapters.match(element({ id: "basicInfo_name" }), "姓名", adapter)?.key, "fullName");
+  assert.equal(formAdapters.match(element({ id: "basicInfo_idCardType" }), "证件类型", adapter)?.key, "idType");
+  assert.equal(formAdapters.match(element({ id: "basicInfo_idCardNumber" }), "证件号码", adapter)?.key, "idNumber");
+  assert.equal(formAdapters.match(element({ id: "basicInfo_birthday" }), "出生日期", adapter)?.key, "birthDate");
+  assert.equal(formAdapters.match(element({ id: "basicInfo_gender" }), "性别", adapter)?.key, "gender");
+  assert.equal(formAdapters.match(element({ id: "basicInfo_expectedInterviewCity" }), "期望面试城市", adapter)?.key, "targetCities");
+  assert.equal(formAdapters.match(element({ id: "collegeCode" }), "学校名称", adapter)?.key, "school");
+  assert.equal(formAdapters.match(element({ id: "majorRanking" }), "专业排名", adapter)?.key, "educationRank");
+  assert.equal(formAdapters.match(element({ id: "englishLevel" }), "最高英语水平", adapter)?.key, "languageCertificate");
+  assert.equal(formAdapters.match(element({ id: "NACHN" }), "", adapter)?.key, "fullName");
+  assert.equal(formAdapters.match(element({ id: "GBDAT" }), "", adapter)?.key, "birthDate");
+  assert.equal(formAdapters.match(element({ id: "ICNUM" }), "", adapter)?.key, "idNumber");
 });

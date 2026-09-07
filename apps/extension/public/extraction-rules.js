@@ -186,6 +186,27 @@
       cardSelectors: [],
       sectionCompany: false,
       numericApplicationIds: false
+    },
+    {
+      id: "cmbchina",
+      hostPattern: /(?:^|\.)career\.cmbchina\.com$/i,
+      defaultCompany: "招商银行",
+      positionSelectors: [
+        '[class*="job-name"]',
+        '[class*="job_name"]',
+        '[class*="jobTitle"]',
+        '[class*="position"]',
+        "h1",
+        "h2",
+        "h3"
+      ],
+      cardSelectors: [
+        '[class*="resume"]',
+        '[class*="delivery"]',
+        '[class*="application"]'
+      ],
+      sectionCompany: true,
+      numericApplicationIds: false
     }
   ];
 
@@ -218,7 +239,7 @@
     registry.registerGeneric({ extractionAdapterId: "generic" });
     for (const adapter of platformAdapters) {
       const platformId = registry.canonicalPlatformId(adapter.id);
-      if (["jd", "alibaba", "baidu"].includes(adapter.id)) {
+      if (["jd", "alibaba", "baidu", "cmbchina"].includes(adapter.id)) {
         registry.registerCompany({
           id: adapter.id,
           name: adapter.defaultCompany || adapter.id,

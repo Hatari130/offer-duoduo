@@ -261,3 +261,102 @@
   .cloud-sync-actions { grid-column: auto; }
   .cloud-sync-more > div { right: auto; left: 0; }
 }
+
+/* Cloud sync badge (Compact Chip for Overlay Header / Summary Row) -------- */
+
+.cloud-sync-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 9px;
+  border-radius: 9999px;
+  border: 1px solid var(--of-line, #e2e8f0);
+  background: rgb(255 255 255 / 0.95);
+  color: var(--of-text-muted, #64748b);
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 1px 3px -1px rgb(15 23 42 / 0.08);
+  white-space: nowrap;
+}
+
+.cloud-sync-badge:hover:not(:disabled) {
+  background: #ffffff;
+  border-color: var(--of-brand-300, #93c5fd);
+  color: var(--of-brand-700, #1d4ed8);
+  box-shadow: 0 3px 10px -2px rgb(37 99 235 / 0.18);
+  transform: translateY(-0.5px);
+}
+
+.cloud-sync-badge:active:not(:disabled) {
+  transform: translateY(0.5px);
+}
+
+.cloud-sync-badge:focus-visible {
+  outline: 2px solid var(--of-focus, #3b82f6);
+  outline-offset: 2px;
+}
+
+.cloud-sync-badge:disabled {
+  cursor: wait;
+  opacity: 0.82;
+}
+
+.cloud-sync-badge-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #94a3b8;
+  flex-shrink: 0;
+  transition: background-color 0.2s ease;
+}
+
+.cloud-sync-badge.is-connected .cloud-sync-badge-dot {
+  background: #22c55e;
+  box-shadow: 0 0 0 2px rgb(34 197 94 / 0.2);
+}
+
+.cloud-sync-badge.is-disconnected .cloud-sync-badge-dot {
+  background: #f59e0b;
+  box-shadow: 0 0 0 2px rgb(245 158 11 / 0.2);
+}
+
+.cloud-sync-badge.is-error .cloud-sync-badge-dot {
+  background: #ef4444;
+  box-shadow: 0 0 0 2px rgb(239 68 68 / 0.2);
+}
+
+.cloud-sync-badge.is-busy .cloud-sync-badge-dot {
+  background: var(--of-brand-500, #3b82f6);
+  animation: pulse-sync-dot 1.2s ease-in-out infinite;
+}
+
+.cloud-sync-badge-icon {
+  flex-shrink: 0;
+  color: var(--of-brand-600, #2563eb);
+}
+
+.cloud-sync-badge.is-disconnected .cloud-sync-badge-icon {
+  color: #94a3b8;
+}
+
+.cloud-sync-badge.is-error .cloud-sync-badge-icon {
+  color: #ef4444;
+}
+
+.cloud-sync-badge-text {
+  letter-spacing: -0.01em;
+}
+
+.cloud-sync-badge-spin {
+  flex-shrink: 0;
+  color: var(--of-brand-600, #2563eb);
+}
+
+@keyframes pulse-sync-dot {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.35); opacity: 0.6; }
+}

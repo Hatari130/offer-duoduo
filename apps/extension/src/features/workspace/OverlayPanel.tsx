@@ -1,15 +1,12 @@
-import { useEffect, useMemo, useState } from "react";
-import { useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   AlertTriangle,
+  ArrowLeftRight,
   ArrowRight,
-  BriefcaseBusiness,
   CalendarDays,
   CalendarClock,
-  Check,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
   Download,
   ExternalLink,
   FileText,
@@ -29,6 +26,12 @@ import {
   Trash2,
   X
 } from "lucide-react";
+import {
+  CLOUD_CONNECTION_KEY,
+  loadCloudConnection,
+  type CloudConnection
+} from "@/infrastructure/sync/syncState";
+import { UserAvatar } from "./UserAvatar";
 import {
   DEFAULT_DEEPSEEK_MODEL,
   extractWithDeepSeek,
@@ -128,6 +131,28 @@ export function OverlayPanel({
   const [selectedLocation, setSelectedLocation] = useState("全部");
   const [chinaMapFeatures, setChinaMapFeatures] = useState<ChinaMapFeature[]>([]);
   const [chinaMapError, setChinaMapError] = useState(false);
+  const [connection, setConnection] = useState<CloudConnection>();
+  const lastJobTabRef = useRef<
+    "overview" | "opportunities" | "agenda" | "locations" | "settings"
+  >("overview");
+
+  useEffect(() => {
+    void loadCloudConnection().then(setConnection);
+    if (typeof chrome === "undefined" || !chrome.storage?.onChanged) return;
+    const listener = (changes: Record<string, chrome.storage.StorageChange>) => {
+      if (changes[CLOUD_CONNECTION_KEY]) {
+        void loadCloudConnection().then(setConnection);
+      }
+    };
+    chrome.storage.onChanged.addListener(listener);
+    return () => chrome.storage.onChanged.removeListener(listener);
+  }, []);
+
+  useEffect(() => {
+    if (tab !== "profile") {
+      lastJobTabRef.current = tab;
+    }
+  }, [tab]);
 
   useEffect(() => {
     overlayScrollRef.current?.scrollTo(0, 0);
@@ -288,33 +313,69 @@ export function OverlayPanel({
     </div>
   );
 
+  const userName = connection?.user?.displayName || profile.fullName || "我";
+  const spaceTitle = tab === "profile" ? `${userName} 的个人资料库` : `${userName} 的 2026 秋招`;
+
+  const handleToggleSpace = () => {
+    if (tab === "profile") {
+      setTab(lastJobTabRef.current || "overview");
+    } else {
+      setTab("profile");
+    }
+  };
+
   return (
     <div className="overlay-app">
       <header className="overlay-header">
         <div className="overlay-identity">
-          <span className="overlay-monogram" aria-hidden="true"><Puzzle size={17} /></span>
-          <span className="overlay-wordmark">JobKoI</span>
-          <span className="overlay-divider" />
-          <button
-            className="overlay-space"
-            onClick={() => setTab(tab === "profile" ? "overview" : "profile")}
-            title="个人资料库"
+          <div
+            className="overlay-user-avatar-wrap"
+            title={
+              connection?.user
+                ? `${connection.user.displayName || connection.user.email}（已登录）`
+                : "未连接 Web 工作台"
+            }
           >
-            <BriefcaseBusiness size={15} />
-            {tab === "profile" ? "个人资料库" : "2026 秋招"}
-            <ChevronDown size={14} />
-          </button>
+            <UserAvatar avatarKey={connection?.user?.avatarKey} className="overlay-header-avatar" />
+            {connection?.user && <span className="overlay-avatar-online-dot" aria-hidden="true" />}
+          </div>
+
+          <div className="overlay-space-selector">
+            <button
+              type="button"
+              className="overlay-space-trigger"
+              onClick={handleToggleSpace}
+              title={
+                tab === "profile"
+                  ? `点击直接切换至：${userName} 的 2026 秋招`
+                  : `点击直接切换至：${userName} 的个人资料库`
+              }
+              aria-label={
+                tab === "profile"
+                  ? "切换至 2026 秋招"
+                  : "切换至个人资料库"
+              }
+            >
+              <span className="overlay-space-title">{spaceTitle}</span>
+              <span className="overlay-space-switch-badge">
+                <ArrowLeftRight size={10} aria-hidden="true" />
+                <span>切换</span>
+              </span>
+            </button>
+          </div>
         </div>
         <div className="overlay-header-tools">
-          <button className="overlay-resume-button" aria-label="打开简历中心" title="打开简历中心" onClick={onOpenResumeManager}>
-            <FileText size={17} />
-            <span>简历中心</span>
-          </button>
-          <button aria-label="刷新" onClick={onRefresh}>
-            <RefreshCw size={17} />
+          <button
+            className="overlay-resume-button"
+            aria-label="打开网申信息中心"
+            title="网申信息中心：维护通用简历与网申字段，点击在新标签页打开"
+            onClick={onOpenResumeManager}
+          >
+            <FileText size={14} />
+            <span>网申信息</span>
           </button>
           <button aria-label="关闭" onClick={onClose}>
-            <X size={19} />
+            <X size={18} />
           </button>
         </div>
       </header>
@@ -345,7 +406,6 @@ export function OverlayPanel({
                 )}
               </button>
             </section>
-            <CloudSyncSettings compact />
           </div>
         )}
 
@@ -357,6 +417,7 @@ export function OverlayPanel({
                   ? `${activeJobs.length} 个岗位正在推进`
                   : "暂无岗位记录"}
               </span>
+              <CloudSyncSettings variant="badge" />
             </div>
 
             <section className="overlay-flow">
@@ -609,15 +670,6 @@ export function OverlayPanel({
         <button title="机会" aria-label="机会" className={tab === "opportunities" ? "active" : ""} onClick={() => setTab("opportunities")}><Megaphone size={19} /></button>
         <button title="日历" aria-label="日历" className={tab === "agenda" ? "active" : ""} onClick={() => setTab("agenda")}><CalendarDays size={19} /></button>
         <button title="设置" aria-label="设置" className={tab === "settings" ? "active" : ""} onClick={() => setTab("settings")}><Settings2 size={19} /></button>
-        <button
-          className="overlay-web-workspace"
-          title="在新标签页打开网页工作台"
-          aria-label="在新标签页打开网页工作台"
-          onClick={() => openWebWorkspace()}
-        >
-          <span>打开工作台</span>
-          <ExternalLink size={13} />
-        </button>
       </nav>
     </div>
   );

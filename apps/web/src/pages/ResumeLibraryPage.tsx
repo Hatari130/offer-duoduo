@@ -22,6 +22,30 @@ function ResumeStarterPreview() {
   </figure>;
 }
 
+function ResumeMiniSheet({ tailored = false }: { tailored?: boolean }) {
+  return <div className={`resume-mini-sheet ${tailored ? "resume-mini-sheet--tailored" : ""}`} aria-hidden="true">
+    <div className="resume-mini-sheet__header">
+      <span className="resume-mini-sheet__avatar" />
+      <div className="resume-mini-sheet__lines">
+        <span className="resume-mini-sheet__line resume-mini-sheet__line--name" />
+        <span className="resume-mini-sheet__line resume-mini-sheet__line--sub" />
+      </div>
+    </div>
+    <div className="resume-mini-sheet__divider" />
+    <div className="resume-mini-sheet__section">
+      <span className="resume-mini-sheet__sec-title" />
+      <span className="resume-mini-sheet__line" />
+      <span className="resume-mini-sheet__line resume-mini-sheet__line--70" />
+    </div>
+    <div className="resume-mini-sheet__section">
+      <span className="resume-mini-sheet__sec-title" />
+      <span className="resume-mini-sheet__line" />
+      <span className="resume-mini-sheet__line resume-mini-sheet__line--85" />
+      <span className="resume-mini-sheet__line resume-mini-sheet__line--55" />
+    </div>
+  </div>;
+}
+
 function createStarterPortrait(id: string): ResumeAsset {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="280" height="320" viewBox="0 0 280 320"><rect width="280" height="320" fill="#f2f2f0"/><circle cx="140" cy="105" r="58" fill="#c9c9c5"/><path d="M42 320c8-82 43-127 98-127s90 45 98 127" fill="#9e9e99"/><path d="M91 91c5-44 28-66 52-66 36 0 58 27 58 69-17-10-33-28-41-45-14 22-38 37-69 42Z" fill="#565653"/></svg>`;
   return {
@@ -132,11 +156,43 @@ export function ResumeLibraryPage() {
     : <div className="resume-library-sections">
       <section className="resume-template-section">
         <header className="resume-section-heading"><span><FileText size={18} /></span><div><strong>通用版本</strong><small>用于创建岗位定制简历的基础版本；只同步简历内容，不需要上传 PDF 原件。</small></div></header>
-        {templates.length ? <div className="resume-template-grid">{templates.map((template) => <article className="resume-library-card" key={template.id}><button className="resume-library-card__open" type="button" onClick={() => navigate(`/app/resumes/edit/${encodeURIComponent(template.id)}`)}><span className="resume-template-card__tag">字段简历</span><strong>{template.name}</strong><span>{template.profile.targetRole || "点击继续完善简历"}</span><small><Clock3 size={13} />{new Date(template.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} · {template.origin === "web" ? "网页创建" : "插件同步"}</small><em><PencilLine size={13} aria-hidden="true" />继续编辑</em></button><button className="resume-library-card__delete" type="button" onClick={() => void removeTemplate(template)} aria-label={`删除 ${template.name}`} title="删除通用简历"><Trash2 aria-hidden="true" size={15} /></button></article>)}</div> : <p className="resume-section-empty">还没有通用版本。你可以直接在网页制作，或从插件同步已有简历。</p>}
+        {templates.length ? <div className="resume-template-grid">{templates.map((template) => <article className="resume-library-card" key={template.id}>
+          <button className="resume-library-card__open" type="button" onClick={() => navigate(`/app/resumes/edit/${encodeURIComponent(template.id)}`)}>
+            <ResumeMiniSheet />
+            <div className="resume-library-card__body">
+              <div className="resume-library-card__info">
+                <span className="resume-template-card__tag">字段简历</span>
+                <strong>{template.name}</strong>
+                <span>{template.profile.targetRole || "点击继续完善简历"}</span>
+              </div>
+              <div className="resume-library-card__footer">
+                <small><Clock3 size={13} />{new Date(template.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} · {template.origin === "web" ? "网页创建" : "插件同步"}</small>
+                <em><PencilLine size={13} aria-hidden="true" />继续编辑</em>
+              </div>
+            </div>
+          </button>
+          <button className="resume-library-card__delete" type="button" onClick={() => void removeTemplate(template)} aria-label={`删除 ${template.name}`} title="删除通用简历"><Trash2 aria-hidden="true" size={14} /></button>
+        </article>)}</div> : <p className="resume-section-empty">还没有通用版本。你可以直接在网页制作，或从插件同步已有简历。</p>}
       </section>
       <section className="resume-tailored-section">
         <header className="resume-section-heading"><span><FileCheck2 size={18} /></span><div><strong>岗位定制简历</strong><small>每份定制简历独立对应一个岗位，删除不会影响插件中的通用模板。</small></div></header>
-        {!versions.length ? <p className="resume-section-empty">还没有岗位定制版本。可以从投递管理中为具体岗位创建。</p> : <div className="resume-source-groups">{groups.map(([sourceName, items]) => <section className="resume-source-group" key={sourceName}><header><span><FileCheck2 size={18} /></span><div><strong>{sourceName}</strong><small>{items.length} 个岗位定制版本</small></div></header><div className="resume-version-grid">{items.map((item) => { const { version } = item; return <article className="resume-version-card" key={version.id}><button className="resume-version-card__open" type="button" onClick={() => navigate(`/app/resumes/tailor/${encodeURIComponent(version.tailorTaskId)}`)}><span className="resume-version-status"><PencilLine aria-hidden="true" size={13} />{STATUS_LABELS[version.status]}</span><strong>{version.position}</strong><span>{version.company}</span><small><Clock3 size={13} />{new Date(version.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small></button><button className="resume-version-card__delete" type="button" onClick={() => void removeVersion(item)} aria-label={`删除 ${version.company} ${version.position} 的定制简历`} title="删除定制简历"><Trash2 aria-hidden="true" size={15} /></button></article>; })}</div></section>)}</div>}
+        {!versions.length ? <p className="resume-section-empty">还没有岗位定制版本。可以从投递管理中为具体岗位创建。</p> : <div className="resume-source-groups">{groups.map(([sourceName, items]) => <section className="resume-source-group" key={sourceName}><header><span><FileCheck2 size={18} /></span><div><strong>{sourceName}</strong><small>{items.length} 个岗位定制版本</small></div></header><div className="resume-version-grid">{items.map((item) => { const { version } = item; return <article className="resume-version-card" key={version.id}>
+          <button className="resume-version-card__open" type="button" onClick={() => navigate(`/app/resumes/tailor/${encodeURIComponent(version.tailorTaskId)}`)}>
+            <ResumeMiniSheet tailored />
+            <div className="resume-version-card__body">
+              <div className="resume-version-card__info">
+                <span className="resume-version-status"><PencilLine aria-hidden="true" size={13} />{STATUS_LABELS[version.status]}</span>
+                <strong>{version.position}</strong>
+                <span>{version.company}</span>
+              </div>
+              <div className="resume-version-card__footer">
+                <small><Clock3 size={13} />{new Date(version.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })}</small>
+                <em><PencilLine size={13} aria-hidden="true" />编辑定制</em>
+              </div>
+            </div>
+          </button>
+          <button className="resume-version-card__delete" type="button" onClick={() => void removeVersion(item)} aria-label={`删除 ${version.company} ${version.position} 的定制简历`} title="删除定制简历"><Trash2 aria-hidden="true" size={14} /></button>
+        </article>; })}</div></section>)}</div>}
       </section>
     </div>}
   </section>;

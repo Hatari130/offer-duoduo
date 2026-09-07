@@ -1,0 +1,673 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>招商银行招聘中心 - 个人简历</title>
+    <style>
+      body { font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif; padding: 24px; }
+      .ant-form-item { margin-bottom: 24px; display: flex; align-items: center; }
+      .ant-form-item-label { width: 140px; text-align: right; margin-right: 16px; }
+      .ant-form-item-control { flex: 1; }
+      .ant-input { box-sizing: border-box; width: 100%; max-width: 360px; height: 36px; padding: 4px 11px; border: 1px solid #d9d9d9; border-radius: 2px; }
+      .ant-select { position: relative; width: 100%; max-width: 360px; }
+      .ant-select-selector { box-sizing: border-box; min-height: 36px; padding: 4px 11px; border: 1px solid #d9d9d9; border-radius: 2px; }
+      .ant-select-selection-search-input { position: absolute; inset: 0; width: 100%; opacity: 0; }
+      .ant-select-dropdown { position: absolute; z-index: 1050; min-width: 200px; background: #fff; box-shadow: 0 3px 6px -4px rgba(0,0,0,.12), 0 6px 16px 0 rgba(0,0,0,.08); border-radius: 2px; padding: 4px 0; }
+      .ant-select-dropdown-hidden { display: none; }
+      .ant-select-item-option { padding: 5px 12px; cursor: pointer; }
+      .ant-select-item-option:hover { background: #f5f5f5; }
+      .ant-picker { box-sizing: border-box; padding: 4px 11px; height: 36px; border: 1px solid #d9d9d9; border-radius: 2px; display: inline-flex; align-items: center; }
+      .ant-picker-input > input { border: none; outline: none; width: 100%; }
+      .ant-radio-group { display: inline-flex; gap: 16px; }
+      .ant-radio-wrapper { display: inline-flex; align-items: center; cursor: pointer; gap: 8px; }
+    </style>
+  </head>
+  <body>
+    <div class="resume-wrapper">
+      <form class="ant-form ant-form-horizontal">
+        <!-- 基本信息 (Basic Info) -->
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_name" title="姓名">
+              姓名
+              <span class="ant-tooltip-trigger"><svg viewBox="0 0 1024 1024"><path d="M512 64C264.6..."></path></svg>请填写真实姓名</span>
+            </label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <input id="basicInfo_name" class="ant-input" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_idCardNumber" title="证件号码">证件号码</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <input id="basicInfo_idCardNumber" class="ant-input" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_gender" title="性别">性别</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <div class="ant-radio-group" id="basicInfo_gender">
+                  <label class="ant-radio-wrapper">
+                    <span class="ant-radio"><input type="radio" class="ant-radio-input" value="1" /></span>
+                    <span>男</span>
+                  </label>
+                  <label class="ant-radio-wrapper">
+                    <span class="ant-radio"><input type="radio" class="ant-radio-input" value="2" /></span>
+                    <span>女</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_birthday" title="出生日期">出生日期</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <div class="ant-picker time-cell">
+                  <div class="ant-picker-input">
+                    <input id="basicInfo_birthday" placeholder="选择日期" value="" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_phone" title="手机号码">手机号码</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <input id="basicInfo_phone" class="ant-input" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_currentResidence" title="现居住地">现居住地</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <input id="basicInfo_currentResidence" class="ant-input" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="basicInfo_expectedInterviewCity" title="期望面试城市">期望面试城市</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-select ant-select-single ant-select-show-arrow" data-select-id="basicInfo_expectedInterviewCity">
+              <div class="ant-select-selector">
+                <span class="ant-select-selection-search">
+                  <input id="basicInfo_expectedInterviewCity" class="ant-select-selection-search-input" role="combobox" aria-expanded="false" aria-controls="interviewCity_list" value="" />
+                </span>
+                <span class="ant-select-selection-placeholder">请选择城市</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 教育经历 (Education) -->
+        <div class="item-box">
+          <div class="item-name">教育经历</div>
+          <div class="education-list" id="educationList">
+            <div class="education-card list">
+              <div class="ant-row ant-form-item">
+                <div class="ant-col ant-form-item-label">
+                  <label for="collegeCode" title="学校名称">学校名称</label>
+                </div>
+                <div class="ant-col ant-form-item-control">
+                  <div class="ant-form-item-control-input">
+                    <div class="ant-form-item-control-input-content">
+                      <input id="collegeCode" class="ant-input" value="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ant-row ant-form-item">
+                <div class="ant-col ant-form-item-label">
+                  <label for="educationLevelCode" title="学历">学历</label>
+                </div>
+                <div class="ant-col ant-form-item-control">
+                  <div class="ant-select ant-select-single ant-select-show-arrow" data-select-id="educationLevelCode">
+                    <div class="ant-select-selector">
+                      <span class="ant-select-selection-search">
+                        <input id="educationLevelCode" class="ant-select-selection-search-input" role="combobox" aria-expanded="false" aria-controls="degree_list" value="" />
+                      </span>
+                      <span class="ant-select-selection-placeholder">请选择学历</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ant-row ant-form-item">
+                <div class="ant-col ant-form-item-label">
+                  <label for="majorCode" title="专业名称">专业名称</label>
+                </div>
+                <div class="ant-col ant-form-item-control">
+                  <div class="ant-form-item-control-input">
+                    <div class="ant-form-item-control-input-content">
+                      <input id="majorCode" class="ant-input" value="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ant-row ant-form-item">
+                <div class="ant-col ant-form-item-label">
+                  <label for="majorRanking" title="专业排名">专业排名</label>
+                </div>
+                <div class="ant-col ant-form-item-control">
+                  <div class="ant-select ant-select-single ant-select-show-arrow" data-select-id="majorRanking">
+                    <div class="ant-select-selector">
+                      <span class="ant-select-selection-search">
+                        <input id="majorRanking" class="ant-select-selection-search-input" role="combobox" aria-expanded="false" aria-controls="ranking_list" value="" />
+                      </span>
+                      <span class="ant-select-selection-placeholder">请选择排名</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ant-row ant-form-item">
+                <div class="ant-col ant-form-item-label">
+                  <label for="fullEducation" title="全日制">全日制</label>
+                </div>
+                <div class="ant-col ant-form-item-control">
+                  <div class="ant-form-item-control-input">
+                    <div class="ant-form-item-control-input-content">
+                      <div class="ant-radio-group" id="fullEducation">
+                        <label class="ant-radio-wrapper">
+                          <span class="ant-radio"><input type="radio" class="ant-radio-input" value="1" /></span>
+                          <span>全日制</span>
+                        </label>
+                        <label class="ant-radio-wrapper">
+                          <span class="ant-radio"><input type="radio" class="ant-radio-input" value="0" /></span>
+                          <span>非全日制</span>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ant-row ant-form-item">
+                <div class="ant-col ant-form-item-label">
+                  <label for="endDate" title="毕业时间">毕业时间</label>
+                </div>
+                <div class="ant-col ant-form-item-control">
+                  <div class="ant-form-item-control-input">
+                    <div class="ant-form-item-control-input-content">
+                      <div class="ant-picker time-cell">
+                        <div class="ant-picker-input">
+                          <input id="endDate" placeholder="选择日期" value="" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="add-item">
+              <div class="btn-add" id="addEducationBtn">
+                <i class="mgr-5 m-icon m-icon-add"></i>+ 添加
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 英语水平 (Language) -->
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="englishLevel" title="最高英语水平">最高英语水平</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-select ant-select-single ant-select-show-arrow" data-select-id="englishLevel">
+              <div class="ant-select-selector">
+                <span class="ant-select-selection-search">
+                  <input id="englishLevel" class="ant-select-selection-search-input" role="combobox" aria-expanded="false" aria-controls="english_list" value="" />
+                </span>
+                <span class="ant-select-selection-placeholder">请选择英语等级</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="englishScore" title="英语成绩">英语成绩</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <input id="englishScore" class="ant-input" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 未填写的字段 (Unfilled fields to test red highlight) -->
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="graduationDesign" title="毕业设计">毕业设计</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <textarea id="graduationDesign" class="ant-input" placeholder="可阐述毕业设计、课题和方向"></textarea>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ant-row ant-form-item">
+          <div class="ant-col ant-form-item-label">
+            <label for="familyTitle" title="职位 / 职务">职位 / 职务</label>
+          </div>
+          <div class="ant-col ant-form-item-control">
+            <div class="ant-form-item-control-input">
+              <div class="ant-form-item-control-input-content">
+                <input id="familyTitle" class="ant-input" placeholder="请输入" value="" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Dropdowns for Ant Selects -->
+    <div id="interviewCity_dropdown" class="ant-select-dropdown ant-select-dropdown-hidden">
+      <div id="interviewCity_list" role="listbox">
+        <div class="ant-select-item ant-select-item-option" title="深圳"><div class="ant-select-item-option-content">深圳</div></div>
+        <div class="ant-select-item ant-select-item-option" title="北京"><div class="ant-select-item-option-content">北京</div></div>
+        <div class="ant-select-item ant-select-item-option" title="上海"><div class="ant-select-item-option-content">上海</div></div>
+        <div class="ant-select-item ant-select-item-option" title="南京"><div class="ant-select-item-option-content">南京</div></div>
+      </div>
+    </div>
+
+    <div id="degree_dropdown" class="ant-select-dropdown ant-select-dropdown-hidden">
+      <div id="degree_list" role="listbox">
+        <div class="ant-select-item ant-select-item-option" title="本科"><div class="ant-select-item-option-content">本科</div></div>
+        <div class="ant-select-item ant-select-item-option" title="硕士研究生"><div class="ant-select-item-option-content">硕士研究生</div></div>
+        <div class="ant-select-item ant-select-item-option" title="博士研究生"><div class="ant-select-item-option-content">博士研究生</div></div>
+      </div>
+    </div>
+
+    <div id="ranking_dropdown" class="ant-select-dropdown ant-select-dropdown-hidden">
+      <div id="ranking_list" role="listbox">
+        <div class="ant-select-item ant-select-item-option" title="前5%"><div class="ant-select-item-option-content">前5%</div></div>
+        <div class="ant-select-item ant-select-item-option" title="前10%"><div class="ant-select-item-option-content">前10%</div></div>
+        <div class="ant-select-item ant-select-item-option" title="前20%"><div class="ant-select-item-option-content">前20%</div></div>
+        <div class="ant-select-item ant-select-item-option" title="其他"><div class="ant-select-item-option-content">其他</div></div>
+      </div>
+    </div>
+
+    <div id="english_dropdown" class="ant-select-dropdown ant-select-dropdown-hidden">
+      <div id="english_list" role="listbox">
+        <div class="ant-select-item ant-select-item-option" title="大学英语四级(CET4)"><div class="ant-select-item-option-content">大学英语四级(CET4)</div></div>
+        <div class="ant-select-item ant-select-item-option" title="大学英语六级(CET6)"><div class="ant-select-item-option-content">大学英语六级(CET6)</div></div>
+      </div>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        storage: { local: { get: async () => ({}) } },
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: (msg) => {
+            if (msg?.type === "OFFERFLOW_FILL_PROGRESS") {
+              const p = msg.progress || msg;
+              document.body.dataset.fillProgress = `${p.stage}:${p.current}/${p.total}:${p.label || ""}`;
+            }
+            return Promise.resolve();
+          }
+        }
+      };
+
+      let activeSelect = null;
+      function wireAntSelect(root) {
+        const selector = root.querySelector(".ant-select-selector");
+        const input = root.querySelector("input[role='combobox']");
+        const listId = input?.getAttribute("aria-controls");
+        const list = listId ? document.getElementById(listId) : null;
+        const dropdown = list?.closest(".ant-select-dropdown");
+        if (!dropdown || !selector || !input) return;
+
+        const close = () => {
+          if (activeSelect === root) {
+            activeSelect = null;
+          }
+          root.classList.remove("ant-select-open");
+          input.setAttribute("aria-expanded", "false");
+          dropdown.classList.add("ant-select-dropdown-hidden");
+        };
+
+        selector.addEventListener("click", (e) => {
+          e.stopPropagation();
+          if (activeSelect && activeSelect !== root) {
+            activeSelect.classList.remove("ant-select-open");
+            activeSelect.querySelector("input[role='combobox']")?.setAttribute("aria-expanded", "false");
+          }
+          activeSelect = root;
+          root.classList.add("ant-select-open");
+          input.setAttribute("aria-expanded", "true");
+          dropdown.classList.remove("ant-select-dropdown-hidden");
+        });
+
+        dropdown.querySelectorAll(".ant-select-item-option").forEach((option) => {
+          option.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const targetRoot = activeSelect || root;
+            const targetInput = targetRoot.querySelector("input[role='combobox']");
+            const targetSelector = targetRoot.querySelector(".ant-select-selector");
+            targetRoot.querySelector(".ant-select-selection-placeholder")?.remove();
+            let selected = targetRoot.querySelector(".ant-select-selection-item");
+            if (!selected) {
+              selected = document.createElement("span");
+              selected.className = "ant-select-selection-item";
+              targetSelector.appendChild(selected);
+            }
+            selected.textContent = option.textContent.trim();
+            selected.setAttribute("title", option.textContent.trim());
+            if (targetInput) {
+              targetInput.value = option.textContent.trim();
+              targetInput.dispatchEvent(new Event("input", { bubbles: true }));
+              targetInput.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+            close();
+          });
+        });
+
+        document.addEventListener("click", (e) => {
+          if (activeSelect === root && !root.contains(e.target) && !dropdown.contains(e.target)) {
+            close();
+          }
+        });
+      }
+      document.querySelectorAll(".ant-select").forEach(wireAntSelect);
+
+      function wireAntRadio(group) {
+        const wrappers = group.querySelectorAll(".ant-radio-wrapper");
+        wrappers.forEach((wrapper) => {
+          wrapper.addEventListener("click", () => {
+            wrappers.forEach((w) => {
+              w.classList.remove("ant-radio-wrapper-checked");
+              const r = w.querySelector(".ant-radio");
+              r?.classList.remove("ant-radio-checked");
+              const inp = w.querySelector("input[type='radio']");
+              if (inp) inp.checked = false;
+            });
+            wrapper.classList.add("ant-radio-wrapper-checked");
+            const radio = wrapper.querySelector(".ant-radio");
+            radio?.classList.add("ant-radio-checked");
+            const inp = wrapper.querySelector("input[type='radio']");
+            if (inp) {
+              inp.checked = true;
+              inp.dispatchEvent(new Event("change", { bubbles: true }));
+            }
+          });
+        });
+      }
+      document.querySelectorAll(".ant-radio-group").forEach(wireAntRadio);
+
+      let addClicks = 0;
+      const addEducationBtn = document.getElementById("addEducationBtn");
+      addEducationBtn?.addEventListener("click", () => {
+        addClicks += 1;
+        const eduList = document.getElementById("educationList");
+        const card1 = document.createElement("div");
+        card1.className = "education-card list";
+        card1.innerHTML = `
+          <div class="ant-row ant-form-item">
+            <div class="ant-col ant-form-item-label">
+              <label for="educationHistoryList_1_collegeCode" title="学校名称">学校名称</label>
+            </div>
+            <div class="ant-col ant-form-item-control">
+              <div class="ant-form-item-control-input">
+                <div class="ant-form-item-control-input-content">
+                  <input id="educationHistoryList_1_collegeCode" class="ant-input" value="" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ant-row ant-form-item">
+            <div class="ant-col ant-form-item-label">
+              <label for="educationHistoryList_1_educationLevelCode" title="学历">学历</label>
+            </div>
+            <div class="ant-col ant-form-item-control">
+              <div class="ant-select ant-select-single ant-select-show-arrow" data-select-id="educationHistoryList_1_educationLevelCode">
+                <div class="ant-select-selector">
+                  <span class="ant-select-selection-search">
+                    <input id="educationHistoryList_1_educationLevelCode" class="ant-select-selection-search-input" role="combobox" aria-expanded="false" aria-controls="degree_list" value="" />
+                  </span>
+                  <span class="ant-select-selection-placeholder">请选择学历</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ant-row ant-form-item">
+            <div class="ant-col ant-form-item-label">
+              <label for="educationHistoryList_1_majorCode" title="专业名称">专业名称</label>
+            </div>
+            <div class="ant-col ant-form-item-control">
+              <div class="ant-form-item-control-input">
+                <div class="ant-form-item-control-input-content">
+                  <input id="educationHistoryList_1_majorCode" class="ant-input" value="" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ant-row ant-form-item">
+            <div class="ant-col ant-form-item-label">
+              <label for="educationHistoryList_1_majorRanking" title="专业排名">专业排名</label>
+            </div>
+            <div class="ant-col ant-form-item-control">
+              <div class="ant-select ant-select-single ant-select-show-arrow" data-select-id="educationHistoryList_1_majorRanking">
+                <div class="ant-select-selector">
+                  <span class="ant-select-selection-search">
+                    <input id="educationHistoryList_1_majorRanking" class="ant-select-selection-search-input" role="combobox" aria-expanded="false" aria-controls="ranking_list" value="" />
+                  </span>
+                  <span class="ant-select-selection-placeholder">请选择排名</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ant-row ant-form-item">
+            <div class="ant-col ant-form-item-label">
+              <label for="educationHistoryList_1_fullEducation" title="全日制">全日制</label>
+            </div>
+            <div class="ant-col ant-form-item-control">
+              <div class="ant-form-item-control-input">
+                <div class="ant-form-item-control-input-content">
+                  <div class="ant-radio-group" id="educationHistoryList_1_fullEducation">
+                    <label class="ant-radio-wrapper">
+                      <span class="ant-radio"><input type="radio" class="ant-radio-input" value="1" /></span>
+                      <span>全日制</span>
+                    </label>
+                    <label class="ant-radio-wrapper">
+                      <span class="ant-radio"><input type="radio" class="ant-radio-input" value="0" /></span>
+                      <span>非全日制</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ant-row ant-form-item">
+            <div class="ant-col ant-form-item-label">
+              <label for="educationHistoryList_1_endDate" title="毕业时间">毕业时间</label>
+            </div>
+            <div class="ant-col ant-form-item-control">
+              <div class="ant-form-item-control-input">
+                <div class="ant-form-item-control-input-content">
+                  <div class="ant-picker time-cell">
+                    <div class="ant-picker-input">
+                      <input id="educationHistoryList_1_endDate" placeholder="选择日期" value="" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        const addItemEl = eduList.querySelector(".add-item");
+        eduList.insertBefore(card1, addItemEl);
+        card1.querySelectorAll(".ant-select").forEach(wireAntSelect);
+        card1.querySelectorAll(".ant-radio-group").forEach(wireAntRadio);
+      });
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script src="../../public/form-adapters.js"></script>
+    <script>
+      const cmbAdapter = window.OfferFlowFormAdapters.resolve({
+        hostname: "career.cmbchina.com",
+        pathname: "/center/resume"
+      });
+      window.OfferFlowFormAdapters.resolve = () => cmbAdapter;
+    </script>
+    <script src="../../public/form-runtime.js"></script>
+    <script src="../../public/form-control-drivers.js"></script>
+    <script src="../../public/content.js"></script>
+    <script>
+      const listener = globalThis.__offerflowListeners.at(-1);
+      const snapshot0 = {
+        fullName: "李招招",
+        idNumber: "440301199805201234",
+        gender: "男",
+        birthDate: "1998-05-20",
+        phone: "13988886666",
+        currentCity: "深圳市南山区",
+        targetCities: "深圳",
+        school: "江南大学",
+        degree: "硕士研究生",
+        major: "计算机科学与技术",
+        educationRank: "前10%",
+        recruitmentType: "全日制",
+        graduationDate: "2025-06-30",
+        languageCertificate: "大学英语六级(CET6)",
+        languageScore: "580"
+      };
+      const snapshot1 = {
+        school: "浙江大学",
+        degree: "本科",
+        major: "软件工程",
+        educationRank: "前20%",
+        recruitmentType: "全日制",
+        graduationDate: "2022-06-30"
+      };
+
+      listener({
+        type: "OFFERFLOW_SCAN_APPLICATION_FORM_V2",
+        expandRepeaters: true,
+        repeatCounts: { education: 2 }
+      }, {}, (scan) => {
+        listener({
+          type: "OFFERFLOW_FILL_APPLICATION_FORM_V2",
+          fields: scan.fields,
+          values: {},
+          fieldValues: {},
+          profileSnapshots: [snapshot0, snapshot1],
+          repeatCounts: { education: 2 },
+          fillDynamicFields: true,
+          maxRounds: 3,
+          delayMs: 0
+        }, {}, (fill) => {
+          const genderChecked = document.querySelector("#basicInfo_gender input[type='radio']:checked")
+            ?.closest(".ant-radio-wrapper")?.textContent?.trim() || "";
+          const fullEdChecked = document.querySelector("#fullEducation input[type='radio']:checked")
+            ?.closest(".ant-radio-wrapper")?.textContent?.trim() || "";
+          const fullEdChecked1 = document.querySelector("#educationHistoryList_1_fullEducation input[type='radio']:checked")
+            ?.closest(".ant-radio-wrapper")?.textContent?.trim() || "";
+
+          const unfilledHighlightGraduationDesign = document.querySelector("label[for='graduationDesign']")
+            ?.classList.contains("offerflow-unfilled-label") || false;
+          const unfilledHighlightFamilyTitle = document.querySelector("label[for='familyTitle']")
+            ?.classList.contains("offerflow-unfilled-label") || false;
+          const unfilledHighlightName = document.querySelector("label[for='basicInfo_name']")
+            ?.classList.contains("offerflow-unfilled-label") || false;
+
+          // Test dynamic clearing on user typing
+          const gradDesignInput = document.querySelector("#graduationDesign");
+          gradDesignInput.value = "基于微服务的高并发招聘系统";
+          gradDesignInput.dispatchEvent(new Event("input", { bubbles: true }));
+          const clearedAfterInput = !document.querySelector("label[for='graduationDesign']")
+            ?.classList.contains("offerflow-unfilled-label");
+
+          document.body.dataset.ready = "true";
+          document.body.dataset.result = encodeURIComponent(JSON.stringify({
+            ok: true,
+            data: {
+              scan,
+              fill,
+              addClicks,
+              name: document.querySelector("#basicInfo_name")?.value || "",
+              idNumber: document.querySelector("#basicInfo_idCardNumber")?.value || "",
+              gender: genderChecked,
+              birthday: document.querySelector("#basicInfo_birthday")?.value || "",
+              phone: document.querySelector("#basicInfo_phone")?.value || "",
+              currentResidence: document.querySelector("#basicInfo_currentResidence")?.value || "",
+              interviewCity: document.querySelector("#basicInfo_expectedInterviewCity")?.value || "",
+              school: document.querySelector("#collegeCode")?.value || "",
+              degree: document.querySelector("#educationLevelCode")?.value || "",
+              major: document.querySelector("#majorCode")?.value || "",
+              ranking: document.querySelector("#majorRanking")?.value || "",
+              fullEducation: fullEdChecked,
+              endDate: document.querySelector("#endDate")?.value || "",
+              school1: document.querySelector("#educationHistoryList_1_collegeCode")?.value || "",
+              degree1: document.querySelector("#educationHistoryList_1_educationLevelCode")?.value || "",
+              major1: document.querySelector("#educationHistoryList_1_majorCode")?.value || "",
+              ranking1: document.querySelector("#educationHistoryList_1_majorRanking")?.value || "",
+              fullEducation1: fullEdChecked1,
+              endDate1: document.querySelector("#educationHistoryList_1_endDate")?.value || "",
+              englishLevel: document.querySelector("#englishLevel")?.value || "",
+              englishScore: document.querySelector("#englishScore")?.value || "",
+              unfilledHighlightGraduationDesign,
+              unfilledHighlightFamilyTitle,
+              unfilledHighlightName,
+              clearedAfterInput
+            }
+          }));
+        });
+      });
+    </script>
+  </body>
+</html>

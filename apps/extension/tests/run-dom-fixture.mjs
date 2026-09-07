@@ -84,6 +84,9 @@ const pupumallFormPath = fileURLToPath(
 const citicbankFormPath = fileURLToPath(
   new URL("./fixtures/application-form-citicbank.html", import.meta.url)
 );
+const cmbchinaFormPath = fileURLToPath(
+  new URL("./fixtures/application-form-cmbchina.html", import.meta.url)
+);
 const profileDirectory = mkdtempSync(join(tmpdir(), "offerflow-dom-test-"));
 
 const runFixture = (fixture, virtualTimeBudget = 2500) => {
@@ -608,6 +611,43 @@ try {
   ], "Microdone way-repeat education cards must be independently mapped and filled");
   assert.equal(citicbankForm.fill.results.every((result) => result.status === "filled"), true);
   console.log("DOM form fixture passed: CITIC Bank Microdone HR way.js binding, bootstrap-select and repeat education fill correctly.");
+
+  const cmbchinaForm = runFixture(cmbchinaFormPath, 35000);
+  assert.equal(cmbchinaForm.scan.platform.id, "cmbchina", "career.cmbchina.com must resolve CMB China adapter");
+  assert.equal(cmbchinaForm.scan.repeatersExpanded, true, "CMB China repeaters must be expanded when repeatCounts > 1");
+  assert.equal(cmbchinaForm.addClicks, 1, "+ 添加 button must be clicked to expand the 2nd education entry");
+  assert.equal(cmbchinaForm.name, "李招招", "basicInfo_name must be filled with full name");
+  assert.equal(cmbchinaForm.idNumber, "440301199805201234", "basicInfo_idCardNumber must be filled with ID number");
+  assert.equal(cmbchinaForm.gender, "男", "basicInfo_gender Ant radio group must select 男");
+  assert.equal(cmbchinaForm.birthday, "1998-05-20", "basicInfo_birthday Ant DatePicker must be filled");
+  assert.equal(cmbchinaForm.phone, "13988886666", "basicInfo_phone must be filled with phone number");
+  assert.equal(cmbchinaForm.currentResidence, "深圳市南山区", "basicInfo_currentResidence must be filled with current address");
+  assert.equal(cmbchinaForm.interviewCity, "深圳", "basicInfo_expectedInterviewCity Ant Select must select 深圳");
+
+  // Education entry 0 (Master's)
+  assert.equal(cmbchinaForm.school, "江南大学", "collegeCode must be filled with 1st school");
+  assert.equal(cmbchinaForm.degree, "硕士研究生", "educationLevelCode Ant Select must select 硕士研究生");
+  assert.equal(cmbchinaForm.major, "计算机科学与技术", "majorCode must be filled with 1st major");
+  assert.equal(cmbchinaForm.ranking, "前10%", "majorRanking Ant Select must select 前10%");
+  assert.equal(cmbchinaForm.fullEducation, "全日制", "fullEducation Ant radio group must select 全日制");
+  assert.equal(cmbchinaForm.endDate, "2025-06-30", "endDate Ant DatePicker must be filled for 1st education");
+
+  // Education entry 1 (Bachelor's)
+  assert.equal(cmbchinaForm.school1, "浙江大学", "educationHistoryList_1_collegeCode must be filled with 2nd school");
+  assert.equal(cmbchinaForm.degree1, "本科", "educationHistoryList_1_educationLevelCode must select 本科");
+  assert.equal(cmbchinaForm.major1, "软件工程", "educationHistoryList_1_majorCode must be filled with 2nd major");
+  assert.equal(cmbchinaForm.ranking1, "前20%", "educationHistoryList_1_majorRanking must select 前20%");
+  assert.equal(cmbchinaForm.fullEducation1, "全日制", "educationHistoryList_1_fullEducation Ant radio group must select 全日制");
+  assert.equal(cmbchinaForm.endDate1, "2022-06-30", "educationHistoryList_1_endDate must be filled for 2nd education");
+
+  assert.equal(cmbchinaForm.englishLevel, "大学英语六级(CET6)", "englishLevel Ant Select must select CET6");
+  assert.equal(cmbchinaForm.englishScore, "580", "englishScore must be filled with score");
+  assert.equal(cmbchinaForm.fill.filled, 21, "all 21 snapshot fields across both education entries must be successfully filled");
+  assert.equal(cmbchinaForm.unfilledHighlightGraduationDesign, true, "unfilled graduationDesign label must be highlighted in red");
+  assert.equal(cmbchinaForm.unfilledHighlightFamilyTitle, true, "unfilled familyTitle label must be highlighted in red");
+  assert.equal(cmbchinaForm.unfilledHighlightName, false, "filled basicInfo_name label must NOT be highlighted");
+  assert.equal(cmbchinaForm.clearedAfterInput, true, "unfilled label highlight must auto-clear when user inputs value");
+  console.log("DOM form fixture passed: CMB China Ant Design v4 forms, repeater expansion, datepickers, radios, selects, and unfilled field red-highlighting work correctly.");
 
   const reinjectionForm = runFixture(reinjectionFormPath, 4000);
   assert.equal(reinjectionForm.listenerCount, 1, "reinjecting a new extension session must replace the stale listener");

@@ -27,7 +27,13 @@ import {
 } from "@/infrastructure/sync/syncState";
 import "./cloud-sync.css";
 
-export default function CloudSyncSettings({ compact = false }: { compact?: boolean }) {
+export default function CloudSyncSettings({
+  compact = false,
+  variant
+}: {
+  compact?: boolean;
+  variant?: "card" | "badge" | "compact";
+}) {
   const [overview, setOverview] = useState<CloudSyncOverview>();
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
@@ -147,7 +153,48 @@ export default function CloudSyncSettings({ compact = false }: { compact?: boole
     } finally { setBusy(false); }
   };
 
-  if (compact) {
+  if (variant === "badge") {
+    const lastSyncedTime = overview?.state.lastSyncedAt
+      ? new Date(overview.state.lastSyncedAt).toLocaleTimeString("zh-CN", {
+          hour: "2-digit",
+          minute: "2-digit"
+        })
+      : null;
+
+    const tooltipText = busy
+      ? "正在与云端工作台同步中…"
+      : error || overview?.state.lastError
+        ? `同步异常: ${error || overview?.state.lastError}（点击重试）`
+        : connection
+          ? `${connection.user.displayName || connection.user.email}（已连接，上次同步 ${lastSyncedTime || "未知"}）· 点击立即同步`
+          : "未连接 Web 工作台 · 点击登录并同步";
+
+    return (
+      <button
+        type="button"
+        className={`cloud-sync-badge ${connection ? "is-connected" : "is-disconnected"} ${busy ? "is-busy" : ""} ${error || overview?.state.lastError ? "is-error" : ""}`}
+        onClick={() => void (connection ? syncNow() : loginAndSync())}
+        disabled={busy}
+        title={tooltipText}
+        aria-label={tooltipText}
+      >
+        <span className="cloud-sync-badge-dot" aria-hidden="true" />
+        <Cloud size={12} className="cloud-sync-badge-icon" aria-hidden="true" />
+        <span className="cloud-sync-badge-text">
+          {busy
+            ? "同步中…"
+            : error || overview?.state.lastError
+              ? "同步异常"
+              : connection
+                ? (lastSyncedTime ? `已同步 ${lastSyncedTime}` : "已连接")
+                : "连接云端"}
+        </span>
+        {busy && <RefreshCw className="spin cloud-sync-badge-spin" size={11} aria-hidden="true" />}
+      </button>
+    );
+  }
+
+  if (compact || variant === "compact") {
     const lastSyncedAt = overview?.state.lastSyncedAt
       ? new Date(overview.state.lastSyncedAt).toLocaleString("zh-CN", {
           month: "numeric",

@@ -1868,7 +1868,7 @@
 }
 
 .resume-editor-section-body {
-  padding: 0 0 28px;
+  padding: 16px 22px 24px;
   border-top: 0;
 }
 
@@ -2770,9 +2770,9 @@
 .resume-editor-index button:hover,
 .resume-editor-index button:focus-visible,
 .resume-editor-index button.active {
-  color: #F98C53;
-  background: #FFF0E8;
-  border-left-color: #F98C53;
+  color: var(--of-brand-700, #34489e);
+  background: var(--of-brand-50, #f5f7ff);
+  border-left-color: var(--of-brand-600, #4058c7);
   font-weight: 700;
   outline: none;
 }
@@ -2916,7 +2916,7 @@
 }
 
 .resume-editor-section-body {
-  padding: 0 0 28px;
+  padding: 16px 22px 24px;
   border-top: 0;
 }
 
@@ -3609,6 +3609,7 @@ body,
   text-transform: uppercase;
 }
 
+.resume-manager-shell .resume-editor-index-list,
 .resume-manager-shell .resume-editor-index-group > div {
   display: grid;
   gap: 0.18rem;
@@ -3753,7 +3754,8 @@ body,
     display: none;
   }
 
-  .resume-manager-shell .resume-editor-index-group > div {
+  .resume-manager-shell .resume-editor-index-list,
+.resume-manager-shell .resume-editor-index-group > div {
     display: flex;
     gap: 0.35rem;
   }
