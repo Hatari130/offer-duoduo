@@ -25,8 +25,12 @@ import {
 import {
   CLOUD_CONNECTION_KEY,
   CLOUD_SYNC_OUTBOX_KEY,
-  CLOUD_SYNC_STATE_KEY
+  CLOUD_SYNC_STATE_KEY,
+  clearCloudConnection,
+  clearCloudDataOwner,
+  clearCloudSyncStorage
 } from "@/infrastructure/sync/syncState";
+import { saveJobs, clearLocalProfileAndResumes } from "@/infrastructure/storage/storage";
 import { UserAvatar } from "@/features/workspace/UserAvatar";
 import "./cloud-sync.css";
 
@@ -81,20 +85,6 @@ export default function CloudSyncSettings({
     }
   };
 
-  const deleteLocalDataAndLogin = async () => {
-    if (!window.confirm("清空旧账号在此浏览器中的投递、简历、原文件与网申档案，再登录新账号？此操作不能撤销；旧账号的云端数据不会被删除。取消则保留全部资料。")) return;
-    setBusy(true);
-    setError("");
-    try {
-      await deleteLocalApplicationsAndForgetOwner();
-      await refresh();
-      await loginAndSync(false);
-    } catch (cause) {
-      setError(cloudErrorMessage(cause, "清除并登录失败"));
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const syncNow = async () => {
     if (overview?.requiresUploadConsent) {
@@ -138,13 +128,32 @@ export default function CloudSyncSettings({
   };
 
   const disconnect = async () => {
-    if (!window.confirm("退出当前账号并停止云端同步？本地投递、简历和网申档案会保留，且仍绑定原账号。")) return;
+    if (!window.confirm("确定退出当前账号登录？")) return;
     setBusy(true);
     setError("");
+    setMessage("");
     try {
       await disconnectCloud();
+      setOverview(undefined);
       await refresh();
-      setMessage("已退出登录，本地记录保持不变。");
+      setMessage("已退出登录。");
+    } catch (cause) {
+      console.error("Disconnect failed:", cause);
+      try {
+        await clearCloudConnection();
+        await clearCloudSyncStorage();
+        await clearCloudDataOwner();
+        setOverview(undefined);
+        await refresh();
+        setMessage("已退出登录。");
+      } catch (inner) {
+        const msg = inner instanceof Error ? inner.message : String(inner);
+        if (msg.includes("context invalidated")) {
+          setError("插件已更新，请刷新网页（按 F5）后再试。");
+        } else {
+          setError(msg || "退出登录失败，请重试");
+        }
+      }
     } finally {
       setBusy(false);
     }
@@ -171,13 +180,38 @@ export default function CloudSyncSettings({
     if (!window.confirm("永久删除插件中的全部本地投递、简历库并清除个人网申档案？此操作不能撤销，请先确认数据已备份。")) return;
     setBusy(true);
     setError("");
+    setMessage("");
     try {
       await deleteLocalApplicationsAndForgetOwner();
+      setOverview((prev) =>
+        prev ? { ...prev, connection: undefined, requiresUploadConsent: false } : undefined
+      );
       await refresh();
       setMessage("本地投递、简历与个人数据已彻底清除，现在可以连接新账号。");
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "无法清除本地数据");
-    } finally { setBusy(false); }
+      console.error("Clear local data failed:", cause);
+      try {
+        await clearCloudConnection();
+        await saveJobs([], { origin: "cloud" });
+        await clearLocalProfileAndResumes();
+        await clearCloudSyncStorage();
+        await clearCloudDataOwner();
+        setOverview((prev) =>
+          prev ? { ...prev, connection: undefined, requiresUploadConsent: false } : undefined
+        );
+        await refresh();
+        setMessage("本地投递、简历与个人数据已彻底清除。");
+      } catch (inner) {
+        const msg = inner instanceof Error ? inner.message : String(inner);
+        if (msg.includes("context invalidated")) {
+          setError("插件已更新，请刷新网页（按 F5）后再试。");
+        } else {
+          setError(msg || "无法清除本地数据");
+        }
+      }
+    } finally {
+      setBusy(false);
+    }
   };
 
   const connection = overview?.connection;
@@ -202,9 +236,10 @@ export default function CloudSyncSettings({
         })
       : null;
 
+    const isError = Boolean(connection && (error || overview?.state.lastError));
     const tooltipText = busy
       ? "正在与云端工作台同步中…"
-      : error || overview?.state.lastError
+      : isError
         ? `同步异常: ${error || overview?.state.lastError}（点击重试）`
         : connection
           ? `${connection.user.displayName || connection.user.email}（已连接，上次同步 ${lastSyncedTime || "未知"}）· 点击立即同步`
@@ -213,7 +248,7 @@ export default function CloudSyncSettings({
     return (
       <button
         type="button"
-        className={`cloud-sync-badge ${connection ? "is-connected" : "is-disconnected"} ${busy ? "is-busy" : ""} ${error || overview?.state.lastError ? "is-error" : ""}`}
+        className={`cloud-sync-badge ${connection ? "is-connected" : "is-disconnected"} ${busy ? "is-busy" : ""} ${isError ? "is-error" : ""}`}
         onClick={() => void (connection ? syncNow() : loginAndSync())}
         disabled={busy}
         title={tooltipText}
@@ -224,7 +259,7 @@ export default function CloudSyncSettings({
         <span className="cloud-sync-badge-text">
           {busy
             ? "同步中…"
-            : error || overview?.state.lastError
+            : isError
               ? "同步异常"
               : connection
                 ? (lastSyncedTime ? `已同步 ${lastSyncedTime}` : "已连接")
@@ -301,7 +336,7 @@ export default function CloudSyncSettings({
         ) : (
           <button className="button button--primary cloud-login-button" type="button" onClick={() => void loginAndSync()} disabled={busy}>
             {busy ? <RefreshCw className="spin" size={16} /> : <Cloud size={16} />}
-            登录并确认同步范围
+            登录 JobKoi 并同步投递
           </button>
         )}
 
@@ -325,31 +360,7 @@ export default function CloudSyncSettings({
           <p className="cloud-sync-feedback is-error" role="alert">{overview.state.lastError}</p>
         )}
         {error && (
-          <div className={`cloud-sync-feedback is-error ${error.includes("跨账号") ? "is-mismatch-banner" : ""}`} role="alert">
-            <p>{error}</p>
-            {error.includes("跨账号") && (
-              <div className="cloud-mismatch-options">
-                <button
-                  type="button"
-                  className="button button--secondary"
-                  onClick={() => void deleteLocalDataAndLogin()}
-                  disabled={busy}
-                >
-                  <Trash2 size={13} />
-                  清空旧数据并登录新账号
-                </button>
-                <button
-                  type="button"
-                  className="button button--secondary"
-                  onClick={() => void loginAndSync(true)}
-                  disabled={busy}
-                >
-                  <Upload size={13} />
-                  确认迁移投递与简历
-                </button>
-              </div>
-            )}
-          </div>
+          <p className="cloud-sync-feedback is-error" role="alert">{error}</p>
         )}
         {message && <p className="cloud-sync-feedback is-success" role="status"><CheckCircle2 size={13} />{message}</p>}
         {!connection && (
@@ -381,7 +392,7 @@ export default function CloudSyncSettings({
                 重置简历与网申档案
               </button>
               <button className="cloud-disconnect-button" type="button" onClick={() => void deleteLocalData()} disabled={busy}>
-                <Trash2 size={14} />清空本地资料并换号
+                <Trash2 size={14} />清空本地资料
               </button>
             </div>
           </details>

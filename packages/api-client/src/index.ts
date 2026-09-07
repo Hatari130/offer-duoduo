@@ -1,6 +1,9 @@
 import type {
   AdminDashboardRangeDays,
   AdminDashboardResponse,
+  AdminFeedbackItem,
+  AdminFeedbackListQuery,
+  AdminFeedbackListResponse,
   ApiResponse,
   ApplicationDetailResponse,
   ApplicationListResponse,
@@ -54,6 +57,7 @@ import type {
   UpdateAccountAvatarRequest,
   UpdateResumeVersionRequest,
   UpdateResumeTemplateRequest,
+  UpdateAdminFeedbackStatusRequest,
   VerifyEmailVerificationCodeRequest
 } from "@offerflow/contracts";
 import type { CreateInterviewRecordFromTranscriptRequest } from "@offerflow/contracts";
@@ -425,7 +429,22 @@ export function createApiClient(options: ApiClientOptions) {
 
   const admin = {
     dashboard: (days: AdminDashboardRangeDays = 30) =>
-      request<AdminDashboardResponse>(`/v1/admin/dashboard?days=${days}`)
+      request<AdminDashboardResponse>(`/v1/admin/dashboard?days=${days}`),
+    feedbackList: (params: AdminFeedbackListQuery = {}) => {
+      const query = new URLSearchParams();
+      if (params.status && params.status !== "all") query.set("status", params.status);
+      if (params.category && params.category !== "all") query.set("category", params.category);
+      if (params.keyword?.trim()) query.set("keyword", params.keyword.trim());
+      if (typeof params.limit === "number") query.set("limit", String(params.limit));
+      if (typeof params.offset === "number") query.set("offset", String(params.offset));
+      const qs = query.toString();
+      return request<AdminFeedbackListResponse>(`/v1/admin/feedback${qs ? `?${qs}` : ""}`);
+    },
+    updateFeedbackStatus: (id: string, body: UpdateAdminFeedbackStatusRequest) =>
+      request<{ success: true; item: AdminFeedbackItem }>(`/v1/admin/feedback/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify(body)
+      })
   };
 
   const feedback = {

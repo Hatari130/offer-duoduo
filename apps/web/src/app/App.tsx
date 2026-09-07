@@ -47,7 +47,9 @@ export function App() {
   useEffect(() => {
     if (status === "anonymous" && protectedReason) {
       requestLogin(protectedReason);
-      navigate("/app/chat", { replace: true });
+      if (!extensionConnect) {
+        navigate("/app/chat", { replace: true });
+      }
       return;
     }
     if ((status === "authenticated" || status === "guest") && pathname === "/login") navigate("/app/chat", { replace: true });

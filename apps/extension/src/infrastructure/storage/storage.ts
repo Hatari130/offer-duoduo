@@ -7,7 +7,12 @@ import {
   type ResumeAsset
 } from "@/shared/types";
 import type { TailoredResumeBundle, TailoredResumeEntry } from "@/features/tailor/types";
-import { cloudDataScope, enqueueApplicationChanges, loadCloudDataOwner } from "@/infrastructure/sync/syncState";
+import {
+  cloudDataScope,
+  enqueueApplicationChanges,
+  loadCloudConnection,
+  loadCloudDataOwner
+} from "@/infrastructure/sync/syncState";
 import {
   countResumeFields,
   dehydrateResumeLibrary,
@@ -17,6 +22,7 @@ import {
 } from "@/features/resumes/resumeLifecycle";
 
 export const JOBS_KEY = "offerflow.jobs";
+export const GUEST_JOBS_KEY = "offerflow.jobs.guest";
 export const SETTINGS_KEY = "offerflow.settings";
 export const PROFILE_KEY = "offerflow.profile";
 export const TAILORED_RESUMES_KEY = "offerflow.tailoredResumes";
@@ -299,6 +305,32 @@ export async function clearLocalProfileAndResumes(): Promise<void> {
   ]);
 }
 
+export async function getActiveJobsKey(): Promise<string> {
+  const connection = await loadCloudConnection();
+  if (connection?.user?.id) {
+    return `offerflow.jobs.${connection.user.id}`;
+  }
+  return GUEST_JOBS_KEY;
+}
+
+export async function clearUserJobs(userId: string): Promise<void> {
+  const key = `offerflow.jobs.${userId}`;
+  if (!hasChromeStorage()) {
+    localStorage.removeItem(key);
+    return;
+  }
+  await chrome.storage.local.remove([key]);
+}
+
+export async function clearGuestJobs(): Promise<void> {
+  if (!hasChromeStorage()) {
+    localStorage.removeItem(GUEST_JOBS_KEY);
+    localStorage.removeItem(JOBS_KEY);
+    return;
+  }
+  await chrome.storage.local.remove([GUEST_JOBS_KEY, JOBS_KEY]);
+}
+
 export async function loadJobs(): Promise<JobApplication[]> {
   const normalize = (jobs: JobApplication[]) => jobs.map((job) => ({
     ...job,
@@ -309,23 +341,43 @@ export async function loadJobs(): Promise<JobApplication[]> {
       job.rawExcerpt
     )
   }));
+  const connection = await loadCloudConnection();
+  if (!connection?.user?.id) {
+    if (!hasChromeStorage()) {
+      localStorage.removeItem(GUEST_JOBS_KEY);
+      localStorage.removeItem(JOBS_KEY);
+      return [];
+    }
+    const result = await chrome.storage.local.get([GUEST_JOBS_KEY, JOBS_KEY]);
+    if (result[GUEST_JOBS_KEY] || result[JOBS_KEY]) {
+      await chrome.storage.local.remove([GUEST_JOBS_KEY, JOBS_KEY]);
+    }
+    return [];
+  }
+
+  const activeKey = `offerflow.jobs.${connection.user.id}`;
   if (!hasChromeStorage()) {
-    const value = localStorage.getItem(JOBS_KEY);
+    const value = localStorage.getItem(activeKey);
     return normalize(value ? JSON.parse(value) : []);
   }
-  const result = await chrome.storage.local.get(JOBS_KEY);
-  return normalize((result[JOBS_KEY] as JobApplication[] | undefined) ?? []);
+  const result = await chrome.storage.local.get([activeKey, JOBS_KEY]);
+  const jobs = result[activeKey] as JobApplication[] | undefined;
+  if (result[JOBS_KEY]) {
+    await chrome.storage.local.remove([JOBS_KEY]);
+  }
+  return normalize(jobs ?? []);
 }
 
 export async function saveJobs(
   jobs: JobApplication[],
   options: { origin?: "local" | "cloud" } = {}
 ): Promise<void> {
+  const activeKey = await getActiveJobsKey();
   const previous = options.origin === "cloud" ? [] : await loadJobs();
   if (!hasChromeStorage()) {
-    localStorage.setItem(JOBS_KEY, JSON.stringify(jobs));
+    localStorage.setItem(activeKey, JSON.stringify(jobs));
   } else {
-    await chrome.storage.local.set({ [JOBS_KEY]: jobs });
+    await chrome.storage.local.set({ [activeKey]: jobs });
   }
   if (options.origin !== "cloud") {
     await enqueueApplicationChanges(previous, jobs);
@@ -376,12 +428,19 @@ export async function saveSettings(settings: OfferFlowSettings): Promise<void> {
 }
 
 export async function loadProfile(): Promise<PersonalProfile> {
+  const sanitize = (raw?: PersonalProfile) => {
+    const profile = stripResumeDiagnosticFields({ ...EMPTY_PROFILE, ...raw });
+    if (isStarterProfile(profile)) {
+      return { ...EMPTY_PROFILE };
+    }
+    return profile;
+  };
   if (!hasChromeStorage()) {
     const value = localStorage.getItem(PROFILE_KEY);
-    return value ? stripResumeDiagnosticFields({ ...EMPTY_PROFILE, ...JSON.parse(value) }) : { ...EMPTY_PROFILE };
+    return sanitize(value ? JSON.parse(value) : undefined);
   }
   const result = await chrome.storage.local.get(PROFILE_KEY);
-  return stripResumeDiagnosticFields({ ...EMPTY_PROFILE, ...(result[PROFILE_KEY] as PersonalProfile | undefined) });
+  return sanitize(result[PROFILE_KEY] as PersonalProfile | undefined);
 }
 
 export async function saveProfile(profile: PersonalProfile): Promise<void> {

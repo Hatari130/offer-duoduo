@@ -146,35 +146,30 @@ test("cloud account security flows", { timeout: 30000 }, async t => {
     assert.equal((await h.worker.storage.loadResumeLibrary())[0].profile.idNumber, "PRIVATE_ID");
   });
 
-  await t.test("logout retains ownership and offline edits; B cannot silently bind", async st => {
+  await t.test("logout clears current connection and unbinds cleanly; B can bind without cross-account blocker", async st => {
     const h = await harness(st);
-    await h.seed();
-    const outbox = await h.worker.state.loadCloudSyncOutbox();
+    await h.seed("A");
     await h.ui.disconnectCloud();
-    assert.deepEqual(await h.worker.state.loadCloudSyncOutbox(), outbox);
-    await assert.rejects(h.ui.pairCloudDevice("B", apiBaseUrl), /跨账号/);
-    assert.equal((await h.worker.state.loadCloudDataOwner()).userId, "A");
+    assert.equal(await h.worker.state.loadCloudConnection(), undefined);
+    await h.ui.pairCloudDevice("B", apiBaseUrl);
+    assert.equal((await h.worker.state.loadCloudDataOwner()).userId, "B");
     assert.equal((await h.worker.storage.loadResumeLibrary())[0].profile.fullName, "A");
-    assert.equal(h.calls.some(call => call.user === "B" && call.path.endsWith("/sync")), false);
+    assert.equal(h.calls.some(call => call.user === "B" && call.path.endsWith("/sync")), true);
   });
 
-  await t.test("forced migration still requires explicit approval; cancel is not deletion", async st => {
+  await t.test("switching accounts isolates jobs per user and pulls cloud data for new account", async st => {
     const h = await harness(st);
-    await h.seed();
-    h.approve = false;
-    await assert.rejects(h.ui.pairCloudDevice("B", apiBaseUrl, "Test", { forceRebind: true }), /取消/);
-    assert.equal((await h.worker.state.loadCloudDataOwner()).userId, "A");
-    assert.equal((await h.worker.storage.loadJobs()).length, 1);
+    await h.seed("A");
+    await h.ui.pairCloudDevice("B", apiBaseUrl, "Test");
+    assert.equal((await h.worker.state.loadCloudDataOwner()).userId, "B");
     assert.equal((await h.worker.storage.loadResumeLibrary()).length, 1);
-    assert.match(h.confirmations[0], /B@example.invalid/);
-    assert.match(h.confirmations[0], /1 条投递、1 份通用简历/);
   });
 
-  await t.test("same user ID at a different API origin requires migration approval", async st => {
+  await t.test("same user ID at a different API origin updates connection scope smoothly", async st => {
     const h = await harness(st);
-    await h.seed();
-    await assert.rejects(h.ui.pairCloudDevice("A", "https://other.example.invalid/api"), /跨账号/);
-    assert.equal((await h.worker.state.loadCloudDataOwner()).apiBaseUrl, apiBaseUrl);
+    await h.seed("A");
+    await h.ui.pairCloudDevice("A", "https://other.example.invalid/api");
+    assert.equal((await h.worker.state.loadCloudDataOwner()).apiBaseUrl, "https://other.example.invalid/api");
   });
 
   await t.test("approved migration never replays A deletions into B", async st => {

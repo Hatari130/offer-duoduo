@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { CheckCircle2, LoaderCircle, ShieldCheck } from "lucide-react";
 import { api } from "../app/api";
+import { useAuth } from "../app/AuthContext";
 import { Logo } from "../components/Logo";
 
 function redirectWithCode(redirectUri: string, state: string, code: string): void {
@@ -15,8 +16,11 @@ function redirectWithCode(redirectUri: string, state: string, code: string): voi
 
 export function ExtensionConnectPage() {
   const [error, setError] = useState("");
+  const { status } = useAuth();
 
   useEffect(() => {
+    if (status !== "authenticated") return;
+
     const params = new URLSearchParams(window.location.search);
     const redirectUri = params.get("redirect_uri");
     const state = params.get("state");
@@ -37,7 +41,7 @@ export function ExtensionConnectPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [status]);
 
   return (
     <main className="extension-connect-page">

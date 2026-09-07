@@ -1,4 +1,4 @@
-﻿import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRef } from "react";
 import {
   AlertTriangle,
@@ -50,6 +50,7 @@ import {
   saveProfile,
   saveSettings
 } from "@/infrastructure/storage/storage";
+import { CLOUD_CONNECTION_KEY } from "@/infrastructure/sync/syncState";
 import {
   DEFAULT_OPPORTUNITY_FEED_URL,
   loadOpportunityCache,
@@ -218,8 +219,14 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
       areaName: string
     ) => {
       if (areaName !== "local") return;
-      if (changes[JOBS_KEY]?.newValue) {
-        setJobs(changes[JOBS_KEY].newValue as JobApplication[]);
+      if (changes[CLOUD_CONNECTION_KEY]) {
+        void loadJobs().then(setJobs);
+      }
+      const hasJobChange = Object.keys(changes).some(
+        (key) => key === JOBS_KEY || key.startsWith("offerflow.jobs")
+      );
+      if (hasJobChange) {
+        void loadJobs().then(setJobs);
       }
       if (changes[PROFILE_KEY]?.newValue) {
         setProfile(changes[PROFILE_KEY].newValue as PersonalProfile);

@@ -15,7 +15,10 @@ import type {
   ResumeTemplateRecord,
   ResumeVersionRecord,
   SessionUser,
-  UpdateResumeTemplateRequest
+  UpdateResumeTemplateRequest,
+  AdminFeedbackItem,
+  AdminFeedbackListResponse,
+  ProductFeedbackStatus
 } from "@offerflow/contracts";
 import {
   isAvatarKey, resumeTemplateTombstone, sanitizeResumeTemplate,
@@ -46,6 +49,7 @@ import {
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
 import {
   StoreError,
+  type AdminFeedbackFilter,
   type EmailVerificationCodeInput,
   type EmailVerificationPurpose,
   type InterviewRecordInput,
@@ -122,8 +126,9 @@ interface StoredResumeTemplate {
 
 interface StoredProductFeedback extends ProductFeedbackInput {
   id: string;
-  status: "new" | "reviewing" | "planned" | "resolved" | "closed";
+  status: ProductFeedbackStatus;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface MemoryStoreOptions {
@@ -638,6 +643,84 @@ export class MemoryStore implements OfferFlowStore {
           conversationCount: conversations.filter((item) => item.userId === user.id).length,
           applicationCount: [...this.applications.values()].filter((item) => item.userId === user.id && !item.item.deletedAt).length
         }))
+    };
+  }
+
+  listAdminFeedback(filter: AdminFeedbackFilter): AdminFeedbackListResponse {
+    const all = [...this.productFeedback].sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt));
+
+    const counts = {
+      all: all.length,
+      new: all.filter((item) => item.status === "new").length,
+      reviewing: all.filter((item) => item.status === "reviewing").length,
+      planned: all.filter((item) => item.status === "planned").length,
+      resolved: all.filter((item) => item.status === "resolved").length,
+      closed: all.filter((item) => item.status === "closed").length
+    };
+
+    let filtered = all;
+    if (filter.status && filter.status !== "all") {
+      filtered = filtered.filter((item) => item.status === filter.status);
+    }
+    if (filter.category && filter.category !== "all") {
+      filtered = filtered.filter((item) => item.category === filter.category);
+    }
+    if (filter.keyword && filter.keyword.trim()) {
+      const q = filter.keyword.trim().toLowerCase();
+      filtered = filtered.filter((item) => {
+        const user = item.userId ? this.users.get(item.userId) : undefined;
+        return (
+          item.content.toLowerCase().includes(q) ||
+          Boolean(item.contact && item.contact.toLowerCase().includes(q)) ||
+          Boolean(item.pagePath && item.pagePath.toLowerCase().includes(q)) ||
+          Boolean(user && (user.email.toLowerCase().includes(q) || user.displayName.toLowerCase().includes(q)))
+        );
+      });
+    }
+
+    const total = filtered.length;
+    const paged = filtered.slice(filter.offset, filter.offset + filter.limit);
+
+    const items: AdminFeedbackItem[] = paged.map((item) => {
+      const user = item.userId ? this.users.get(item.userId) : undefined;
+      return {
+        id: item.id,
+        userId: item.userId,
+        userEmail: user?.email,
+        userDisplayName: user?.displayName,
+        category: item.category,
+        content: item.content,
+        contact: item.contact,
+        pagePath: item.pagePath,
+        status: item.status,
+        createdAt: item.createdAt,
+        updatedAt: item.updatedAt
+      };
+    });
+
+    return { items, total, counts };
+  }
+
+  updateAdminFeedbackStatus(id: string, status: ProductFeedbackStatus): AdminFeedbackItem | null {
+    const item = this.productFeedback.find((entry) => entry.id === id);
+    if (!item) return null;
+    item.status = status;
+    item.updatedAt = new Date().toISOString();
+    this.persist();
+
+    const user = item.userId ? this.users.get(item.userId) : undefined;
+    return {
+      id: item.id,
+      userId: item.userId,
+      userEmail: user?.email,
+      userDisplayName: user?.displayName,
+      category: item.category,
+      content: item.content,
+      contact: item.contact,
+      pagePath: item.pagePath,
+      status: item.status,
+      createdAt: item.createdAt,
+      updatedAt: item.updatedAt
     };
   }
 

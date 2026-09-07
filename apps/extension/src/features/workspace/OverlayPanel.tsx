@@ -314,7 +314,9 @@ export function OverlayPanel({
   );
 
   const isConnected = !!connection?.user;
-  const userName = connection?.user?.displayName || (profile.fullName && profile.fullName !== "林知夏" ? profile.fullName : "");
+  const userName = isConnected
+    ? (connection?.user?.displayName || (profile.fullName && profile.fullName !== "林知夏" ? profile.fullName : ""))
+    : "";
   const spaceTitle = tab === "profile"
     ? (userName ? `${userName} 的个人资料库` : "个人资料库")
     : (userName ? `${userName} 的 2026 秋招` : "2026 秋招");

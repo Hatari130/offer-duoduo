@@ -10,7 +10,9 @@ import type { JobApplication, TailorJobContext } from "@offerflow/domain";
 import { cloudResumeToPersonalProfile, toCloudResumeAssets, toCloudResumeProfile } from "@offerflow/domain";
 import {
   EMPTY_PROFILE,
+  clearGuestJobs,
   clearLocalProfileAndResumes,
+  clearUserJobs,
   isStarterProfile,
   loadJobs,
   loadPendingDeletedResumeIds,
@@ -101,10 +103,9 @@ export async function handleCloudSyncCommand(request: CloudSyncCommand): Promise
   if (!cloudAuthority) throw new Error("云端操作只能由插件后台执行");
   if (!request || typeof request.action !== "string") throw new Error("无效的云端操作");
   if (request.action === "sync") return runCloudSync();
+  if (request.action === "disconnect") return performDisconnect();
   return serialized(async () => {
     switch (request.action) {
-      case "disconnect":
-        return performDisconnect();
       case "clearLocal":
         return performClearLocal();
       case "resync":
@@ -151,7 +152,14 @@ async function requireBoundConnection(): Promise<CloudConnection | undefined> {
   if (!connection) return undefined;
   const owner = await loadCloudDataOwner();
   if (!owner || cloudDataScope(owner) !== connectionScope(connection)) {
-    throw new Error("本地资料与当前账号归属不一致，已阻止跨账号同步，请重新登录确认");
+    const nextOwner: CloudDataOwner = {
+      userId: connection.user.id,
+      apiBaseUrl: connection.apiBaseUrl,
+      consentVersion: CLOUD_RESUME_CONSENT_VERSION,
+      consentGrantedAt: new Date().toISOString()
+    };
+    await saveCloudDataOwner(nextOwner);
+    return connection;
   }
   if (owner.consentVersion !== CLOUD_RESUME_CONSENT_VERSION) {
     throw new Error("请重新登录并确认投递与简历的云端同步范围");
@@ -218,7 +226,19 @@ export function cloudErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof TypeError && /fetch/i.test(error.message)) {
     return "无法连接 JobKoI 官网，请检查网络后重新登录并同步";
   }
-  return error instanceof Error ? error.message : fallback;
+  if (error instanceof Error) {
+    const msg = error.message;
+    if (
+      msg.includes("did not approve access") ||
+      msg.includes("User cancelled") ||
+      msg.includes("canceled") ||
+      msg.includes("cancelled")
+    ) {
+      return "已取消登录或授权窗口已关闭";
+    }
+    return msg;
+  }
+  return fallback;
 }
 
 let activeSync: Promise<CloudSyncOverview> | undefined;
@@ -266,11 +286,11 @@ export async function pairCloudDevice(
   code: string,
   apiBaseUrl = DEFAULT_CLOUD_API_URL,
   deviceName = defaultDeviceName(),
-  options: { allowInitialUpload?: boolean; forceRebind?: boolean } = {}
+  options: { allowInitialUpload?: boolean; forceRebind?: boolean; skipConsent?: boolean } = {}
 ): Promise<CloudSyncOverview> {
   const preview = await command<PairPreview>({ action: "preparePair", code, apiBaseUrl, deviceName, forceRebind: options.forceRebind });
   try {
-    if (preview.requiresConsent) {
+    if (preview.requiresConsent && !options.skipConsent) {
       const action = preview.migration ? "迁移并同步" : "同步";
       const approved = typeof window !== "undefined" && window.confirm(
         `${action}至 ${preview.user.email}（${preview.apiBaseUrl}）？\n\n` +
@@ -313,17 +333,13 @@ async function prepareCloudPair(code: string, apiBaseUrl: string, deviceName: st
   const previousScope = owner ? cloudDataScope(owner) : previousConnection ? connectionScope(previousConnection) : undefined;
   const nextScope = cloudDataScope({ userId: session.user.id, apiBaseUrl: normalizedUrl });
   const migration = Boolean((owner || previousConnection) && previousScope !== nextScope);
-  if (migration && !forceRebind) {
-    await createApiClient({ baseUrl: normalizedUrl, getAccessToken: () => session.accessToken }).auth.logout().catch(() => undefined);
-    throw new Error("已阻止跨账号同步：本地投递、简历和网申档案仍属于原账号。请在设置中选择清空本地资料，或明确迁移投递与简历后再登录。");
-  }
   const pendingId = globalThis.crypto.randomUUID();
   const preview: PairPreview = {
     pendingId, user: session.user, apiBaseUrl: normalizedUrl,
     jobCount: localJobs.length,
     resumeCount: library.filter(resume => (resume.kind || "base") === "base").length,
     migration,
-    requiresConsent: migration || owner?.consentVersion !== CLOUD_RESUME_CONSENT_VERSION
+    requiresConsent: Boolean(owner?.consentVersion !== CLOUD_RESUME_CONSENT_VERSION)
   };
   const connection: CloudConnection = {
     apiBaseUrl: normalizedUrl,
@@ -369,7 +385,6 @@ async function finishCloudPair(pendingId: string): Promise<CloudSyncOverview> {
   await saveCloudDataOwner(nextOwner);
   await saveCloudConnection(pending.connection);
   pendingPairs.delete(pendingId);
-  if (!sameScope) await enqueueApplicationChanges([], await loadJobs());
   return performBatchedCloudSync();
 }
 
@@ -389,10 +404,36 @@ export async function loginAndSync(
   authUrl.searchParams.set("redirect_uri", redirectUri);
   authUrl.searchParams.set("state", state);
 
-  const callbackUrl = await chrome.identity.launchWebAuthFlow({
-    url: authUrl.toString(),
-    interactive: true
-  });
+  let callbackUrl: string | undefined;
+  try {
+    // 优先尝试无感静默登录：如果用户在当前浏览器中已经登录过 Web 端，直接利用已有会话静默完成，不弹任何新窗口！
+    callbackUrl = await chrome.identity.launchWebAuthFlow({
+      url: authUrl.toString(),
+      interactive: false
+    });
+  } catch {
+    // 网页端未登录或需要交互时，才打开授权窗口
+    try {
+      callbackUrl = await chrome.identity.launchWebAuthFlow({
+        url: authUrl.toString(),
+        interactive: true
+      });
+    } catch (interactiveError) {
+      const msg =
+        interactiveError instanceof Error
+          ? interactiveError.message
+          : String(interactiveError);
+      if (
+        msg.includes("did not approve access") ||
+        msg.includes("User cancelled") ||
+        msg.includes("canceled") ||
+        msg.includes("cancelled")
+      ) {
+        throw new Error("已取消登录或授权窗口已关闭");
+      }
+      throw interactiveError;
+    }
+  }
   if (!callbackUrl) throw new Error("登录窗口没有返回授权结果");
 
   const callback = new URL(callbackUrl);
@@ -401,11 +442,19 @@ export async function loginAndSync(
   }
   const code = callback.searchParams.get("code");
   if (!code) throw new Error("登录没有完成，请重新尝试");
-  return pairCloudDevice(code, apiBaseUrl, deviceName, options);
+  return pairCloudDevice(code, apiBaseUrl, deviceName, { ...options, skipConsent: true });
 }
 
 export async function disconnectCloud(): Promise<void> {
-  return command<void>({ action: "disconnect" });
+  if (cloudAuthority) return performDisconnect();
+  try {
+    await Promise.race([
+      command<void>({ action: "disconnect" }),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error("disconnect timeout")), 1200))
+    ]);
+  } catch {
+    await performDisconnect();
+  }
 }
 
 async function performDisconnect(): Promise<void> {
@@ -416,12 +465,20 @@ async function performDisconnect(): Promise<void> {
       getAccessToken: () => connection.accessToken
     });
     await client.auth.logout().catch(() => undefined);
+    await clearUserJobs(connection.user.id);
   }
   await clearCloudConnection();
+  await clearCloudSyncStorage();
+  await clearCloudDataOwner();
 }
 
 export async function deleteLocalApplicationsAndForgetOwner(): Promise<void> {
-  return command<void>({ action: "clearLocal" });
+  if (cloudAuthority) return performClearLocal();
+  try {
+    return await command<void>({ action: "clearLocal" });
+  } catch {
+    await performClearLocal();
+  }
 }
 
 async function performClearLocal(): Promise<void> {
@@ -430,6 +487,7 @@ async function performClearLocal(): Promise<void> {
   await clearLocalProfileAndResumes();
   await clearCloudSyncStorage();
   await clearCloudDataOwner();
+  await clearGuestJobs();
 }
 
 export async function deleteCloudResumeTemplate(templateId: string): Promise<void> {

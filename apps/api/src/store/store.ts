@@ -10,9 +10,20 @@ import type {
   ResumeTemplateRecord,
   ResumeVersionRecord,
   SessionUser,
-  UpdateResumeTemplateRequest
+  UpdateResumeTemplateRequest,
+  AdminFeedbackItem,
+  AdminFeedbackListResponse,
+  ProductFeedbackStatus
 } from "@offerflow/contracts";
 import type { ProductFeedbackCategory } from "@offerflow/contracts";
+
+export interface AdminFeedbackFilter {
+  status?: string;
+  category?: string;
+  keyword?: string;
+  limit: number;
+  offset: number;
+}
 import type {
   ChatAttachment,
   ChatContextReference,
@@ -104,6 +115,8 @@ export interface OfferFlowStore {
   deleteUser(userId: string): Awaitable<boolean>;
   createProductFeedback(input: ProductFeedbackInput): Awaitable<{ id: string; createdAt: string }>;
   getAdminDashboard(rangeDays: AdminDashboardRangeDays): Awaitable<AdminDashboardResponse>;
+  listAdminFeedback(filter: AdminFeedbackFilter): Awaitable<AdminFeedbackListResponse>;
+  updateAdminFeedbackStatus(id: string, status: ProductFeedbackStatus): Awaitable<AdminFeedbackItem | null>;
 
   reserveEmailVerificationCode(input: EmailVerificationCodeInput): Awaitable<{ id: string }>;
   markEmailVerificationCodeSent(id: string, sentAt: string): Awaitable<void>;

@@ -14,7 +14,10 @@ import type {
   ResumeTemplateRecord,
   ResumeVersionRecord,
   SessionUser,
-  UpdateResumeTemplateRequest
+  UpdateResumeTemplateRequest,
+  AdminFeedbackItem,
+  AdminFeedbackListResponse,
+  ProductFeedbackStatus
 } from "@offerflow/contracts";
 import {
   isAvatarKey, resumeTemplateTombstone, sanitizeResumeTemplate,
@@ -44,6 +47,7 @@ import {
 import { hashPassword, verifyPassword } from "../auth/crypto.ts";
 import {
   StoreError,
+  type AdminFeedbackFilter,
   type EmailVerificationCodeInput,
   type EmailVerificationPurpose,
   type InterviewRecordInput,
@@ -317,6 +321,119 @@ export class PostgresStore implements OfferFlowStore {
         conversationCount: Number(row.conversation_count),
         applicationCount: Number(row.application_count)
       }))
+    };
+  }
+
+  async listAdminFeedback(filter: AdminFeedbackFilter): Promise<AdminFeedbackListResponse> {
+    const countsResult = await this.pool.query(
+      `SELECT
+         COUNT(*)::int AS all_count,
+         COUNT(*) FILTER (WHERE status = 'new')::int AS new_count,
+         COUNT(*) FILTER (WHERE status = 'reviewing')::int AS reviewing_count,
+         COUNT(*) FILTER (WHERE status = 'planned')::int AS planned_count,
+         COUNT(*) FILTER (WHERE status = 'resolved')::int AS resolved_count,
+         COUNT(*) FILTER (WHERE status = 'closed')::int AS closed_count
+       FROM product_feedback`
+    );
+    const countRow = countsResult.rows[0] ?? {};
+    const counts = {
+      all: Number(countRow.all_count ?? 0),
+      new: Number(countRow.new_count ?? 0),
+      reviewing: Number(countRow.reviewing_count ?? 0),
+      planned: Number(countRow.planned_count ?? 0),
+      resolved: Number(countRow.resolved_count ?? 0),
+      closed: Number(countRow.closed_count ?? 0)
+    };
+
+    const conditions: string[] = [];
+    const values: unknown[] = [];
+
+    if (filter.status && filter.status !== "all") {
+      values.push(filter.status);
+      conditions.push(`pf.status = $${values.length}`);
+    }
+    if (filter.category && filter.category !== "all") {
+      values.push(filter.category);
+      conditions.push(`pf.category = $${values.length}`);
+    }
+    if (filter.keyword && filter.keyword.trim()) {
+      values.push(`%${filter.keyword.trim()}%`);
+      const idx = values.length;
+      conditions.push(`(pf.content ILIKE $${idx} OR pf.contact ILIKE $${idx} OR pf.page_path ILIKE $${idx} OR u.email ILIKE $${idx} OR u.display_name ILIKE $${idx})`);
+    }
+
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(" AND ")}` : "";
+
+    const totalQuery = `SELECT COUNT(*)::int AS total FROM product_feedback pf LEFT JOIN users u ON u.id = pf.user_id ${whereClause}`;
+    const totalResult = await this.pool.query(totalQuery, values);
+    const total = Number(totalResult.rows[0]?.total ?? 0);
+
+    const itemsQuery = `
+      SELECT
+        pf.id,
+        pf.user_id,
+        pf.category,
+        pf.content,
+        pf.contact,
+        pf.page_path,
+        pf.status,
+        pf.created_at,
+        u.email AS user_email,
+        u.display_name AS user_display_name
+      FROM product_feedback pf
+      LEFT JOIN users u ON u.id = pf.user_id
+      ${whereClause}
+      ORDER BY pf.created_at DESC
+      LIMIT $${values.length + 1} OFFSET $${values.length + 2}
+    `;
+    const itemsResult = await this.pool.query(itemsQuery, [...values, filter.limit, filter.offset]);
+
+    const items: AdminFeedbackItem[] = itemsResult.rows.map((row) => ({
+      id: String(row.id),
+      userId: row.user_id ? String(row.user_id) : undefined,
+      userEmail: row.user_email ? String(row.user_email) : undefined,
+      userDisplayName: row.user_display_name ? String(row.user_display_name) : undefined,
+      category: row.category,
+      content: String(row.content),
+      contact: row.contact ? String(row.contact) : undefined,
+      pagePath: row.page_path ? String(row.page_path) : undefined,
+      status: row.status,
+      createdAt: new Date(row.created_at).toISOString()
+    }));
+
+    return { items, total, counts };
+  }
+
+  async updateAdminFeedbackStatus(id: string, status: ProductFeedbackStatus): Promise<AdminFeedbackItem | null> {
+    const result = await this.pool.query(
+      `UPDATE product_feedback
+       SET status = $1
+       WHERE id = $2
+       RETURNING id, user_id, category, content, contact, page_path, status, created_at`,
+      [status, id]
+    );
+    if (result.rows.length === 0) return null;
+    const row = result.rows[0];
+    let userEmail: string | undefined;
+    let userDisplayName: string | undefined;
+    if (row.user_id) {
+      const userResult = await this.pool.query("SELECT email, display_name FROM users WHERE id = $1", [row.user_id]);
+      if (userResult.rows.length > 0) {
+        userEmail = userResult.rows[0].email;
+        userDisplayName = userResult.rows[0].display_name;
+      }
+    }
+    return {
+      id: String(row.id),
+      userId: row.user_id ? String(row.user_id) : undefined,
+      userEmail,
+      userDisplayName,
+      category: row.category,
+      content: String(row.content),
+      contact: row.contact ? String(row.contact) : undefined,
+      pagePath: row.page_path ? String(row.page_path) : undefined,
+      status: row.status,
+      createdAt: new Date(row.created_at).toISOString()
     };
   }
 

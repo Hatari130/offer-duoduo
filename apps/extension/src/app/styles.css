@@ -933,24 +933,105 @@ button {
   animation: spin 0.8s linear infinite;
 }
 
-.opportunity-search {
-  height: 40px;
+/* Web Workspace Guidance Banner */
+.opportunity-web-banner {
   display: flex;
   align-items: center;
-  gap: 9px;
-  padding: 0 12px;
-  background: #fafbf9;
-  border: 1px solid var(--overlay-line);
-  border-radius: 11px;
+  gap: 10px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  background: linear-gradient(135deg, rgba(238, 242, 255, 0.95), rgba(243, 232, 255, 0.85));
+  border: 1px solid rgba(199, 210, 254, 0.8);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
+.opportunity-web-banner:hover {
+  background: linear-gradient(135deg, rgba(224, 231, 255, 1), rgba(233, 213, 255, 0.95));
+  border-color: rgba(165, 180, 252, 1);
+  box-shadow: 0 4px 14px -3px rgba(79, 70, 229, 0.18);
+  transform: translateY(-1px);
+}
+
+.opportunity-web-banner-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  color: #4f46e5;
+  border-radius: 8px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 4px rgba(79, 70, 229, 0.08);
+}
+
+.opportunity-web-banner-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.opportunity-web-banner-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.opportunity-web-banner-title strong {
+  font-size: 12px;
+  font-weight: 650;
+  color: #312e81;
+}
+
+.opportunity-web-banner-badge {
+  font-size: 10px;
+  font-weight: 600;
+  color: #4338ca;
+  background: #e0e7ff;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.opportunity-web-banner-info p {
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #4b5563;
+  line-height: 1.3;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opportunity-web-banner-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #4f46e5;
+  flex-shrink: 0;
+  padding: 4px 8px;
+  background: #ffffff;
+  border-radius: 6px;
+  border: 1px solid rgba(199, 210, 254, 0.8);
+}
+
+/* Discovery Controls (Search & Chips) */
 .opportunity-discovery-controls {
-  position: sticky;
-  z-index: 20;
-  top: 64px;
-  margin: -18px -18px 0;
-  padding: 8px 18px 10px;
-  background: var(--of-canvas);
+  margin-bottom: 12px;
+}
+
+.opportunity-search {
+  height: 38px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 11px;
+  background: #ffffff;
+  border: 1px solid var(--overlay-line);
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
 .opportunity-search svg {
@@ -966,17 +1047,71 @@ button {
   border: 0;
   outline: none;
   font-size: 12px;
+  color: var(--overlay-text);
 }
 
+.opportunity-search input::placeholder {
+  color: #9ca3af;
+}
+
+.opportunity-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.opportunity-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  color: var(--of-text-subtle, #64748b);
+  background: #ffffff;
+  border: 1px solid var(--overlay-line, #e2e8f0);
+  border-radius: 999px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+}
+
+.opportunity-chip:hover {
+  color: var(--overlay-text, #0f172a);
+  border-color: #cbd5e1;
+  background: #f8fafc;
+}
+
+.opportunity-chip.active {
+  color: #4338ca;
+  background: #eef2ff;
+  border-color: #c7d2fe;
+  font-weight: 600;
+}
+
+.opportunity-chip.active.is-urgent {
+  color: #b91c1c;
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.opportunity-chip small {
+  font-size: 10px;
+  opacity: 0.75;
+}
+
+/* Error banner */
 .opportunity-error {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 4px 10px;
-  margin: 8px 0;
-  padding: 11px 12px;
-  color: #6b322a;
-  background: #fff7f5;
-  border: 1px solid #f0d6d0;
+  margin: 8px 0 12px;
+  padding: 10px 12px;
+  color: #991b1b;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   border-radius: 10px;
 }
 
@@ -987,7 +1122,7 @@ button {
 .opportunity-error span {
   grid-column: 1;
   overflow: hidden;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
@@ -996,179 +1131,204 @@ button {
   grid-column: 2;
   grid-row: 1 / span 2;
   padding: 0;
-  color: #8e4136;
+  color: #b91c1c;
   background: transparent;
   border: 0;
-  font-size: 12px;
+  font-size: 11.5px;
+  font-weight: 600;
   cursor: pointer;
 }
 
+/* Compact Opportunity List & Cards */
 .opportunity-list {
-  border-top: 1px solid var(--overlay-line);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-top: 0;
 }
 
 .opportunity-card {
   position: relative;
-  padding: 15px 2px;
-  border-bottom: 1px solid var(--overlay-line);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 10px 12px;
+  background: #ffffff;
+  border: 1px solid var(--overlay-line);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
 }
 
 .opportunity-card::before {
-  position: absolute;
-  top: 17px;
-  bottom: 17px;
-  left: -8px;
-  width: 2px;
-  background: #c7cbc8;
-  border-radius: 2px;
-  content: "";
+  display: none !important;
 }
 
-.opportunity-card--open::before,
-.opportunity-card--ongoing::before {
-  background: #4d7c61;
-}
-
-.opportunity-card--closing::before {
-  background: #c65f4d;
-}
-
-.opportunity-card--upcoming::before {
-  background: #5e7baa;
+.opportunity-card:hover {
+  border-color: #a5b4fc;
+  box-shadow: 0 4px 14px -3px rgba(67, 56, 202, 0.12);
+  transform: translateY(-1px);
 }
 
 .opportunity-card-topline {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-}
-
-.opportunity-card-topline strong,
-.opportunity-card-topline small {
-  display: block;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.opportunity-card-topline strong {
-  font-size: 12px;
-}
-
-.opportunity-card-topline small {
-  margin-top: 3px;
-  color: var(--overlay-muted);
-  font-size: 12px;
-}
-
-.opportunity-card-topline em {
-  padding: 5px 7px;
-  color: #59605b;
-  background: #f2f4f2;
-  border-radius: 999px;
-  font-size: 12px;
-  font-style: normal;
-  white-space: nowrap;
-}
-
-.opportunity-card--closing .opportunity-card-topline em {
-  color: #9d4135;
-  background: #fff1ee;
-}
-
-.opportunity-card h2 {
-  display: -webkit-box;
-  margin: 9px 0 0;
-  overflow: hidden;
-  color: #4e5651;
-  font-size: 10px;
-  font-weight: 600;
-  line-height: 1.45;
-  letter-spacing: -0.005em;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-}
-
-.opportunity-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-top: 9px;
-}
-
-.opportunity-tags span {
-  padding: 4px 7px;
-  color: #626863;
-  background: #f5f6f4;
-  border-radius: 5px;
-  font-size: 12px;
-}
-
-.opportunity-card-meta {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
-  margin-top: 11px;
-  color: var(--overlay-muted);
+  gap: 8px;
 }
 
-.opportunity-card-meta > span {
-  display: inline-flex;
+.opportunity-card-company-wrap {
+  display: flex;
   align-items: center;
-  gap: 5px;
-  font-size: 12px;
+  gap: 6px;
+  min-width: 0;
 }
 
-.opportunity-card-meta small {
-  overflow: hidden;
-  font-size: 12px;
+.opportunity-card-company {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--overlay-text);
   white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
 }
 
-.opportunity-card-actions {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 7px;
-  margin-top: 11px;
+.opportunity-card-batch {
+  font-size: 10px;
+  color: #475569;
+  background: #f1f5f9;
+  padding: 1px 5px;
+  border-radius: 4px;
+  flex-shrink: 0;
 }
 
-.opportunity-card-actions button {
-  min-height: 30px;
+.opportunity-status-pill {
   display: inline-flex;
   align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  font-weight: 500;
+  padding: 2px 7px;
+  border-radius: 999px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  color: #64748b;
+  background: #f1f5f9;
+}
+
+.opportunity-status-pill--closing {
+  color: #c2410c;
+  background: #fff7ed;
+  border: 1px solid #ffedd5;
+}
+
+.opportunity-status-pill--open,
+.opportunity-status-pill--ongoing {
+  color: #047857;
+  background: #ecfdf5;
+  border: 1px solid #d1fae5;
+}
+
+.opportunity-status-pill--upcoming {
+  color: #1d4ed8;
+  background: #eff6ff;
+  border: 1px solid #dbeafe;
+}
+
+.opportunity-status-pill--closed {
+  color: #94a3b8;
+  background: #f8fafc;
+}
+
+.opportunity-card-title {
+  margin: 0;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #475569;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.opportunity-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 1px;
+}
+
+.opportunity-card-meta-left {
+  display: flex;
+  align-items: center;
   gap: 5px;
-  padding: 0 10px;
-  color: #555c57;
-  background: #fff;
-  border: 1px solid var(--overlay-line);
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: 650;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+
+.opportunity-card-date {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10.5px;
+  color: #64748b;
+}
+
+.opportunity-card-date.is-urgent {
+  color: #dc2626;
+  font-weight: 500;
+}
+
+.opportunity-card-tag {
+  font-size: 10px;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 1px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+
+.opportunity-card-action {
+  flex-shrink: 0;
+}
+
+.opportunity-apply-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 8px;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #4338ca;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 6px;
   cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.opportunity-card-actions button.primary {
-  color: #fff;
-  background: var(--overlay-text);
-  border-color: var(--overlay-text);
+.opportunity-apply-link:hover:not(:disabled) {
+  color: #ffffff;
+  background: #4f46e5;
+  border-color: #4f46e5;
 }
 
-.opportunity-card-actions button:disabled {
-  color: #9a9f9b;
-  background: #f4f5f3;
-  border-color: #eceeeb;
+.opportunity-apply-link:disabled {
+  color: #94a3b8;
+  background: #f1f5f9;
+  border-color: #e2e8f0;
   cursor: not-allowed;
 }
 
+/* Empty State */
 .opportunity-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 48px 18px 32px;
+  padding: 36px 18px 24px;
   text-align: center;
 }
 
@@ -1183,36 +1343,78 @@ button {
 }
 
 .opportunity-empty strong {
-  margin-top: 15px;
-  font-size: 12px;
+  margin-top: 14px;
+  font-size: 13px;
 }
 
 .opportunity-empty p {
-  max-width: 250px;
-  margin: 7px 0 0;
+  max-width: 260px;
+  margin: 6px 0 0;
   color: var(--overlay-muted);
-  font-size: 12px;
-  line-height: 1.6;
+  font-size: 11.5px;
+  line-height: 1.5;
 }
 
-.opportunity-empty button {
+.opportunity-empty-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.opportunity-empty-actions button {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  margin-top: 15px;
-  padding: 8px 11px;
-  color: #fff;
-  background: var(--overlay-text);
-  border: 0;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #475569;
+  background: #ffffff;
+  border: 1px solid var(--overlay-line);
   border-radius: 8px;
-  font-size: 12px;
   cursor: pointer;
 }
 
+.opportunity-empty-actions button.primary {
+  color: #ffffff;
+  background: #4f46e5;
+  border-color: #4f46e5;
+}
+
+/* Footnote & Web Guide */
 .opportunity-footnote {
-  padding: 14px 0 4px;
-  color: #a0a4a1;
-  font-size: 12px;
+  padding: 16px 0 4px;
+  text-align: center;
+}
+
+.opportunity-footer-web-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #4338ca;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-bottom: 8px;
+}
+
+.opportunity-footer-web-link:hover {
+  color: #3730a3;
+  background: #e0e7ff;
+  border-color: #a5b4fc;
+}
+
+.opportunity-footer-synctime {
+  font-size: 10.5px;
+  color: #94a3b8;
   text-align: center;
 }
 
@@ -2249,7 +2451,7 @@ button {
 }
 
 .overlay-shell .overlay-scroll--opportunities {
-  padding-top: 144px;
+  /* Inherits standard padding 88px 22px 96px for clean flow */
 }
 
 .overlay-shell .overlay-capture-card {
@@ -2558,74 +2760,20 @@ button {
   font-size: 12px;
 }
 
-.overlay-shell .opportunity-search {
-  height: 46px;
-  padding: 0 14px;
-}
-
-.overlay-shell .opportunity-search input {
-  font-size: 12px;
-}
-
 .overlay-shell .opportunity-discovery-controls {
-  position: fixed;
-  z-index: 39;
-  top: var(--overlay-header-height);
-  right: 0;
-  left: 0;
-  margin: 0;
-  padding: 7px 22px 8px;
-  background: var(--of-canvas);
-  border-bottom: 1px solid var(--overlay-line);
+  position: static;
+  margin: 10px 0 12px;
+  padding: 0;
+  background: transparent;
+  border-bottom: 0;
 }
 
-.overlay-shell .opportunity-card-topline small,
-.overlay-shell .opportunity-tags span,
-.overlay-shell .opportunity-card-meta small,
-.overlay-shell .opportunity-footnote {
-  font-size: 12px;
-}
-
-.overlay-shell .opportunity-card {
-  padding: 18px 3px;
-}
-
-.overlay-shell .opportunity-card-topline {
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 8px;
-}
-
-.overlay-shell .opportunity-card-topline strong {
-  font-size: 14px;
-}
-
-.overlay-shell .opportunity-card-topline em {
-  padding: 6px 9px;
-  font-size: 12px;
-}
-
-.overlay-shell .opportunity-card h2 {
-  margin-top: 8px;
-  font-size: 10px;
-  line-height: 1.45;
-}
-
-.overlay-shell .opportunity-card-meta > span,
-.overlay-shell .opportunity-card-actions button,
-.overlay-shell .opportunity-empty p {
-  font-size: 12px;
-}
-
-.overlay-shell .opportunity-card-actions button {
-  min-height: 34px;
+.overlay-shell .opportunity-search {
+  height: 40px;
   padding: 0 12px;
 }
 
-.overlay-shell .opportunity-empty strong {
-  font-size: 14px;
-}
-
-.overlay-shell .opportunity-empty button {
+.overlay-shell .opportunity-search input {
   font-size: 12px;
 }
 

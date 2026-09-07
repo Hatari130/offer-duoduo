@@ -902,8 +902,7 @@ body {
   color: var(--of-brand-600);
 }
 
-.overlay-calendar-toolbar,
-.opportunity-discovery-controls {
+.overlay-calendar-toolbar {
   background: var(--of-canvas);
   border-color: var(--of-line);
 }

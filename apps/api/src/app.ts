@@ -46,7 +46,8 @@ import {
   isUpdateConversationRequest,
   isUpdateResumeTemplateRequest,
   isUpdateResumeVersionRequest,
-  isSyncResumeTemplatesRequest
+  isSyncResumeTemplatesRequest,
+  isUpdateAdminFeedbackStatusRequest
 } from "@offerflow/contracts";
 import type {
   ChatAttachment,
@@ -1089,16 +1090,51 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
-      if (method === "GET" && path === "/v1/admin/dashboard") {
+      async function requireAdminUser() {
         const user = await store.getUser(userId);
         if (!user || !config.adminEmails.includes(user.email.trim().toLowerCase())) {
           throw new HttpError(403, "ADMIN_FORBIDDEN", "当前账号没有运营后台访问权限");
         }
+        return user;
+      }
+
+      if (method === "GET" && path === "/v1/admin/dashboard") {
+        await requireAdminUser();
         const days = Number(url.searchParams.get("days") || "30");
         if (days !== 7 && days !== 30 && days !== 90) {
           throw new HttpError(400, "INVALID_ADMIN_RANGE", "统计周期仅支持 7、30 或 90 天");
         }
         success(response, await store.getAdminDashboard(days));
+        return;
+      }
+
+      if (method === "GET" && path === "/v1/admin/feedback") {
+        await requireAdminUser();
+        const status = url.searchParams.get("status") || undefined;
+        const category = url.searchParams.get("category") || undefined;
+        const keyword = url.searchParams.get("keyword") || undefined;
+        const rawLimit = Number(url.searchParams.get("limit") || "50");
+        const limit = Number.isFinite(rawLimit) ? Math.min(Math.max(1, rawLimit), 200) : 50;
+        const rawOffset = Number(url.searchParams.get("offset") || "0");
+        const offset = Number.isFinite(rawOffset) ? Math.max(0, rawOffset) : 0;
+        const result = await store.listAdminFeedback({ status, category, keyword, limit, offset });
+        success(response, result);
+        return;
+      }
+
+      const adminFeedbackStatusMatch = path.match(/^\/v1\/admin\/feedback\/([^/]+)\/status$/);
+      if (method === "PATCH" && adminFeedbackStatusMatch) {
+        await requireAdminUser();
+        const feedbackId = decodePath(adminFeedbackStatusMatch[1]);
+        const body = await readJson(request);
+        if (!isUpdateAdminFeedbackStatusRequest(body)) {
+          throw new HttpError(400, "INVALID_STATUS", "非法的反馈状态");
+        }
+        const updated = await store.updateAdminFeedbackStatus(feedbackId, body.status);
+        if (!updated) {
+          throw new HttpError(404, "FEEDBACK_NOT_FOUND", "反馈记录不存在");
+        }
+        success(response, { success: true, item: updated });
         return;
       }
 

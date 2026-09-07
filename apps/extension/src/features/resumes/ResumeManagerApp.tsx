@@ -786,9 +786,6 @@ function ResumeListItem({
   onActivate: () => void;
   onDelete: () => void;
 }) {
-  const health = parseHealth(resume);
-  const pageCount = resume.source?.pageCount;
-  const characterCount = resume.parse?.textLength || resume.source?.characterCount || 0;
   return (
     <div
       className={`resume-list-item ${selected ? "selected" : ""}`}
@@ -805,11 +802,7 @@ function ResumeListItem({
       <span className="resume-list-file"><FileText size={17} /></span>
       <span className="resume-list-copy">
         <span className="resume-list-title"><strong>{resumeName(resume)}</strong><i>{resumeKindLabel(resume.kind)} v{resume.versionNumber || 1}</i></span>
-        <small>{resume.sourceFileName || "本地资料"}</small>
-        <small>{fieldCount(resume)} 个字段 · {pageCount ? `${pageCount} 页` : "页数待确认"} · {characterCount ? `${characterCount} 字` : "字符待识别"}</small>
-        <small className={`resume-parse-health ${health.className}`}>
-          <i />{health.label}{resume.parse?.warnings.length ? ` · ${resume.parse.warnings.length} 项` : ""}
-        </small>
+        <small>{fieldCount(resume)} 个字段</small>
       </span>
       <span className="resume-list-actions">
         {active ? (

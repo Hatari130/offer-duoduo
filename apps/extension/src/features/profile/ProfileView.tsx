@@ -646,6 +646,22 @@ export default function ProfileView({
   useEffect(() => setDraft(profile), [profile]);
 
   useEffect(() => {
+    if (isStarterProfile(draft)) {
+      void (async () => {
+        const conn = await loadCloudConnection();
+        const cleanProfile: PersonalProfile = {
+          ...EMPTY_PROFILE,
+          fullName: conn?.user?.displayName || "",
+          email: conn?.user?.email || ""
+        };
+        setDraft(cleanProfile);
+        setResumeFileName("");
+        await onSave(cleanProfile);
+      })();
+    }
+  }, [draft, onSave]);
+
+  useEffect(() => {
     let cancelled = false;
     void (async () => {
       const [library, activeId] = await Promise.all([loadResumeLibrary(), loadActiveResumeId()]);
@@ -1092,26 +1108,6 @@ export default function ProfileView({
     }
   };
 
-  const resetToCleanProfile = async () => {
-    if (!window.confirm("确定清空演示数据并重置为当前登录账号信息？")) return;
-    setBusy(true);
-    try {
-      const conn = await loadCloudConnection();
-      const cleanProfile: PersonalProfile = {
-        ...EMPTY_PROFILE,
-        fullName: conn?.user?.displayName || "",
-        email: conn?.user?.email || ""
-      };
-      setDraft(cleanProfile);
-      setResumeFileName("");
-      await onSave(cleanProfile);
-      setStatus("已重置为纯净网申档案");
-    } catch (err) {
-      setStatus(err instanceof Error ? err.message : "重置失败");
-    } finally {
-      setBusy(false);
-    }
-  };
 
   const toggleSection = (id: ProfileSectionId) =>
     setOpenSections((current) => ({ ...current, [id]: !current[id] }));
@@ -1171,18 +1167,6 @@ export default function ProfileView({
         </div>
       )}
 
-      {isStarterProfile(draft) && (
-        <div className="profile-autofill-card" style={{ borderColor: "#fbbf24", background: "rgba(251, 191, 36, 0.08)" }}>
-          <span><Sparkles size={20} style={{ color: "#d97706" }} /></span>
-          <div>
-            <strong style={{ color: "#b45309" }}>检测到演示数据“林知夏”</strong>
-            <small>建议一键重置为您的真实账号纯净档案</small>
-          </div>
-          <button onClick={resetToCleanProfile} disabled={busy} style={{ background: "#d97706" }}>
-            一键重置
-          </button>
-        </div>
-      )}
 
       <div className="profile-autofill-card">
         <span><ScanLine size={20} /></span>
