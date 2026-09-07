@@ -1,7 +1,8 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
-import { WEB_SECURITY_HEADERS, WEB_CONTENT_SECURITY_POLICY, inspectWebSecurityHeaders, webSecurityPlugin } from "../../../deploy/web-security.mjs";
+import { CAMPUS_HIRING_FEED_ORIGIN, WEB_SECURITY_HEADERS, WEB_CONTENT_SECURITY_POLICY, inspectWebSecurityHeaders, webSecurityPlugin } from "../../../deploy/web-security.mjs";
+import { DEFAULT_CAMPUS_HIRING_FEED_URL } from "../../../packages/domain/src/campus-hiring.ts";
 
 test("Nginx and preview use the same complete HTML security headers", async () => {
   const nginx = await readFile(new URL("../../../deploy/nginx-security-headers.conf", import.meta.url), "utf8");
@@ -19,4 +20,11 @@ test("built HTML gets a CSP fallback without unsupported frame-ancestors meta", 
   assert.equal(meta.attrs.content.includes("frame-ancestors"), false);
   assert.match(WEB_CONTENT_SECURITY_POLICY, /frame-ancestors 'none'/);
   assert.match(WEB_CONTENT_SECURITY_POLICY, /worker-src 'self' blob:/);
+});
+
+test("CSP permits the configured public campus-hiring feed and no broader GitHub origin", () => {
+  const feed = new URL(DEFAULT_CAMPUS_HIRING_FEED_URL);
+  assert.equal(CAMPUS_HIRING_FEED_ORIGIN, feed.origin);
+  assert.match(WEB_CONTENT_SECURITY_POLICY, new RegExp(`connect-src 'self' ${feed.origin.replaceAll(".", "\\.")}(?:;| )`));
+  assert.equal(WEB_CONTENT_SECURITY_POLICY.includes("https://*.github.io"), false);
 });

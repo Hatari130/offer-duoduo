@@ -1,5 +1,6 @@
 /** Shared by build-time HTML, local preview, Nginx verification and tests. */
-export const WEB_CONTENT_SECURITY_POLICY = "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'";
+export const CAMPUS_HIRING_FEED_ORIGIN = "https://shouna12358-png.github.io";
+export const WEB_CONTENT_SECURITY_POLICY = `default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self' ${CAMPUS_HIRING_FEED_ORIGIN}; worker-src 'self' blob:; object-src 'none'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'`;
 
 export const WEB_SECURITY_HEADERS = {
   "Content-Security-Policy": WEB_CONTENT_SECURITY_POLICY,
