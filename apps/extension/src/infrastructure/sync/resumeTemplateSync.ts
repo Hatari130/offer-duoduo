@@ -1,4 +1,5 @@
 import type { ResumeTemplateRecord } from "@offerflow/contracts";
+import { mergeCloudResumeProfile } from "@offerflow/domain";
 import type { StoredResume } from "../storage/storage.ts";
 
 /** Merge the server's field-first resume library into extension storage.
@@ -13,7 +14,7 @@ export function mergeRemoteResumeTemplates(
   for (const remote of remoteTemplates) {
     const current = merged.get(remote.id);
     if (remote.deletedAt) {
-      if (!current || current.updatedAt.localeCompare(remote.updatedAt) <= 0) merged.delete(remote.id);
+      merged.delete(remote.id);
       continue;
     }
     if (current && current.updatedAt.localeCompare(remote.updatedAt) > 0) continue;
@@ -26,7 +27,7 @@ export function mergeRemoteResumeTemplates(
       versionNumber: current?.versionNumber || 1,
       lifecycleStatus: "active",
       sourceFileName: remote.sourceFileName || current?.sourceFileName,
-      profile: remote.profile,
+      profile: mergeCloudResumeProfile(current?.profile, remote.profile),
       assets: remoteDocument?.assets || current?.assets,
       portraitAssetId: remoteDocument?.portraitAssetId || current?.portraitAssetId,
       createdAt: remote.createdAt,

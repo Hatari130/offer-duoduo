@@ -7,7 +7,7 @@ import {
   type ResumeAsset
 } from "@/shared/types";
 import type { TailoredResumeBundle, TailoredResumeEntry } from "@/features/tailor/types";
-import { enqueueApplicationChanges } from "@/infrastructure/sync/syncState";
+import { cloudDataScope, enqueueApplicationChanges, loadCloudDataOwner } from "@/infrastructure/sync/syncState";
 import {
   countResumeFields,
   dehydrateResumeLibrary,
@@ -25,6 +25,7 @@ export const BASE_PROFILE_KEY = "offerflow.baseProfile";
 export const RESUMES_KEY = "offerflow.resumes";
 export const ACTIVE_RESUME_KEY = "offerflow.activeResumeId";
 export const RESUME_LIBRARY_UI_KEY = "offerflow.resumeLibraryUi";
+export const PENDING_DELETED_RESUMES_KEY = "offerflow.pendingDeletedResumeIds";
 
 export type StoredResumeKind = "base" | "job";
 export type ResumeLifecycleStatus = "active" | "archived" | "invalid";
@@ -206,6 +207,97 @@ export const EMPTY_PROFILE: PersonalProfile = {
 
 const hasChromeStorage = () =>
   typeof chrome !== "undefined" && Boolean(chrome.storage?.local);
+
+export function isStarterProfile(profile: Partial<PersonalProfile> | undefined): boolean {
+  if (!profile) return false;
+  return profile.fullName === "林知夏" || profile.email === "lin.zhixia@example.com";
+}
+
+async function pendingResumeDeletionKey(scope?: string): Promise<string | undefined> {
+  const owner = scope ? undefined : await loadCloudDataOwner();
+  const resolved = scope || (owner && cloudDataScope(owner));
+  return resolved ? `${PENDING_DELETED_RESUMES_KEY}.${encodeURIComponent(resolved)}` : undefined;
+}
+
+export async function loadPendingDeletedResumeIds(scope?: string): Promise<string[]> {
+  const key = await pendingResumeDeletionKey(scope);
+  if (!key) return [];
+  if (!hasChromeStorage()) {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : [];
+  }
+  const result = await chrome.storage.local.get(key);
+  return (result[key] as string[] | undefined) ?? [];
+}
+
+export async function savePendingDeletedResumeIds(ids: string[], scope?: string): Promise<void> {
+  const key = await pendingResumeDeletionKey(scope);
+  if (!key) return;
+  if (!hasChromeStorage()) {
+    localStorage.setItem(key, JSON.stringify(ids));
+    return;
+  }
+  await chrome.storage.local.set({ [key]: ids });
+}
+
+export async function recordPendingDeletedResumeId(id: string, scope?: string): Promise<void> {
+  const current = await loadPendingDeletedResumeIds(scope);
+  if (!current.includes(id)) {
+    await savePendingDeletedResumeIds([...current, id], scope);
+  }
+}
+
+export async function removePendingDeletedResumeIds(idsToRemove: string[], scope?: string): Promise<void> {
+  const set = new Set(idsToRemove);
+  const current = await loadPendingDeletedResumeIds(scope);
+  await savePendingDeletedResumeIds(current.filter((id) => !set.has(id)), scope);
+}
+
+/** Attribute old unscoped deletion IDs only while the old account is still
+ * connected. Never attach an ambiguous queue to a newly connected account. */
+export async function migrateLegacyResumeDeletions(scope: string): Promise<void> {
+  const legacy = hasChromeStorage()
+    ? (await chrome.storage.local.get(PENDING_DELETED_RESUMES_KEY))[PENDING_DELETED_RESUMES_KEY]
+    : JSON.parse(localStorage.getItem(PENDING_DELETED_RESUMES_KEY) || "[]");
+  if (!Array.isArray(legacy) || !legacy.length) return;
+  const current = await loadPendingDeletedResumeIds(scope);
+  await savePendingDeletedResumeIds([...new Set([...current, ...legacy.filter((id): id is string => typeof id === "string")])], scope);
+  if (hasChromeStorage()) await chrome.storage.local.remove(PENDING_DELETED_RESUMES_KEY);
+  else localStorage.removeItem(PENDING_DELETED_RESUMES_KEY);
+}
+
+export async function clearLocalProfileAndResumes(): Promise<void> {
+  const pendingKey = await pendingResumeDeletionKey();
+  if (hasChromeStorage()) {
+    const all = await chrome.storage.local.get(null);
+    const tailoredPdfKeys = Object.keys(all).filter((key) => key.startsWith(`${TAILORED_PDF_KEY}.`));
+    await chrome.storage.local.remove([
+      BASE_PROFILE_KEY,
+      TAILORED_RESUMES_KEY,
+      RESUME_LIBRARY_UI_KEY,
+      PENDING_DELETED_RESUMES_KEY,
+      ...(pendingKey ? [pendingKey] : []),
+      ...tailoredPdfKeys
+    ]);
+  } else {
+    localStorage.removeItem(BASE_PROFILE_KEY);
+    localStorage.removeItem(TAILORED_RESUMES_KEY);
+    localStorage.removeItem(RESUME_LIBRARY_UI_KEY);
+    localStorage.removeItem(PENDING_DELETED_RESUMES_KEY);
+    if (pendingKey) localStorage.removeItem(pendingKey);
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key?.startsWith(`${TAILORED_PDF_KEY}.`)) keysToRemove.push(key);
+    }
+    keysToRemove.forEach((key) => localStorage.removeItem(key));
+  }
+  await Promise.all([
+    saveResumeLibrary([]),
+    setActiveResumeId(""),
+    saveProfile({ ...EMPTY_PROFILE })
+  ]);
+}
 
 export async function loadJobs(): Promise<JobApplication[]> {
   const normalize = (jobs: JobApplication[]) => jobs.map((job) => ({

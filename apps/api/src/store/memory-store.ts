@@ -17,11 +17,17 @@ import type {
   SessionUser,
   UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
-import { isAvatarKey } from "@offerflow/contracts";
+import {
+  isAvatarKey, resumeTemplateTombstone, sanitizeResumeTemplate,
+  sanitizeResumeVersionRecord, sanitizeTailorTask, sanitizeTailorTaskRequest
+} from "@offerflow/contracts";
 import {
   decideApplicationRevision,
   mergeAcceptedApplication,
   createResumeDocument,
+  cloudResumeToPersonalProfile,
+  toCloudResumeDocument,
+  toCloudResumeProfile,
   type ChatAttachment,
   type ChatContextReference,
   type ChatConversation,
@@ -397,6 +403,7 @@ export class MemoryStore implements OfferFlowStore {
     for (const [id, value] of this.conversations) if (value.userId === userId) { this.conversations.delete(id); this.messages.delete(id); }
     for (const [key, value] of this.applications) if (value.userId === userId) this.applications.delete(key);
     for (const [key, value] of this.resumeVersions) if (value.userId === userId) this.resumeVersions.delete(key);
+    for (const [key, value] of this.resumeTemplates) if (value.userId === userId) this.resumeTemplates.delete(key);
     for (const [key, value] of this.tailorTasks) if (value.userId === userId) this.tailorTasks.delete(key);
     for (const [key, value] of this.interviewRecords) if (value.userId === userId) this.interviewRecords.delete(key);
     for (const [hash, value] of this.sessionsByHash) if (value.userId === userId) { this.sessionsByHash.delete(hash); this.sessionHashById.delete(value.id); }
@@ -1174,6 +1181,7 @@ export class MemoryStore implements OfferFlowStore {
     task: TailorTask;
     version: ResumeVersionRecord;
   } {
+    request = sanitizeTailorTaskRequest(request);
     const now = new Date().toISOString();
     const taskId = randomUUID();
     const versionId = randomUUID();
@@ -1252,29 +1260,30 @@ export class MemoryStore implements OfferFlowStore {
     if (!stored) return undefined;
     const version = this.resumeVersions.get(`${userId}:${stored.task.versionId}`)?.item;
     if (!version) return undefined;
-    return { task: clone(stored.task), version: clone(version) };
+    return { task: sanitizeTailorTask(clone(stored.task)), version: sanitizeResumeVersionRecord(version) };
   }
 
   getResumeVersion(userId: string, versionId: string): ResumeVersionRecord | undefined {
     const stored = this.resumeVersions.get(`${userId}:${versionId}`);
-    return stored ? clone(stored.item) : undefined;
+    return stored ? sanitizeResumeVersionRecord(clone(stored.item)) : undefined;
   }
 
   listResumeVersions(userId: string): ResumeVersionRecord[] {
     return [...this.resumeVersions.values()]
       .filter((stored) => stored.userId === userId && stored.item.version.status !== "archived")
-      .map((stored) => clone(stored.item))
+      .map((stored) => sanitizeResumeVersionRecord(clone(stored.item)))
       .sort((left, right) => right.version.updatedAt.localeCompare(left.version.updatedAt));
   }
 
   listResumeTemplates(userId: string, includeDeleted = false): ResumeTemplateRecord[] {
     return [...this.resumeTemplates.values()]
       .filter((stored) => stored.userId === userId && (includeDeleted || !stored.template.deletedAt))
-      .map((stored) => clone(stored.template))
+      .map((stored) => sanitizeResumeTemplate(stored.template))
       .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt));
   }
 
   createResumeTemplate(userId: string, request: CreateResumeTemplateRequest): ResumeTemplateRecord {
+    request = { ...request, document: toCloudResumeDocument(request.document) };
     const key = `${userId}:${request.id}`;
     if (this.resumeTemplates.has(key)) {
       throw new MemoryStoreError("RESUME_TEMPLATE_EXISTS", "这份简历已经存在", 409);
@@ -1283,7 +1292,7 @@ export class MemoryStore implements OfferFlowStore {
     const template: ResumeTemplateRecord = {
       id: request.id,
       name: request.name.trim(),
-      profile: clone(request.document.profile),
+      profile: toCloudResumeProfile(request.document.profile),
       document: {
         ...clone(request.document),
         id: request.id,
@@ -1302,21 +1311,22 @@ export class MemoryStore implements OfferFlowStore {
 
   getResumeTemplate(userId: string, templateId: string): ResumeTemplateRecord | undefined {
     const stored = this.resumeTemplates.get(`${userId}:${templateId}`);
-    return stored && !stored.template.deletedAt ? clone(stored.template) : undefined;
+    return stored && !stored.template.deletedAt ? sanitizeResumeTemplate(stored.template) : undefined;
   }
 
   updateResumeTemplate(userId: string, templateId: string, request: UpdateResumeTemplateRequest): ResumeTemplateRecord {
+    request = { ...request, document: toCloudResumeDocument(request.document) };
     const key = `${userId}:${templateId}`;
     const stored = this.resumeTemplates.get(key);
-    if (!stored) throw new MemoryStoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
+    if (!stored || stored.template.deletedAt) throw new MemoryStoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
     if (request.document.id !== templateId) {
       throw new MemoryStoreError("INVALID_RESUME_DOCUMENT", "简历文档与当前通用简历不匹配", 400);
     }
     const now = new Date().toISOString();
     const template: ResumeTemplateRecord = {
-      ...stored.template,
+      ...sanitizeResumeTemplate(stored.template),
       name: request.name.trim(),
-      profile: clone(request.document.profile),
+      profile: toCloudResumeProfile(request.document.profile),
       document: {
         ...clone(request.document),
         id: templateId,
@@ -1339,30 +1349,33 @@ export class MemoryStore implements OfferFlowStore {
     const now = new Date(Math.max(Date.now(), Date.parse(stored.template.updatedAt) + 1)).toISOString();
     this.resumeTemplates.set(key, {
       userId,
-      template: { ...stored.template, updatedAt: now, deletedAt: now }
+      template: resumeTemplateTombstone(stored.template, now)
     });
     this.persist();
   }
 
   syncResumeTemplates(userId: string, templates: ResumeTemplateRecord[]): ResumeTemplateRecord[] {
-    for (const template of templates) {
+    for (const incoming of templates) {
+      const template = sanitizeResumeTemplate(incoming);
       const key = `${userId}:${template.id}`;
       const current = this.resumeTemplates.get(key)?.template;
+      // Deletion is final for an ID, even if a stale client has a future clock.
+      if (current?.deletedAt) continue;
       if (current && current.updatedAt.localeCompare(template.updatedAt) > 0) continue;
       const mergedDocument = template.document
         ? clone(template.document)
         : current?.document
           ? {
-              ...clone(current.document),
+              ...toCloudResumeDocument(current.document),
               title: template.name,
-              profile: clone(template.profile),
+              profile: cloudResumeToPersonalProfile(template.profile),
               updatedAt: template.updatedAt
             }
           : undefined;
       this.resumeTemplates.set(key, {
         userId,
-        template: clone({
-          ...current,
+        template: sanitizeResumeTemplate({
+          ...(current ? sanitizeResumeTemplate(current) : {}),
           ...template,
           document: mergedDocument,
           origin: current?.origin || template.origin || "extension"
@@ -1379,6 +1392,7 @@ export class MemoryStore implements OfferFlowStore {
     document: ResumeDocument,
     expectedRevision: number
   ): ResumeVersionRecord {
+    document = toCloudResumeDocument(document);
     const key = `${userId}:${versionId}`;
     const stored = this.resumeVersions.get(key);
     if (!stored) {
@@ -1389,7 +1403,7 @@ export class MemoryStore implements OfferFlowStore {
         "REVISION_CONFLICT",
         "这份简历已在其他页面更新，请刷新后重试",
         409,
-        { serverRevision: stored.item.revision, server: stored.item }
+        { serverRevision: stored.item.revision, server: sanitizeResumeVersionRecord(stored.item) }
       );
     }
     if (document.id !== stored.item.version.document.id) {

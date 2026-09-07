@@ -9,6 +9,7 @@ import type {
 } from "@offerflow/domain";
 import {
   hydrateResumeProfileSemantics,
+  cloudResumeToPersonalProfile,
   parseResumeContentBlocks,
   serializeResumeContentBlocks
 } from "@offerflow/domain";
@@ -172,8 +173,8 @@ export function applyResumePatch(
   return { profile, changes, provider, generatedAt: new Date().toISOString() };
 }
 
-function promptFor(job: TailorJobContext, profile: PersonalProfile, sourceEvidence?: ResumeSourceEvidence): string {
-  const semanticProfile = hydrateResumeProfileSemantics(profile);
+function promptFor(job: TailorJobContext, profile: PersonalProfile): string {
+  const semanticProfile = hydrateResumeProfileSemantics(cloudResumeToPersonalProfile(profile));
   const blocksForModel = (blocks: ResumeContentBlock[] = []): unknown[] => blocks.map((block) => block.kind === "project"
     ? { id: block.id, kind: block.kind, title: block.title, children: blocksForModel(block.children) }
     : { id: block.id, kind: block.kind, label: block.label, text: block.text });
@@ -198,15 +199,14 @@ function promptFor(job: TailorJobContext, profile: PersonalProfile, sourceEviden
 {"summary":{"value":"...","reason":"..."},"strengths":{"value":"...","reason":"..."},"experiences":[{"id":"...","blocks":[{"id":"原块id","text":"改写后文本","reason":"对应的JD能力"}]}],"projects":[],"campusExperiences":[]}
 
 岗位：${JSON.stringify(job)}
-候选人结构化证据：${JSON.stringify(evidence)}
-原文件证据（仅用于核对，不得据此改变已锁定层级）：${JSON.stringify(sourceEvidence || {})}`;
+候选人结构化证据：${JSON.stringify(evidence)}`;
 }
 
 export function createResumeTailorProvider(config: ApiConfig): ResumeTailorProvider {
   return {
     configured: Boolean(config.aiApiKey),
     name: config.aiModel,
-    async generate(job, profile, sourceEvidence) {
+    async generate(job, profile, _sourceEvidence) {
       if (!config.aiApiKey) throw new Error("AI 服务尚未配置");
       const response = await fetch(`${config.aiBaseUrl}/chat/completions`, {
         method: "POST",
@@ -221,13 +221,14 @@ export function createResumeTailorProvider(config: ApiConfig): ResumeTailorProvi
           response_format: { type: "json_object" },
           messages: [
             { role: "system", content: "你只返回符合要求的 JSON。禁止虚构简历事实。" },
-            { role: "user", content: promptFor(job, profile, sourceEvidence) }
+            { role: "user", content: promptFor(job, profile) }
           ]
         })
       });
       if (!response.ok) {
-        const message = await response.text();
-        throw new Error(`AI 服务请求失败（${response.status}）：${message.slice(0, 240)}`);
+        // Do not expose upstream bodies, which may echo the candidate's input.
+        await response.body?.cancel();
+        throw new Error(`AI 服务请求失败（${response.status}），请稍后重试`);
       }
       const payload = await response.json() as {
         choices?: Array<{ message?: { content?: string } }>;

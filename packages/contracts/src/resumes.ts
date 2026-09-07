@@ -1,5 +1,6 @@
 import type {
   PersonalProfile,
+  CloudResumeProfile,
   ResumeAsset,
   ResumeTailorProposal,
   ResumeDocument,
@@ -8,6 +9,7 @@ import type {
   TailorJobContext,
   TailorTask
 } from "@offerflow/domain";
+import { cloudResumeToPersonalProfile, toCloudResumeAssets, toCloudResumeDocument, toCloudResumeProfile } from "@offerflow/domain";
 import { isRecord } from "./common.ts";
 import type { SessionUser } from "./auth.ts";
 
@@ -26,7 +28,7 @@ export interface ResumeTemplateRecord {
   id: string;
   name: string;
   sourceFileName?: string;
-  profile: PersonalProfile;
+  profile: CloudResumeProfile;
   /** Web-authored resumes keep their presentation settings here while
    * `profile` remains the canonical field payload consumed by the extension. */
   document?: ResumeDocument;
@@ -108,6 +110,61 @@ export interface ExchangeHandoffResponse {
   expiresAt: string;
   user: SessionUser;
   targetPath: string;
+}
+
+/** Keep an empty compatibility shell for old clients, never deleted content. */
+export function resumeTemplateTombstone(template: Pick<ResumeTemplateRecord, "id" | "createdAt" | "updatedAt">, deletedAt: string): ResumeTemplateRecord {
+  return {
+    id: template.id,
+    name: "",
+    profile: toCloudResumeProfile({}),
+    createdAt: template.createdAt,
+    updatedAt: deletedAt,
+    deletedAt
+  };
+}
+
+export function sanitizeResumeTemplate(template: ResumeTemplateRecord): ResumeTemplateRecord {
+  if (template.deletedAt) return resumeTemplateTombstone(template, template.deletedAt);
+  return {
+    id: template.id,
+    name: template.name,
+    profile: toCloudResumeProfile(template.profile),
+    ...(template.document ? { document: toCloudResumeDocument(template.document) } : {}),
+    ...(template.origin ? { origin: template.origin } : {}),
+    createdAt: template.createdAt,
+    updatedAt: template.updatedAt
+  };
+}
+
+export function sanitizeTailorTaskRequest(request: CreateTailorTaskRequest): CreateTailorTaskRequest {
+  const sourceAssets = toCloudResumeAssets(request.sourceAssets);
+  return {
+    sourceResumeId: request.sourceResumeId,
+    sourceResumeName: request.sourceResumeName,
+    sourceProfile: cloudResumeToPersonalProfile(request.sourceProfile),
+    ...(sourceAssets.length ? { sourceAssets } : {}),
+    ...(sourceAssets.some(asset => asset.id === request.sourcePortraitAssetId) ? { sourcePortraitAssetId: request.sourcePortraitAssetId } : {}),
+    ...(request.applicationId ? { applicationId: request.applicationId } : {}),
+    job: {
+      company: request.job.company,
+      position: request.job.position,
+      sourceUrl: request.job.sourceUrl,
+      ...(typeof request.job.city === "string" ? { city: request.job.city } : {}),
+      ...(typeof request.job.summary === "string" ? { summary: request.job.summary } : {}),
+      responsibilities: request.job.responsibilities.filter(item => typeof item === "string"),
+      requirements: request.job.requirements.filter(item => typeof item === "string")
+    }
+  };
+}
+
+export function sanitizeResumeVersionRecord(item: ResumeVersionRecord): ResumeVersionRecord {
+  return { ...item, version: { ...item.version, document: toCloudResumeDocument(item.version.document) } };
+}
+
+export function sanitizeTailorTask(task: TailorTask): TailorTask {
+  const { sourceEvidence: _sourceEvidence, ...safe } = task;
+  return safe;
 }
 
 export function isCreateTailorTaskRequest(value: unknown): value is CreateTailorTaskRequest {

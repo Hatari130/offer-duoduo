@@ -11,6 +11,20 @@ export const CLOUD_SYNC_OUTBOX_KEY = "offerflow.cloudSyncOutbox";
 export const CLOUD_SYNC_METADATA_KEY = "offerflow.cloudSyncMetadata";
 export const CLOUD_DEVICE_ID_KEY = "offerflow.cloudDeviceId";
 export const CLOUD_DATA_OWNER_KEY = "offerflow.cloudDataOwner";
+export const CLOUD_RESUME_CONSENT_VERSION = 1;
+
+export interface CloudDataOwner {
+  userId: string;
+  /** Missing only for a legacy, disconnected binding; fail closed on upload. */
+  apiBaseUrl?: string;
+  consentVersion?: number;
+  consentGrantedAt?: string;
+}
+
+export function cloudDataScope(owner: Pick<CloudDataOwner, "userId" | "apiBaseUrl">): string | undefined {
+  if (!owner.apiBaseUrl) return undefined;
+  return JSON.stringify([owner.apiBaseUrl.replace(/\/+$/, ""), owner.userId]);
+}
 
 export interface CloudConnection {
   apiBaseUrl: string;
@@ -137,12 +151,23 @@ export async function saveCloudConnection(connection: CloudConnection): Promise<
   await writeValue(CLOUD_CONNECTION_KEY, connection);
 }
 
-export async function loadCloudDataOwner(): Promise<string | undefined> {
-  return readValue<string>(CLOUD_DATA_OWNER_KEY);
+export async function clearCloudConnection(): Promise<void> {
+  // Logging out must not discard offline edits, tombstones or revision bases.
+  await removeValues([CLOUD_CONNECTION_KEY]);
 }
 
-export async function saveCloudDataOwner(userId: string): Promise<void> {
-  await writeValue(CLOUD_DATA_OWNER_KEY, userId);
+export async function loadCloudDataOwner(): Promise<CloudDataOwner | undefined> {
+  const stored = await readValue<CloudDataOwner | string>(CLOUD_DATA_OWNER_KEY);
+  if (typeof stored !== "string") return stored;
+  const connection = await loadCloudConnection();
+  return {
+    userId: stored,
+    ...(connection?.user.id === stored ? { apiBaseUrl: connection.apiBaseUrl } : {})
+  };
+}
+
+export async function saveCloudDataOwner(owner: CloudDataOwner): Promise<void> {
+  await writeValue(CLOUD_DATA_OWNER_KEY, owner);
 }
 
 export async function clearCloudDataOwner(): Promise<void> {

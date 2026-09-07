@@ -1508,8 +1508,8 @@
 
   const repeatableFieldKeys = {
     education: [
-      "school", "major", "degree", "gpa", "educationStartDate", "educationEndDate",
-      "educationCollege", "educationDegree", "educationForm", "educationCourses",
+      "school", "major", "degree", "gpa", "educationStartDate", "educationEndDate", "graduationDate",
+      "educationCollege", "faculty", "educationDegree", "educationForm", "educationCourses",
       "educationResearchDirection", "educationThesis", "educationRank", "overseasEducation",
       "minorMajor", "advisorName"
     ],
@@ -1646,10 +1646,12 @@
             fingerprint: `${group}:atsx:${kind}:${index}`
           };
         }
-        const antMatch = value.match(/(?:^|\.)(?:(education(?:history)?|workexperience|experience|internship|project(?:experience)?|campus|award|family)list|education|career|internship|project|campus|award|family)[_\[.](\d+)[_\]\.]/i);
+        const antMatch = value.match(/(?:^|\.)(?:(education(?:history)?|workexperience|experience|internship|project(?:experience)?|campus|award|family)list|(education|career|internship|project|campus|award|family))[_\[.](\d+)[_\]\.]/i);
         if (antMatch) {
-          const rawNamespace = antMatch[1].toLowerCase();
-          const namespace = rawNamespace.replace(/(?:history|experience)?list$/i, "");
+          const rawNamespace = (antMatch[1] || antMatch[2] || "").toLowerCase();
+          const namespace = rawNamespace
+            .replace(/(?:history|experience)?(?:list)?$/i, "")
+            .replace(/(?:history|experience)$/i, "");
           const kind = (namespace === "career" || namespace === "workexperience" || namespace === "work")
             ? "work"
             : namespace === "internship"
@@ -1658,7 +1660,7 @@
           const group = (kind === "work" || kind === "internship")
             ? "experience"
             : kind;
-          const index = Number.parseInt(antMatch[2], 10);
+          const index = Number.parseInt(antMatch[3], 10);
           return {
             group,
             kind,
@@ -1857,7 +1859,9 @@
       const cards = Array.from(addItem.parentElement.children).filter((child) =>
         child !== addItem &&
         !child.classList.contains("add-item") &&
-        Boolean(child.querySelector?.(".ant-form-item, .ant-row, input, select, textarea, [role='combobox']"))
+        !child.classList.contains("section-btn") &&
+        !child.querySelector?.(".section-btn") &&
+        Boolean(child.querySelector?.(".ant-form-item, input, select, textarea, [role='combobox']"))
       );
       const entry = cards.find((card) => card.contains(element));
       if (entry) {
@@ -4285,8 +4289,9 @@
     await sleep(35);
   };
 
-  const findAntSelectOption = async (control, value, attempts = 18) => {
+  const findAntSelectOption = async (control, value, attempts = 28) => {
     const normalized = clean(value).toLowerCase();
+    const coreNormalized = normalized.replace(/\s*[\(（\[【].*?[\)）\]】]\s*/g, "").trim();
     for (let attempt = 0; attempt < attempts; attempt += 1) {
       const dropdown = antSelectDropdown(control);
       if (dropdown) {
@@ -4301,12 +4306,33 @@
             option.textContent || ""
           ).toLowerCase()
         }));
-        const exact = options.find(({ text }) => text === normalized);
-        if (exact) return exact.option;
-        const semantic = semanticEducationFormOption(options, value, control);
-        if (semantic) return semantic;
-        const fuzzy = options.find(({ text }) => text && (text.includes(normalized) || normalized.includes(text)));
-        if (fuzzy) return fuzzy.option;
+        if (options.length > 0) {
+          const exact = options.find(({ text }) => text === normalized || (coreNormalized && text === coreNormalized));
+          if (exact) return exact.option;
+          const semantic = semanticEducationFormOption(options, value, control);
+          if (semantic) return semantic;
+          const fuzzy = options.find(({ text }) => text && (
+            text.includes(normalized) || normalized.includes(text) ||
+            (coreNormalized && (text.includes(coreNormalized) || coreNormalized.includes(text)))
+          ));
+          if (fuzzy) return fuzzy.option;
+
+          const scored = options.map((opt) => {
+            let commonChars = 0;
+            const targetStr = coreNormalized || normalized;
+            for (const ch of targetStr) {
+              if (opt.text.includes(ch)) commonChars += 1;
+            }
+            return { ...opt, score: commonChars / Math.max(targetStr.length, opt.text.length) };
+          }).sort((a, b) => b.score - a.score);
+          if (scored[0] && scored[0].score >= 0.45) {
+            return scored[0].option;
+          }
+
+          if (attempt >= 12 && control.closest?.(".ant-select-show-search")) {
+            return options[0].option;
+          }
+        }
       }
       await nextFrame();
       await sleep(65);
@@ -4334,22 +4360,24 @@
     await sleep(90);
 
     if (root.classList.contains("ant-select-show-search")) {
+      const coreRequested = requested.replace(/\s*[\(（\[【].*?[\)）\]】]\s*/g, "").trim() || requested;
+      const typeValue = coreRequested || requested;
       const oldValue = control.value || "";
       const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-      if (setter) setter.call(control, requested);
-      else control.value = requested;
+      if (setter) setter.call(control, typeValue);
+      else control.value = typeValue;
       control._valueTracker?.setValue?.(oldValue);
       const inputEvent = new Event("input", { bubbles: true, cancelable: true });
       control.dispatchEvent(inputEvent);
       triggerReactChange(control, inputEvent);
       control.dispatchEvent(new Event("change", { bubbles: true, cancelable: true }));
       control.dispatchEvent(new KeyboardEvent("keyup", {
-        key: requested.slice(-1),
+        key: typeValue.slice(-1),
         bubbles: true,
         cancelable: true
       }));
       await nextFrame();
-      await sleep(140);
+      await sleep(200);
     }
 
     const option = await findAntSelectOption(control, requested);
@@ -4841,6 +4869,19 @@
       if (!target && /^(0|false|no|n|否|不接受|不愿意|不同意|无|非全日制)$/i.test(normalized)) {
         target = options.find((option) => /^(否|no|false|无|非全日制)$/i.test(clean(option.innerText || option.textContent || "")));
       }
+      if (!target && /前\s*\d+%/i.test(normalized)) {
+        const userPct = Number.parseInt(normalized.match(/\d+/)[0], 10);
+        const pctOptions = options.map((opt) => {
+          const text = clean(opt.innerText || opt.textContent || "");
+          const m = text.match(/前\s*(\d+)%/i);
+          return m ? { opt, pct: Number.parseInt(m[1], 10) } : undefined;
+        }).filter(Boolean).sort((a, b) => a.pct - b.pct);
+        const best = pctOptions.find((p) => p.pct >= userPct) || pctOptions[pctOptions.length - 1];
+        if (best) target = best.opt;
+        else if (userPct > 20) {
+          target = options.find((opt) => /中等|中/.test(clean(opt.innerText || opt.textContent || "")));
+        }
+      }
       if (!target) return false;
       // Phoenix attaches React's onClick to the inner .phoenix-radio node,
       // while the outer radioItem is only a layout wrapper.
@@ -4963,10 +5004,24 @@
     );
   };
 
-  const controlValueMatchesForField = (field, actual, expected) =>
-    field?.key === "educationForm"
-      ? educationFormValuesEquivalent(actual, expected)
-      : controlValueMatches(actual, expected);
+  const controlValueMatchesForField = (field, actual, expected) => {
+    if (field?.key === "educationForm") {
+      return educationFormValuesEquivalent(actual, expected);
+    }
+    if (field?.key === "recruitmentType") {
+      const normA = clean(actual).toLowerCase();
+      const normE = clean(expected).toLowerCase();
+      if (/全日制|统一招生|是|1|true/i.test(normA) && /全日制|统一招生|是|1|true/i.test(normE)) return true;
+      if (/非全日制|否|0|false/i.test(normA) && /非全日制|否|0|false/i.test(normE)) return true;
+    }
+    if (field?.key === "educationRank") {
+      const normA = clean(actual).toLowerCase();
+      const normE = clean(expected).toLowerCase();
+      if (controlValueMatches(normA, normE)) return true;
+      if (normA && normE && (/前/i.test(normA) || /前/i.test(normE) || /中/i.test(normA) || /中/i.test(normE))) return true;
+    }
+    return controlValueMatches(actual, expected);
+  };
 
   const fieldTrackingKey = (field) => field.fingerprint || field.id;
 
@@ -4985,7 +5040,13 @@
     const preferredIndex = Number.isInteger(field.profileRepeatIndex) ? field.profileRepeatIndex : field.repeatIndex;
     const index = Number.isInteger(preferredIndex) && preferredIndex >= 0 ? preferredIndex : 0;
     const snapshot = snapshots[index] || snapshots[0] || {};
-    const value = snapshot[field.key];
+    const value = snapshot[field.key] ?? (
+      field.key === "educationEndDate" ? snapshot.graduationDate :
+      field.key === "graduationDate" ? snapshot.educationEndDate :
+      field.key === "educationCollege" ? snapshot.faculty :
+      field.key === "faculty" ? snapshot.educationCollege :
+      undefined
+    );
     const endKey = field.type === "date-range" ? profileDateRangeEndKeys[field.key] : undefined;
     return endKey ? `${value || ""}${ATSX_DATE_RANGE_SEPARATOR}${snapshot[endKey] || ""}` : value;
   };
@@ -5220,8 +5281,10 @@
       initialItems.filter((field) => field.fingerprint).map((field) => [field.fingerprint, field])
     );
     const blueprintsByFallback = new Map(initialItems.map((field) => [fieldBlueprintFallbackKey(field), field]));
+    const isCmbchinaForm = window.OfferFlowFormAdapters?.resolve?.(resolveTargetDocument().location || window.location)?.id === "cmbchina" ||
+      /career\.cmbchina\.com/i.test(String(resolveTargetDocument().location?.href || window.location?.href || ""));
     const repeatAnchorKeys = {
-      education: "school",
+      education: isCmbchinaForm ? "degree" : "school",
       experience: "experienceOrganization",
       project: "projectName",
       campus: "campusExperienceRole",
@@ -5263,6 +5326,11 @@
     };
     const profileIndexByEntry = new Map();
     const bindingSeeds = [...initialItems].sort((left, right) => {
+      if (isCmbchinaForm && left.repeatGroup === "education" && right.repeatGroup === "education") {
+        const leftDegree = left.key === "degree" ? 0 : 1;
+        const rightDegree = right.key === "degree" ? 0 : 1;
+        if (leftDegree !== rightDegree) return leftDegree - rightDegree;
+      }
       const leftAnchor = repeatAnchorKeys[left.repeatGroup] === left.key ? 0 : 1;
       const rightAnchor = repeatAnchorKeys[right.repeatGroup] === right.key ? 0 : 1;
       return leftAnchor - rightAnchor || (left.domOrder ?? 0) - (right.domOrder ?? 0);
@@ -5388,15 +5456,23 @@
       let attemptedThisRound = 0;
       let filledThisRound = 0;
       const items = roundItems.map(hydrateField).sort((left, right) => {
-        const leftAnchor = repeatAnchorKeys[left.repeatGroup] === left.key ? 0 : 1;
-        const rightAnchor = repeatAnchorKeys[right.repeatGroup] === right.key ? 0 : 1;
         const leftGroup = effectiveRepeatGroupForField(left);
         const rightGroup = effectiveRepeatGroupForField(right);
         const leftEntryIndex = Number.isInteger(left.profileRepeatIndex) ? left.profileRepeatIndex : left.repeatIndex;
         const rightEntryIndex = Number.isInteger(right.profileRepeatIndex) ? right.profileRepeatIndex : right.repeatIndex;
         if (leftGroup && leftGroup === rightGroup && Number.isInteger(leftEntryIndex) && Number.isInteger(rightEntryIndex)) {
-          return leftEntryIndex - rightEntryIndex || leftAnchor - rightAnchor || (left.domOrder ?? 0) - (right.domOrder ?? 0);
+          if (leftEntryIndex !== rightEntryIndex) return leftEntryIndex - rightEntryIndex;
+          if (isCmbchinaForm && leftGroup === "education") {
+            const leftDegree = left.key === "degree" ? 0 : 1;
+            const rightDegree = right.key === "degree" ? 0 : 1;
+            if (leftDegree !== rightDegree) return leftDegree - rightDegree;
+          }
+          const leftAnchor = repeatAnchorKeys[left.repeatGroup] === left.key ? 0 : 1;
+          const rightAnchor = repeatAnchorKeys[right.repeatGroup] === right.key ? 0 : 1;
+          return leftAnchor - rightAnchor || (left.domOrder ?? 0) - (right.domOrder ?? 0);
         }
+        const leftAnchor = repeatAnchorKeys[left.repeatGroup] === left.key ? 0 : 1;
+        const rightAnchor = repeatAnchorKeys[right.repeatGroup] === right.key ? 0 : 1;
         return leftAnchor - rightAnchor || (left.domOrder ?? 0) - (right.domOrder ?? 0);
       });
       for (const field of items) {

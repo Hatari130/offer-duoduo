@@ -10,6 +10,7 @@ import {
   setActiveResumeId,
   type StoredResume
 } from "@/infrastructure/storage/storage";
+import { deleteCloudResumeTemplate } from "@/infrastructure/sync/cloudSync";
 import type { PersonalProfile } from "@/shared/types";
 
 type ResumeLibraryPanelProps = {
@@ -105,7 +106,10 @@ export default function ResumeLibraryPanel({ onOpenManager, onSaveProfile }: Res
     if (!window.confirm(`确定删除《${resumeDisplayName(resume)}》吗？删除后不能恢复。`)) return;
     const next = resumes.filter((item) => item.id !== resume.id);
     setResumes(next);
-    await saveResumeLibrary(next);
+    await Promise.all([
+      saveResumeLibrary(next),
+      deleteCloudResumeTemplate(resume.id)
+    ]);
     if (resume.id === activeId) {
       const replacement = next[0];
       if (replacement) {

@@ -1,4 +1,3 @@
-import { createApiClient } from "@offerflow/api-client";
 import { base64ToUint8Array } from "@/shared/binary";
 import {
   updateResumeSourceAssets,
@@ -6,10 +5,12 @@ import {
 } from "@/infrastructure/storage/storage";
 import {
   cloudErrorMessage,
+  createCloudTailorTask,
   DEFAULT_CLOUD_WEB_URL,
   getCloudSyncOverview,
   loginAndSync
 } from "@/infrastructure/sync/cloudSync";
+import { cloudDataScope } from "@/infrastructure/sync/syncState";
 import type { TailorContext } from "./types";
 
 function webBaseUrlForApi(apiBaseUrl: string): string {
@@ -42,45 +43,26 @@ export async function openWebTailorWorkspace(
       // The source PDF remains available; the website still offers manual photo upload.
     }
   }
-  let connection = (await getCloudSyncOverview()).connection;
-  if (!connection) {
+  const overview = await getCloudSyncOverview();
+  let connection = overview.connection;
+  if (!connection || overview.requiresUploadConsent) {
     const connected = await loginAndSync();
     connection = connected.connection;
   }
   if (!connection) throw new Error("请先连接 JobKoI 官网账号后再定制简历");
 
-  const client = createApiClient({
-    baseUrl: connection.apiBaseUrl,
-    getAccessToken: () => connection!.accessToken
-  });
+  if (!window.confirm(`将“${sourceResume.name}”的简历字段和图片保存到 ${connection.user.email} 的网页定制工作台？\n\n网申专用字段、原文件及提取原文不会上传。进入网页后，点击 AI 定制才会将相关经历文本交给 AI 服务处理。`)) return;
   let created;
   try {
-    created = await client.resumes.createTailorTask({
-      sourceResumeId: sourceResume.id,
-      sourceResumeName: sourceResume.name,
-      sourceProfile: sourceResume.profile,
-      sourceAssets,
-      sourcePortraitAssetId,
-      sourceEvidence: {
-        fileName: sourceResume.source?.fileName || sourceResume.sourceFileName || sourceResume.name,
-        rawText: sourceResume.parse?.sourceText,
-        unclassifiedText: sourceResume.parse?.unclassifiedText,
-        parseCoverage: sourceResume.parse?.coverage,
-        parserVersion: sourceResume.parse?.parserVersion,
-        warnings: sourceResume.parse?.warnings
-      },
-      applicationId,
-      job: {
+    created = await createCloudTailorTask(sourceResume.id, {
         company: context.company,
         position: context.position,
         city: context.city,
         sourceUrl: context.sourceUrl || "",
         summary: context.summary,
         responsibilities: context.responsibilities || [],
-        requirements: context.requirements || [],
-        rawExcerpt: context.rawExcerpt
-      }
-    });
+        requirements: context.requirements || []
+      }, cloudDataScope({ userId: connection.user.id, apiBaseUrl: connection.apiBaseUrl })!, applicationId);
   } catch (error) {
     throw new Error(cloudErrorMessage(error, "创建简历定制任务失败，请重新登录后再试"));
   }

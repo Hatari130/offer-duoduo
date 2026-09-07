@@ -550,6 +550,14 @@ body {
   transform: scale(1.05);
 }
 
+.overlay-user-avatar-wrap.is-guest .overlay-header-avatar {
+  opacity: 0.88;
+}
+
+.overlay-user-avatar-wrap.is-guest:hover .overlay-header-avatar {
+  opacity: 1;
+}
+
 .overlay-avatar-online-dot {
   position: absolute;
   right: -2px;

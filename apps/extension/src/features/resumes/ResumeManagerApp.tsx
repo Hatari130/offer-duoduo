@@ -56,6 +56,7 @@ import {
   type StoredResumeParseMetadata,
   type StoredResumeSourceMetadata
 } from "@/infrastructure/storage/storage";
+import { deleteCloudResumeTemplate } from "@/infrastructure/sync/cloudSync";
 import {
   calculateResumeCoverage,
   collectResumeRemovalIds,
@@ -563,7 +564,8 @@ export default function ResumeManagerApp() {
       saveResumeLibrary(next),
       dropTailoredResumesForSourceResumeIds(removalIds),
       setActiveResumeId(nextActiveId),
-      nextActiveResume ? saveProfile(nextActiveResume.profile) : saveProfile({ ...EMPTY_PROFILE })
+      nextActiveResume ? saveProfile(nextActiveResume.profile) : saveProfile({ ...EMPTY_PROFILE }),
+      Promise.all(Array.from(removalIds).map((id) => deleteCloudResumeTemplate(id)))
     ]);
     notify(
       linkedCount || removedTailoredCount

@@ -4,6 +4,7 @@ import react from "@vitejs/plugin-react";
 import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { cp, mkdir } from "node:fs/promises";
+import { WEB_SECURITY_HEADERS, webSecurityPlugin } from "../../deploy/web-security.mjs";
 
 const require = createRequire(resolve(process.cwd(), "package.json"));
 
@@ -22,7 +23,8 @@ function copyPdfJsCMaps(): Plugin {
 }
 
 export default defineConfig({
-  plugins: [react(), copyPdfJsCMaps()],
+  plugins: [react(), copyPdfJsCMaps(), webSecurityPlugin()],
+  preview: { headers: WEB_SECURITY_HEADERS },
   build: {
     outDir: "dist",
     emptyOutDir: true

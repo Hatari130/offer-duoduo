@@ -313,8 +313,11 @@ export function OverlayPanel({
     </div>
   );
 
-  const userName = connection?.user?.displayName || profile.fullName || "我";
-  const spaceTitle = tab === "profile" ? `${userName} 的个人资料库` : `${userName} 的 2026 秋招`;
+  const isConnected = !!connection?.user;
+  const userName = connection?.user?.displayName || (profile.fullName && profile.fullName !== "林知夏" ? profile.fullName : "");
+  const spaceTitle = tab === "profile"
+    ? (userName ? `${userName} 的个人资料库` : "个人资料库")
+    : (userName ? `${userName} 的 2026 秋招` : "2026 秋招");
 
   const handleToggleSpace = () => {
     if (tab === "profile") {
@@ -329,15 +332,19 @@ export function OverlayPanel({
       <header className="overlay-header">
         <div className="overlay-identity">
           <div
-            className="overlay-user-avatar-wrap"
+            className={`overlay-user-avatar-wrap ${!isConnected ? "is-guest" : ""}`}
             title={
-              connection?.user
-                ? `${connection.user.displayName || connection.user.email}（已登录）`
-                : "未连接 Web 工作台"
+              isConnected
+                ? `${connection?.user?.displayName || connection?.user?.email}（已登录）`
+                : "未登录 Web 工作台（点击前往设置登录）"
             }
+            onClick={() => {
+              if (!isConnected) setTab("settings");
+            }}
+            style={{ cursor: isConnected ? "default" : "pointer" }}
           >
             <UserAvatar avatarKey={connection?.user?.avatarKey} className="overlay-header-avatar" />
-            {connection?.user && <span className="overlay-avatar-online-dot" aria-hidden="true" />}
+            {isConnected && <span className="overlay-avatar-online-dot" aria-hidden="true" />}
           </div>
 
           <div className="overlay-space-selector">
@@ -347,8 +354,8 @@ export function OverlayPanel({
               onClick={handleToggleSpace}
               title={
                 tab === "profile"
-                  ? `点击直接切换至：${userName} 的 2026 秋招`
-                  : `点击直接切换至：${userName} 的个人资料库`
+                  ? `点击直接切换至：${userName ? `${userName} 的 2026 秋招` : "2026 秋招"}`
+                  : `点击直接切换至：${userName ? `${userName} 的个人资料库` : "个人资料库"}`
               }
               aria-label={
                 tab === "profile"
@@ -643,13 +650,6 @@ export function OverlayPanel({
 
         {tab === "settings" && (
           <section className="overlay-page">
-            <div className="overlay-page-title">
-              <span className="overlay-section-icon"><Settings2 size={18} /></span>
-              <div><h1>连接</h1><p>服务状态</p></div>
-            </div>
-            <div className="overlay-connection-list">
-              <div><Sparkles size={17} /><span><strong>DeepSeek</strong><small>{settings.deepseekApiKey ? "已连接" : "未配置"}</small></span><i className={settings.deepseekApiKey ? "active" : ""} /></div>
-            </div>
             <CloudSyncSettings />
           </section>
         )}

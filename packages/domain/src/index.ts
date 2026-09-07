@@ -8,3 +8,4 @@ export * from "./interviews.ts";
 export * from "./opportunities.ts";
 export * from "./profile.ts";
 export * from "./resumes.ts";
+export * from "./cloud-resume.ts";

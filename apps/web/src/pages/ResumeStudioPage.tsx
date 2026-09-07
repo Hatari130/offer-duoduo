@@ -24,6 +24,7 @@ import type {
 } from "@offerflow/domain";
 import {
   createResumeDocument,
+  cloudResumeToPersonalProfile,
   hydrateResumeProfileSemantics,
   resolveProfileExperienceKind,
   RESUME_TEMPLATES,
@@ -772,13 +773,13 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
               createResumeDocument({
                 id: template.id,
                 title: template.name,
-                profile: template.profile
+                profile: cloudResumeToPersonalProfile(template.profile)
               });
             return {
               document: {
                 ...resumeDocument,
                 title: template.name,
-                profile: hydrateResumeProfileSemantics(template.profile)
+                profile: hydrateResumeProfileSemantics(cloudResumeToPersonalProfile(template.profile))
               },
               title: template.name,
               versionId: "",
@@ -949,6 +950,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
 
   const generateProposal = async () => {
     if (!taskId) return;
+    if (!window.confirm("将这份简历的摘要、技能、工作和项目经历文本交给 AI 服务进行岗位定制？原文件、提取原文、网申专用字段及图片不会发送给 AI。取消则不发送。")) return;
     setTailoring(true);
     setError("");
     try {

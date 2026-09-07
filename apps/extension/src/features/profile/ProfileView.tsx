@@ -25,8 +25,12 @@ import {
   saveBaseProfile,
   saveResumeLibrary,
   setActiveResumeId,
+  EMPTY_PROFILE,
+  isStarterProfile,
   type StoredResume
 } from "@/infrastructure/storage/storage";
+import { deleteCloudResumeTemplate } from "@/infrastructure/sync/cloudSync";
+import { loadCloudConnection } from "@/infrastructure/sync/syncState";
 import { resolveProfileExperienceKind } from "@/shared/types";
 import type {
   ProfileExperienceKind,
@@ -1045,6 +1049,70 @@ export default function ProfileView({
     </EntryCard>
   ));
 
+  const deleteCurrentResume = async () => {
+    if (!currentResume) return;
+    if (!window.confirm(`确定删除《${currentResume.name}》吗？\n删除后将从本地与云端彻底移除，不可恢复。`)) return;
+    setBusy(true);
+    try {
+      const targetId = currentResume.id;
+      const nextLibrary = resumeLibrary.filter((item) => item.id !== targetId);
+      const nextActiveId = nextLibrary[0]?.id || "";
+      const nextActiveResume = nextLibrary.find((item) => item.id === nextActiveId);
+
+      await Promise.all([
+        deleteCloudResumeTemplate(targetId),
+        saveResumeLibrary(nextLibrary),
+        setActiveResumeId(nextActiveId)
+      ]);
+
+      setResumeLibrary(nextLibrary);
+      setActiveResumeIdState(nextActiveId);
+
+      if (nextActiveResume) {
+        setDraft(nextActiveResume.profile);
+        setResumeFileName(nextActiveResume.sourceFileName || "");
+        await onSave(nextActiveResume.profile);
+        setStatus(`已删除《${currentResume.name}》，当前切换为《${nextActiveResume.name}》`);
+      } else {
+        const conn = await loadCloudConnection();
+        const cleanProfile: PersonalProfile = {
+          ...EMPTY_PROFILE,
+          fullName: conn?.user?.displayName || "",
+          email: conn?.user?.email || ""
+        };
+        setDraft(cleanProfile);
+        setResumeFileName("");
+        await onSave(cleanProfile);
+        setStatus(`已删除《${currentResume.name}》，当前已重置为纯净档案`);
+      }
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "删除失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const resetToCleanProfile = async () => {
+    if (!window.confirm("确定清空演示数据并重置为当前登录账号信息？")) return;
+    setBusy(true);
+    try {
+      const conn = await loadCloudConnection();
+      const cleanProfile: PersonalProfile = {
+        ...EMPTY_PROFILE,
+        fullName: conn?.user?.displayName || "",
+        email: conn?.user?.email || ""
+      };
+      setDraft(cleanProfile);
+      setResumeFileName("");
+      await onSave(cleanProfile);
+      setStatus("已重置为纯净网申档案");
+    } catch (err) {
+      setStatus(err instanceof Error ? err.message : "重置失败");
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const toggleSection = (id: ProfileSectionId) =>
     setOpenSections((current) => ({ ...current, [id]: !current[id] }));
 
@@ -1073,9 +1141,46 @@ export default function ProfileView({
           <select value={activeResumeId} onChange={(event) => void selectResume(event.target.value)} disabled={busy}>
             {resumeLibrary.map((resume) => <option key={resume.id} value={resume.id}>{resume.name}</option>)}
           </select>
+          <button
+            type="button"
+            className="profile-resume-delete-btn"
+            title="删除此简历（同步从云端删除）"
+            onClick={() => void deleteCurrentResume()}
+            disabled={busy || !currentResume}
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 3,
+              padding: "4px 8px",
+              fontSize: 12,
+              color: "#ef4444",
+              background: "rgba(239, 68, 68, 0.08)",
+              border: "1px solid rgba(239, 68, 68, 0.2)",
+              borderRadius: 6,
+              cursor: "pointer",
+              marginLeft: 4,
+              flexShrink: 0
+            }}
+          >
+            <Trash2 size={13} />
+            <span>删除</span>
+          </button>
           <span className={`profile-sync-state ${hasPendingChanges || storageWarning ? "pending" : "synced"}`}>
             {hasPendingChanges || storageWarning ? "待保存" : "已同步"}
           </span>
+        </div>
+      )}
+
+      {isStarterProfile(draft) && (
+        <div className="profile-autofill-card" style={{ borderColor: "#fbbf24", background: "rgba(251, 191, 36, 0.08)" }}>
+          <span><Sparkles size={20} style={{ color: "#d97706" }} /></span>
+          <div>
+            <strong style={{ color: "#b45309" }}>检测到演示数据“林知夏”</strong>
+            <small>建议一键重置为您的真实账号纯净档案</small>
+          </div>
+          <button onClick={resetToCleanProfile} disabled={busy} style={{ background: "#d97706" }}>
+            一键重置
+          </button>
         </div>
       )}
 

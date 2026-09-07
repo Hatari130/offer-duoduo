@@ -1126,6 +1126,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           conversations: conversationData.filter(Boolean),
           interviewRecords,
           resumeVersions: await store.listResumeVersions(userId),
+          resumeTemplates: await store.listResumeTemplates(userId),
           sessions: (await store.listSessions(userId)).map(({ userId: _userId, revokedAt: _revokedAt, ...session }) => session)
         });
         return;
@@ -1612,7 +1613,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         failure(response, error.status, error.code, error.message, error.details);
         return;
       }
-      console.error("JobKoI API request failed", error);
+      // Error messages/objects can contain SQL payloads or upstream AI bodies.
+      console.error("JobKoI API request failed", { errorType: error instanceof TypeError ? "TypeError" : "Error" });
       failure(response, 500, "INTERNAL_ERROR", "服务暂时不可用，请稍后重试");
     }
   }

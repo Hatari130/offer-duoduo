@@ -1,5 +1,5 @@
 import { loadSettings } from "@/infrastructure/storage/storage";
-import { runCloudSync } from "@/infrastructure/sync/cloudSync";
+import { enableBackgroundCloudAuthority, handleCloudSyncCommand, runCloudSync } from "@/infrastructure/sync/cloudSync";
 import { CLOUD_SYNC_OUTBOX_KEY } from "@/infrastructure/sync/syncState";
 import {
   DEFAULT_OPPORTUNITY_FEED_URL,
@@ -47,6 +47,8 @@ async function syncOpportunityFeedInBackground(): Promise<void> {
     console.warn("JobKoI opportunity feed sync failed", error);
   }
 }
+
+enableBackgroundCloudAuthority();
 
 async function initializeBackground(): Promise<void> {
   await chrome.alarms.create(CLOUD_SYNC_ALARM_NAME, {
@@ -117,7 +119,17 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 });
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (sender.id !== chrome.runtime.id) return;
+  if (message?.type === "OFFERFLOW_CLOUD_COMMAND") {
+    handleCloudSyncCommand(message.command)
+      .then((data) => sendResponse({ ok: true, data }))
+      .catch((error) => sendResponse({
+        ok: false,
+        error: error instanceof Error ? error.message : "云端指令执行失败"
+      }));
+    return true;
+  }
   if (message?.type === "OFFERFLOW_CLOUD_SYNC_NOW") {
     runCloudSync()
       .then((overview) => sendResponse({ ok: true, data: overview }))

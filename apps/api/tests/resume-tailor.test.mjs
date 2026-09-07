@@ -231,8 +231,9 @@ test("web-authored field resumes can be edited and synchronized back to the exte
   });
   assert.equal(updated.response.status, 200);
   assert.equal(updated.payload.data.template.profile.targetRole, "AI 产品经理");
-  assert.deepEqual(updated.payload.data.template.profile.experiences[0].contentBlocks, contentBlocks);
-  assert.deepEqual(updated.payload.data.template.document.profile.experiences[0].contentBlocks, contentBlocks);
+  const cloudBlocks = contentBlocks.map(({ evidence: _localEvidence, ...block }) => block);
+  assert.deepEqual(updated.payload.data.template.profile.experiences[0].contentBlocks, cloudBlocks);
+  assert.deepEqual(updated.payload.data.template.document.profile.experiences[0].contentBlocks, cloudBlocks);
 
   const stalePluginSync = await jsonRequest(app.baseUrl, "/v1/resume-templates/sync", {
     method: "POST",
@@ -240,7 +241,7 @@ test("web-authored field resumes can be edited and synchronized back to the exte
     body: JSON.stringify({ templates: [{ id, name: "旧插件简历", profile: profile(), origin: "extension", createdAt: now, updatedAt: now }] })
   });
   assert.equal(stalePluginSync.payload.data.templates[0].name, "AI 产品经理通用简历");
-  assert.deepEqual(stalePluginSync.payload.data.templates[0].profile.experiences[0].contentBlocks, contentBlocks);
+  assert.deepEqual(stalePluginSync.payload.data.templates[0].profile.experiences[0].contentBlocks, cloudBlocks);
 
   const newerProfile = profile();
   newerProfile.phone = "13900000000";

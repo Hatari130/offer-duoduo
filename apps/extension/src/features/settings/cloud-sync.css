@@ -129,6 +129,68 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.cloud-logout-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  min-height: 2.5rem;
+  padding: 0 0.85rem;
+  color: #dc2626 !important;
+  background: #fef2f2 !important;
+  border: 1px solid #fecaca !important;
+  border-radius: var(--of-radius-control, 8px);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.cloud-logout-button:hover:not(:disabled) {
+  color: #ffffff !important;
+  background: #dc2626 !important;
+  border-color: #dc2626 !important;
+}
+
+.cloud-logout-button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.cloud-sync-connected {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-block: 0.5rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--of-brand-50, #f8fafc);
+  border: 1px solid var(--of-brand-200, #e2e8f0);
+  border-radius: 0.625rem;
+}
+
+.cloud-connected-avatar {
+  width: 2rem !important;
+  height: 2rem !important;
+  flex-shrink: 0;
+}
+
+.cloud-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.cloud-user-meta {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--of-text-muted, #64748b);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .cloud-sync-actions .button,
@@ -249,6 +311,36 @@
 
 .cloud-sync-feedback.is-error { color: var(--of-danger); }
 .cloud-sync-feedback.is-success { color: var(--of-success); }
+
+.cloud-sync-feedback.is-mismatch-banner {
+  display: grid;
+  gap: 0.45rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--of-danger-soft, #fef2f2);
+  border: 1px solid color-mix(in oklch, var(--of-danger, #ef4444) 25%, var(--of-line, #e2e8f0));
+  border-radius: 0.5rem;
+}
+
+.cloud-sync-feedback.is-mismatch-banner p {
+  margin: 0;
+  color: var(--of-danger, #dc2626);
+  font-weight: 550;
+  line-height: 1.4;
+}
+
+.cloud-mismatch-options {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-top: 0.2rem;
+}
+
+.cloud-mismatch-options .button {
+  min-height: 2rem !important;
+  font-size: 0.72rem !important;
+  padding: 0 0.55rem !important;
+  border-radius: 0.45rem !important;
+}
 
 @media (max-width: 47.5rem) {
   .cloud-sync-card { grid-template-columns: auto minmax(0, 1fr); }

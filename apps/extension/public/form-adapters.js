@@ -470,12 +470,12 @@
         // 教育经历 (Education)
         ["school", "学校名称|毕业院校|就读学校|学校|collegeCode|schoolName|INSTI"],
         ["degree", "学历|最高学历|教育程度|educationLevelCode|SLART"],
-        ["faculty", "院系|所属院系|学院|faculty"],
+        ["educationCollege", "院系|所属院系|学院|faculty"],
         ["educationRank", "专业排名|排名|majorRanking"],
         ["major", "专业名称|所学专业|主修专业|专业(?!排名)|majorCode|majorName|MAJNM"],
         ["recruitmentType", "是否统招|全日制|全日制统招|fullEducation|AUSBI"],
         ["educationStartDate", "起始时间|入学时间|学习时间|startDate"],
-        ["graduationDate", "毕业时间|预计毕业|离校时间|endDate"],
+        ["educationEndDate", "毕业时间|预计毕业|离校时间|endDate"],
         ["educationDescription", "毕业设计|毕业论文|graduationDesign"],
 
         // 工作 / 实习经历 (Work & Internship Experience)

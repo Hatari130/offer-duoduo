@@ -16,9 +16,15 @@ import type {
   SessionUser,
   UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
-import { isAvatarKey } from "@offerflow/contracts";
+import {
+  isAvatarKey, resumeTemplateTombstone, sanitizeResumeTemplate,
+  sanitizeResumeVersionRecord, sanitizeTailorTask, sanitizeTailorTaskRequest
+} from "@offerflow/contracts";
 import {
   createResumeDocument,
+  cloudResumeToPersonalProfile,
+  toCloudResumeDocument,
+  toCloudResumeProfile,
   decideApplicationRevision,
   mergeAcceptedApplication,
   type ChatAttachment,
@@ -995,6 +1001,7 @@ export class PostgresStore implements OfferFlowStore {
   }
 
   async createTailorTask(userId: string, request: CreateTailorTaskRequest): Promise<{ task: TailorTask; version: ResumeVersionRecord }> {
+    request = sanitizeTailorTaskRequest(request);
     const now = new Date().toISOString();
     const taskId = randomUUID();
     const versionId = randomUUID();
@@ -1028,17 +1035,17 @@ export class PostgresStore implements OfferFlowStore {
 
   async getTailorTask(userId: string, taskId: string): Promise<{ task: TailorTask; version: ResumeVersionRecord } | undefined> {
     const result = await this.pool.query(`SELECT t.payload AS task, v.payload AS version FROM tailor_tasks t JOIN resume_versions v ON v.tailor_task_id=t.id AND v.user_id=t.user_id WHERE t.id=$1 AND t.user_id=$2`, [taskId,userId]);
-    return result.rows[0] ? { task: result.rows[0].task, version: result.rows[0].version } : undefined;
+    return result.rows[0] ? { task: sanitizeTailorTask(result.rows[0].task), version: sanitizeResumeVersionRecord(result.rows[0].version) } : undefined;
   }
 
   async getResumeVersion(userId: string, versionId: string): Promise<ResumeVersionRecord | undefined> {
     const result = await this.pool.query("SELECT payload FROM resume_versions WHERE id=$1 AND user_id=$2", [versionId,userId]);
-    return result.rows[0]?.payload;
+    return result.rows[0] ? sanitizeResumeVersionRecord(result.rows[0].payload) : undefined;
   }
 
   async listResumeVersions(userId: string): Promise<ResumeVersionRecord[]> {
     const result = await this.pool.query("SELECT payload FROM resume_versions WHERE user_id=$1 AND payload->'version'->>'status' <> 'archived' ORDER BY updated_at DESC", [userId]);
-    return result.rows.map((row) => row.payload);
+    return result.rows.map((row) => sanitizeResumeVersionRecord(row.payload));
   }
 
   async listResumeTemplates(userId: string, includeDeleted = false): Promise<ResumeTemplateRecord[]> {
@@ -1048,15 +1055,16 @@ export class PostgresStore implements OfferFlowStore {
        ORDER BY updated_at DESC`,
       [userId, includeDeleted]
     );
-    return result.rows.map((row) => row.payload as ResumeTemplateRecord);
+    return result.rows.map((row) => sanitizeResumeTemplate(row.payload));
   }
 
   async createResumeTemplate(userId: string, request: CreateResumeTemplateRequest): Promise<ResumeTemplateRecord> {
+    request = { ...request, document: toCloudResumeDocument(request.document) };
     const now = new Date().toISOString();
     const template: ResumeTemplateRecord = {
       id: request.id,
       name: request.name.trim(),
-      profile: structuredClone(request.document.profile),
+      profile: toCloudResumeProfile(request.document.profile),
       document: {
         ...structuredClone(request.document),
         id: request.id,
@@ -1085,10 +1093,11 @@ export class PostgresStore implements OfferFlowStore {
       [templateId, userId]
     );
     const template = result.rows[0]?.payload as ResumeTemplateRecord | undefined;
-    return template && !template.deletedAt ? template : undefined;
+    return template && !template.deletedAt ? sanitizeResumeTemplate(template) : undefined;
   }
 
   async updateResumeTemplate(userId: string, templateId: string, request: UpdateResumeTemplateRequest): Promise<ResumeTemplateRecord> {
+    request = { ...request, document: toCloudResumeDocument(request.document) };
     if (request.document.id !== templateId) {
       throw new StoreError("INVALID_RESUME_DOCUMENT", "简历文档与当前通用简历不匹配", 400);
     }
@@ -1098,7 +1107,7 @@ export class PostgresStore implements OfferFlowStore {
     const template: ResumeTemplateRecord = {
       ...current,
       name: request.name.trim(),
-      profile: structuredClone(request.document.profile),
+      profile: toCloudResumeProfile(request.document.profile),
       document: {
         ...structuredClone(request.document),
         id: templateId,
@@ -1108,7 +1117,7 @@ export class PostgresStore implements OfferFlowStore {
       updatedAt: now
     };
     const result = await this.pool.query(
-      "UPDATE resume_templates SET payload=$3::jsonb,updated_at=$4 WHERE id=$1 AND user_id=$2",
+      "UPDATE resume_templates SET payload=$3::jsonb,updated_at=$4 WHERE id=$1 AND user_id=$2 AND payload->>'deletedAt' IS NULL",
       [templateId, userId, json(template), now]
     );
     if (!result.rowCount) throw new StoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
@@ -1119,7 +1128,7 @@ export class PostgresStore implements OfferFlowStore {
     const current = await this.getResumeTemplate(userId, templateId);
     if (!current) throw new StoreError("RESUME_TEMPLATE_NOT_FOUND", "没有找到这份通用简历", 404);
     const now = new Date(Math.max(Date.now(), Date.parse(current.updatedAt) + 1)).toISOString();
-    const deleted = { ...current, updatedAt: now, deletedAt: now };
+    const deleted = resumeTemplateTombstone(current, now);
     const result = await this.pool.query(
       "UPDATE resume_templates SET payload=$3::jsonb,updated_at=$4 WHERE id=$1 AND user_id=$2",
       [templateId, userId, json(deleted), now]
@@ -1132,33 +1141,37 @@ export class PostgresStore implements OfferFlowStore {
     const client = await this.pool.connect();
     try {
       await client.query("BEGIN");
-      for (const template of templates) {
+      for (const incoming of templates) {
+        const template = sanitizeResumeTemplate(incoming);
         const currentResult = await client.query(
           "SELECT payload FROM resume_templates WHERE id=$1 AND user_id=$2 FOR UPDATE",
           [template.id, userId]
         );
         const current = currentResult.rows[0]?.payload as ResumeTemplateRecord | undefined;
+        if (current?.deletedAt) continue;
         if (current && current.updatedAt.localeCompare(template.updatedAt) > 0) continue;
         const mergedDocument = template.document
           ? structuredClone(template.document)
           : current?.document
             ? {
-                ...structuredClone(current.document),
+                ...toCloudResumeDocument(current.document),
                 title: template.name,
-                profile: structuredClone(template.profile),
+                profile: cloudResumeToPersonalProfile(template.profile),
                 updatedAt: template.updatedAt
               }
             : undefined;
-        const merged: ResumeTemplateRecord = {
-          ...current,
+        const merged: ResumeTemplateRecord = sanitizeResumeTemplate({
+          ...(current ? sanitizeResumeTemplate(current) : {}),
           ...template,
           document: mergedDocument,
           origin: current?.origin || template.origin || "extension"
-        };
+        });
         await client.query(
           `INSERT INTO resume_templates (id,user_id,payload,created_at,updated_at)
            VALUES ($1,$2,$3::jsonb,$4,$5)
-           ON CONFLICT (id,user_id) DO UPDATE SET payload=EXCLUDED.payload, updated_at=EXCLUDED.updated_at`,
+           ON CONFLICT (id,user_id) DO UPDATE SET payload=EXCLUDED.payload, updated_at=EXCLUDED.updated_at
+           WHERE resume_templates.payload->>'deletedAt' IS NULL
+             AND resume_templates.updated_at <= EXCLUDED.updated_at`,
           [template.id, userId, json(merged), template.createdAt, template.updatedAt]
         );
       }
@@ -1173,6 +1186,7 @@ export class PostgresStore implements OfferFlowStore {
   }
 
   async updateResumeVersion(userId: string, versionId: string, document: ResumeDocument, expectedRevision: number): Promise<ResumeVersionRecord> {
+    document = toCloudResumeDocument(document);
     const current = await this.getResumeVersion(userId, versionId);
     if (!current) throw new StoreError("RESUME_VERSION_NOT_FOUND", "没有找到这份简历版本", 404);
     if (current.revision !== expectedRevision) throw new StoreError("REVISION_CONFLICT", "这份简历已在其他页面更新，请刷新后重试", 409, { serverRevision: current.revision, server: current });
