@@ -13,6 +13,7 @@ import "./styles/feedback.css";
 import "./styles/chat.css";
 import "./styles/data-pages.css";
 import "./styles/company-directory.css";
+import "./styles/batch-import.css";
 import "./styles/resume-studio.css";
 import "./styles/browser-extension.css";
 import "./styles/help-center.css";

@@ -36,12 +36,14 @@ import {
   Send,
   Star,
   Table2,
+  Upload,
   UsersRound,
   X
 } from "lucide-react";
 import { api } from "../app/api";
 import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
+import { BatchImportDialog } from "../features/applications/BatchImportDialog";
 import { InterviewRecordsDialog } from "../features/applications/InterviewRecordsDialog";
 import { downloadApplicationExport } from "../features/applications/applicationExcelExport";
 
@@ -115,6 +117,7 @@ export function ApplicationsPage() {
     return param === "board" ? "board" : "table";
   });
   const [exporting, setExporting] = useState(false);
+  const [importOpen, setImportOpen] = useState(false);
   const [expandedEmptyStages, setExpandedEmptyStages] = useState<Set<ApplicationStage>>(() => new Set());
   const [dialog, setDialog] = useState<{ mode: "create" } | { mode: "edit"; item: ApplicationSyncItem }>();
   const [interviewDialog, setInterviewDialog] = useState<ApplicationSyncItem>();
@@ -367,6 +370,14 @@ export function ApplicationsPage() {
         >
           <Download aria-hidden="true" size={16} />{exporting ? "正在生成" : "导出 Excel"}
         </button>
+        <button
+          className="application-import-button"
+          type="button"
+          aria-label="从飞书或 Excel 批量导入投递记录"
+          onClick={() => setImportOpen(true)}
+        >
+          <Upload aria-hidden="true" size={16} />批量导入
+        </button>
         <div className="view-switch" aria-label="显示方式">
           <button type="button" aria-pressed={view === "table"} onClick={() => selectView("table")}><Table2 aria-hidden="true" size={16} />表格</button>
           <button type="button" aria-pressed={view === "board"} onClick={() => selectView("board")}><Columns3 aria-hidden="true" size={16} />看板</button>
@@ -465,6 +476,16 @@ export function ApplicationsPage() {
         <InterviewRecordsDialog
           item={interviewDialog}
           onClose={() => setInterviewDialog(undefined)}
+        />
+      )}
+      {importOpen && (
+        <BatchImportDialog
+          existingItems={items}
+          onClose={() => setImportOpen(false)}
+          onImportComplete={(res) => {
+            load({ silent: true });
+            setStatus(`批量导入完成！成功新建 ${res.createdCount} 条，更新 ${res.updatedCount} 条已有记录。`);
+          }}
         />
       )}
     </section>
