@@ -1,7 +1,8 @@
 export interface DeadlineStatus {
   isUrgent: boolean; // within 3 days or expired
   isExpired: boolean; // past deadline
-  remainingText: string; // e.g. "剩 2 天", "剩 12 小时", "已截止"
+  isCompleted?: boolean; // assessment completed
+  remainingText: string; // e.g. "剩 2 天", "剩 12 小时", "已截止", "已完成"
   formattedDate: string; // e.g. "09/10 18:00"
 }
 
@@ -10,8 +11,34 @@ export interface DeadlineStatus {
  */
 export function computeDeadlineStatus(
   deadlineStr?: string,
-  now: Date = new Date()
+  now: Date = new Date(),
+  isCompleted?: boolean
 ): DeadlineStatus | undefined {
+  if (isCompleted) {
+    let formattedDate = "";
+    if (deadlineStr && deadlineStr.trim()) {
+      const normalizedStr = deadlineStr.includes("T")
+        ? deadlineStr
+        : deadlineStr.replace(" ", "T");
+      const parsed = Date.parse(normalizedStr);
+      if (!Number.isNaN(parsed)) {
+        formattedDate = new Intl.DateTimeFormat("zh-CN", {
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(new Date(parsed));
+      }
+    }
+    return {
+      isUrgent: false,
+      isExpired: false,
+      isCompleted: true,
+      remainingText: "已完成",
+      formattedDate
+    };
+  }
+
   if (!deadlineStr || !deadlineStr.trim()) return undefined;
 
   // Supports "2026-09-10 18:00" or ISO format
@@ -35,6 +62,7 @@ export function computeDeadlineStatus(
     return {
       isUrgent: true,
       isExpired: true,
+      isCompleted: false,
       remainingText: "已截止",
       formattedDate
     };
@@ -57,6 +85,7 @@ export function computeDeadlineStatus(
   return {
     isUrgent,
     isExpired: false,
+    isCompleted: false,
     remainingText,
     formattedDate
   };

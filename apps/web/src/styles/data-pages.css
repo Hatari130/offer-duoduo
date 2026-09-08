@@ -307,7 +307,7 @@
   text-align: start;
 }
 
-.application-table { min-width: 62rem; }
+.application-table { min-width: 66rem; }
 
 .opportunities-page {
   --opportunity-blue: var(--of-info);
@@ -674,6 +674,7 @@
   font-size: 0.75rem;
   font-weight: 650;
   letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 
 .data-table tbody tr:last-child td { border-block-end: 0; }
@@ -1414,6 +1415,11 @@
   border: 0;
   font-family: inherit;
   text-align: start;
+  white-space: nowrap;
+}
+
+.table-sort svg {
+  flex-shrink: 0;
 }
 
 .table-sort:hover { color: var(--of-brand-700); }
@@ -2156,6 +2162,52 @@
   border-style: solid;
 }
 
+.application-deadline-cell {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+}
+
+.application-deadline-check-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.65rem;
+  height: 1.65rem;
+  padding: 0;
+  color: var(--of-text-subtle);
+  background: transparent;
+  border: 1px dashed var(--of-line-strong);
+  border-radius: 0.4rem;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.application-deadline-check-action:hover {
+  color: #15803d;
+  background: #f0fdf4;
+  border-color: #86efac;
+  border-style: solid;
+}
+
+.application-deadline-btn.is-completed {
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #86efac;
+  font-weight: 620;
+}
+
+.application-deadline-btn.is-completed:hover {
+  background: #dcfce7;
+  border-color: #4ade80;
+  color: #166534;
+}
+
+.application-deadline-btn.is-completed svg {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
 .application-deadline-btn--icon-only {
   width: 1.85rem;
   height: 1.85rem;
@@ -2233,6 +2285,18 @@
   flex-shrink: 0;
 }
 
+.board-card-deadline.is-completed {
+  color: #15803d;
+  background: #f0fdf4;
+  border-color: #86efac;
+  font-weight: 600;
+}
+
+.board-card-deadline.is-completed svg {
+  color: #16a34a;
+  flex-shrink: 0;
+}
+
 .board-card-deadline-tag {
   display: inline-block;
   padding: 0.1rem 0.32rem;
@@ -2245,6 +2309,31 @@
 .board-card-deadline.is-urgent .board-card-deadline-tag {
   background: #fee2e2;
   color: #dc2626;
+}
+
+html[data-theme="dark"] .application-deadline-btn.is-completed {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #86efac;
+}
+
+html[data-theme="dark"] .application-deadline-btn.is-completed:hover {
+  background: rgba(34, 197, 94, 0.22);
+  border-color: #22c55e;
+}
+
+html[data-theme="dark"] .application-deadline-btn.is-completed svg {
+  color: #86efac;
+}
+
+html[data-theme="dark"] .board-card-deadline.is-completed {
+  background: rgba(34, 197, 94, 0.14);
+  border-color: rgba(34, 197, 94, 0.45);
+  color: #86efac;
+}
+
+html[data-theme="dark"] .board-card-deadline.is-completed svg {
+  color: #86efac;
 }
 
 html[data-theme="dark"] .application-deadline-btn.is-urgent {
@@ -3265,12 +3354,44 @@ html[data-theme="dark"] .board-card-deadline.is-urgent .board-card-deadline-tag 
   min-height: 0;
 }
 
-.dialog-fields label {
+.dialog-fields label,
+.dialog-fields .dialog-field-block {
   display: grid;
   gap: 0.25rem;
   color: var(--of-text-muted);
   font-size: 0.73rem;
   font-weight: 600;
+}
+
+.deadline-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.deadline-complete-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.32rem;
+  font-size: 0.73rem;
+  font-weight: 550;
+  color: var(--of-text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+
+.deadline-complete-checkbox input[type="checkbox"] {
+  width: 0.95rem;
+  height: 0.95rem;
+  min-height: unset;
+  margin: 0;
+  accent-color: var(--of-success, #16a34a);
+  cursor: pointer;
+}
+
+.deadline-complete-checkbox:hover {
+  color: var(--of-text);
 }
 
 .dialog-fields input,

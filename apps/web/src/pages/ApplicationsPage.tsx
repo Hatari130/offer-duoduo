@@ -24,6 +24,7 @@ import {
   BadgeCheck,
   BriefcaseBusiness,
   CalendarClock,
+  Check,
   ChevronRight,
   Columns3,
   Download,
@@ -418,7 +419,11 @@ export function ApplicationsPage() {
             <tbody>
               {filtered.map((item) => {
                 const application = item.application;
-                const deadlineStatus = computeDeadlineStatus(application.deadline);
+                const deadlineStatus = computeDeadlineStatus(
+                  application.deadline,
+                  undefined,
+                  application.assessmentCompleted
+                );
                 return (
                   <tr key={application.id} className={selectableStage(application.stage) === "closed" ? "application-row--closed" : undefined}>
                     <td data-label="公司与岗位"><div className="application-identity"><button className="application-title" type="button" onClick={() => setDialog({ mode: "edit", item })}><strong>{application.company}</strong><span>{application.position}</span>{application.tailoredResumeName && <small>已关联定制简历</small>}</button></div></td>
@@ -427,24 +432,59 @@ export function ApplicationsPage() {
                     <td data-label="投递时间"><span className="cell-icon"><CalendarClock aria-hidden="true" size={14} />{appliedAtLabel(application.appliedAt)}</span></td>
                     <td data-label="笔试截止">
                       {deadlineStatus ? (
-                        <button
-                          type="button"
-                          className={`application-deadline-btn ${deadlineStatus.isUrgent ? "is-urgent" : ""}`}
-                          title={`具体截止：${deadlineStatus.formattedDate}（点击修改）`}
-                          onClick={() => setDialog({ mode: "edit", item })}
-                        >
-                          {deadlineStatus.isUrgent ? (
-                            <>
-                              <AlertTriangle aria-hidden="true" size={12} />
-                              <span>{deadlineStatus.remainingText}</span>
-                            </>
-                          ) : (
-                            <>
-                              <CalendarClock aria-hidden="true" size={13} />
-                              <span>{deadlineStatus.formattedDate}</span>
-                            </>
+                        <div className="application-deadline-cell">
+                          <button
+                            type="button"
+                            className={`application-deadline-btn ${
+                              deadlineStatus.isCompleted
+                                ? "is-completed"
+                                : deadlineStatus.isUrgent
+                                ? "is-urgent"
+                                : ""
+                            }`}
+                            title={
+                              deadlineStatus.isCompleted
+                                ? `笔试已完成${deadlineStatus.formattedDate ? `（原截止：${deadlineStatus.formattedDate}）` : ""}，点击修改`
+                                : `具体截止：${deadlineStatus.formattedDate}（点击修改）`
+                            }
+                            onClick={() => setDialog({ mode: "edit", item })}
+                          >
+                            {deadlineStatus.isCompleted ? (
+                              <>
+                                <Check aria-hidden="true" size={13} />
+                                <span>已完成</span>
+                              </>
+                            ) : deadlineStatus.isUrgent ? (
+                              <>
+                                <AlertTriangle aria-hidden="true" size={12} />
+                                <span>{deadlineStatus.remainingText}</span>
+                              </>
+                            ) : (
+                              <>
+                                <CalendarClock aria-hidden="true" size={13} />
+                                <span>{deadlineStatus.formattedDate}</span>
+                              </>
+                            )}
+                          </button>
+                          {!deadlineStatus.isCompleted && (
+                            <button
+                              type="button"
+                              className="application-deadline-check-action"
+                              title="点击一键标记笔试已完成"
+                              aria-label={`标记 ${application.company} ${application.position} 笔试已完成`}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                void mutate(item, {
+                                  ...application,
+                                  assessmentCompleted: true,
+                                  updatedAt: new Date().toISOString()
+                                });
+                              }}
+                            >
+                              <Check aria-hidden="true" size={12} />
+                            </button>
                           )}
-                        </button>
+                        </div>
                       ) : (
                         <button
                           type="button"
@@ -487,17 +527,36 @@ export function ApplicationsPage() {
                 {isEmptyStage ? <button className="board-column-header board-column-header--toggle" type="button" aria-expanded={!isCollapsed} aria-label={`${isCollapsed ? "展开" : "收起"}${STAGE_LABELS[stageKey]}阶段`} onClick={() => toggleEmptyStage(stageKey)}><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></button> : <header><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></header>}
                 <div>
                   {stageItems.map((item) => {
-                    const deadlineStatus = computeDeadlineStatus(item.application.deadline);
+                    const deadlineStatus = computeDeadlineStatus(
+                      item.application.deadline,
+                      undefined,
+                      item.application.assessmentCompleted
+                    );
                     return (
                       <article className={`board-card ${selectableStage(item.application.stage) === "closed" ? "board-card--closed" : ""}`} key={item.application.id}>
                         <button className="board-card-main" type="button" onClick={() => setDialog({ mode: "edit", item })}>
                           <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em>{["closed", "interview"].includes(selectableStage(item.application.stage)) && <b className="board-stage-label">{applicationStageLabel(item.application)}</b>}<small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
                           {deadlineStatus && (
                             <span
-                              className={`board-card-deadline ${deadlineStatus.isUrgent ? "is-urgent" : ""}`}
-                              title={`具体截止：${deadlineStatus.formattedDate}`}
+                              className={`board-card-deadline ${
+                                deadlineStatus.isCompleted
+                                  ? "is-completed"
+                                  : deadlineStatus.isUrgent
+                                  ? "is-urgent"
+                                  : ""
+                              }`}
+                              title={
+                                deadlineStatus.isCompleted
+                                  ? `笔试已完成${deadlineStatus.formattedDate ? `（原截止：${deadlineStatus.formattedDate}）` : ""}`
+                                  : `具体截止：${deadlineStatus.formattedDate}`
+                              }
                             >
-                              {deadlineStatus.isUrgent ? (
+                              {deadlineStatus.isCompleted ? (
+                                <>
+                                  <Check aria-hidden="true" size={12} />
+                                  <span>笔试已完成</span>
+                                </>
+                              ) : deadlineStatus.isUrgent ? (
                                 <>
                                   <AlertTriangle aria-hidden="true" size={12} />
                                   <span>笔试截止: {deadlineStatus.remainingText}</span>
@@ -585,6 +644,9 @@ function ApplicationDialog({
   );
   const [deadline, setDeadline] = useState(
     item?.application.deadline?.slice(0, 16).replace(" ", "T") || ""
+  );
+  const [assessmentCompleted, setAssessmentCompleted] = useState(
+    Boolean(item?.application.assessmentCompleted)
   );
   const [jobDescription, setJobDescription] = useState(item?.application.rawExcerpt || "");
   const [sourceUrl, setSourceUrl] = useState(item?.application.sourceHost === "manual" ? "" : item?.application.sourceUrl || "");
@@ -702,6 +764,7 @@ function ApplicationDialog({
             interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
             appliedAt: appliedAt ? appliedAt.slice(0, 10) : undefined,
             deadline: deadline ? deadline.replace("T", " ").slice(0, 16) : undefined,
+            assessmentCompleted: assessmentCompleted || undefined,
             rawExcerpt: jobDescription.trim() || undefined,
             sourceUrl: url,
             sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
@@ -793,7 +856,25 @@ function ApplicationDialog({
           {stage === "closed" && <label><span>结束原因</span><select value={closedReason} onChange={(event) => setClosedReason(event.target.value as ClosedStageReason | "")}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select></label>}
           <label><span>投递时间</span><input type="date" value={appliedAt} onChange={(event) => setAppliedAt(event.target.value)} /></label>
           {Boolean(item) && (
-            <label><span>笔试截止</span><input type="datetime-local" value={deadline} onChange={(event) => setDeadline(event.target.value)} /></label>
+            <div className="dialog-field-block">
+              <div className="deadline-label-row">
+                <span>笔试截止</span>
+                <label className="deadline-complete-checkbox" title="勾选标记笔试已完成">
+                  <input
+                    type="checkbox"
+                    checked={assessmentCompleted}
+                    onChange={(event) => setAssessmentCompleted(event.target.checked)}
+                  />
+                  <span>已完成</span>
+                </label>
+              </div>
+              <input
+                type="datetime-local"
+                value={deadline}
+                onChange={(event) => setDeadline(event.target.value)}
+                aria-label="笔试截止时间"
+              />
+            </div>
           )}
           <label className={(!item || stage === "interview" || stage === "closed") ? "field-wide" : ""}><span>岗位来源链接</span><input type="url" inputMode="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://careers.example.com/job/123" /></label>
           <label className="field-wide"><span>岗位 JD</span><textarea value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} placeholder="粘贴岗位职责、任职要求、加分项等完整 JD" /></label>

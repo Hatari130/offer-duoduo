@@ -151,6 +151,7 @@ export interface JobApplication {
   externalStage?: string;
   appliedAt?: string;
   deadline?: string;
+  assessmentCompleted?: boolean;
   nextAction?: string;
   sourceUrl: string;
   sourceHost: string;
@@ -181,6 +182,7 @@ export interface ExtractedJob {
   jobType?: string;
   recruitmentType?: RecruitmentType;
   deadline?: string;
+  assessmentCompleted?: boolean;
   appliedAt?: string;
   nextAction?: string;
   summary?: string;

@@ -57,3 +57,15 @@ test("computeDeadlineStatus does not trigger urgent warning beyond 3 days", () =
   assert.equal(status.isExpired, false);
   assert.equal(status.remainingText, "剩 5 天");
 });
+
+test("computeDeadlineStatus marks completed assessments without urgent or expired warning", () => {
+  const now = new Date("2026-09-08T12:00:00Z");
+  const past = "2026-08-30T10:00:00Z";
+  const status = computeDeadlineStatus(past, now, true);
+
+  assert.ok(status);
+  assert.equal(status.isUrgent, false);
+  assert.equal(status.isExpired, false);
+  assert.equal(status.isCompleted, true);
+  assert.equal(status.remainingText, "已完成");
+});
