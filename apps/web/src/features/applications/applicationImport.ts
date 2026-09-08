@@ -31,7 +31,7 @@ export const IMPORT_FIELD_LABELS: Record<ImportTargetField, string> = {
   position: "岗位名称 *",
   stage: "当前阶段",
   appliedAt: "投递时间",
-  deadline: "笔试截止时间",
+  deadline: "笔试截止",
   city: "城市/地点",
   department: "部门/业务线",
   recruitmentType: "岗位类型",

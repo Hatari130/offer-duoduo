@@ -2156,6 +2156,16 @@
   border-style: solid;
 }
 
+.application-deadline-btn--icon-only {
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.45rem;
+}
+
 .application-deadline-btn.is-urgent {
   color: #b91c1c;
   background: #fff5f5;
@@ -2168,6 +2178,11 @@
   background: #fee2e2;
   border-color: #ef4444;
   color: #991b1b;
+}
+
+.application-deadline-btn.is-urgent svg {
+  color: #dc2626;
+  flex-shrink: 0;
 }
 
 .deadline-date-text {
@@ -2188,10 +2203,6 @@
   font-size: 0.69rem;
   font-weight: 700;
   line-height: 1.2;
-}
-
-.application-deadline-btn.is-urgent .deadline-date-text svg {
-  color: #dc2626;
 }
 
 .board-card-deadline {
@@ -2246,6 +2257,10 @@ html[data-theme="dark"] .application-deadline-btn.is-urgent {
 html[data-theme="dark"] .application-deadline-btn.is-urgent:hover {
   background: rgba(239, 68, 68, 0.22);
   border-color: #ef4444;
+}
+
+html[data-theme="dark"] .application-deadline-btn.is-urgent svg {
+  color: #fca5a5;
 }
 
 html[data-theme="dark"] .application-deadline-warning-tag {
@@ -3138,15 +3153,17 @@ html[data-theme="dark"] .board-card-deadline.is-urgent .board-card-deadline-tag 
 .application-dialog-backdrop.is-closing { pointer-events: none; }
 
 .application-dialog {
-  width: min(44rem, calc(100% - 2rem));
-  max-height: min(48rem, calc(100dvh - 2rem));
+  display: flex;
+  flex-direction: column;
+  width: min(42rem, calc(100% - 2rem));
+  max-height: min(92vh, 44rem);
   padding: 0;
   color: var(--of-text);
   background: var(--of-surface-raised);
-  border: 0;
-  border-radius: 1.35rem;
+  border: 1px solid var(--of-line);
+  border-radius: 1.15rem;
   box-shadow: var(--of-shadow-float);
-  overflow: auto;
+  overflow: hidden;
   overscroll-behavior: contain;
 }
 
@@ -3183,93 +3200,202 @@ html[data-theme="dark"] .board-card-deadline.is-urgent .board-card-deadline-tag 
   }
 }
 
-.application-dialog form { padding: 1.4rem; }
+.application-dialog form {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+}
 
 .application-dialog header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
+  padding: 0.85rem 1.25rem;
+  border-bottom: 1px solid var(--of-line);
+  background: var(--of-surface-raised);
+  flex-shrink: 0;
+}
+
+.application-dialog header .page-kicker {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--of-brand-600);
+  margin-bottom: 0.15rem;
 }
 
 .application-dialog h2 {
-  margin: 0.45rem 0 0;
+  margin: 0;
   color: var(--of-text-strong);
-  font-size: 1.4rem;
-  font-weight: 650;
-  letter-spacing: -0.035em;
+  font-size: 1.15rem;
+  font-weight: 680;
+  letter-spacing: -0.025em;
 }
 
 .application-dialog header > button {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.1rem;
+  height: 2.1rem;
   place-items: center;
   color: var(--of-text-muted);
   background: var(--of-surface-muted);
-  border: 0;
-  border-radius: 0.7rem;
+  border: 1px solid transparent;
+  border-radius: 0.6rem;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.application-dialog header > button:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface-raised);
+  border-color: var(--of-line);
 }
 
 .dialog-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-  margin-block-start: 1.5rem;
+  gap: 0.6rem 0.85rem;
+  padding: 0.85rem 1.25rem;
+  margin: 0;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
 }
 
 .dialog-fields label {
   display: grid;
-  gap: 0.42rem;
+  gap: 0.25rem;
   color: var(--of-text-muted);
-  font-size: 0.75rem;
-  font-weight: 620;
+  font-size: 0.73rem;
+  font-weight: 600;
 }
 
 .dialog-fields input,
 .dialog-fields select,
 .dialog-fields textarea {
   width: 100%;
-  min-height: 2.7rem;
-  padding-inline: 0.75rem;
+  min-height: 2.25rem;
+  height: 2.25rem;
+  padding-inline: 0.65rem;
   color: var(--of-text);
   background: var(--of-surface-raised);
   border: 1px solid var(--of-line-control, var(--of-line-strong));
-  border-radius: 0.7rem;
-  font-size: 1rem;
+  border-radius: 0.55rem;
+  font-size: 0.84rem;
+  transition: border-color 140ms ease, box-shadow 140ms ease;
 }
 
 .dialog-fields textarea {
-  min-height: 10rem;
-  padding: 0.72rem 0.75rem;
-  line-height: 1.65;
+  min-height: 4rem;
+  height: 4.25rem;
+  padding: 0.5rem 0.65rem;
+  line-height: 1.45;
   resize: vertical;
+  font-size: 0.82rem;
 }
 
 .dialog-fields input:focus,
 .dialog-fields select:focus,
-.dialog-fields textarea:focus { border-color: var(--of-brand-400); }
+.dialog-fields textarea:focus {
+  border-color: var(--of-brand-400);
+  outline: 2px solid color-mix(in srgb, var(--of-brand-400) 25%, transparent);
+  outline-offset: 0;
+}
+
 .dialog-fields .field-wide { grid-column: 1 / -1; }
-.dialog-fields .dialog-note--wide { max-width: none; white-space: normal; line-height: 1.5; }
 
 .dialog-error {
-  min-height: 1.3rem;
-  margin-block-start: 0.75rem;
+  padding: 0.4rem 1.25rem 0;
   color: var(--of-danger);
-  font-size: 0.75rem;
+  font-size: 0.74rem;
+  font-weight: 550;
 }
 
 .application-dialog footer {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin: 0.5rem -1.4rem -1.4rem;
-  padding: 1rem 1.4rem;
+  gap: 0.75rem;
+  padding: 0.65rem 1.25rem;
   background: var(--of-surface-muted);
+  border-top: 1px solid var(--of-line);
+  margin: 0;
+  flex-shrink: 0;
 }
 
-.application-dialog footer > div { display: flex; gap: 0.55rem; }
+.application-dialog footer > div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.application-dialog .danger-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.15rem;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 0.55rem;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.application-dialog .danger-button:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+  color: #b91c1c;
+}
+
+.application-dialog .secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.15rem;
+  padding: 0.35rem 0.95rem;
+  font-size: 0.8rem;
+  font-weight: 550;
+  color: var(--of-text-muted);
+  background: var(--of-surface-raised);
+  border: 1px solid var(--of-line);
+  border-radius: 0.55rem;
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.application-dialog .secondary-button:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface-muted);
+  border-color: var(--of-line-strong);
+}
+
+.application-dialog .primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.15rem;
+  padding: 0.35rem 1.15rem;
+  font-size: 0.8rem;
+  font-weight: 650;
+  color: #ffffff;
+  background: var(--of-accent);
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  box-shadow: 0 1px 2px rgba(63, 86, 184, 0.28);
+  cursor: pointer;
+  transition: all 140ms ease;
+}
+
+.application-dialog .primary-button:hover {
+  background: var(--of-accent-hover);
+}
 
 .settings-grid {
   display: grid;
