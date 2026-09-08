@@ -18,6 +18,7 @@ import {
   type RecruitmentType
 } from "@offerflow/domain";
 import {
+  AlertTriangle,
   ArrowUpDown,
   ArrowUpRight,
   BadgeCheck,
@@ -45,10 +46,11 @@ import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
 import { BatchImportDialog } from "../features/applications/BatchImportDialog";
 import { InterviewRecordsDialog } from "../features/applications/InterviewRecordsDialog";
+import { computeDeadlineStatus } from "../features/applications/applicationDeadline";
 import { downloadApplicationExport } from "../features/applications/applicationExcelExport";
 
 type ViewMode = "table" | "board";
-type SortKey = "recruitmentType" | "stage" | "appliedAt";
+type SortKey = "recruitmentType" | "stage" | "appliedAt" | "deadline";
 type SortDirection = "asc" | "desc";
 
 function sourceHost(value: string): string {
@@ -169,6 +171,12 @@ export function ApplicationsPage() {
             .localeCompare(applicationRecruitmentType(rightApplication) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(rightApplication)!] : "未识别", "zh-CN");
         } else if (sort.key === "stage") {
           comparison = SELECTABLE_STAGES.indexOf(selectableStage(leftApplication.stage)) - SELECTABLE_STAGES.indexOf(selectableStage(rightApplication.stage));
+        } else if (sort.key === "deadline") {
+          const leftTime = leftApplication.deadline ? Date.parse(leftApplication.deadline) : Number.NaN;
+          const rightTime = rightApplication.deadline ? Date.parse(rightApplication.deadline) : Number.NaN;
+          if (Number.isNaN(leftTime) && !Number.isNaN(rightTime)) return 1;
+          if (!Number.isNaN(leftTime) && Number.isNaN(rightTime)) return -1;
+          comparison = leftTime - rightTime;
         } else {
           const leftTime = leftApplication.appliedAt ? Date.parse(leftApplication.appliedAt) : Number.NaN;
           const rightTime = rightApplication.appliedAt ? Date.parse(rightApplication.appliedAt) : Number.NaN;
@@ -403,16 +411,48 @@ export function ApplicationsPage() {
         <div className="application-table-wrap">
           <table className="data-table application-table">
             <caption className="sr-only">个人投递记录</caption>
-            <thead><tr><th>公司与岗位</th><th aria-sort={sort?.key === "recruitmentType" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("recruitmentType")}>岗位类型<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "stage" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("stage")}>当前阶段<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "appliedAt" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("appliedAt")}>投递时间<ArrowUpDown aria-hidden="true" size={13} /></button></th><th>地点</th><th>岗位 JD</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
+            <thead><tr><th>公司与岗位</th><th aria-sort={sort?.key === "recruitmentType" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("recruitmentType")}>岗位类型<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "stage" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("stage")}>当前阶段<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "appliedAt" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("appliedAt")}>投递时间<ArrowUpDown aria-hidden="true" size={13} /></button></th><th aria-sort={sort?.key === "deadline" ? (sort.direction === "asc" ? "ascending" : "descending") : "none"}><button className="table-sort" type="button" onClick={() => toggleSort("deadline")}>笔试截止时间<ArrowUpDown aria-hidden="true" size={13} /></button></th><th>地点</th><th>岗位 JD</th><th>面试问答记录</th><th><span className="sr-only">操作</span></th></tr></thead>
             <tbody>
               {filtered.map((item) => {
                 const application = item.application;
+                const deadlineStatus = computeDeadlineStatus(application.deadline);
                 return (
                   <tr key={application.id} className={selectableStage(application.stage) === "closed" ? "application-row--closed" : undefined}>
                     <td data-label="公司与岗位"><div className="application-identity"><button className="application-title" type="button" onClick={() => setDialog({ mode: "edit", item })}><strong>{application.company}</strong><span>{application.position}</span>{application.tailoredResumeName && <small>已关联定制简历</small>}</button></div></td>
                     <td data-label="岗位类型"><select className="application-tag application-tag--recruitment application-tag--select" aria-label={`更新 ${application.company} ${application.position} 的岗位类型`} value={applicationRecruitmentType(application) || ""} onChange={(event) => changeRecruitmentType(item, (event.target.value || undefined) as RecruitmentType | undefined)}><option value="">未识别</option>{RECRUITMENT_TYPES.map((value) => <option value={value} key={value}>{RECRUITMENT_TYPE_LABELS[value]}</option>)}</select></td>
                     <td data-label="当前阶段"><div className="stage-cell"><select className={`application-tag application-tag--stage application-tag--select application-tag--${stageTone(selectableStage(application.stage))}`} aria-label={`更新 ${application.company} ${application.position} 的阶段`} value={selectableStage(application.stage)} onChange={(event) => changeStage(item, event.target.value as ApplicationStage)}>{SELECTABLE_STAGES.map((value) => <option value={value} key={value}>{value === "closed" ? selectedStageLabel(value, application.closedReason) : value === "interview" ? selectedStageLabel(value, undefined, application.interviewRound) : STAGE_LABELS[value]}</option>)}</select>{selectableStage(application.stage) === "interview" && !application.interviewRound && <select className="application-tag application-tag--select application-tag--secondary" aria-label={`更新 ${application.company} ${application.position} 的面试轮次`} value="" onChange={(event) => changeInterviewRound(item, event.target.value as InterviewRound)}><option value="">选择面试轮次</option>{INTERVIEW_ROUNDS.map((round) => <option value={round} key={round}>{INTERVIEW_ROUND_LABELS[round]}</option>)}</select>}{selectableStage(application.stage) === "closed" && !application.closedReason && <select className="application-tag application-tag--select application-tag--secondary" aria-label={`更新 ${application.company} ${application.position} 的结束原因`} value="" onChange={(event) => changeClosedReason(item, event.target.value as ClosedStageReason)}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select>}</div></td>
                     <td data-label="投递时间"><span className="cell-icon"><CalendarClock aria-hidden="true" size={14} />{appliedAtLabel(application.appliedAt)}</span></td>
+                    <td data-label="笔试截止时间">
+                      {deadlineStatus ? (
+                        <button
+                          type="button"
+                          className={`application-deadline-btn ${deadlineStatus.isUrgent ? "is-urgent" : ""}`}
+                          title={`点击修改笔试截止时间${deadlineStatus.remainingText ? `（${deadlineStatus.remainingText}）` : ""}`}
+                          onClick={() => setDialog({ mode: "edit", item })}
+                        >
+                          <span className="deadline-date-text">
+                            <CalendarClock aria-hidden="true" size={13} />
+                            {deadlineStatus.formattedDate}
+                          </span>
+                          {deadlineStatus.isUrgent && (
+                            <span className="application-deadline-warning-tag">
+                              <AlertTriangle aria-hidden="true" size={12} />
+                              <span>{deadlineStatus.remainingText}</span>
+                            </span>
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          className="application-deadline-btn application-deadline-btn--empty"
+                          title="点击填写笔试截止时间"
+                          onClick={() => setDialog({ mode: "edit", item })}
+                        >
+                          <Plus aria-hidden="true" size={13} />
+                          <span>填写截止</span>
+                        </button>
+                      )}
+                    </td>
                     <td data-label="地点"><span className="cell-icon"><MapPin aria-hidden="true" size={14} />{application.city || "未填写"}</span></td>
                     <td data-label="岗位 JD"><button className={`application-jd-entry ${application.rawExcerpt?.trim() ? "has-content" : ""}`} type="button" aria-label={`${application.rawExcerpt?.trim() ? "查看" : "为"} ${application.company} ${application.position} ${application.rawExcerpt?.trim() ? "的岗位 JD" : "添加岗位 JD"}`} onClick={() => setDialog({ mode: "edit", item })}><FileText aria-hidden="true" size={15} /><span>{application.rawExcerpt?.trim() ? "查看 JD" : "添加 JD"}</span></button></td>
                     <td data-label="面试记录"><button className="interview-record-entry" type="button" aria-label={`为 ${application.company} ${application.position} 添加面试问答记录`} onClick={() => setInterviewDialog(item)}><Plus aria-hidden="true" size={15} /><span>添加</span></button></td>
@@ -442,17 +482,27 @@ export function ApplicationsPage() {
               <section className={`board-column ${isCollapsed ? "board-column--collapsed" : ""}`} data-stage={stageKey} key={stageKey}>
                 {isEmptyStage ? <button className="board-column-header board-column-header--toggle" type="button" aria-expanded={!isCollapsed} aria-label={`${isCollapsed ? "展开" : "收起"}${STAGE_LABELS[stageKey]}阶段`} onClick={() => toggleEmptyStage(stageKey)}><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></button> : <header><span>{STAGE_LABELS[stageKey]}</span><strong>{stageItems.length}</strong></header>}
                 <div>
-                  {stageItems.map((item) => (
-                    <article className={`board-card ${selectableStage(item.application.stage) === "closed" ? "board-card--closed" : ""}`} key={item.application.id}>
-                      <button className="board-card-main" type="button" onClick={() => setDialog({ mode: "edit", item })}>
-                        <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em>{["closed", "interview"].includes(selectableStage(item.application.stage)) && <b className="board-stage-label">{applicationStageLabel(item.application)}</b>}<small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
-                      </button>
+                  {stageItems.map((item) => {
+                    const deadlineStatus = computeDeadlineStatus(item.application.deadline);
+                    return (
+                      <article className={`board-card ${selectableStage(item.application.stage) === "closed" ? "board-card--closed" : ""}`} key={item.application.id}>
+                        <button className="board-card-main" type="button" onClick={() => setDialog({ mode: "edit", item })}>
+                          <span>{item.application.company}</span><strong>{item.application.position}</strong><em>{applicationRecruitmentType(item.application) ? RECRUITMENT_TYPE_LABELS[applicationRecruitmentType(item.application)!] : "类型未识别"}</em>{["closed", "interview"].includes(selectableStage(item.application.stage)) && <b className="board-stage-label">{applicationStageLabel(item.application)}</b>}<small><MapPin aria-hidden="true" size={12} />{item.application.city || "地点未填写"}</small>
+                          {deadlineStatus && (
+                            <span className={`board-card-deadline ${deadlineStatus.isUrgent ? "is-urgent" : ""}`}>
+                              {deadlineStatus.isUrgent ? <AlertTriangle aria-hidden="true" size={12} /> : <CalendarClock aria-hidden="true" size={12} />}
+                              <span>笔试截止: {deadlineStatus.formattedDate}</span>
+                              <b className="board-card-deadline-tag">{deadlineStatus.remainingText}</b>
+                            </span>
+                          )}
+                        </button>
                       <div className="board-card-actions">
                         <button className={`board-jd-entry ${item.application.rawExcerpt?.trim() ? "has-content" : ""}`} type="button" aria-label={`${item.application.rawExcerpt?.trim() ? "查看" : "为"} ${item.application.company} ${item.application.position} ${item.application.rawExcerpt?.trim() ? "的岗位 JD" : "添加岗位 JD"}`} onClick={() => setDialog({ mode: "edit", item })}><FileText aria-hidden="true" size={14} /><span>{item.application.rawExcerpt?.trim() ? "查看 JD" : "添加 JD"}</span></button>
                         <button className="board-interview-entry" type="button" aria-label={`为 ${item.application.company} ${item.application.position} 添加面试问答记录`} onClick={() => setInterviewDialog(item)}><MessageCircleQuestion aria-hidden="true" size={14} /><span>面试记录</span></button>
                       </div>
                     </article>
-                  ))}
+                  );
+                })}
                   {!stageItems.length && <span className="board-empty">暂无记录</span>}
                 </div>
               </section>
@@ -517,6 +567,9 @@ function ApplicationDialog({
   const [interviewRound, setInterviewRound] = useState<InterviewRound | "">(item?.application.interviewRound || "");
   const [appliedAt, setAppliedAt] = useState(
     item?.application.appliedAt?.slice(0, 16).replace(" ", "T") || ""
+  );
+  const [deadline, setDeadline] = useState(
+    item?.application.deadline?.slice(0, 16).replace(" ", "T") || ""
   );
   const [jobDescription, setJobDescription] = useState(item?.application.rawExcerpt || "");
   const [sourceUrl, setSourceUrl] = useState(item?.application.sourceHost === "manual" ? "" : item?.application.sourceUrl || "");
@@ -633,6 +686,7 @@ function ApplicationDialog({
             closedReason: stage === "closed" ? closedReason || undefined : undefined,
             interviewRound: stage === "interview" ? interviewRound || undefined : undefined,
             appliedAt: appliedAt ? appliedAt.replace("T", " ").slice(0, 16) : undefined,
+            deadline: deadline ? deadline.replace("T", " ").slice(0, 16) : undefined,
             rawExcerpt: jobDescription.trim() || undefined,
             sourceUrl: url,
             sourceHost: providedSourceUrl ? sourceHost(url) : "manual",
@@ -723,6 +777,9 @@ function ApplicationDialog({
           {stage === "interview" && <label><span>面试轮次</span><select value={interviewRound} onChange={(event) => setInterviewRound(event.target.value as InterviewRound | "")}><option value="">选择面试轮次</option>{INTERVIEW_ROUNDS.map((round) => <option value={round} key={round}>{INTERVIEW_ROUND_LABELS[round]}</option>)}</select></label>}
           {stage === "closed" && <label><span>结束原因</span><select value={closedReason} onChange={(event) => setClosedReason(event.target.value as ClosedStageReason | "")}><option value="">选择结束原因</option>{CLOSED_STAGE_REASONS.map((reason) => <option value={reason} key={reason}>{CLOSED_STAGE_REASON_LABELS[reason]}</option>)}</select></label>}
           <label><span>投递时间</span><input type="datetime-local" value={appliedAt} onChange={(event) => setAppliedAt(event.target.value)} /></label>
+          {Boolean(item) && (
+            <label><span>笔试截止时间</span><input type="datetime-local" value={deadline} onChange={(event) => setDeadline(event.target.value)} /></label>
+          )}
           <label className="field-wide"><span>岗位 JD</span><textarea aria-describedby="application-jd-note" value={jobDescription} onChange={(event) => setJobDescription(event.target.value)} placeholder="粘贴岗位职责、任职要求、加分项等完整 JD" /><small className="dialog-note dialog-note--wide" id="application-jd-note">插件同步的岗位 JD 会自动显示在这里，也可以手动补充或修改。</small></label>
           <label className="field-wide"><span>岗位来源链接</span><input type="url" inputMode="url" value={sourceUrl} onChange={(event) => setSourceUrl(event.target.value)} placeholder="https://careers.example.com/job/123" /></label>
         </div>

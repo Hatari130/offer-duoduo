@@ -18,6 +18,7 @@ export type ImportTargetField =
   | "position"
   | "stage"
   | "appliedAt"
+  | "deadline"
   | "city"
   | "department"
   | "recruitmentType"
@@ -30,6 +31,7 @@ export const IMPORT_FIELD_LABELS: Record<ImportTargetField, string> = {
   position: "岗位名称 *",
   stage: "当前阶段",
   appliedAt: "投递时间",
+  deadline: "笔试截止时间",
   city: "城市/地点",
   department: "部门/业务线",
   recruitmentType: "岗位类型",
@@ -60,6 +62,7 @@ export interface NormalizedImportApplication {
   closedReason?: ClosedStageReason;
   interviewRound?: InterviewRound;
   appliedAt?: string;
+  deadline?: string;
   rawExcerpt?: string;
   sourceUrl: string;
   action: "create" | "update" | "skip";
@@ -422,6 +425,8 @@ export function detectColumnMapping(headers: string[]): ColumnMappingItem[] {
       targetField = "stage";
     } else if (!usedFields.has("appliedAt") && /^(投递时间|投递日期|申请时间|申请日期|时间|日期|applied\s*at|date|applied\s*time)$/i.test(raw)) {
       targetField = "appliedAt";
+    } else if (!usedFields.has("deadline") && /^(笔试截止时间|笔试截止|截止时间|测评截止|考试截止|笔试时间|笔试ddl|ddl|deadline)$/i.test(raw)) {
+      targetField = "deadline";
     } else if (!usedFields.has("city") && /^(城市|地点|工作地点|工作城市|base|base地|city|location)$/i.test(raw)) {
       targetField = "city";
     } else if (!usedFields.has("department") && /^(部门|业务线|事业群|bg|bu|事业部|department|team)$/i.test(raw)) {
@@ -438,8 +443,10 @@ export function detectColumnMapping(headers: string[]): ColumnMappingItem[] {
       targetField = "position";
     } else if (!usedFields.has("stage") && (raw.includes("阶段") || raw.includes("状态") || raw.includes("进度"))) {
       targetField = "stage";
-    } else if (!usedFields.has("appliedAt") && (raw.includes("投递时间") || raw.includes("申请时间") || raw.includes("日期"))) {
+    } else if (!usedFields.has("appliedAt") && (raw.includes("投递时间") || raw.includes("申请时间") || (raw.includes("日期") && !raw.includes("截止")))) {
       targetField = "appliedAt";
+    } else if (!usedFields.has("deadline") && (raw.includes("截止") || raw.includes("笔试"))) {
+      targetField = "deadline";
     } else if (!usedFields.has("city") && (raw.includes("城市") || raw.includes("地点") || raw.includes("base"))) {
       targetField = "city";
     }
@@ -657,6 +664,7 @@ export function buildImportCandidates(
     const rawPosition = getColValue(row, "position");
     const rawStage = getColValue(row, "stage");
     const rawAppliedAt = getColValue(row, "appliedAt");
+    const rawDeadline = getColValue(row, "deadline");
     const rawCity = getColValue(row, "city");
     const rawDepartment = getColValue(row, "department");
     const rawRecruitmentType = getColValue(row, "recruitmentType");
@@ -676,6 +684,7 @@ export function buildImportCandidates(
     const { stage, closedReason, interviewRound } = normalizeStageValue(rawStage);
     const recruitmentType = normalizeRecruitmentTypeValue(rawRecruitmentType, rawPosition);
     const appliedAt = normalizeDateValue(rawAppliedAt);
+    const deadline = normalizeDateValue(rawDeadline);
     const city = rawCity ? normalizeApplicationCity(rawCity) : undefined;
     const finalUrl = rawUrl || (matched && careerUrl ? careerUrl : "offerflow://manual");
 
@@ -707,6 +716,7 @@ export function buildImportCandidates(
       closedReason,
       interviewRound,
       appliedAt,
+      deadline,
       rawExcerpt: rawExcerpt || undefined,
       sourceUrl: finalUrl,
       action,
@@ -765,6 +775,7 @@ export async function executeApplicationImport(
           closedReason: candidate.stage === "closed" ? candidate.closedReason || existing.closedReason : undefined,
           interviewRound: candidate.stage === "interview" ? candidate.interviewRound || existing.interviewRound : undefined,
           appliedAt: candidate.appliedAt ?? existing.appliedAt,
+          deadline: candidate.deadline ?? existing.deadline,
           rawExcerpt: candidate.rawExcerpt
             ? existing.rawExcerpt
               ? `${existing.rawExcerpt}\n\n[批量导入备注]\n${candidate.rawExcerpt}`
@@ -811,6 +822,7 @@ export async function executeApplicationImport(
           closedReason: candidate.stage === "closed" ? candidate.closedReason : undefined,
           interviewRound: candidate.stage === "interview" ? candidate.interviewRound : undefined,
           appliedAt: candidate.appliedAt,
+          deadline: candidate.deadline,
           rawExcerpt: candidate.rawExcerpt,
           sourceUrl: candidate.sourceUrl,
           sourceHost,
