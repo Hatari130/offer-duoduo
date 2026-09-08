@@ -450,20 +450,11 @@ export function ApplicationsPage() {
                             onClick={() => setDialog({ mode: "edit", item })}
                           >
                             {deadlineStatus.isCompleted ? (
-                              <>
-                                <Check aria-hidden="true" size={13} />
-                                <span>已完成</span>
-                              </>
+                              <span>已完成</span>
                             ) : deadlineStatus.isUrgent ? (
-                              <>
-                                <AlertTriangle aria-hidden="true" size={12} />
-                                <span>{deadlineStatus.remainingText}</span>
-                              </>
+                              <span>{deadlineStatus.remainingText}</span>
                             ) : (
-                              <>
-                                <CalendarClock aria-hidden="true" size={13} />
-                                <span>{deadlineStatus.formattedDate}</span>
-                              </>
+                              <span>{deadlineStatus.formattedDate}</span>
                             )}
                           </button>
                           {!deadlineStatus.isCompleted && (
@@ -552,20 +543,11 @@ export function ApplicationsPage() {
                               }
                             >
                               {deadlineStatus.isCompleted ? (
-                                <>
-                                  <Check aria-hidden="true" size={12} />
-                                  <span>笔试已完成</span>
-                                </>
+                                <span>笔试已完成</span>
                               ) : deadlineStatus.isUrgent ? (
-                                <>
-                                  <AlertTriangle aria-hidden="true" size={12} />
-                                  <span>笔试截止: {deadlineStatus.remainingText}</span>
-                                </>
+                                <span>笔试截止: {deadlineStatus.remainingText}</span>
                               ) : (
-                                <>
-                                  <CalendarClock aria-hidden="true" size={12} />
-                                  <span>笔试截止: {deadlineStatus.formattedDate}</span>
-                                </>
+                                <span>笔试截止: {deadlineStatus.formattedDate}</span>
                               )}
                             </span>
                           )}

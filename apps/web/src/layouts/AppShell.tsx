@@ -36,6 +36,8 @@ import { navigate } from "../app/router";
 import { applyColorTheme, persistColorTheme, readStoredColorTheme, type ColorTheme } from "../app/theme";
 import { Logo } from "../components/Logo";
 import { FeedbackDialog } from "../components/FeedbackDialog";
+import { ChangelogDialog } from "../components/ChangelogDialog";
+import { hasSeenLatestChangelog } from "../features/changelog/changelogData";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { UserAvatar } from "../components/UserAvatar";
 
@@ -113,6 +115,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const [clockNow, setClockNow] = useState(() => Date.now());
   const [accountOpen, setAccountOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
+  const [changelogOpen, setChangelogOpen] = useState(false);
+  const [hasNewChangelog, setHasNewChangelog] = useState(() => !hasSeenLatestChangelog());
   const [colorTheme, setColorTheme] = useState<ColorTheme>(() =>
     document.documentElement.dataset.theme === "dark" ? "dark" : "light"
   );
@@ -127,6 +131,15 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   const activeNavigationIndex = primaryNavigation.findIndex(
     (item) => pathname === item.href || pathname.startsWith(`${item.href}/`)
   );
+
+  useEffect(() => {
+    if (!hasSeenLatestChangelog()) {
+      const timer = window.setTimeout(() => {
+        setChangelogOpen(true);
+      }, 500);
+      return () => window.clearTimeout(timer);
+    }
+  }, []);
 
   useEffect(() => {
     setMobileOpen(false);
@@ -647,6 +660,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                     <button type="button" onClick={() => { setAccountOpen(false); setFeedbackOpen(true); }}>
                       <MessageCircleMore aria-hidden="true" size={16} />提交反馈
                     </button>
+                    <button type="button" onClick={() => { setAccountOpen(false); setChangelogOpen(true); }}>
+                      <Info aria-hidden="true" size={16} />更新日志
+                      {hasNewChangelog && <span className="changelog-menu-badge">NEW</span>}
+                    </button>
                   </div>
 
                   <footer className="account-popover-compliance">
@@ -692,8 +709,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                     <button type="button" onClick={() => { setAccountOpen(false); setFeedbackOpen(true); }}>
                       <MessageCircleMore aria-hidden="true" size={16} />提交反馈
                     </button>
-                    <button type="button" disabled title="后续接入">
-                      <Info aria-hidden="true" size={16} />更新日志<span>即将上线</span>
+                    <button type="button" onClick={() => { setAccountOpen(false); setChangelogOpen(true); }}>
+                      <Info aria-hidden="true" size={16} />更新日志
+                      {hasNewChangelog && <span className="changelog-menu-badge">NEW</span>}
                     </button>
                     <button type="button" onClick={logout}>
                       <LogOut aria-hidden="true" size={16} />退出登录
@@ -791,6 +809,17 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         })}
       </nav>
       <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} pagePath={pathname} />
+      <ChangelogDialog
+        open={changelogOpen}
+        onClose={() => {
+          setChangelogOpen(false);
+          setHasNewChangelog(false);
+        }}
+        onAcknowledge={() => {
+          setChangelogOpen(false);
+          setHasNewChangelog(false);
+        }}
+      />
     </div>
   );
 }
