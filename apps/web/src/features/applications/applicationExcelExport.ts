@@ -1,5 +1,6 @@
 import type { ApplicationSyncItem } from "@offerflow/contracts";
 import {
+  ASSESSMENT_TYPE_LABELS,
   CLOSED_STAGE_REASON_LABELS,
   INTERVIEW_ROUND_LABELS,
   RECRUITMENT_TYPE_LABELS,
@@ -148,6 +149,7 @@ function stageLabel(application: JobApplication): string {
   const stage = selectableStage(application.stage);
   if (stage === "closed" && application.closedReason) return `${STAGE_LABELS.closed} · ${CLOSED_STAGE_REASON_LABELS[application.closedReason]}`;
   if (stage === "interview" && application.interviewRound) return `${STAGE_LABELS.interview} · ${INTERVIEW_ROUND_LABELS[application.interviewRound]}`;
+  if (stage === "assessment" && application.assessmentType) return `${STAGE_LABELS.assessment} · ${ASSESSMENT_TYPE_LABELS[application.assessmentType]}`;
   return STAGE_LABELS[stage];
 }
 
@@ -158,7 +160,7 @@ function applicationEvents(application: JobApplication): string {
 }
 
 const headers = [
-  "公司", "岗位", "部门", "岗位类型", "当前阶段", "投递时间", "截止时间", "地点",
+  "公司", "岗位", "部门", "岗位类型", "当前阶段", "投递时间", "测评截止", "地点",
   "下一步行动", "岗位摘要", "岗位 JD", "岗位职责", "任职要求", "来源链接", "来源网站",
   "关联简历", "外部招聘进度", "是否收藏", "投递事件"
 ];

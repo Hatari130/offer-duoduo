@@ -18,6 +18,7 @@ import {
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type ChangeEvent } from "react";
 import type { ApplicationSyncItem } from "@offerflow/contracts";
 import {
+  ASSESSMENT_TYPE_LABELS,
   CLOSED_STAGE_REASON_LABELS,
   INTERVIEW_ROUND_LABELS,
   RECRUITMENT_TYPES,
@@ -609,6 +610,9 @@ export function BatchImportDialog({ existingItems, onClose, onImportComplete }: 
                                 </option>
                               ))}
                             </select>
+                            {cand.stage === "assessment" && cand.assessmentType && (
+                              <small className="sub-tag">{ASSESSMENT_TYPE_LABELS[cand.assessmentType]}</small>
+                            )}
                             {cand.interviewRound && (
                               <small className="sub-tag">{INTERVIEW_ROUND_LABELS[cand.interviewRound]}</small>
                             )}

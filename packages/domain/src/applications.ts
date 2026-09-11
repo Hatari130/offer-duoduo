@@ -28,10 +28,22 @@ export const STAGE_LABELS: Record<ApplicationStage, string> = {
   interested: "感兴趣",
   to_apply: "待投递",
   applied: "已投递",
-  assessment: "笔试测评",
+  assessment: "测评",
   interview: "面试",
   offer: "Offer",
   closed: "已结束"
+};
+
+export const ASSESSMENT_TYPES = [
+  "written_test",
+  "ai_interview"
+] as const;
+
+export type AssessmentType = (typeof ASSESSMENT_TYPES)[number];
+
+export const ASSESSMENT_TYPE_LABELS: Record<AssessmentType, string> = {
+  written_test: "笔试测评",
+  ai_interview: "AI面"
 };
 
 export const CLOSED_STAGE_REASONS = [
@@ -146,6 +158,7 @@ export interface JobApplication {
   jobType?: string;
   recruitmentType?: RecruitmentType;
   stage: ApplicationStage;
+  assessmentType?: AssessmentType;
   closedReason?: ClosedStageReason;
   interviewRound?: InterviewRound;
   externalStage?: string;
@@ -181,6 +194,7 @@ export interface ExtractedJob {
   city?: string;
   jobType?: string;
   recruitmentType?: RecruitmentType;
+  assessmentType?: AssessmentType;
   deadline?: string;
   assessmentCompleted?: boolean;
   appliedAt?: string;

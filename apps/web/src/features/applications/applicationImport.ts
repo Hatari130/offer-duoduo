@@ -5,6 +5,7 @@ import {
   normalizeApplicationCompany,
   normalizeApplicationPosition,
   type ApplicationStage,
+  type AssessmentType,
   type ClosedStageReason,
   type InterviewRound,
   type JobApplication,
@@ -31,7 +32,7 @@ export const IMPORT_FIELD_LABELS: Record<ImportTargetField, string> = {
   position: "岗位名称 *",
   stage: "当前阶段",
   appliedAt: "投递时间",
-  deadline: "笔试截止",
+  deadline: "测评截止",
   city: "城市/地点",
   department: "部门/业务线",
   recruitmentType: "岗位类型",
@@ -59,6 +60,7 @@ export interface NormalizedImportApplication {
   city?: string;
   recruitmentType?: RecruitmentType;
   stage: ApplicationStage;
+  assessmentType?: AssessmentType;
   closedReason?: ClosedStageReason;
   interviewRound?: InterviewRound;
   appliedAt?: string;
@@ -425,7 +427,7 @@ export function detectColumnMapping(headers: string[]): ColumnMappingItem[] {
       targetField = "stage";
     } else if (!usedFields.has("appliedAt") && /^(投递时间|投递日期|申请时间|申请日期|时间|日期|applied\s*at|date|applied\s*time)$/i.test(raw)) {
       targetField = "appliedAt";
-    } else if (!usedFields.has("deadline") && /^(笔试截止时间|笔试截止|截止时间|测评截止|考试截止|笔试时间|笔试ddl|ddl|deadline)$/i.test(raw)) {
+    } else if (!usedFields.has("deadline") && /^(测评截止时间|测评截止|笔试截止时间|笔试截止|截止时间|考试截止|笔试时间|笔试ddl|测评ddl|ddl|deadline)$/i.test(raw)) {
       targetField = "deadline";
     } else if (!usedFields.has("city") && /^(城市|地点|工作地点|工作城市|base|base地|city|location)$/i.test(raw)) {
       targetField = "city";
@@ -445,7 +447,7 @@ export function detectColumnMapping(headers: string[]): ColumnMappingItem[] {
       targetField = "stage";
     } else if (!usedFields.has("appliedAt") && (raw.includes("投递时间") || raw.includes("申请时间") || (raw.includes("日期") && !raw.includes("截止")))) {
       targetField = "appliedAt";
-    } else if (!usedFields.has("deadline") && (raw.includes("截止") || raw.includes("笔试"))) {
+    } else if (!usedFields.has("deadline") && (raw.includes("截止") || raw.includes("测评") || raw.includes("笔试"))) {
       targetField = "deadline";
     } else if (!usedFields.has("city") && (raw.includes("城市") || raw.includes("地点") || raw.includes("base"))) {
       targetField = "city";
@@ -515,6 +517,7 @@ export function matchOfficialCompany(name: string): {
 /** Normalize stage text to JobKoi ApplicationStage, ClosedStageReason, InterviewRound */
 export function normalizeStageValue(raw?: string): {
   stage: ApplicationStage;
+  assessmentType?: AssessmentType;
   closedReason?: ClosedStageReason;
   interviewRound?: InterviewRound;
 } {
@@ -540,6 +543,14 @@ export function normalizeStageValue(raw?: string): {
     return { stage: "closed", closedReason };
   }
 
+  // Assessment (AI interview or written test)
+  if (/ai面|ai面试/i.test(str)) {
+    return { stage: "assessment", assessmentType: "ai_interview" };
+  }
+  if (/笔试|机试|ot|oa/i.test(str)) {
+    return { stage: "assessment", assessmentType: "written_test" };
+  }
+
   // Interview
   if (/面|初试|复试|终面|约面/.test(str)) {
     let interviewRound: InterviewRound | undefined;
@@ -551,8 +562,8 @@ export function normalizeStageValue(raw?: string): {
     return { stage: "interview", interviewRound };
   }
 
-  // Assessment
-  if (/笔试|测评|机试|在线测试|ot|oa/.test(str)) {
+  // General Assessment
+  if (/测评|在线测试/.test(str)) {
     return { stage: "assessment" };
   }
 
@@ -681,7 +692,7 @@ export function buildImportCandidates(
     const { canonicalName, careerUrl, matched } = matchOfficialCompany(extractedCompany);
     const finalCompany = canonicalName;
 
-    const { stage, closedReason, interviewRound } = normalizeStageValue(rawStage);
+    const { stage, assessmentType, closedReason, interviewRound } = normalizeStageValue(rawStage);
     const recruitmentType = normalizeRecruitmentTypeValue(rawRecruitmentType, rawPosition);
     const appliedAt = normalizeDateValue(rawAppliedAt);
     const deadline = normalizeDateValue(rawDeadline);
@@ -713,6 +724,7 @@ export function buildImportCandidates(
       city,
       recruitmentType,
       stage,
+      assessmentType,
       closedReason,
       interviewRound,
       appliedAt,
@@ -772,6 +784,7 @@ export async function executeApplicationImport(
           city: candidate.city ?? existing.city,
           recruitmentType: candidate.recruitmentType ?? existing.recruitmentType,
           stage: candidate.stage,
+          assessmentType: candidate.stage === "assessment" ? candidate.assessmentType ?? existing.assessmentType : undefined,
           closedReason: candidate.stage === "closed" ? candidate.closedReason || existing.closedReason : undefined,
           interviewRound: candidate.stage === "interview" ? candidate.interviewRound || existing.interviewRound : undefined,
           appliedAt: candidate.appliedAt ?? existing.appliedAt,
@@ -819,6 +832,7 @@ export async function executeApplicationImport(
           city: candidate.city,
           recruitmentType: candidate.recruitmentType,
           stage: candidate.stage,
+          assessmentType: candidate.stage === "assessment" ? candidate.assessmentType : undefined,
           closedReason: candidate.stage === "closed" ? candidate.closedReason : undefined,
           interviewRound: candidate.stage === "interview" ? candidate.interviewRound : undefined,
           appliedAt: candidate.appliedAt,

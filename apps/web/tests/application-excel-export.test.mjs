@@ -29,5 +29,53 @@ test("exports application records as an Excel workbook with readable fields", ()
   assert.match(content, /示例 &amp; 公司/);
   assert.match(content, /面试 · 二面/);
   assert.match(content, /岗位 JD/);
+  assert.match(content, /测评截止/);
   assert.match(content, /<autoFilter ref="A1:S2"/);
+});
+
+test("exports assessment application with assessmentType", () => {
+  const workbook = createApplicationExportXlsx([
+    {
+      revision: 1,
+      application: {
+        id: "app-ai",
+        company: "某科技",
+        position: "AI工程师",
+        stage: "assessment",
+        assessmentType: "ai_interview",
+        appliedAt: "2026-09-08T09:00:00.000Z",
+        deadline: "2026-09-12 18:00",
+        sourceUrl: "offerflow://manual",
+        sourceHost: "manual",
+        responsibilities: [],
+        requirements: [],
+        createdAt: "2026-09-08T09:00:00.000Z",
+        updatedAt: "2026-09-08T09:00:00.000Z",
+        events: []
+      }
+    },
+    {
+      revision: 1,
+      application: {
+        id: "app-written",
+        company: "某大厂",
+        position: "后端开发",
+        stage: "assessment",
+        assessmentType: "written_test",
+        appliedAt: "2026-09-08T09:00:00.000Z",
+        deadline: "2026-09-10 18:00",
+        sourceUrl: "offerflow://manual",
+        sourceHost: "manual",
+        responsibilities: [],
+        requirements: [],
+        createdAt: "2026-09-08T09:00:00.000Z",
+        updatedAt: "2026-09-08T09:00:00.000Z",
+        events: []
+      }
+    }
+  ]);
+
+  const content = new TextDecoder().decode(workbook);
+  assert.match(content, /测评 · AI面/);
+  assert.match(content, /测评 · 笔试测评/);
 });

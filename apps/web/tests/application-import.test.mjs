@@ -42,13 +42,14 @@ test("parseClipboardOrCsv distinguishes header row from data", () => {
 });
 
 test("detectColumnMapping automatically maps standard and common custom headers", () => {
-  const headers = ["投递企业", "应聘岗位", "当前状态", "申请日期", "工作地点", "业务线", "备注信息"];
+  const headers = ["投递企业", "应聘岗位", "当前状态", "申请日期", "测评截止", "工作地点", "业务线", "备注信息"];
   const mapping = detectColumnMapping(headers);
 
   assert.equal(mapping.find((m) => m.headerName === "投递企业")?.targetField, "company");
   assert.equal(mapping.find((m) => m.headerName === "应聘岗位")?.targetField, "position");
   assert.equal(mapping.find((m) => m.headerName === "当前状态")?.targetField, "stage");
   assert.equal(mapping.find((m) => m.headerName === "申请日期")?.targetField, "appliedAt");
+  assert.equal(mapping.find((m) => m.headerName === "测评截止")?.targetField, "deadline");
   assert.equal(mapping.find((m) => m.headerName === "工作地点")?.targetField, "city");
   assert.equal(mapping.find((m) => m.headerName === "业务线")?.targetField, "department");
   assert.equal(mapping.find((m) => m.headerName === "备注信息")?.targetField, "rawExcerpt");
@@ -86,7 +87,10 @@ test("matchOfficialCompany matches company directory entries and aliases", () =>
 test("normalizeStageValue maps user Chinese stage descriptions into JobKoi stage and round", () => {
   assert.deepEqual(normalizeStageValue("已投递"), { stage: "applied" });
   assert.deepEqual(normalizeStageValue("简历初筛中"), { stage: "applied" });
-  assert.deepEqual(normalizeStageValue("笔试测评"), { stage: "assessment" });
+  assert.deepEqual(normalizeStageValue("笔试测评"), { stage: "assessment", assessmentType: "written_test" });
+  assert.deepEqual(normalizeStageValue("笔试"), { stage: "assessment", assessmentType: "written_test" });
+  assert.deepEqual(normalizeStageValue("AI面"), { stage: "assessment", assessmentType: "ai_interview" });
+  assert.deepEqual(normalizeStageValue("在线测评"), { stage: "assessment" });
 
   const i1 = normalizeStageValue("技术一面");
   assert.equal(i1.stage, "interview");
