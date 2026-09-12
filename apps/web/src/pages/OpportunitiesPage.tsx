@@ -23,8 +23,13 @@ import {
 } from "../features/opportunities/campusHiringFeed";
 import { opportunityPageRequiresLogin } from "../features/opportunities/paginationAccess";
 import { crawlDateKey, latestCrawlDateKey } from "../features/opportunities/latestCrawl";
+import {
+  buildOpportunitySearchString,
+  parseOpportunityUrlState,
+  type OpportunityUrlState
+} from "../features/opportunities/opportunityUrlParams";
 import { useAuth } from "../app/AuthContext";
-import { navigate } from "../app/router";
+import { NAVIGATION_EVENT, navigate } from "../app/router";
 
 const PAGE_SIZE = 20;
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
@@ -172,17 +177,48 @@ function OpportunityDeadline({ opportunity }: { opportunity: CampusHiringOpportu
 export function OpportunitiesPage() {
   const { status: authStatus, requestLogin } = useAuth();
   const isAuthenticated = authStatus === "authenticated";
+  const initialUrlState = useMemo(
+    () => parseOpportunityUrlState(typeof window === "undefined" ? "" : window.location.search, isAuthenticated),
+    []
+  );
   const [opportunities, setOpportunities] = useState<CampusHiringOpportunity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [query, setQuery] = useState("");
-  const [city, setCity] = useState("all");
-  const [industry, setIndustry] = useState("all");
-  const [cohort, setCohort] = useState("all");
-  const [batch, setBatch] = useState("all");
-  const [companyType, setCompanyType] = useState("all");
-  const [quickFilter, setQuickFilter] = useState<OpportunityQuickFilter>("all");
-  const [page, setPage] = useState(1);
+  const [query, setQuery] = useState(initialUrlState.query);
+  const [city, setCity] = useState(initialUrlState.city);
+  const [industry, setIndustry] = useState(initialUrlState.industry);
+  const [cohort, setCohort] = useState(initialUrlState.cohort);
+  const [batch, setBatch] = useState(initialUrlState.batch);
+  const [companyType, setCompanyType] = useState(initialUrlState.companyType);
+  const [quickFilter, setQuickFilter] = useState<OpportunityQuickFilter>(initialUrlState.quickFilter);
+  const [page, setPage] = useState(initialUrlState.page);
+
+  useEffect(() => {
+    if (initialUrlState.requiresAuthLogin) {
+      requestLogin("登录后即可查看第 4 页及后续校招信息。");
+    }
+  }, [initialUrlState.requiresAuthLogin, requestLogin]);
+
+  useEffect(() => {
+    const syncFromUrl = () => {
+      const urlState = parseOpportunityUrlState(window.location.search, isAuthenticated);
+      setPage(urlState.page);
+      setQuery(urlState.query);
+      setCity(urlState.city);
+      setIndustry(urlState.industry);
+      setCohort(urlState.cohort);
+      setBatch(urlState.batch);
+      setCompanyType(urlState.companyType);
+      setQuickFilter(urlState.quickFilter);
+    };
+
+    window.addEventListener("popstate", syncFromUrl);
+    window.addEventListener(NAVIGATION_EVENT, syncFromUrl);
+    return () => {
+      window.removeEventListener("popstate", syncFromUrl);
+      window.removeEventListener(NAVIGATION_EVENT, syncFromUrl);
+    };
+  }, [isAuthenticated]);
 
   const load = (signal?: AbortSignal) => {
     setLoading(true);
@@ -191,7 +227,6 @@ export function OpportunitiesPage() {
       .then((result) => {
         void cacheCampusHiringFeed(result);
         setOpportunities(result.opportunities);
-        setPage(1);
       })
       .catch((requestError) => {
         if (requestError instanceof DOMException && requestError.name === "AbortError") return;
@@ -298,6 +333,24 @@ export function OpportunitiesPage() {
     quickFilter !== "all"
   ].filter(Boolean).length;
 
+  const updateUrlFilters = (next: Partial<OpportunityUrlState>) => {
+    const nextSearch = buildOpportunitySearchString({
+      query: next.query !== undefined ? next.query : query,
+      city: next.city !== undefined ? next.city : city,
+      industry: next.industry !== undefined ? next.industry : industry,
+      cohort: next.cohort !== undefined ? next.cohort : cohort,
+      batch: next.batch !== undefined ? next.batch : batch,
+      companyType: next.companyType !== undefined ? next.companyType : companyType,
+      quickFilter: next.quickFilter !== undefined ? next.quickFilter : quickFilter,
+      page: next.page !== undefined ? next.page : 1
+    });
+    const nextUrl = `${window.location.pathname}${nextSearch}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (nextUrl !== currentUrl) {
+      window.history.replaceState({}, "", nextUrl);
+    }
+  };
+
   const clearFilters = () => {
     setQuery("");
     setCity("all");
@@ -307,11 +360,22 @@ export function OpportunitiesPage() {
     setCompanyType("all");
     setQuickFilter("all");
     setPage(1);
+    updateUrlFilters({
+      query: "",
+      city: "all",
+      industry: "all",
+      cohort: "all",
+      batch: "all",
+      companyType: "all",
+      quickFilter: "all",
+      page: 1
+    });
   };
 
   const selectQuickFilter = (value: OpportunityQuickFilter) => {
     setQuickFilter(value);
     setPage(1);
+    updateUrlFilters({ quickFilter: value, page: 1 });
   };
 
   const goToPage = (nextPage: number) => {
@@ -321,6 +385,21 @@ export function OpportunitiesPage() {
       return;
     }
     setPage(targetPage);
+    const nextSearch = buildOpportunitySearchString({
+      query,
+      city,
+      industry,
+      cohort,
+      batch,
+      companyType,
+      quickFilter,
+      page: targetPage
+    });
+    const nextUrl = `${window.location.pathname}${nextSearch}`;
+    const currentUrl = `${window.location.pathname}${window.location.search}`;
+    if (nextUrl !== currentUrl) {
+      window.history.pushState({}, "", nextUrl);
+    }
     document.getElementById("opportunity-results")?.scrollIntoView({ block: "start" });
   };
 
@@ -369,8 +448,10 @@ export function OpportunitiesPage() {
               type="search"
               value={query}
               onChange={(event) => {
-                setQuery(event.target.value);
+                const nextQuery = event.target.value;
+                setQuery(nextQuery);
                 setPage(1);
+                updateUrlFilters({ query: nextQuery, page: 1 });
               }}
               placeholder="搜索公司、岗位、行业或城市"
               aria-controls="opportunity-results"
@@ -378,35 +459,80 @@ export function OpportunitiesPage() {
           </label>
           <label className="select-control">
             <span className="sr-only">按城市筛选</span>
-            <select value={city} onChange={(event) => { setCity(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+            <select
+              value={city}
+              onChange={(event) => {
+                const nextCity = event.target.value;
+                setCity(nextCity);
+                setPage(1);
+                updateUrlFilters({ city: nextCity, page: 1 });
+              }}
+              aria-controls="opportunity-results"
+            >
               <option value="all">城市</option>
               {filterOptions.cities.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <label className="select-control">
             <span className="sr-only">按企业性质筛选</span>
-            <select value={companyType} onChange={(event) => { setCompanyType(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+            <select
+              value={companyType}
+              onChange={(event) => {
+                const nextCompanyType = event.target.value;
+                setCompanyType(nextCompanyType);
+                setPage(1);
+                updateUrlFilters({ companyType: nextCompanyType, page: 1 });
+              }}
+              aria-controls="opportunity-results"
+            >
               <option value="all">企业性质</option>
               {filterOptions.companyTypes.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <label className="select-control">
             <span className="sr-only">按行业筛选</span>
-            <select value={industry} onChange={(event) => { setIndustry(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+            <select
+              value={industry}
+              onChange={(event) => {
+                const nextIndustry = event.target.value;
+                setIndustry(nextIndustry);
+                setPage(1);
+                updateUrlFilters({ industry: nextIndustry, page: 1 });
+              }}
+              aria-controls="opportunity-results"
+            >
               <option value="all">行业</option>
               {filterOptions.industries.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <label className="select-control">
             <span className="sr-only">按届别筛选</span>
-            <select value={cohort} onChange={(event) => { setCohort(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+            <select
+              value={cohort}
+              onChange={(event) => {
+                const nextCohort = event.target.value;
+                setCohort(nextCohort);
+                setPage(1);
+                updateUrlFilters({ cohort: nextCohort, page: 1 });
+              }}
+              aria-controls="opportunity-results"
+            >
               <option value="all">全部届别</option>
               {filterOptions.cohorts.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>
           </label>
           <label className="select-control">
             <span className="sr-only">按招聘类型筛选</span>
-            <select value={batch} onChange={(event) => { setBatch(event.target.value); setPage(1); }} aria-controls="opportunity-results">
+            <select
+              value={batch}
+              onChange={(event) => {
+                const nextBatch = event.target.value;
+                setBatch(nextBatch);
+                setPage(1);
+                updateUrlFilters({ batch: nextBatch, page: 1 });
+              }}
+              aria-controls="opportunity-results"
+            >
               <option value="all">全部类型</option>
               {filterOptions.batches.map((value) => <option value={value} key={value}>{value}</option>)}
             </select>

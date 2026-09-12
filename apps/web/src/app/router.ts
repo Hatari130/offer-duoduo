@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { flushSync } from "react-dom";
 
-const NAVIGATION_EVENT = "offerflow:navigate";
+export const NAVIGATION_EVENT = "offerflow:navigate";
 const TRANSITION_ATTRIBUTE = "offerflowTransition";
 const FALLBACK_ATTRIBUTE = "offerflowTransitionFallback";
 
@@ -71,7 +71,8 @@ export function startUiTransition(update: () => void, scope: UiTransitionScope):
 
 export function navigate(path: string, options: { replace?: boolean; transition?: boolean } = {}): void {
   const next = path.startsWith("/") ? path : `/${path}`;
-  if (next === window.location.pathname && !options.replace) return;
+  const current = `${window.location.pathname}${window.location.search}${window.location.hash}`;
+  if (next === current && !options.replace) return;
 
   const commit = () => {
     if (options.replace) window.history.replaceState({}, "", next);
