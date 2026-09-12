@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 import type { OpportunityStatus } from "@offerflow/domain";
 import {
   AlarmClock,
@@ -192,6 +192,7 @@ export function OpportunitiesPage() {
   const [companyType, setCompanyType] = useState(initialUrlState.companyType);
   const [quickFilter, setQuickFilter] = useState<OpportunityQuickFilter>(initialUrlState.quickFilter);
   const [page, setPage] = useState(initialUrlState.page);
+  const [jumpPageInput, setJumpPageInput] = useState("");
 
   useEffect(() => {
     if (initialUrlState.requiresAuthLogin) {
@@ -401,6 +402,16 @@ export function OpportunitiesPage() {
       window.history.pushState({}, "", nextUrl);
     }
     document.getElementById("opportunity-results")?.scrollIntoView({ block: "start" });
+  };
+
+  const handleJumpSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const raw = jumpPageInput.trim();
+    if (!raw) return;
+    const parsed = parseInt(raw, 10);
+    if (!Number.isInteger(parsed)) return;
+    goToPage(parsed);
+    setJumpPageInput("");
   };
 
   return (
@@ -743,7 +754,7 @@ export function OpportunitiesPage() {
             {filtered.length > PAGE_SIZE && (
               <nav className="opportunity-pagination" aria-label="校招列表分页">
                 <p className="opportunity-pagination__summary">
-                  显示第 {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} 条，共 {filtered.length.toLocaleString("zh-CN")} 条
+                  显示第 {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filtered.length)} 条，共 {filtered.length.toLocaleString("zh-CN")} 条（第 {currentPage} / {totalPages} 页）
                 </p>
                 <div className="opportunity-pagination__controls">
                   <button
@@ -776,6 +787,31 @@ export function OpportunitiesPage() {
                   >
                     下一页<ChevronRight aria-hidden="true" size={17} strokeWidth={2} />
                   </button>
+                  <form
+                    className="opportunity-pagination__jumper"
+                    onSubmit={handleJumpSubmit}
+                    aria-label="跳转到指定页"
+                  >
+                    <span>跳至</span>
+                    <input
+                      className="opportunity-pagination__jumper-input"
+                      type="number"
+                      min={1}
+                      max={totalPages}
+                      value={jumpPageInput}
+                      onChange={(event) => setJumpPageInput(event.target.value)}
+                      placeholder={String(currentPage)}
+                      aria-label="跳转目标页码"
+                    />
+                    <span>页</span>
+                    <button
+                      className="opportunity-pagination__jumper-button"
+                      type="submit"
+                      disabled={!jumpPageInput.trim()}
+                    >
+                      跳转
+                    </button>
+                  </form>
                 </div>
               </nav>
             )}

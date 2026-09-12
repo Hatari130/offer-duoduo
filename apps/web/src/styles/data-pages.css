@@ -713,6 +713,7 @@
   background: var(--of-surface-raised);
   font-size: 0.8125rem;
   font-weight: 680;
+  cursor: pointer;
   transition-property: color, background-color, border-color, transform;
   transition-duration: var(--of-duration-fast);
   transition-timing-function: var(--of-ease-standard);
@@ -767,6 +768,48 @@
   color: var(--of-text-muted);
   font-size: 1rem;
   letter-spacing: 0.1em;
+}
+
+.opportunity-pagination__jumper {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-inline-start: 0.6rem;
+  color: var(--of-text-subtle);
+  font-size: 0.8125rem;
+}
+
+.opportunity-pagination__jumper-input {
+  width: 3.5rem;
+  min-height: 2.75rem;
+  padding: 0 0.4rem;
+  border: 1px solid var(--of-line);
+  border-radius: 0.75rem;
+  color: var(--of-text);
+  background: var(--of-surface-raised);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  outline: none;
+  transition: border-color var(--of-duration-fast), box-shadow var(--of-duration-fast);
+  -moz-appearance: textfield;
+}
+
+.opportunity-pagination__jumper-input::-webkit-outer-spin-button,
+.opportunity-pagination__jumper-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.opportunity-pagination__jumper-input:focus {
+  border-color: var(--of-info);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--of-info) 20%, transparent);
+}
+
+.opportunity-pagination__jumper-button {
+  min-height: 2.75rem;
+  padding-inline: 0.85rem;
 }
 
 .opportunity-company-cell > span {
@@ -3941,6 +3984,11 @@ html[data-theme="dark"] .application-deadline-warning-tag {
 
   .opportunity-pagination__controls {
     justify-content: center;
+  }
+
+  .opportunity-pagination__jumper {
+    margin-inline-start: 0;
+    margin-block-start: 0.35rem;
   }
 }
 
