@@ -2143,9 +2143,11 @@
 }
 
 .application-jd-entry.has-content {
-  color: #15803d;
-  background: #dcfce7;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
   border: 0;
+  font-weight: 650;
+  opacity: 1;
 }
 
 .application-jd-entry:hover {
@@ -2157,17 +2159,19 @@ html[data-theme="dark"] .application-jd-entry:hover {
 }
 
 .application-jd-entry.has-content:hover {
-  background: #bbf7d0;
+  color: var(--of-text-strong);
+  background: var(--of-line);
 }
 
 html[data-theme="dark"] .application-jd-entry.has-content {
-  color: #86efac;
-  background: rgba(34, 197, 94, 0.16);
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
   border: 0;
 }
 
 html[data-theme="dark"] .application-jd-entry.has-content:hover {
-  background: rgba(34, 197, 94, 0.24);
+  color: var(--of-text-strong);
+  background: var(--of-line-strong);
 }
 
 .application-jd-entry:focus-visible {
@@ -2541,7 +2545,7 @@ html[data-theme="dark"] .application-deadline-warning-tag {
 }
 
 .board-jd-entry { border-inline-end: 1px solid var(--of-brand-100); }
-.board-jd-entry.has-content { color: var(--of-success); background: var(--of-success-soft); }
+.board-jd-entry.has-content { color: var(--of-text-muted); background: var(--of-surface-muted); }
 .board-jd-entry:hover,
 .board-interview-entry:hover { background: var(--of-brand-100); }
 .board-card:hover {
