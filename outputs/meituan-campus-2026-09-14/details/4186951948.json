@@ -1,0 +1,64 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4186951948&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:58.147Z",
+  "data": {
+    "jobUnionId": "4186951948",
+    "name": "大模型应用开发项目实习生",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "001",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "美团核心本地商业下业务研发平台，基于公司“零售+科技”的战略导向，通过从底层架构到应用系统、从软件到硬件、从传统算法到GenAI的全方位技术研究，以及开发、运维、安全等全流程能力建设，致力于推动美团核心本地商业下需求侧与供给侧的数字化和智能化升级，助力业务实现高质量增长，优化用户使用体验，提升商户经营水平，促进行业生态伙伴关系的持续健康发展。团队秉持务实、自驱、开放以及追求卓越的工程师文化，一方面通过系统和技术体系的持续迭代升级，帮助业务高质量增长；另一方面，密切关注前沿技术趋势变化，积极创新技术能力，为业务未来发展创造新的可能性。期待优秀的你加入我们，在夯实专业、深耕平台的基础上与业务携手同行，一起用技术 “帮大家吃得更好，生活更好”。",
+    "jobDuty": "1、负责大模型在智能客服领域落地的应用场景的开发、调优、测试和维护\n2、负责prompt的编写、调试和维护\n3、负责Prompt工程系统的设计开发，包括Agent，Prompt，Chain等核心模块。\n4、负责大模型及Prompt在业务系统里的评测体系建设",
+    "jobRequirement": "1、本科以上学历，具备扎实的编程基础和数据结构算法基础，优秀的编程能力和问题解决能力；\n2、优秀的模块设计、抽象能力，能进行系统设计与思考；\n3、自我驱动，善于钻研，勤于思考总结，结果导向；\n4、有大模型应用开发、Prompt编写调优的经验者优先；\n5、熟悉LangChain、AutoGPT等开源项目者优先。",
+    "precedence": "",
+    "highLight": "前沿探索，业务高速发展，个人成长空间大，技术挑战大",
+    "otherInfo": null,
+    "firstPostTime": 1772246403000,
+    "refreshTime": 1773644673000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型应用开发项目实习生\n实习-日常实习\n更新时间：2026/03/16\n工作地点：北京市、上海市\n部门：核心本地商业-业务研发平台\n工作经验：不限\n当前职位无法投递\n分享\n立即申请\n部门介绍\n美团核心本地商业下业务研发平台，基于公司“零售+科技”的战略导向，通过从底层架构到应用系统、从软件到硬件、从传统算法到GenAI的全方位技术研究，以及开发、运维、安全等全流程能力建设，致力于推动美团核心本地商业下需求侧与供给侧的数字化和智能化升级，助力业务实现高质量增长，优化用户使用体验，提升商户经营水平，促进行业生态伙伴关系的持续健康发展。团队秉持务实、自驱、开放以及追求卓越的工程师文化，一方面通过系统和技术体系的持续迭代升级，帮助业务高质量增长；另一方面，密切关注前沿技术趋势变化，积极创新技术能力，为业务未来发展创造新的可能性。期待优秀的你加入我们，在夯实专业、深耕平台的基础上与业务携手同行，一起用技术 “帮大家吃得更好，生活更好”。\n岗位职责\n1、负责大模型在智能客服领域落地的应用场景的开发、调优、测试和维护\n2、负责prompt的编写、调试和维护\n3、负责Prompt工程系统的设计开发，包括Agent，Prompt，Chain等核心模块。\n4、负责大模型及Prompt在业务系统里的评测体系建设\n岗位基本要求\n1、本科以上学历，具备扎实的编程基础和数据结构算法基础，优秀的编程能力和问题解决能力；\n2、优秀的模块设计、抽象能力，能进行系统设计与思考；\n3、自我驱动，善于钻研，勤于思考总结，结果导向；\n4、有大模型应用开发、Prompt编写调优的经验者优先；\n5、熟悉LangChain、AutoGPT等开源项目者优先。\n岗位亮点\n前沿探索，业务高速发展，个人成长空间大，技术挑战大\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "d47f649dc72d40b99cdc70d4c4004d09",
+  "verified_at": "2026-09-15T01:32:00.738Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=d47f649dc72d40b99cdc70d4c4004d09",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=d47f649dc72d40b99cdc70d4c4004d09&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "d47f649dc72d40b99cdc70d4c4004d09",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "网络安全工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "安全测试",
+        "techDire": "不限",
+        "postContent": "1、负责IoT、云、App等产品和服务的渗透测试、漏洞挖掘和风险评估；\n2、负责公司产品安全应急响应，负责漏洞验证与审核，推动漏洞确认和修复；\n3、负责安全事件的排查、响应与分析，定期对安全策略进行优化，及安全设备的维护和日常巡检；\n4、结合业务，设计开发新安全系统及工具或优化现有安全工具。",
+        "postRequire": "1、本科及以上学历，电子、自动化、计算机、信息安全等相关专业；\n2、对安全相关技术有极大的热情与兴趣；\n3、具备以下条件之一者优先：\n1）熟悉某一安全细分领域，如内网渗透、移动安全、恶意软件分析、CTF竞赛等；\n2）具有漏洞挖掘或渗透测试经验；\n3）熟悉系统、网络、数据库应用等攻击技术、入侵检测思路、防御与加固方案；\n4）独立开发过安全测试工具，并挖掘出有效的安全漏洞。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "346aad2db1fc442b85e37227bb0e8e72",
+          "name": "网络安全",
+          "description": "我们是网安世界的建筑师，为用户筑建起牢固的数智屏障；我们是物联网上的巡逻兵，在黑白混杂的网络中将威胁与风险精准定位捉拿；我们是信息丛林中的守护者，在01编织的信息里用标准与规范拉起安全红线，推动打造更安全的数字环境。\n我们是前沿科技的先锋队，手握“技术”与“创新”利剑，敢探索，寻突破，主要研究方向覆盖 WEB 安全、移动安全、协议安全、无线安全、固件安全、威胁情报、机器学习等多个领域。荣获浙江省科学技术进步一等奖、中国电子学会科技进步一等奖、世界物联网博览会金奖等诸多奖项。"
+        }
+      ]
+    }
+  ]
+}

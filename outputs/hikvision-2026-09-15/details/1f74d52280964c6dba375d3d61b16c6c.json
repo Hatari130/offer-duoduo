@@ -1,0 +1,140 @@
+{
+  "source_job_id": "1f74d52280964c6dba375d3d61b16c6c",
+  "verified_at": "2026-09-15T01:32:17.508Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=1f74d52280964c6dba375d3d61b16c6c",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=1f74d52280964c6dba375d3d61b16c6c&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "62e09ce5fe3645deb77cb5662b834c80",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "视觉应用工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "不限",
+        "postContent": "1、负责机器视觉项目需求沟通，及相机、镜头、光源、工控机等硬件的选型；\n2、根据机构件，完成标定流程设计，通信协议设计，软件逻辑等设计，并出具文档；\n3、根据项目的软件功能，完成软件开发；\n4、根据项目的检测功能，完成算法流程搭建；\n5、按照客户要求，完成项目实施及验收。",
+        "postRequire": "1、本科及以上学历，光学、工业自动化、电气、计算机或通信工程等相关专业优先；\r\n2、精通图像处理算法、熟悉机器视觉处理流程；\r\n3、精通C、C++或C#语言,多线程、多进程、内存共享、网络通信编程技术；\r\n4、熟练使用Halcon、visionpro、Labview、VisionMaster中的任意一款视觉处理软件；\r\n5、能适应经常性中短期出差；\r\n6、独立完成过机器视觉项目开发和现场实施工作经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "1f74d52280964c6dba375d3d61b16c6c",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:55",
+        "updateTime": "2026-08-20 17:09:48"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "037fe84da806469fa1ab38c897698221",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "视觉应用工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "不限",
+        "postContent": "1、负责机器视觉项目需求沟通，及相机、镜头、光源、工控机等硬件的选型；\n2、根据机构件，完成标定流程设计，通信协议设计，软件逻辑等设计，并出具文档；\n3、根据项目的软件功能，完成软件开发；\n4、根据项目的检测功能，完成算法流程搭建；\n5、按照客户要求，完成项目实施及验收。",
+        "postRequire": "1、本科及以上学历，光学、工业自动化、电气、计算机或通信工程等相关专业优先；\n2、精通图像处理算法、熟悉机器视觉处理流程；\n3、精通C、C++或C#语言,多线程、多进程、内存共享、网络通信编程技术；\n4、熟练使用Halcon、visionpro、Labview、VisionMaster中的任意一款视觉处理软件；\n5、能适应经常性中短期出差；\n6、独立完成过机器视觉项目开发和现场实施工作经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "珠海市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "1f74d52280964c6dba375d3d61b16c6c",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:48"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "acbf28244ac54512b2d5a3a5c03567ba",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "视觉应用工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "不限",
+        "postContent": "1、负责机器视觉项目需求沟通，及相机、镜头、光源、工控机等硬件的选型；\n2、根据机构件，完成标定流程设计，通信协议设计，软件逻辑等设计，并出具文档；\n3、根据项目的软件功能，完成软件开发；\n4、根据项目的检测功能，完成算法流程搭建；\n5、按照客户要求，完成项目实施及验收。",
+        "postRequire": "1、本科及以上学历，光学、工业自动化、电气、计算机或通信工程等相关专业优先；\r\n2、精通图像处理算法、熟悉机器视觉处理流程；\r\n3、精通C、C++或C#语言,多线程、多进程、内存共享、网络通信编程技术；\r\n4、熟练使用Halcon、visionpro、Labview、VisionMaster中的任意一款视觉处理软件；\r\n5、能适应经常性中短期出差；\r\n6、独立完成过机器视觉项目开发和现场实施工作经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "苏州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "1f74d52280964c6dba375d3d61b16c6c",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:48"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "e19635d46c1f43259cd7f2ee4579b16d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "视觉应用工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "不限",
+        "postContent": "1、负责机器视觉项目需求沟通，及相机、镜头、光源、工控机等硬件的选型；\n2、根据机构件，完成标定流程设计，通信协议设计，软件逻辑等设计，并出具文档；\n3、根据项目的软件功能，完成软件开发；\n4、根据项目的检测功能，完成算法流程搭建；\n5、按照客户要求，完成项目实施及验收。",
+        "postRequire": "1、本科及以上学历，光学、工业自动化、电气、计算机或通信工程等相关专业优先；\r\n2、精通图像处理算法、熟悉机器视觉处理流程；\r\n3、精通C、C++或C#语言,多线程、多进程、内存共享、网络通信编程技术；\r\n4、熟练使用Halcon、visionpro、Labview、VisionMaster中的任意一款视觉处理软件；\r\n5、能适应经常性中短期出差；\r\n6、独立完成过机器视觉项目开发和现场实施工作经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "深圳市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "1f74d52280964c6dba375d3d61b16c6c",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:09:48"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

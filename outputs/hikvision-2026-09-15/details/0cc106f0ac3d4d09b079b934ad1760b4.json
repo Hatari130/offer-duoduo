@@ -1,0 +1,533 @@
+{
+  "source_job_id": "0cc106f0ac3d4d09b079b934ad1760b4",
+  "verified_at": "2026-09-15T01:32:14.202Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=0cc106f0ac3d4d09b079b934ad1760b4",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=0cc106f0ac3d4d09b079b934ad1760b4&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "55d0bb86834f46b5920b4f533ae59e87",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "重庆市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:55",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "94a3128c750741d4bb872d5870bc5564",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "北京市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "4eae2081cee04ed793b307e62e39389f",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "广州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "39b4846e148740678f9bf720685d087a",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "长沙市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "c82b915a323c42a5aa0e875128f1e758",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "成都市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "5b5f8d9b434f4340afa105b89d138b0a",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "济南市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "eb42754c2ae74160a5f7711b97199d8a",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "深圳市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "a8b70fc7f8c34c7eae9e36377f7df3be",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "合肥市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "e9874e47500c406c81416227d2338581",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "厦门市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "f13f7524cad641bfbf8599df6fb0594e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人#海康微影#智能硬件-交通与停车#智能硬件-后端业务#智能硬件-前端业务#智能硬件-移动与穿戴#海康睿影",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        },
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        },
+        {
+          "id": "cbd238ee68984a4485e9452a6104bd27",
+          "name": "智能硬件-交通与停车",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        },
+        {
+          "id": "592bc7a9655a4eba99cdcc64f210c91d",
+          "name": "智能硬件-后端业务",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        },
+        {
+          "id": "596e1f38382340859689858c0be4e041",
+          "name": "智能硬件-前端业务",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        },
+        {
+          "id": "cfabf4b8267e42708c519be6fb85b618",
+          "name": "智能硬件-移动与穿戴",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        },
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "c95de8cadbe14689834304302d168844",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "郑州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "2e60366316994693badcd87baa737669",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "上海市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "09ff611791094f3d8330d6087e4f2380",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "苏州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "3c1f48528bde468dbcc6fe331f9e13b0",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "天津市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "7156cff0ebd64633841e0d897809bd8e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售前工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "不限",
+        "postContent": "1、围绕业务的需求，根据客户和销售需要，包括并不限于提供满足项目需求的系统解决方案（包括需求分析引导、系统架构设计、解决方案文档编制、技术交流和招投标等策划和设计工作）；\n2、引导客户市场和业务的开拓（包括客户市场引导、培训推广、方案协同等工作）。",
+        "postRequire": "1、本科及以上学历，计算机、信息、通信、机械、自动化、材料等泛理工科相关专业优先；\n2、具备较好的解决方案的技术沟通和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "惠州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0cc106f0ac3d4d09b079b934ad1760b4",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

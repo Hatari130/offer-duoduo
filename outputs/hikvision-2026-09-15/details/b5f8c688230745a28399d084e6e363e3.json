@@ -1,0 +1,41 @@
+{
+  "source_job_id": "b5f8c688230745a28399d084e6e363e3",
+  "verified_at": "2026-09-15T01:32:08.665Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=b5f8c688230745a28399d084e6e363e3",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=b5f8c688230745a28399d084e6e363e3&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "b5f8c688230745a28399d084e6e363e3",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "信号完整性工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "PCB/SI",
+        "techDire": "不限",
+        "postContent": "1、参与产品信号完整性和电源完整性设计工作；                                   \r\n2、提供系统级或者板级互连工程设计方案，包含高速链路可行性评估方案、各类串/并行总线仿真设计、PI仿真分析、硬件电路电性能故障问题定位等。",
+        "postRequire": "1、本科及以上学历，计算机、电子、自动化类、仪器科学与技术等相关专业优先；                              \r\n2、熟悉精通运用CAD/CAE工具，例如: HFSS、POWER DC、POWERSI、ADS、QCD、SIwave等相关仿真工具；                                                       \r\n3、能够熟练阅读和理解英文资料，具有创新和强烈的团队意识。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:20",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c85e437f543c4494bf31fe6524368e6d",
+          "name": "智能硬件-硬件技术",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

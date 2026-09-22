@@ -1,0 +1,136 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697311648&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:53.533Z",
+  "data": {
+    "jobUnionId": "4697311648",
+    "name": "AI数据开发工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG050",
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 数据仓库的建设、组织和管理，沉淀数据资产；\n2. 数据建设过程的各项工具研发，如数据安全、数据质量、数据开发的工具链等；\n3. 数据应用的研发，如商业智能、挖掘、分析报告、数据可视化等；\n4. 探索大模型在数据开发场景的应用，如利用LLM辅助数据质量检测、智能数据血缘分析、自然语言查询数据（Text-to-SQL）等；\n5. 其他服务于业务各环节的数据运营工作。",
+    "jobRequirement": "【岗位要求】\n1. 计算机、信息技术相关专业本科及以上学历，对数据技术感兴趣；\n2. 熟练掌握至少一种编程语言（包括但不限于Python、Java、C++等），熟练掌握算法数据结构；\n3. 掌握数据库基本原理和知识，熟练使用SQL；\n具备以下经验者优先：\n1. 具备相关行业互联网公司核心项目实习经验；\n2. 发表过相关技术方向国际顶会或核心期刊一作论文；\n3. 对大型开源软件项目有核心开发贡献；\n4. 熟悉大数据技术（Hadoop、Spark、flink等）；\n5. 有大模型辅助数据开发的经验，如使用LLM进行Text-to-SQL、数据质量校验、自动化ETL等；\n6. 熟悉向量数据库（如Milvus等）或RAG检索增强技术。\n【岗位亮点】\n1. 美团拥有海量数据资产，为数据开发提供丰富的实战土壤；\n2. 数据与大模型深度融合，可参与构建AI驱动的智能数据平台；\n3. 完善的技术培养体系，与行业大牛共事成长。\n4. 了解大语言模型的基本概念，对AI在数据领域的应用有好奇心和学习意愿，有使用AI工具辅助数据开发的经验或实践者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960995000,
+    "refreshTime": 1786960995000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI数据开发工程师\n应届-校园招聘\n工作地点：北京市、上海市、成都市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 数据仓库的建设、组织和管理，沉淀数据资产；\n2. 数据建设过程的各项工具研发，如数据安全、数据质量、数据开发的工具链等；\n3. 数据应用的研发，如商业智能、挖掘、分析报告、数据可视化等；\n4. 探索大模型在数据开发场景的应用，如利用LLM辅助数据质量检测、智能数据血缘分析、自然语言查询数据（Text-to-SQL）等；\n5. 其他服务于业务各环节的数据运营工作。\n任职要求\n【岗位要求】\n1. 计算机、信息技术相关专业本科及以上学历，对数据技术感兴趣；\n2. 熟练掌握至少一种编程语言（包括但不限于Python、Java、C++等），熟练掌握算法数据结构；\n3. 掌握数据库基本原理和知识，熟练使用SQL；\n具备以下经验者优先：\n1. 具备相关行业互联网公司核心项目实习经验；\n2. 发表过相关技术方向国际顶会或核心期刊一作论文；\n3. 对大型开源软件项目有核心开发贡献；\n4. 熟悉大数据技术（Hadoop、Spark、flink等）；\n5. 有大模型辅助数据开发的经验，如使用LLM进行Text-to-SQL、数据质量校验、自动化ETL等；\n6. 熟悉向量数据库（如Milvus等）或RAG检索增强技术。\n【岗位亮点】\n1. 美团拥有海量数据资产，为数据开发提供丰富的实战土壤；\n2. 数据与大模型深度融合，可参与构建AI驱动的智能数据平台；\n3. 完善的技术培养体系，与行业大牛共事成长。\n4. 了解大语言模型的基本概念，对AI在数据领域的应用有好奇心和学习意愿，有使用AI工具辅助数据开发的经验或实践者优先。\n工作城市\n北京市、上海市、成都市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

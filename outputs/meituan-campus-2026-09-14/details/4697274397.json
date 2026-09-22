@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697274397&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:49.493Z",
+  "data": {
+    "jobUnionId": "4697274397",
+    "name": "大模型搜索推荐算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 美团多个推荐场景算法设计优化，包括被动触达渠道和主动触达渠道，设计触发、召回、排序、机制全链路模型算法演进应用落地，为数亿量级全部美团用户服务；\n2. 从服务共性解决方案出发，探索迁移学习、强化学习、可解释性推荐、异构建模等模型算法落地；\n3. 优化多个推荐渠道联动效果，给予用户一致性体验；\n4. 深耕业务特点和生活场景，设计并实现个性化推荐系统全链路优化；\n5. 探索大模型在搜索推荐场景的应用，包括LLM驱动的语义召回与重排、生成式推荐（Generative\n  Recommendation）、大模型辅助特征工程与用户理解等前沿方向。",
+    "jobRequirement": "1. 本科及以上学历；\n2. 扎实的编程能力和数据结构基础，较强的业务问题分析和解决能力；\n3. 熟悉常用的机器学习、深度学习或强化学习算法；\n4. 了解大语言模型的基本原理，对LLM在搜索推荐领域的应用有初步了解或实践经验；\n5. 自驱主动，沟通良好，有团队协作精神。\n\n具备以下经验者优先：\n1. 发表过创新性顶会论文；\n2. 在Kaggle等平台上取得靠前名次；\n3. 有LLM4Rec相关研究或实践经验；\n4. 熟悉RAG、Agent等大模型应用范式，有在搜索推荐场景落地的经验。\n\n【岗位亮点】\n1. 亿级DAU、海量用户数据、复杂多业务场景；\n2. 大模型与搜索推荐深度融合，可参与LLM4Rec前沿范式探索；\n3. 充足的计算资源和海量数据，快速积累AI在搜推方向的落地经验；\n4. 团队技术卓越，发表多篇顶会论文。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961002000,
+    "refreshTime": 1786961002000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型搜索推荐算法工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 美团多个推荐场景算法设计优化，包括被动触达渠道和主动触达渠道，设计触发、召回、排序、机制全链路模型算法演进应用落地，为数亿量级全部美团用户服务；\n2. 从服务共性解决方案出发，探索迁移学习、强化学习、可解释性推荐、异构建模等模型算法落地；\n3. 优化多个推荐渠道联动效果，给予用户一致性体验；\n4. 深耕业务特点和生活场景，设计并实现个性化推荐系统全链路优化；\n5. 探索大模型在搜索推荐场景的应用，包括LLM驱动的语义召回与重排、生成式推荐（Generative\nRecommendation）、大模型辅助特征工程与用户理解等前沿方向。\n任职要求\n1. 本科及以上学历；\n2. 扎实的编程能力和数据结构基础，较强的业务问题分析和解决能力；\n3. 熟悉常用的机器学习、深度学习或强化学习算法；\n4. 了解大语言模型的基本原理，对LLM在搜索推荐领域的应用有初步了解或实践经验；\n5. 自驱主动，沟通良好，有团队协作精神。\n具备以下经验者优先：\n1. 发表过创新性顶会论文；\n2. 在Kaggle等平台上取得靠前名次；\n3. 有LLM4Rec相关研究或实践经验；\n4. 熟悉RAG、Agent等大模型应用范式，有在搜索推荐场景落地的经验。\n【岗位亮点】\n1. 亿级DAU、海量用户数据、复杂多业务场景；\n2. 大模型与搜索推荐深度融合，可参与LLM4Rec前沿范式探索；\n3. 充足的计算资源和海量数据，快速积累AI在搜推方向的落地经验；\n4. 团队技术卓越，发表多篇顶会论文。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

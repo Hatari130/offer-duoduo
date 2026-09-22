@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153953328&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:13.883Z",
+  "data": {
+    "jobUnionId": "3153953328",
+    "name": "【大模型北斗实习】面向真实物理世界的大规模智能体研究（Agent In Real Life）",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "随着 LLM 与 RL 技术的飞速发展，具备自主决策与执行能力的 Agent 系统成为 AI 领域的前沿研究方向。本课题聚焦于构建能够在真实物理世界（餐饮、购物、旅行规划等）复杂场景下自主运行的 Agent 系统，解决传统 AI 系统难以应对的多步骤规划、长期目标追踪、环境适应性等核心挑战。主要研究内容包括但不限于：\n1）自主规划与决策：研究基于 LLM 的 CoT 等的复杂推理机制，使 Agent 能够自主分解并解决如\"为一家四口安排一个周末出游计划，包括交通、住宿、餐饮和活动\"等多步骤任务；开发能够在规划失败时进行自我修正和重新规划的自适应决策框架，突破传统 Agent 在复杂场景下的规划瓶颈。\n2）强化学习驱动的自主优化：应用前沿强化学习算法（如PPO、GRPO、RL）优化 Agent 的决策系统，通过用户反馈和任务完成度构建复杂奖励函数；研究如何在高维状态空间和长期依赖问题中有效进行奖励分配，解决真实复杂物理场景中典型的延迟反馈和稀疏奖励挑战。\n3）多 Agent 协作与分布式决策：设计基于角色分工的多 Agent 协作框架，使不同专长的 Agent 能够协同解决复杂任务，如\"美食专家 Agent 负责菜品推荐，规划 Agent 负责整体行程安排\"等；研究 Agent 间的通信协议和共识机制，解决分布式决策中的冲突协调和资源分配问题。",
+    "jobRequirement": "1）硕士及以上学历，计算机科学、人工智能或相关专业背景。\n2）熟练掌握 Python，熟悉 PyTorch 或 TensorFlow 等深度学习框架。\n3）扎实的 LLM 和 Agent 系统理论基础。\n4）熟悉 RL 算法框架，具备将 RL 应用于 Agent 决策优化的实践经验。\n5）具备设计复杂 Agent 系统架构的能力，包括记忆机制、规划模块、执行模块等核心组件。\n加分项：\n1）在NeurIPS、ICLR、ICML、ACL、EMNLP等顶级会议发表过 Agent 系统或相关技术的论文。\n2）参与过开源 Agent 项目（如LangChain、AutoGPT 等）的开发或有重要贡献。\n3）具备多 Agent 系统设计和协作机制研究经验，了解 Agent 间通信和任务分配技术。\n4）有构建端到端 Agent 系统的实际项目经验，能够解决生产环境中的鲁棒性和可靠性问题。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309543000,
+    "refreshTime": 1747963941000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】面向真实物理世界的大规模智能体研究（Agent In Real Life）\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n随着 LLM 与 RL 技术的飞速发展，具备自主决策与执行能力的 Agent 系统成为 AI 领域的前沿研究方向。本课题聚焦于构建能够在真实物理世界（餐饮、购物、旅行规划等）复杂场景下自主运行的 Agent 系统，解决传统 AI 系统难以应对的多步骤规划、长期目标追踪、环境适应性等核心挑战。主要研究内容包括但不限于：\n1）自主规划与决策：研究基于 LLM 的 CoT 等的复杂推理机制，使 Agent 能够自主分解并解决如\"为一家四口安排一个周末出游计划，包括交通、住宿、餐饮和活动\"等多步骤任务；开发能够在规划失败时进行自我修正和重新规划的自适应决策框架，突破传统 Agent 在复杂场景下的规划瓶颈。\n2）强化学习驱动的自主优化：应用前沿强化学习算法（如PPO、GRPO、RL）优化 Agent 的决策系统，通过用户反馈和任务完成度构建复杂奖励函数；研究如何在高维状态空间和长期依赖问题中有效进行奖励分配，解决真实复杂物理场景中典型的延迟反馈和稀疏奖励挑战。\n3）多 Agent 协作与分布式决策：设计基于角色分工的多 Agent 协作框架，使不同专长的 Agent 能够协同解决复杂任务，如\"美食专家 Agent 负责菜品推荐，规划 Agent 负责整体行程安排\"等；研究 Agent 间的通信协议和共识机制，解决分布式决策中的冲突协调和资源分配问题。\n任职要求\n1）硕士及以上学历，计算机科学、人工智能或相关专业背景。\n2）熟练掌握 Python，熟悉 PyTorch 或 TensorFlow 等深度学习框架。\n3）扎实的 LLM 和 Agent 系统理论基础。\n4）熟悉 RL 算法框架，具备将 RL 应用于 Agent 决策优化的实践经验。\n5）具备设计复杂 Agent 系统架构的能力，包括记忆机制、规划模块、执行模块等核心组件。\n加分项：\n1）在NeurIPS、ICLR、ICML、ACL、EMNLP等顶级会议发表过 Agent 系统或相关技术的论文。\n2）参与过开源 Agent 项目（如LangChain、AutoGPT 等）的开发或有重要贡献。\n3）具备多 Agent 系统设计和协作机制研究经验，了解 Agent 间通信和任务分配技术。\n4）有构建端到端 Agent 系统的实际项目经验，能够解决生产环境中的鲁棒性和可靠性问题。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

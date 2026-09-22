@@ -1,0 +1,106 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697302797&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:54.236Z",
+  "data": {
+    "jobUnionId": "4697302797",
+    "name": "多模态生成大模型算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责通用视觉技术能力的构建，如OCR、人脸人体分析、图像视频理解、3D视觉、图形和渲染算法、基础模型、跨模态理解与生成、MLOps等；\n2. 负责视觉技术在美团全场景下的落地，包括但不限于内容审核、视频结构化理解、智能文档分析、身份核验、智能创作、自动驾驶、场景数字化、摄像头视觉感知、视频流分析、IoT视觉等；\n3. 负责前瞻技术的探索及攻坚，如生成式AI、神经网络渲染、点云处理、增强现实等。",
+    "jobRequirement": "1. 本科及以上学历；\n2. 熟练掌握模式识别和图像视频处理领域的基础理论和方法，在一个或多个领域有深入研究；在机器学习和深度学习方面具备扎实的理论基础和工程实现能力，熟悉PyTorch、TensorFlow等主流框架；\n3. 优秀的分析和解决问题的能力、项目推动力和团队协作能力。\n具备以下经验者优先\n1. 在计算机视觉领域内的权威期刊（TPAMI， TIP， IJCV， TMM等）或顶级会议（CVPR，ICCV，ECCV等）发表过文章；\n2. 在计算机视觉的通用或细分领域的权威竞赛中取得成绩；\n3. 对视频内容理解、行人再识别、深度学习模型压缩、弱监督学习、对抗学习等领域之一有过深入研究。\n岗位亮点\n1. 以公司实际业务为依托，有完善的技术转化和落地机制；\n2. 场景全覆盖，视觉技术方向的选择空间大；\n3. 注重技术创新，关注前沿技术；\n4. 定制化的新人培养计划，可走领域专家培养路线，也可走架构师培养路线。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960994000,
+    "refreshTime": 1786960994000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n多模态生成大模型算法工程师\n应届-校园招聘\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责通用视觉技术能力的构建，如OCR、人脸人体分析、图像视频理解、3D视觉、图形和渲染算法、基础模型、跨模态理解与生成、MLOps等；\n2. 负责视觉技术在美团全场景下的落地，包括但不限于内容审核、视频结构化理解、智能文档分析、身份核验、智能创作、自动驾驶、场景数字化、摄像头视觉感知、视频流分析、IoT视觉等；\n3. 负责前瞻技术的探索及攻坚，如生成式AI、神经网络渲染、点云处理、增强现实等。\n任职要求\n1. 本科及以上学历；\n2. 熟练掌握模式识别和图像视频处理领域的基础理论和方法，在一个或多个领域有深入研究；在机器学习和深度学习方面具备扎实的理论基础和工程实现能力，熟悉PyTorch、TensorFlow等主流框架；\n3. 优秀的分析和解决问题的能力、项目推动力和团队协作能力。\n具备以下经验者优先\n1. 在计算机视觉领域内的权威期刊（TPAMI， TIP， IJCV， TMM等）或顶级会议（CVPR，ICCV，ECCV等）发表过文章；\n2. 在计算机视觉的通用或细分领域的权威竞赛中取得成绩；\n3. 对视频内容理解、行人再识别、深度学习模型压缩、弱监督学习、对抗学习等领域之一有过深入研究。\n岗位亮点\n1. 以公司实际业务为依托，有完善的技术转化和落地机制；\n2. 场景全覆盖，视觉技术方向的选择空间大；\n3. 注重技术创新，关注前沿技术；\n4. 定制化的新人培养计划，可走领域专家培养路线，也可走架构师培养路线。\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

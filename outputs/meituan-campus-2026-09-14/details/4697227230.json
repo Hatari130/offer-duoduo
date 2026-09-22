@@ -1,0 +1,406 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697227230&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:38.215Z",
+  "data": {
+    "jobUnionId": "4697227230",
+    "name": "营销顾问/商务拓展",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "销售、客服与支持类",
+    "jobFamilyGroup": "销售",
+    "cityList": [
+      {
+        "code": "001013002",
+        "name": "厦门市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001013001",
+        "name": "福州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001011001",
+        "name": "杭州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010012",
+        "name": "无锡市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001011002",
+        "name": "宁波市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001011003",
+        "name": "温州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010013",
+        "name": "苏州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001002",
+        "name": "天津市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019008",
+        "name": "惠州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001003001",
+        "name": "石家庄市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001007001",
+        "name": "长春市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019003",
+        "name": "珠海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001015001",
+        "name": "济南市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001015002",
+        "name": "青岛市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019001",
+        "name": "广州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001017001",
+        "name": "武汉市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001012001",
+        "name": "合肥市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010001",
+        "name": "南京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001006001",
+        "name": "沈阳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001006002",
+        "name": "大连市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001020001",
+        "name": "南宁市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001027001",
+        "name": "西安市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001008001",
+        "name": "哈尔滨市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001025001",
+        "name": "昆明市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001018001",
+        "name": "长沙市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019015",
+        "name": "湛江市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001022",
+        "name": "重庆市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019010",
+        "name": "东莞市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001014001",
+        "name": "南昌市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019011",
+        "name": "中山市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019013",
+        "name": "佛山市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001016001",
+        "name": "郑州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 承接执行公司销售策略及政策，负责区域内新商户的拓展、老商户的维护，与商户建立长期稳定的商务合作关系，达成业绩目标；  \n2. 通过深入了解商户需求，结合区域消费市场特征制定个性化营销和运营方案并促成更多元的合作，帮助商家提升经营水平；  \n3. 通过与公司各部门有效配合，快速解决商户经营中遇到的问题及突发事件，及时处理来自商家和消费者的投诉、反馈、建议等，提高消费者和商家的满意度；  \n4. 通过及时收集区域内商户和消费者意见，了解当地市场信息等对业务提出发展参考意见，持续帮助树立企业优良品牌。",
+    "jobRequirement": "1. 本科及以上学历，市场营销等相关专业优先，热爱销售； \n2. 具备较强的学习能力和韧性，能够适应互联网行业的快速发展； \n3. 具备较好的人际敏感度、逻辑思维能力，能够准确把握产品优势和客户心理，高效整合内外部资源。\n岗位亮点： \n1. 公司提供完善的员工福利：社保公积金+补充商业保险、法定节假日之外的额外带薪假期； \n2. 公司拥有完善的培训体系和转岗、晋升机制，可以帮助员工不断提升多项专业技能和管理技能；  \n3. 团队士气高，有激情，工作氛围好。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961058000,
+    "refreshTime": 1786961058000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n营销顾问/商务拓展\n应届-校园招聘\n工作地点：厦门市、福州市、杭州市、无锡市...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 承接执行公司销售策略及政策，负责区域内新商户的拓展、老商户的维护，与商户建立长期稳定的商务合作关系，达成业绩目标；\n2. 通过深入了解商户需求，结合区域消费市场特征制定个性化营销和运营方案并促成更多元的合作，帮助商家提升经营水平；\n3. 通过与公司各部门有效配合，快速解决商户经营中遇到的问题及突发事件，及时处理来自商家和消费者的投诉、反馈、建议等，提高消费者和商家的满意度；\n4. 通过及时收集区域内商户和消费者意见，了解当地市场信息等对业务提出发展参考意见，持续帮助树立企业优良品牌。\n任职要求\n1. 本科及以上学历，市场营销等相关专业优先，热爱销售；\n2. 具备较强的学习能力和韧性，能够适应互联网行业的快速发展；\n3. 具备较好的人际敏感度、逻辑思维能力，能够准确把握产品优势和客户心理，高效整合内外部资源。\n岗位亮点：\n1. 公司提供完善的员工福利：社保公积金+补充商业保险、法定节假日之外的额外带薪假期；\n2. 公司拥有完善的培训体系和转岗、晋升机制，可以帮助员工不断提升多项专业技能和管理技能；\n3. 团队士气高，有激情，工作氛围好。\n工作城市\n厦门市、福州市、杭州市、无锡市、宁波市、北京市、温州市、苏州市、天津市、惠州市、石家庄市、上海市、成都市、长春市、珠海市、济南市、青岛市、广州市、深圳市、武汉市、合肥市、南京市、沈阳市、大连市、南宁市、西安市、哈尔滨市、昆明市、长沙市、湛江市、重庆市、东莞市、南昌市、中山市、佛山市、郑州市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

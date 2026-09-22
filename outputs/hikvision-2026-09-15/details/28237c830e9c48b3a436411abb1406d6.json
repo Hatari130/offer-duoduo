@@ -1,0 +1,41 @@
+{
+  "source_job_id": "28237c830e9c48b3a436411abb1406d6",
+  "verified_at": "2026-09-15T01:32:06.882Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=28237c830e9c48b3a436411abb1406d6",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=28237c830e9c48b3a436411abb1406d6&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "28237c830e9c48b3a436411abb1406d6",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器人定位导航算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "SLAM/三维建模/多传感器融合/场景识别/图像匹配/图像检索",
+        "postContent": "1、负责基于激光雷达、相机或多传感器融合（如IMU、编码器等）的标定、建图、定位算法的设计与开发；\n2、负责对上述算法的性能调优，提升算法的精度、鲁棒性和实时性等多方面性能，实现算法的部署和落地；\n3、跟踪前沿研究领域SLAM技术的发展，对具备应用前景的新技术进行尝试和探索，推进算法的迭代和革新。",
+        "postRequire": "1、硕士及以上学历（计算机、机器人、自动化等相关专业）；\n2、有扎实的编程基础，熟练使用C/C++、Python或Matlab；\n3、掌握SLAM相关理论基础，包括但不限于图像/点云处理、多视图几何、回环检测、状态估计和多传感器融合原理等；\n4、具备至少一种传感器（2D\\3D激光雷达、相机等）的SLAM项目应用经验，熟悉至少一种常用开源SLAM框架（ORB-SLAM3、VINS-Mono、LIO-SAM、Fast-LIO2等）的使用；\n5、了解深度学习方法在SLAM中的应用（如深度学习前端、Nerf-SLAM和语义SLAM等）;\n6、机器人方向知名比赛的核心参与者，或相关期刊顶会（TRO/CVPR/ICRA等）发表论文者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "西安市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

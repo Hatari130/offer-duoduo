@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348763907&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:18.577Z",
+  "data": {
+    "jobUnionId": "4348763907",
+    "name": "【基座大模型北斗实习】基座大模型-Coding方向",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：Coding是当前 AI 技术落地最快、商业价值最大的方向之一。从代码补全到自主修复 GitHub Issue、到端到端软件工程自动化，大模型 Coding 能力的突破正在重塑整个软件开发范式。我们正在构建下一代具有强大代码生成与自主 Agent 能力的基座模型，打造可在真实工程环境中独立运作的 AI 开发者。\n\n岗位职责\n1、负责基座大模型在代码生成、代码理解、代码 debug 等方向的能力研究与提升，提升模型在Coding任务中的 Planning、长上下文理解等核心能力。\n2、探索模型在 repo 级代码理解、跨文件修改、自主 debug 等复杂任务上的能力边界。\n3、参与 Post-training（SFT / RL/ PRM）等 Alignment 方法在 Coding 场景的研究与落地。",
+    "jobRequirement": "1、熟悉NLP、LLM、MLsys、Optimization、OR、Control、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实际项目经验；\n2、熟悉Python等至少一门编程语言，熟悉LINUX环境；\n3、熟悉Pytorch、 Megatron、DeepSpeed 等开源训练框架。\n\n加分项：\n1、有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文优先（如NeurIPS,ICLR,ICML,ACL,EMNLP等）；\n3、KDDCup等业界知名机器学习比赛中获奖经历。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223033000,
+    "refreshTime": 1775223033000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】基座大模型-Coding方向\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：Coding是当前 AI 技术落地最快、商业价值最大的方向之一。从代码补全到自主修复 GitHub Issue、到端到端软件工程自动化，大模型 Coding 能力的突破正在重塑整个软件开发范式。我们正在构建下一代具有强大代码生成与自主 Agent 能力的基座模型，打造可在真实工程环境中独立运作的 AI 开发者。\n岗位职责\n1、负责基座大模型在代码生成、代码理解、代码 debug 等方向的能力研究与提升，提升模型在Coding任务中的 Planning、长上下文理解等核心能力。\n2、探索模型在 repo 级代码理解、跨文件修改、自主 debug 等复杂任务上的能力边界。\n3、参与 Post-training（SFT / RL/ PRM）等 Alignment 方法在 Coding 场景的研究与落地。\n任职要求\n1、熟悉NLP、LLM、MLsys、Optimization、OR、Control、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实际项目经验；\n2、熟悉Python等至少一门编程语言，熟悉LINUX环境；\n3、熟悉Pytorch、 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1、有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文优先（如NeurIPS,ICLR,ICML,ACL,EMNLP等）；\n3、KDDCup等业界知名机器学习比赛中获奖经历。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,54 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4306214875&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:03.549Z",
+  "data": {
+    "jobUnionId": "4306214875",
+    "name": "Agent开发实习生（AI 产品方向）",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "美团平台为用户的基础产品体验负责，还承担了美团的用户增长、市场和品牌营销以及多条业务线的产品设计职责，建立了融合文字、图片、视频和直播等不同形式的內容生态系统，同时整合地图服务部、客户服务和体验部、企业业务部、网约车业务部等部门，致力于用科技提升美团数亿消费者、近千万商家、骑手、司机和团长的服务体验。美团平台拥有高并发、多业务的复杂场景，为技术深度优化提供了最佳实践可能。这里有简单、讲逻辑、有爱的团队，更是一块理想的实战场地，舞台广阔，欢迎你来尽情施展。",
+    "jobDuty": "1.参与 AI Agent 核心系统开发，包括 Prompt 工程、Chain、Harness 和技能模块（Skills）；\n2.实现中小型功能模块或系统优化，支持任务自动化和上下文管理；\n3.学习并实践系统性能调优，在多任务、高并发环境中积累工程经验；\n4.跟踪业界大模型应用与 Agent 技术动态，参与技术调研、方案评估与落地。",
+    "jobRequirement": "1.熟悉至少一种高级编程语言（Java / Python 等），具备基础算法和数据结构能力；\n2.计算机或相关专业背景，计算机基础扎实；\n3.熟悉关系型数据库及 SQL 开发；\n4.具备良好沟通能力，能够分析问题并提出解决方案；\n5.对大模型应用、Agent 系统、Prompt 工程及 AI 工程化有浓厚兴趣，乐于探索新技术。",
+    "precedence": "1.有大模型应用开发、Prompt 编写或调优经验者优先；\n2.有 Agentic 系统或相关开源项目经验（如 Claude Code、DeepAgent、OpenClaw、LangGraph等）者优先；\n3.熟悉技能模块加载及上下文管理经验者优先。",
+    "highLight": "1.学习前沿技术，接触大模型工程实战；\n2.实战机会丰富，可独立完成模块开发和优化任务；\n3.资深 AI 技术专家指导，加速技术与工程能力提升；\n4.快速成长，积累系统设计、工程化和高并发环境经验。",
+    "otherInfo": null,
+    "firstPostTime": 1774404830000,
+    "refreshTime": 1789268409000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAgent开发实习生（AI 产品方向）\n实习-日常实习\n更新时间：2026/09/13\n工作地点：成都市\n部门：核心本地商业-美团平台\n工作经验：不限\n分享\n立即申请\n部门介绍\n美团平台为用户的基础产品体验负责，还承担了美团的用户增长、市场和品牌营销以及多条业务线的产品设计职责，建立了融合文字、图片、视频和直播等不同形式的內容生态系统，同时整合地图服务部、客户服务和体验部、企业业务部、网约车业务部等部门，致力于用科技提升美团数亿消费者、近千万商家、骑手、司机和团长的服务体验。美团平台拥有高并发、多业务的复杂场景，为技术深度优化提供了最佳实践可能。这里有简单、讲逻辑、有爱的团队，更是一块理想的实战场地，舞台广阔，欢迎你来尽情施展。\n岗位职责\n1.参与 AI Agent 核心系统开发，包括 Prompt 工程、Chain、Harness 和技能模块（Skills）；\n2.实现中小型功能模块或系统优化，支持任务自动化和上下文管理；\n3.学习并实践系统性能调优，在多任务、高并发环境中积累工程经验；\n4.跟踪业界大模型应用与 Agent 技术动态，参与技术调研、方案评估与落地。\n岗位基本要求\n1.熟悉至少一种高级编程语言（Java / Python 等），具备基础算法和数据结构能力；\n2.计算机或相关专业背景，计算机基础扎实；\n3.熟悉关系型数据库及 SQL 开发；\n4.具备良好沟通能力，能够分析问题并提出解决方案；\n5.对大模型应用、Agent 系统、Prompt 工程及 AI 工程化有浓厚兴趣，乐于探索新技术。\n具备以下条件优先\n1.有大模型应用开发、Prompt 编写或调优经验者优先；\n2.有 Agentic 系统或相关开源项目经验（如 Claude Code、DeepAgent、OpenClaw、LangGraph等）者优先；\n3.熟悉技能模块加载及上下文管理经验者优先。\n岗位亮点\n1.学习前沿技术，接触大模型工程实战；\n2.实战机会丰富，可独立完成模块开发和优化任务；\n3.资深 AI 技术专家指导，加速技术与工程能力提升；\n4.快速成长，积累系统设计、工程化和高并发环境经验。\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

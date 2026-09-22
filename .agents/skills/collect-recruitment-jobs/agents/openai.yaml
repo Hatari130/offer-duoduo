@@ -1,0 +1,4 @@
+interface:
+  display_name: "招聘数据采集与接入"
+  short_description: "程序化优先采集招聘岗位，dokobot 回退，规范字段并接入本地岗位页面"
+  default_prompt: "使用 $collect-recruitment-jobs 采集我提供的招聘网站，先尝试程序化方式，不可行时用 dokobot CLI，按既定字段整理并接入本地岗位发现页。"

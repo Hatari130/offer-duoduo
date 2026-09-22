@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531268543&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:46.651Z",
+  "data": {
+    "jobUnionId": "4531268543",
+    "name": "【北斗】Agent构建算法研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【愿景】\n建成全球持续领先、客户长期信赖的履约技术平台，打造市场首选、社会认可、服务10亿用户的配送品牌。\n\n【你将参与】\n方向一：Agent 技术体系研究与 Harness 建设\n1.面向真实业务场景，设计并构建 Agent 技术体系，重点攻克任务规划与分解、工具调用与协同、自我反思与纠错、记忆与知识管理等核心能力。\n2.负责 Harness Agent 的开发与评估框架的搭建与持续迭代，抽象可复用的模式与组件。\n3.深入分析 Agent 的失败模式，建立系统化的错误诊断、归因与自动修复机制。\n方向二：Agent for Work 能力研究与探索\n1.面向工作场景，设计并实现具备自主研究、知识库管理、自主循环能力的 Agent 系统。\n2.重点攻克自主信息检索与整合、基于记忆与知识管理的结构化知识库动态更新、计划-执行-反思闭环等关键技术，实现工作流的高效自主执行。\n方向三：业务闭环与落地\n1.与业务团队深度协作，将 Agent 能力落地到真实业务流程中，解决实际业务痛点，并转化为可量化的线上收益。\n2.建立覆盖 Agent 行为、任务完成质量、工具调用准确率和业务效果的评测体系，驱动模型与系统的快速迭代。",
+    "jobRequirement": "【任职资格】\n必备条件：\n1.2027届计算机、人工智能、数学、统计、电子信息、自动化等相关专业，本科及以上学历，博士/硕士优先。\n2.熟悉 LLM 及 Agent 基本机制与技术原理，包括 LLM API、KV Cache、Agent Loop、Tool Use、Reasoning、Planning、Skills、MCP、Memory、Subagent、Multi-Agent 等；对 Prompt Engineering、Context Engineering、Harness Engineering 等课题有较深入了解。\n3.熟练使用 AI Agent 工具进行软件开发，在软件开发领域具有极强的学习能力；能在 AI 辅助下，于没有直接经验的领域进行有质量保证的编程工作。\n4.是 Agent 产品的忠实用户，对 Agent Harness 开发有极大热情，对模型行为有品味与判断力，对开发者体验有强感知；深度使用过代码类及通用类 Agent 产品，并将其融入工作与生活。\n5.良好的中文沟通能力。\n加分项：\n1.在 NeurIPS、ICML、ICLR、CVPR、ACL、EMNLP 等顶会发表过论文，有不错的科研品味，或有被广泛使用的开源项目。\n2.在计算机科学、编程或数据科学领域具有含金量的比赛奖项，有很好的动手能力。\n3.有很好的想象力和产品力，具备跨学科视野，或其它超乎常人的与此工作相关的才能。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459808000,
+    "refreshTime": 1780459808000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】Agent构建算法研究员\n应届-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【愿景】\n建成全球持续领先、客户长期信赖的履约技术平台，打造市场首选、社会认可、服务10亿用户的配送品牌。\n【你将参与】\n方向一：Agent 技术体系研究与 Harness 建设\n1.面向真实业务场景，设计并构建 Agent 技术体系，重点攻克任务规划与分解、工具调用与协同、自我反思与纠错、记忆与知识管理等核心能力。\n2.负责 Harness Agent 的开发与评估框架的搭建与持续迭代，抽象可复用的模式与组件。\n3.深入分析 Agent 的失败模式，建立系统化的错误诊断、归因与自动修复机制。\n方向二：Agent for Work 能力研究与探索\n1.面向工作场景，设计并实现具备自主研究、知识库管理、自主循环能力的 Agent 系统。\n2.重点攻克自主信息检索与整合、基于记忆与知识管理的结构化知识库动态更新、计划-执行-反思闭环等关键技术，实现工作流的高效自主执行。\n方向三：业务闭环与落地\n1.与业务团队深度协作，将 Agent 能力落地到真实业务流程中，解决实际业务痛点，并转化为可量化的线上收益。\n2.建立覆盖 Agent 行为、任务完成质量、工具调用准确率和业务效果的评测体系，驱动模型与系统的快速迭代。\n任职要求\n【任职资格】\n必备条件：\n1.2027届计算机、人工智能、数学、统计、电子信息、自动化等相关专业，本科及以上学历，博士/硕士优先。\n2.熟悉 LLM 及 Agent 基本机制与技术原理，包括 LLM API、KV Cache、Agent Loop、Tool Use、Reasoning、Planning、Skills、MCP、Memory、Subagent、Multi-Agent 等；对 Prompt Engineering、Context Engineering、Harness Engineering 等课题有较深入了解。\n3.熟练使用 AI Agent 工具进行软件开发，在软件开发领域具有极强的学习能力；能在 AI 辅助下，于没有直接经验的领域进行有质量保证的编程工作。\n4.是 Agent 产品的忠实用户，对 Agent Harness 开发有极大热情，对模型行为有品味与判断力，对开发者体验有强感知；深度使用过代码类及通用类 Agent 产品，并将其融入工作与生活。\n5.良好的中文沟通能力。\n加分项：\n1.在 NeurIPS、ICML、ICLR、CVPR、ACL、EMNLP 等顶会发表过论文，有不错的科研品味，或有被广泛使用的开源项目。\n2.在计算机科学、编程或数据科学领域具有含金量的比赛奖项，有很好的动手能力。\n3.有很好的想象力和产品力，具备跨学科视野，或其它超乎常人的与此工作相关的才能。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

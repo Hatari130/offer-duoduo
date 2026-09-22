@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4592373372&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:34.005Z",
+  "data": {
+    "jobUnionId": "4592373372",
+    "name": "【LongCat实习】大模型算法研究员-Search Agent方向",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "2",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "你将加入 LongCat Agent 算法团队，与一线研究员共同推进下一代智能体的范式探索。具体方向包括但不限于：\n1.Agentic RL 基础算法研究：探索面向长程多步任务的强化学习训练范式，包括稀疏奖励下的信用分配、过程奖励建模、自我博弈与多智能体协同、可扩展的 reward modeling，以及训练稳定性与样本效率优化。目标是实现Agent 能力增长的主引擎；\n2.Search Agent 能力构建：研发面向开放域复杂查询的搜索智能体，覆盖多轮检索规划、查询改写、证据聚合、多源信息冲突消解与可信溯源。重点突破\"深度研究\"类长程任务（Deep Research）的端到端 RL 训练，让模型在数十步检索-推理交织中保持目标产出高质量分析内容。\n3.生活服务助理 Agent：解决美团真实业务环境中（餐饮、出行、到店、履约等多业务横跨）实现智能助理的基础问题，研究多工具长链调用、澄清和主动服务、个性化记忆与偏好建模、跨会话状态管理，以及面向真实用户反馈的RL 闭环。这里的复杂度来自亿级用户、千万级 SKU 与多步骤决策构成的真实环境。\n【为什么是我们】\n1.稀缺场景：直接接触亿级真实用户、跨业务多步决策的复杂环境，是当前业界最稀缺的 Agent 训练土壤；\n2.充足资源：充足算力、丰富多模态数据、专属带教导师、顶级 infra 团队支持；\n3.研究自由：明确鼓励技术探索，有机会参与顶会论文产出，研究成果可服务亿级真实用户实现学术与产业双闭环；\n4.成长路径：北京 / 上海双地 base，扁平协作、与算法/Infra/产品高密度共事，快速成长为下一代 Agent 技术骨干。",
+    "jobRequirement": "1.全球 Top 高校计算机科学、人工智能、数学或相关领域博士或硕士；\n2.在 NeurIPS、ICML、ICLR、ACL、EMNLP等大模型领域顶级会议以第一作者发表过论文，研究方向与大语言模型、强化学习、Agent、多模态模型等强相关；\n3.在大语言模型、强化学习、Agent、多模态等方向中至少一个领域有扎实的理论基础与实践经验，能独立完成从问题定义、方法设计、系统开发、实验验证的完整工作闭环，并深度使用AI工具辅助完成；\n4.扎实的代码功底，能高效准确实现复杂模型结构并完成大规模训练实验；\n5.具备良好的科研品味、独立思考能力与跨团队协作沟通能力，对前沿问题有持续热情，敢于挑战现有范式。\n加分项\n1.参与过千卡级大模型训练或 RL 大规模训练 infra 建设；\n2.在 GitHub 有高 star 开源项目，或在大模型 / Agent 领域知名开源社区有持续贡献；\n3.ACM/ICPC、NOI/IOI、Kaggle 等竞赛获奖者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1782475781000,
+    "refreshTime": 1782475781000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat实习】大模型算法研究员-Search Agent方向\n实习-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n你将加入 LongCat Agent 算法团队，与一线研究员共同推进下一代智能体的范式探索。具体方向包括但不限于：\n1.Agentic RL 基础算法研究：探索面向长程多步任务的强化学习训练范式，包括稀疏奖励下的信用分配、过程奖励建模、自我博弈与多智能体协同、可扩展的 reward modeling，以及训练稳定性与样本效率优化。目标是实现Agent 能力增长的主引擎；\n2.Search Agent 能力构建：研发面向开放域复杂查询的搜索智能体，覆盖多轮检索规划、查询改写、证据聚合、多源信息冲突消解与可信溯源。重点突破\"深度研究\"类长程任务（Deep Research）的端到端 RL 训练，让模型在数十步检索-推理交织中保持目标产出高质量分析内容。\n3.生活服务助理 Agent：解决美团真实业务环境中（餐饮、出行、到店、履约等多业务横跨）实现智能助理的基础问题，研究多工具长链调用、澄清和主动服务、个性化记忆与偏好建模、跨会话状态管理，以及面向真实用户反馈的RL 闭环。这里的复杂度来自亿级用户、千万级 SKU 与多步骤决策构成的真实环境。\n【为什么是我们】\n1.稀缺场景：直接接触亿级真实用户、跨业务多步决策的复杂环境，是当前业界最稀缺的 Agent 训练土壤；\n2.充足资源：充足算力、丰富多模态数据、专属带教导师、顶级 infra 团队支持；\n3.研究自由：明确鼓励技术探索，有机会参与顶会论文产出，研究成果可服务亿级真实用户实现学术与产业双闭环；\n4.成长路径：北京 / 上海双地 base，扁平协作、与算法/Infra/产品高密度共事，快速成长为下一代 Agent 技术骨干。\n任职要求\n1.全球 Top 高校计算机科学、人工智能、数学或相关领域博士或硕士；\n2.在 NeurIPS、ICML、ICLR、ACL、EMNLP等大模型领域顶级会议以第一作者发表过论文，研究方向与大语言模型、强化学习、Agent、多模态模型等强相关；\n3.在大语言模型、强化学习、Agent、多模态等方向中至少一个领域有扎实的理论基础与实践经验，能独立完成从问题定义、方法设计、系统开发、实验验证的完整工作闭环，并深度使用AI工具辅助完成；\n4.扎实的代码功底，能高效准确实现复杂模型结构并完成大规模训练实验；\n5.具备良好的科研品味、独立思考能力与跨团队协作沟通能力，对前沿问题有持续热情，敢于挑战现有范式。\n加分项\n1.参与过千卡级大模型训练或 RL 大规模训练 infra 建设；\n2.在 GitHub 有高 star 开源项目，或在大模型 / Agent 领域知名开源社区有持续贡献；\n3.ACM/ICPC、NOI/IOI、Kaggle 等竞赛获奖者优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

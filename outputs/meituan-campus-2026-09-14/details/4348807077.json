@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348807077&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:52.231Z",
+  "data": {
+    "jobUnionId": "4348807077",
+    "name": "【基座大模型北斗实习】下一代大模型训练范式研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：探索下一代大模型训练范式，从模型结构、训练策略、数据策略、算力利用率等角度切入，打造具有更强能力和更高潜力的基座模型\n\n1、设计更高效的模型结构，提高给定数据量、计算量、硬件资源、输出序列长度等约束下的模型能力，如长序列能力、记忆能力等。\n2、探索更科学和前沿的训练策略，对影响training dynamic的关键变量（如学习率、batchsize、初始化等）形成更科学的认知，探索diffusion LLM，test-time scaling等技术。\n3、研究模型结构和数据的耦合关系，优化分阶段训练范式。\n4、结合MLsys解决大规模训练中遇到的卡点问题，实现算法和工程联合设计。",
+    "jobRequirement": "1、熟悉NLP、LLM、MLsys、Optimization、OR、Control、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实际项目经验；\n2、熟悉Python、C++等至少一门编程语言，熟悉LINUX环境；\n3、熟悉Pytorch、 Megatron、DeepSpeed 等开源训练框架。\n\n加分项：\n1、有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文优先（如NeurIPS,ICLR,ICML,ACL,EMNLP等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223033000,
+    "refreshTime": 1775223033000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】下一代大模型训练范式研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：探索下一代大模型训练范式，从模型结构、训练策略、数据策略、算力利用率等角度切入，打造具有更强能力和更高潜力的基座模型\n1、设计更高效的模型结构，提高给定数据量、计算量、硬件资源、输出序列长度等约束下的模型能力，如长序列能力、记忆能力等。\n2、探索更科学和前沿的训练策略，对影响training dynamic的关键变量（如学习率、batchsize、初始化等）形成更科学的认知，探索diffusion LLM，test-time scaling等技术。\n3、研究模型结构和数据的耦合关系，优化分阶段训练范式。\n4、结合MLsys解决大规模训练中遇到的卡点问题，实现算法和工程联合设计。\n任职要求\n1、熟悉NLP、LLM、MLsys、Optimization、OR、Control、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实际项目经验；\n2、熟悉Python、C++等至少一门编程语言，熟悉LINUX环境；\n3、熟悉Pytorch、 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1、有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文优先（如NeurIPS,ICLR,ICML,ACL,EMNLP等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

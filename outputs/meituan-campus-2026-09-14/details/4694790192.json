@@ -1,0 +1,86 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694790192&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:41.969Z",
+  "data": {
+    "jobUnionId": "4694790192",
+    "name": "大模型业务运营岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "运营类",
+    "jobFamilyGroup": "业务运营",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010009",
+        "name": "南通市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG021",
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 制定客服/商服体系业务规划、服务标准及政策，梳理及优化服务流程，提高服务运营效率与质量；\n2. 设计并不断优化服务标准，通过全渠道多种监控方式发现流程和人员执行的问题，推动问题改善；\n3. 深入了解业务，挖掘业务机会点，搭建业务指标体系，推进建设数据工具；\n4. 利用AI工具提升运营效率，如通过大模型对话助手、AI写作工具、数据分析Agent等辅助数据分析、搭建看板、监测异动、制定策略等",
+    "jobRequirement": "【岗位要求】\n1. 本科及以上学历；\n2. 能够以客户为中心，沟通顺畅，有韧性；\n3. 具备较好的流程拆解和标准化能力，较强的分析、归纳、总结能力；\n4. 具备较好的过程管理能力和项目管理能力；\n5. 具备较强的逻辑思维，能迅速定位问题并提供合理化解决方案；\n6. 了解AI工具的基本使用，有使用大模型辅助业务运营的实践经验者优先。\n具备以下经验者优先：\n1. 有使用大模型辅助业务运营的经验，如利用LLM进行数据分析、报告生成等；\n2. 了解Prompt Engineering基本技巧。\n【岗位亮点】\n1. 美团多元化的业务场景，丰富的实战土壤；\n2. 大模型与运营管理深度融合，可体验AI赋能下的新一代运营工作方式；\n3. 完善的培养体系与清晰的成长路径。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961010000,
+    "refreshTime": 1786961010000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型业务运营岗\n应届-校园招聘\n工作地点：北京市、南通市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 制定客服/商服体系业务规划、服务标准及政策，梳理及优化服务流程，提高服务运营效率与质量；\n2. 设计并不断优化服务标准，通过全渠道多种监控方式发现流程和人员执行的问题，推动问题改善；\n3. 深入了解业务，挖掘业务机会点，搭建业务指标体系，推进建设数据工具；\n4. 利用AI工具提升运营效率，如通过大模型对话助手、AI写作工具、数据分析Agent等辅助数据分析、搭建看板、监测异动、制定策略等\n任职要求\n【岗位要求】\n1. 本科及以上学历；\n2. 能够以客户为中心，沟通顺畅，有韧性；\n3. 具备较好的流程拆解和标准化能力，较强的分析、归纳、总结能力；\n4. 具备较好的过程管理能力和项目管理能力；\n5. 具备较强的逻辑思维，能迅速定位问题并提供合理化解决方案；\n6. 了解AI工具的基本使用，有使用大模型辅助业务运营的实践经验者优先。\n具备以下经验者优先：\n1. 有使用大模型辅助业务运营的经验，如利用LLM进行数据分析、报告生成等；\n2. 了解Prompt Engineering基本技巧。\n【岗位亮点】\n1. 美团多元化的业务场景，丰富的实战土壤；\n2. 大模型与运营管理深度融合，可体验AI赋能下的新一代运营工作方式；\n3. 完善的培养体系与清晰的成长路径。\n工作城市\n北京市、南通市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

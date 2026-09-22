@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531810116&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:42.878Z",
+  "data": {
+    "jobUnionId": "4531810116",
+    "name": "【LongCat大模型人才校招】基座评测与认知分析算法研究员-基础模型及Agent能力研究",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "当前，我们正处在大模型从Chat Bot进化为自主智能体（Agent）的关键阶段。Agent 已深度融入代码生产、办公、搜索等场高价值景，其核心能力从单轮对话拓展到复杂任务规划、工具编排、长程记忆与多步推理。如何系统、科学地衡量这些前沿能力，已成为决定大模型能力天花板的核心挑战。我们诚邀对 Agent 评测有信念感的你，一同定义下一代 Agent 能力的标尺。\n本岗位涉及的具体方向包括：\n1.构建 Agent 全维度评测体系：设计横跨感知-规划-执行-反思完整闭环的评测维度框架，重点覆盖代码、办公、搜索等高价值场景。\n2.面向真实用户体验的评测方案建设：当前许多Agent应用领域出现了Benchmark指标相对饱和，无法准确链接真实用户使用体验等问题，我们希望从用户实际使用场景出发，构建高度拟真的交互式评测方案，设计体现用户使用体验的评测指标，对齐训练优化方向与提升用户体验的目标。\n3.基于线上回流日志的模型问题分析与评测验收：利用线上真实交互日志，系统化挖掘 Agent 在复杂链路中的典型失效模式，如工具幻觉、目标偏离等。将发现的 Badcase 自动归因并转化为可复现的回归测试用例，建立基于回流问题的评测看板，以数据驱动方式量化模型版本迭代的真实收益。\n4.探索下一代评测范式：研究人-智能体协同评估、自进化能力评估、Agentic Evaluation、Auto Research等前沿课题，推动评测范式和模型优化范式演进，产出高水平技术报告与顶会论文。\n【为什么是我们】\n1.美团拥有世界级的业务难题，从POC到大规模场景，充满机遇与挑战，兼顾学习和成长。\n2.业界前列的NV GPU和非GPU算力规模，协同算法，AI框架，网络，计算，芯片等多个团队共同建设大模型软、硬件技术底座。\n3.团队拥有同行TOP级别的评测基础能力和相应资源投入，在大模型评测研究领域具备国内领先的竞争力，团队近年产出了PRDBench、AMemGym、CATArena等数十篇高质量论文及研究工作。",
+    "jobRequirement": "1.硕士及以上学历，计算机或相关专业，博士优先。 \n2.在 ML / NLP / RL / CV / Speech 等相关方向有扎实的研究基础，在 ACL / EMNLP / NAACL / NeurIPS / ICML / ICLR / CVPR / ICCV / ICASSP 等顶级会议发表论文者优先。\n3.优秀的代码和算法功底，具备工匠精神，ACM/ICPC、NOI/IOI、Top Coder、Kaggle等比赛获奖者优先。\n4.在大模型领域或强化学习领域，主导过大影响力的项目或论文者优先。\n5.出色的问题分析和解决能力，有自主探索、深耕一个领域的决心和定力。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459822000,
+    "refreshTime": 1780459822000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】基座评测与认知分析算法研究员-基础模型及Agent能力研究\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n当前，我们正处在大模型从Chat Bot进化为自主智能体（Agent）的关键阶段。Agent 已深度融入代码生产、办公、搜索等场高价值景，其核心能力从单轮对话拓展到复杂任务规划、工具编排、长程记忆与多步推理。如何系统、科学地衡量这些前沿能力，已成为决定大模型能力天花板的核心挑战。我们诚邀对 Agent 评测有信念感的你，一同定义下一代 Agent 能力的标尺。\n本岗位涉及的具体方向包括：\n1.构建 Agent 全维度评测体系：设计横跨感知-规划-执行-反思完整闭环的评测维度框架，重点覆盖代码、办公、搜索等高价值场景。\n2.面向真实用户体验的评测方案建设：当前许多Agent应用领域出现了Benchmark指标相对饱和，无法准确链接真实用户使用体验等问题，我们希望从用户实际使用场景出发，构建高度拟真的交互式评测方案，设计体现用户使用体验的评测指标，对齐训练优化方向与提升用户体验的目标。\n3.基于线上回流日志的模型问题分析与评测验收：利用线上真实交互日志，系统化挖掘 Agent 在复杂链路中的典型失效模式，如工具幻觉、目标偏离等。将发现的 Badcase 自动归因并转化为可复现的回归测试用例，建立基于回流问题的评测看板，以数据驱动方式量化模型版本迭代的真实收益。\n4.探索下一代评测范式：研究人-智能体协同评估、自进化能力评估、Agentic Evaluation、Auto Research等前沿课题，推动评测范式和模型优化范式演进，产出高水平技术报告与顶会论文。\n【为什么是我们】\n1.美团拥有世界级的业务难题，从POC到大规模场景，充满机遇与挑战，兼顾学习和成长。\n2.业界前列的NV GPU和非GPU算力规模，协同算法，AI框架，网络，计算，芯片等多个团队共同建设大模型软、硬件技术底座。\n3.团队拥有同行TOP级别的评测基础能力和相应资源投入，在大模型评测研究领域具备国内领先的竞争力，团队近年产出了PRDBench、AMemGym、CATArena等数十篇高质量论文及研究工作。\n任职要求\n1.硕士及以上学历，计算机或相关专业，博士优先。\n2.在 ML / NLP / RL / CV / Speech 等相关方向有扎实的研究基础，在 ACL / EMNLP / NAACL / NeurIPS / ICML / ICLR / CVPR / ICCV / ICASSP 等顶级会议发表论文者优先。\n3.优秀的代码和算法功底，具备工匠精神，ACM/ICPC、NOI/IOI、Top Coder、Kaggle等比赛获奖者优先。\n4.在大模型领域或强化学习领域，主导过大影响力的项目或论文者优先。\n5.出色的问题分析和解决能力，有自主探索、深耕一个领域的决心和定力。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155435203&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:11.840Z",
+  "data": {
+    "jobUnionId": "3155435203",
+    "name": "【大模型北斗实习】虚拟人交互前沿路线研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "随着多模态大模型的发展，虚拟人交互也迎来智能化和拟人化的升级。 传统的2D虚拟人主要专注于语音与嘴型对齐，而大模型时代的虚拟人需具备多模感知和推理的能力，视觉生成需具备高度拟人化。课题研究内容包括但不限于：\n1）基于多模态大模型构建端到端交互虚拟人模型，实现智能双工交互，人、物、场景交互，高度拟人化等能力。\n2）Human Video Model：构建具备高质量人脸、人体、人物交互生成能力的虚拟人基座。",
+    "jobRequirement": "1）熟悉多模态大模型、2D虚拟人、视频生成等相关研究进展。\n2）熟悉PyTorch，有充分的动手实践经验。\n加分项：\n1）社区影响力：有多模态大模型、视频生成、虚拟人相关研究和实习经历，有影响力的开源项目中做出过核心贡献。\n2）学术影响力：发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309545000,
+    "refreshTime": 1747963943000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】虚拟人交互前沿路线研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n随着多模态大模型的发展，虚拟人交互也迎来智能化和拟人化的升级。 传统的2D虚拟人主要专注于语音与嘴型对齐，而大模型时代的虚拟人需具备多模感知和推理的能力，视觉生成需具备高度拟人化。课题研究内容包括但不限于：\n1）基于多模态大模型构建端到端交互虚拟人模型，实现智能双工交互，人、物、场景交互，高度拟人化等能力。\n2）Human Video Model：构建具备高质量人脸、人体、人物交互生成能力的虚拟人基座。\n任职要求\n1）熟悉多模态大模型、2D虚拟人、视频生成等相关研究进展。\n2）熟悉PyTorch，有充分的动手实践经验。\n加分项：\n1）社区影响力：有多模态大模型、视频生成、虚拟人相关研究和实习经历，有影响力的开源项目中做出过核心贡献。\n2）学术影响力：发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

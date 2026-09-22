@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155431042&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:11.774Z",
+  "data": {
+    "jobUnionId": "3155431042",
+    "name": "【大模型北斗实习】音频内容生成算法研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "在内容生成领域，音频生成逐渐成为热门研究方向，具有广阔的应用前景和研究价值。本课题专注于音频内容生成方向，包括但不限于：\n1）音视频联合生成：探索如何使模型在生成过程中有效地结合文本、语音和图像信息，提升生成结果的相关性和自然度。\n2）音频数据处理与融合：研究音频数据的预处理和特征提取技术，以优化生成模型的输入输出。\n3）多模态生成模型的性能评估：设计自动化评估方法，量化多模态生成模型在下游任务中的表现。",
+    "jobRequirement": "1）熟悉常见的多模态大模型架构。\n2）熟悉Python、C++等至少一门编程语言，熟悉LINUX环境。\n3）熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）高星开源项目，社区关注度高。\n2）发表过高水平论文，如 ICLR、NeurIPS、ICML、CVPR 等。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309545000,
+    "refreshTime": 1747963943000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】音频内容生成算法研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n在内容生成领域，音频生成逐渐成为热门研究方向，具有广阔的应用前景和研究价值。本课题专注于音频内容生成方向，包括但不限于：\n1）音视频联合生成：探索如何使模型在生成过程中有效地结合文本、语音和图像信息，提升生成结果的相关性和自然度。\n2）音频数据处理与融合：研究音频数据的预处理和特征提取技术，以优化生成模型的输入输出。\n3）多模态生成模型的性能评估：设计自动化评估方法，量化多模态生成模型在下游任务中的表现。\n任职要求\n1）熟悉常见的多模态大模型架构。\n2）熟悉Python、C++等至少一门编程语言，熟悉LINUX环境。\n3）熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）高星开源项目，社区关注度高。\n2）发表过高水平论文，如 ICLR、NeurIPS、ICML、CVPR 等。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

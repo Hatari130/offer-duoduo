@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155408656&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:12.339Z",
+  "data": {
+    "jobUnionId": "3155408656",
+    "name": "【大模型北斗实习】通用强化学习研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "RL 技术和 Reasoning 技术是大模型处理各项复杂任务的核心。本课题聚焦于利用上述技术，构建能够应对多目标优化、长期规划和不确定性的智能决策系统。\n主要研究内容包括但不限于：\n1）多层次强化学习设计：研究 Hierarchical RL 与 LLM 的结合方法，构建能够处理抽象策略与具体执行的多层次决策系统；探索如何将复杂的系统任务分解为可管理的子任务，并能找到准确稠密的反馈信号，构建 Local RM 和 Global RM，进而完成可依赖和全局的优化。\n2）Reasoning 技术：针对不同的任务，能对 Reasoning 过程的 Token Budget、Reasoning 路径等，有稳定可控的方式，且能实现任务自适应。\n3）RL & Reasoning Scaling Law：探索高效的 RL Scaling 技术和 Test Time Scaling 技术，不断提升模型能力，且能兼顾探索利用和 Compute Cost。",
+    "jobRequirement": "1）计算机科学、人工智能、机器学习或相关专业背景。\n2）熟练掌握 Python，具备高效实现和优化强化学习算法的能力。\n3）扎实的强化学习理论基础，熟悉分层强化学习、多智能体强化学习、贝叶斯强化学习等高级算法框架。\n4）熟悉 LLM 及其与 RL 结合的前沿技术。\n5）熟悉 Reasoning 相关技术。\n加分项：\n1）在NeurIPS、ICLR、ICML等顶级会议发表过 RL 或决策系统相关论文。\n2）参与过大规模 RL 系统的实际部署，并解决过生产环境中的稳定性和效率问题。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309544000,
+    "refreshTime": 1747963942000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】通用强化学习研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\nRL 技术和 Reasoning 技术是大模型处理各项复杂任务的核心。本课题聚焦于利用上述技术，构建能够应对多目标优化、长期规划和不确定性的智能决策系统。\n主要研究内容包括但不限于：\n1）多层次强化学习设计：研究 Hierarchical RL 与 LLM 的结合方法，构建能够处理抽象策略与具体执行的多层次决策系统；探索如何将复杂的系统任务分解为可管理的子任务，并能找到准确稠密的反馈信号，构建 Local RM 和 Global RM，进而完成可依赖和全局的优化。\n2）Reasoning 技术：针对不同的任务，能对 Reasoning 过程的 Token Budget、Reasoning 路径等，有稳定可控的方式，且能实现任务自适应。\n3）RL & Reasoning Scaling Law：探索高效的 RL Scaling 技术和 Test Time Scaling 技术，不断提升模型能力，且能兼顾探索利用和 Compute Cost。\n任职要求\n1）计算机科学、人工智能、机器学习或相关专业背景。\n2）熟练掌握 Python，具备高效实现和优化强化学习算法的能力。\n3）扎实的强化学习理论基础，熟悉分层强化学习、多智能体强化学习、贝叶斯强化学习等高级算法框架。\n4）熟悉 LLM 及其与 RL 结合的前沿技术。\n5）熟悉 Reasoning 相关技术。\n加分项：\n1）在NeurIPS、ICLR、ICML等顶级会议发表过 RL 或决策系统相关论文。\n2）参与过大规模 RL 系统的实际部署，并解决过生产环境中的稳定性和效率问题。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

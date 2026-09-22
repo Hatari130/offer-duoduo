@@ -1,0 +1,41 @@
+{
+  "source_job_id": "96163bea13d14de2ab77c85230703d3e",
+  "verified_at": "2026-09-15T01:32:06.585Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=96163bea13d14de2ab77c85230703d3e",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=96163bea13d14de2ab77c85230703d3e&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "96163bea13d14de2ab77c85230703d3e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "工艺开发工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "工艺",
+        "techDire": "传感器器件工艺/mems器件工艺",
+        "postContent": "一、技术研发：\n1、分析工艺整合部门的模块工艺开发需求，规划模块工艺设计和工艺开发计划；\n2、主导完成新模块工艺、设备和新材料的预研；\n3、调研国际先进工艺技术，评估技术导入的可行性。\n二、技术支持：\n1、分析在线异常问题，寻找根本原因解决问题，并提出预防措施；\n2、分析工艺整合工程师反馈的异常信息，寻找在线异常根本原因，并提出改善预防措施；\n3、完成机台作业指导书编写，培训考核作业员，使其满足上岗操作要求。\n三、技术改进：\n1、分析关键步骤工艺数据，制定改善提升方案，降低异常率，提升产品良率；\n2、主导新工艺和新设备的导入，改善提升现有模块工艺能力。\n四、成本控制：优化工艺流程和工艺参数，降低材料消耗量，协助引进新供应商，降低材料成本。\n五、质量管理：\n1、完成工程试验数据整理和工程技术报告，整理归档；\n2、按公司质量体系的管理要求，完善部门内部质量管理。",
+        "postRequire": "1、硕士及以上学历，电子、力学、物理、计算数学、机械类等相关专业优先；     \n2、了解微纳加工工艺、无源器件工艺及封装工艺等基础知识、了解微纳工艺相关设备结构和工作原理；\n3、良好的英语阅读能力，有较好的沟通力和执行力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

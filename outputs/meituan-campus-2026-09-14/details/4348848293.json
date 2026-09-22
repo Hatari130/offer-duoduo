@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348848293&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:55.974Z",
+  "data": {
+    "jobUnionId": "4348848293",
+    "name": "【基座大模型北斗实习】复杂Agent应用技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：探索下一代 Agent-Native 基础设施。方向覆盖数据计算与商业分析、精准营销与广告投放、个人助理与智能服务三大场景，致力于用 AI Agent 重构人与数据、人与服务的交互方式。\n【技术方向】\n1、DataAgent 核心基建：攻坚复杂长周期任务的调度架构，解决大规模数据流转下的上下文治理、长期记忆与状态流控难题。\n2、BA 场景工具链：构建高扩展性数据处理 Skill 体系与安全高效的代码执行沙盒，支持 Agent 智能调度高并发数据流处理工具。\n3、精准营销 Agent：基于海量用户行为数据的宏观统计与微观推理，探索精细化需求理解与大小模型协同的高效系统设计。\n4、Skill 体系与模型优化：探索 Skill 的表示、调度与自进化机制；推进 Agentic RL、自适应推理等模型训练与调优工作。\n5、智能服务新范式：建立 C 端个人 Agent 与 B 端服务 Agent 的连接，研究智能体架构优化、推理成本控制与长期记忆提升。",
+    "jobRequirement": "1、有好奇心，敢想敢做，学习能力强，能在复杂问题的深度思考与拆解能力；\n2、掌握基本的LLM训练和应用范式；\n3、顶会论文（ACL/EMNLP/NeurIPS/ICLR/KDD 等）、开源贡献或算法竞赛成果突出者优先；\n4、有OpenClaw、Claude code深度使用经验与产出优先；\n5、熟悉Agentic RL者优先；\n6、在 GitHub 上拥有高 Star 的 AI 原生项目，或曾向 OpenClaw/OpenCode 等主流 Agent 框架提交过核心 PR。\n（base北京或上海）",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223029000,
+    "refreshTime": 1775223029000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】复杂Agent应用技术研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：探索下一代 Agent-Native 基础设施。方向覆盖数据计算与商业分析、精准营销与广告投放、个人助理与智能服务三大场景，致力于用 AI Agent 重构人与数据、人与服务的交互方式。\n【技术方向】\n1、DataAgent 核心基建：攻坚复杂长周期任务的调度架构，解决大规模数据流转下的上下文治理、长期记忆与状态流控难题。\n2、BA 场景工具链：构建高扩展性数据处理 Skill 体系与安全高效的代码执行沙盒，支持 Agent 智能调度高并发数据流处理工具。\n3、精准营销 Agent：基于海量用户行为数据的宏观统计与微观推理，探索精细化需求理解与大小模型协同的高效系统设计。\n4、Skill 体系与模型优化：探索 Skill 的表示、调度与自进化机制；推进 Agentic RL、自适应推理等模型训练与调优工作。\n5、智能服务新范式：建立 C 端个人 Agent 与 B 端服务 Agent 的连接，研究智能体架构优化、推理成本控制与长期记忆提升。\n任职要求\n1、有好奇心，敢想敢做，学习能力强，能在复杂问题的深度思考与拆解能力；\n2、掌握基本的LLM训练和应用范式；\n3、顶会论文（ACL/EMNLP/NeurIPS/ICLR/KDD 等）、开源贡献或算法竞赛成果突出者优先；\n4、有OpenClaw、Claude code深度使用经验与产出优先；\n5、熟悉Agentic RL者优先；\n6、在 GitHub 上拥有高 Star 的 AI 原生项目，或曾向 OpenClaw/OpenCode 等主流 Agent 框架提交过核心 PR。\n（base北京或上海）\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

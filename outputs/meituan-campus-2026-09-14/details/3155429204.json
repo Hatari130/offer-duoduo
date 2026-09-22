@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155429204&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:11.677Z",
+  "data": {
+    "jobUnionId": "3155429204",
+    "name": "【大模型北斗实习】推理决策智能体技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "本课题聚焦大模型在复杂场景下的高阶认知能力突破，面向真实需求构建具备自主推理与协作进化能力的智能系统。通过前沿算法创新与工业级场景验证，助力研究者攻克高度自适应智能体架构设计、复杂决策优化等关键技术难题。\n核心研究内容包括：\n1）构建复杂情境推理框架：开发能够处理模糊信息、进行合理假设并自主验证的决策系统，突破不完全数据下的逻辑闭环能力。\n2）建立多智能体协作范式：研究分层任务拆解机制与分布式决策架构，实现跨智能体的动态协调与效能优化。\n3）设计任务驱动进化机制：结合强化学习与反思模型，持续提升智能体在业务场景中的自主适应与问题排查能力。\n4）开发模型可解释性框架：创新推理过程可视化技术，建立决策依据追溯机制，显著降低模型幻觉风险。\n5）探索人机协同新形态：构建具备环境感知与交互进化能力的智能助手，推动大模型在真实场景的可靠落地。",
+    "jobRequirement": "1）熟悉TensorFlow、PyTorch等深度学习框架、和主流编程语言、CUDA/Triton语言，具备扎实的深度学习理论基础。\n2）有扎实的大模型实践和研究能力，尤其是在推理和决策优化领域具有深刻的理解。\n3）发表过高水平论文（如NeurIPS, ICLR, ICML, ACL, EMNLP等）。\n加分项：\n1）有影响力的开源项目中做出过核心贡献，尤其是与大模型推理或多智能体协作相关的项目。\n2）具备复杂推理、自主执行能力的大模型系统，在业务场景上设计和落地经验。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309545000,
+    "refreshTime": 1747963943000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】推理决策智能体技术研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n本课题聚焦大模型在复杂场景下的高阶认知能力突破，面向真实需求构建具备自主推理与协作进化能力的智能系统。通过前沿算法创新与工业级场景验证，助力研究者攻克高度自适应智能体架构设计、复杂决策优化等关键技术难题。\n核心研究内容包括：\n1）构建复杂情境推理框架：开发能够处理模糊信息、进行合理假设并自主验证的决策系统，突破不完全数据下的逻辑闭环能力。\n2）建立多智能体协作范式：研究分层任务拆解机制与分布式决策架构，实现跨智能体的动态协调与效能优化。\n3）设计任务驱动进化机制：结合强化学习与反思模型，持续提升智能体在业务场景中的自主适应与问题排查能力。\n4）开发模型可解释性框架：创新推理过程可视化技术，建立决策依据追溯机制，显著降低模型幻觉风险。\n5）探索人机协同新形态：构建具备环境感知与交互进化能力的智能助手，推动大模型在真实场景的可靠落地。\n任职要求\n1）熟悉TensorFlow、PyTorch等深度学习框架、和主流编程语言、CUDA/Triton语言，具备扎实的深度学习理论基础。\n2）有扎实的大模型实践和研究能力，尤其是在推理和决策优化领域具有深刻的理解。\n3）发表过高水平论文（如NeurIPS, ICLR, ICML, ACL, EMNLP等）。\n加分项：\n1）有影响力的开源项目中做出过核心贡献，尤其是与大模型推理或多智能体协作相关的项目。\n2）具备复杂推理、自主执行能力的大模型系统，在业务场景上设计和落地经验。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

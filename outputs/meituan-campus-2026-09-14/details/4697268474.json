@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697268474&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:55.293Z",
+  "data": {
+    "jobUnionId": "4697268474",
+    "name": "广告算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责美团核心本地商业下全流量场景的广告算法策略研究，利用 LLM与RLHF 优化智能出价策略，将传统人工规则迁移为模型自动决策；\n2. 参与海量数据下的广告召回技术研发，探索基于RAG的大模型辅助召回策略，提升长尾广告与泛化搜索的召回效率；\n3. 参与大规模CTR/CVR预估模型研发，结合大模型特征提取与多模态理解，构建更精准的用户意图与广告匹配能力；\n4. 探索 O2O广告模式与机制策略，利用AI Agent框架实现广告自动化策略生成与效果归因分析；\n5. 基于强化学习和自动控制算法进行智能出价研究，利用AI自动诊断与优化出价决策链路，持续迭代广告ROI；\n6. 研究广告程序化创意，利用AIGC（多模态大模型）生成广告图文/视频创意，并基于反馈数据进行闭环优化。",
+    "jobRequirement": "1. 熟练掌握Linux下面向对象编程（熟悉Java更佳），能运用 AI辅助编码工具（如GitHub Copilot/Cursor） 提升开发效率；\n2. 熟悉NLP、图嵌入、模型预估等深度学习算法，精通至少一种大模型训练框架（如HuggingFace、PyTorch/TensorFlow），具备大模型微调（LoRA/RLHF）或Prompt Engineering经验；\n3. 具备 AI应用构建能力（如LangChain/LlamaIndex/RAG），能将大模型能力落地到广告核心业务场景；\n4. 对数据敏感，有较强数据分析与解决问题能力，能利用AI工具（如自然语言问数、智能归因）快速洞察业务数据；\n5. 自驱主动，沟通良好，有团队协作精神；\n6. 工作有热情，追求卓越。\n\n具备以下条件优先：\n1. 具有广告算法实战经验，有LLM/AIGC在广告场景落地经验者优先；\n2. 在国际一流会议或期刊发表过学术论文，有AI相关顶会（如NeurIPS/ICML/ACL等）论文者优先；\n3. 在Kaggle等平台取得机器学习/深度学习竞赛靠前名次。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960992000,
+    "refreshTime": 1786960992000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n广告算法工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责美团核心本地商业下全流量场景的广告算法策略研究，利用 LLM与RLHF 优化智能出价策略，将传统人工规则迁移为模型自动决策；\n2. 参与海量数据下的广告召回技术研发，探索基于RAG的大模型辅助召回策略，提升长尾广告与泛化搜索的召回效率；\n3. 参与大规模CTR/CVR预估模型研发，结合大模型特征提取与多模态理解，构建更精准的用户意图与广告匹配能力；\n4. 探索 O2O广告模式与机制策略，利用AI Agent框架实现广告自动化策略生成与效果归因分析；\n5. 基于强化学习和自动控制算法进行智能出价研究，利用AI自动诊断与优化出价决策链路，持续迭代广告ROI；\n6. 研究广告程序化创意，利用AIGC（多模态大模型）生成广告图文/视频创意，并基于反馈数据进行闭环优化。\n任职要求\n1. 熟练掌握Linux下面向对象编程（熟悉Java更佳），能运用 AI辅助编码工具（如GitHub Copilot/Cursor） 提升开发效率；\n2. 熟悉NLP、图嵌入、模型预估等深度学习算法，精通至少一种大模型训练框架（如HuggingFace、PyTorch/TensorFlow），具备大模型微调（LoRA/RLHF）或Prompt Engineering经验；\n3. 具备 AI应用构建能力（如LangChain/LlamaIndex/RAG），能将大模型能力落地到广告核心业务场景；\n4. 对数据敏感，有较强数据分析与解决问题能力，能利用AI工具（如自然语言问数、智能归因）快速洞察业务数据；\n5. 自驱主动，沟通良好，有团队协作精神；\n6. 工作有热情，追求卓越。\n具备以下条件优先：\n1. 具有广告算法实战经验，有LLM/AIGC在广告场景落地经验者优先；\n2. 在国际一流会议或期刊发表过学术论文，有AI相关顶会（如NeurIPS/ICML/ACL等）论文者优先；\n3. 在Kaggle等平台取得机器学习/深度学习竞赛靠前名次。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

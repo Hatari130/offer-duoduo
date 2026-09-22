@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4695102432&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:56.184Z",
+  "data": {
+    "jobUnionId": "4695102432",
+    "name": "无人机规划调度算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 核心算法研发（三个方向）：\n（1）负责无人机自主决策规划算法研发，解决数据驱动/端到端规划的挑战性问题，探索云机AI协同，推动自主飞行具身智能化\n（2）负责无人机航迹规划与低空交通管理（UTM），解决多机协同、避障、四维轨迹优化及突发状况下的实时重规划问题\n（3）负责无人机大规模配送场景下的运筹优化与时空调度算法设计，持续提升履约效率，降低单位配送成本。\n2. AI & 智能体领域应用：\n（1）负责大模型与 Agent 架构在规划调度中的应用，构建基于 LLM/Agent 的复杂场景决策框架、端到端任务规划与异常处理机制。\n（2）负责领域数据集建设与模型微调，探索结合领域知识的混合推理机制，提升复杂调度逻辑下的泛化与鲁棒性。\n（3）探索模仿学习与强化学习在轨迹生成、端到端决策及 Sim2Real 迁移中的应用，解决传统优化方法在大规模动态环境下的算力 瓶颈。\n3. AI 赋能研发工程化：\n提炼并构建 AI-First 的算法研发全流程，熟练运用 LLM Agent、AI Code-Gen、智能数据仿真等工具，实现从问题建模、仿真验证到上线部署的高效闭环。\n\n注：工作地点为北京或深圳， 以本JD描述为准。",
+    "jobRequirement": "1、基本学历与专业：\n硕士及以上学历，计算机、自动化、机器人、运筹学、工业工程、人工智能等相关专业。\n2、工程与编程基础：\n（1）具备扎实的计算机科学基础，精通数据结构与算法，熟练掌握 C++ 与 Python，具有良好的代码规范与性能调优能力。\n（2）熟悉至少一种主流深度学习或强化学习框架，熟悉仿真平台（如 AirSim、Gazebo、Isaac Sim 或自定义离散事件仿真）者优先。\n3、核心领域能力（满足以下至少方向之一）：\n方向 A：AI & 深度决策（AI & RL/Agent）\n（1）熟悉模仿学习（DAgger, GAIL）、强化学习（PPO, SAC, Offline RL）及其在运动规划/行为决策中的应用，了解 Sim2Real 迁移与泛化问题。\n（2）深入理解大语言模型（LLM）微调（LoRA/SFT）、Agent 工具调用（Function Calling/ReAct）与 Multi-Agent 系统设计；\n方向 B：运动规划与控制\n（1）深入理解图搜索（A*, D*, Jump Point Search）、采样算法（RRT*, PRM）及连续轨迹优化（B-spline, Polynomial Optimization, MPC）；\n（2）熟悉多机协同规划（MAPF）与时空碰撞检测（SDF, OcTree）等典型方法\n方向 C：运筹优化\n（1）深入理解大规模组合优化问题，精通 MIP/LP 数学规划建模，熟练使用 Commercial Solvers（Gurobi, CPLEX, OR-Tools）；\n（2）精通元启发式算法（ALNS, Tabu Search, Genetic Algorithm）与分解算法（Column Generation, Benders Decomposition），有实战大规模 VRPTW/PDP 经验。\n4、AI 工具效能：\n熟练运用 AI 辅助开发工具进行代码生成、重构、单元测试及算法调优，具备将 AI 工具融入每日 Workflow 的习惯。\n5、软素质：\n（1）具备极强的问题定义能力与数学建模抽象能力；\n（2）逻辑清晰，自我驱动，对低空经济/无人机领域保持强烈的热情与好奇心。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960991000,
+    "refreshTime": 1786960991000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n无人机规划调度算法工程师\n应届-校园招聘\n工作地点：深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 核心算法研发（三个方向）：\n（1）负责无人机自主决策规划算法研发，解决数据驱动/端到端规划的挑战性问题，探索云机AI协同，推动自主飞行具身智能化\n（2）负责无人机航迹规划与低空交通管理（UTM），解决多机协同、避障、四维轨迹优化及突发状况下的实时重规划问题\n（3）负责无人机大规模配送场景下的运筹优化与时空调度算法设计，持续提升履约效率，降低单位配送成本。\n2. AI & 智能体领域应用：\n（1）负责大模型与 Agent 架构在规划调度中的应用，构建基于 LLM/Agent 的复杂场景决策框架、端到端任务规划与异常处理机制。\n（2）负责领域数据集建设与模型微调，探索结合领域知识的混合推理机制，提升复杂调度逻辑下的泛化与鲁棒性。\n（3）探索模仿学习与强化学习在轨迹生成、端到端决策及 Sim2Real 迁移中的应用，解决传统优化方法在大规模动态环境下的算力 瓶颈。\n3. AI 赋能研发工程化：\n提炼并构建 AI-First 的算法研发全流程，熟练运用 LLM Agent、AI Code-Gen、智能数据仿真等工具，实现从问题建模、仿真验证到上线部署的高效闭环。\n注：工作地点为北京或深圳， 以本JD描述为准。\n任职要求\n1、基本学历与专业：\n硕士及以上学历，计算机、自动化、机器人、运筹学、工业工程、人工智能等相关专业。\n2、工程与编程基础：\n（1）具备扎实的计算机科学基础，精通数据结构与算法，熟练掌握 C++ 与 Python，具有良好的代码规范与性能调优能力。\n（2）熟悉至少一种主流深度学习或强化学习框架，熟悉仿真平台（如 AirSim、Gazebo、Isaac Sim 或自定义离散事件仿真）者优先。\n3、核心领域能力（满足以下至少方向之一）：\n方向 A：AI & 深度决策（AI & RL/Agent）\n（1）熟悉模仿学习（DAgger, GAIL）、强化学习（PPO, SAC, Offline RL）及其在运动规划/行为决策中的应用，了解 Sim2Real 迁移与泛化问题。\n（2）深入理解大语言模型（LLM）微调（LoRA/SFT）、Agent 工具调用（Function Calling/ReAct）与 Multi-Agent 系统设计；\n方向 B：运动规划与控制\n（1）深入理解图搜索（A*, D*, Jump Point Search）、采样算法（RRT*, PRM）及连续轨迹优化（B-spline, Polynomial Optimization, MPC）；\n（2）熟悉多机协同规划（MAPF）与时空碰撞检测（SDF, OcTree）等典型方法\n方向 C：运筹优化\n（1）深入理解大规模组合优化问题，精通 MIP/LP 数学规划建模，熟练使用 Commercial Solvers（Gurobi, CPLEX, OR-Tools）；\n（2）精通元启发式算法（ALNS, Tabu Search, Genetic Algorithm）与分解算法（Column Generation, Benders Decomposition），有实战大规模 VRPTW/PDP 经验。\n4、AI 工具效能：\n熟练运用 AI 辅助开发工具进行代码生成、重构、单元测试及算法调优，具备将 AI 工具融入每日 Workflow 的习惯。\n5、软素质：\n（1）具备极强的问题定义能力与数学建模抽象能力；\n（2）逻辑清晰，自我驱动，对低空经济/无人机领域保持强烈的热情与好奇心。\n工作城市\n深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

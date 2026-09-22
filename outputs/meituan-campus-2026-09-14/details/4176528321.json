@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4176528321&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:02.568Z",
+  "data": {
+    "jobUnionId": "4176528321",
+    "name": "【北斗实习】大模型工程开发工程师 - AI Infrastructure 与平台",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】 \n以支撑大语言模型（LLM）大规模落地为目标，构建高性能、高可用的 AI 应用基础设施。研究与建设方向包括 AI 原生应用框架（AI App Framework）、高性能 Agent 编排引擎、评测系统及模型服务治理平台。课题旨在解决 AI 应用从原型到工业级生产环境中的工程挑战，打造支撑美团业务智能化的核心底层引擎。\n【建议研究方向】\n1.AI 应用开发框架： 设计并实现高性能、可扩展的 Agent/Workflow 运行核心，支持复杂逻辑的异步流式处理与调度。\n2.Agent 工程治理： 建立 Agent 运行期的可观测性、调试工具链及故障自愈机制，提升生产环境的稳定性。\n3.Agent自动化评测： 构建工业级的 LLM 评测基础设施，实现评测数据流转、多维度自动打分及评估结果的量化分析。\n4.多智能体架构：研究Agent架构的设计原理、组成模块及交互机制，探索其在自主决策、环境感知与任务执行中的优化方法，分析出游场景下的性能表现与扩展性，为智能体系统开发提供理论支撑。\n5.智能体记忆管理： 研究长短期记忆管理机制，在智能体与用户的多轮对话中，实现对上下文和用户个性化需求的持续追踪能力。",
+    "jobRequirement": "【任职要求】\n海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1.工程高手： 拥有顶尖互联网公司 AI 基础架构实习经验，或作为核心维护者参与过知名开源项目（如 LangChain, LlamaIndex, Ray 等）。\n2.编程悍将： 具备极强的 Coding 能力，精通 Java/Python/Go 至少一门语言，对数据结构与算法有深刻理解。\n3.竞赛大神： 在 ACM-ICPC、IEEE Extreme 等顶级编程竞赛，或 Kaggle、天池等大型工程/算法赛道获得过突出奖项。\n4.科研骨干： 作为骨干成员参与过实验室或导师承接的国家级/大型横向科研项目，具备处理复杂系统工程问题的经验。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1770363344000,
+    "refreshTime": 1770363344000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型工程开发工程师 - AI Infrastructure 与平台\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n以支撑大语言模型（LLM）大规模落地为目标，构建高性能、高可用的 AI 应用基础设施。研究与建设方向包括 AI 原生应用框架（AI App Framework）、高性能 Agent 编排引擎、评测系统及模型服务治理平台。课题旨在解决 AI 应用从原型到工业级生产环境中的工程挑战，打造支撑美团业务智能化的核心底层引擎。\n【建议研究方向】\n1.AI 应用开发框架： 设计并实现高性能、可扩展的 Agent/Workflow 运行核心，支持复杂逻辑的异步流式处理与调度。\n2.Agent 工程治理： 建立 Agent 运行期的可观测性、调试工具链及故障自愈机制，提升生产环境的稳定性。\n3.Agent自动化评测： 构建工业级的 LLM 评测基础设施，实现评测数据流转、多维度自动打分及评估结果的量化分析。\n4.多智能体架构：研究Agent架构的设计原理、组成模块及交互机制，探索其在自主决策、环境感知与任务执行中的优化方法，分析出游场景下的性能表现与扩展性，为智能体系统开发提供理论支撑。\n5.智能体记忆管理： 研究长短期记忆管理机制，在智能体与用户的多轮对话中，实现对上下文和用户个性化需求的持续追踪能力。\n任职要求\n【任职要求】\n海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1.工程高手： 拥有顶尖互联网公司 AI 基础架构实习经验，或作为核心维护者参与过知名开源项目（如 LangChain, LlamaIndex, Ray 等）。\n2.编程悍将： 具备极强的 Coding 能力，精通 Java/Python/Go 至少一门语言，对数据结构与算法有深刻理解。\n3.竞赛大神： 在 ACM-ICPC、IEEE Extreme 等顶级编程竞赛，或 Kaggle、天池等大型工程/算法赛道获得过突出奖项。\n4.科研骨干： 作为骨干成员参与过实验室或导师承接的国家级/大型横向科研项目，具备处理复杂系统工程问题的经验。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

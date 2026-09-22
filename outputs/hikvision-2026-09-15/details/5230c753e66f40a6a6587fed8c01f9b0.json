@@ -1,0 +1,41 @@
+{
+  "source_job_id": "5230c753e66f40a6a6587fed8c01f9b0",
+  "verified_at": "2026-09-15T01:32:06.335Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=5230c753e66f40a6a6587fed8c01f9b0",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=5230c753e66f40a6a6587fed8c01f9b0&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "5230c753e66f40a6a6587fed8c01f9b0",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "红外智能检测算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、负责红外智能检测算法调研、预研与设计；\n2、负责热成像防火、测温、目标检测类等算法开发和优化，并在嵌入式平台上实现；\n3、参与现有算法版本的维护与优化，客诉问题分的析与解决。",
+        "postRequire": "1、硕士及以上学历，计算机、模式识别、电子工程、应用数学类等相关专业；\n2、具有较好的数学功底，对模式识别、机器学习有较深入的理解与认识；\n3、具备红外图像分析，目标检测、分类与跟踪算法研究经历，有实际项目开发经验优先；\n4、熟练掌握C/C++/Python，具备扎实的编程基础。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

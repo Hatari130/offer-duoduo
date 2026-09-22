@@ -1,0 +1,41 @@
+{
+  "source_job_id": "30ca09152cd140deb9869702799dbf0e",
+  "verified_at": "2026-09-15T01:32:09.486Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=30ca09152cd140deb9869702799dbf0e",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=30ca09152cd140deb9869702799dbf0e&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "30ca09152cd140deb9869702799dbf0e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "毫米波雷达算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "毫米波雷达算法",
+        "postContent": "1、 对雷达收发系统进行建模和仿真，指导设计和优化毫米波雷达收发系统；\n2、 对开发和售后的毫米波雷达中的电磁波问题进行分析和定位，协助提升产品性能；\n3、负责毫米波雷达系统的集成和测试方案，确保系统性能达标；\n4、 与其他团队成员协作，共同完成项目的整体研发工作； \n5、跟踪毫米波雷达技术的最新发展，进行技术研究和创新\n6、 编写相关技术文档，为生产和应用提供技术支持。",
+        "postRequire": "1、硕士及以上学历，电子科学与技术、电磁场与微波技术等相关专业，一年以上射频设计、硬件设计、调试、优化经验，且有一定天线设计基础或经验；\n2、熟悉毫米波雷达及收发系统的基本原理和设计方法。； \n3、具备良好的电磁场理论和数学基础，能够进行毫米波雷达系统进行建模和仿真； \n4、熟悉雷达信号处理算法，能够将电磁反射特性与信号算法相结合者优先；\n5、熟悉电磁场仿真软件（如HFSS、CST等）的使用，会使用TICRA者优先；\n6、具有毫米波应用和开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 09:16:50",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

@@ -149,7 +149,7 @@ export function ChatContextPicker({ options, selected, loading, onChange }: Chat
           ) : (
             <div className="chat-context-state">
               <strong>还没有可用的个人材料</strong>
-              <span>先在简历中心、投递管理或面试记录中添加资料。</span>
+              <span>先在简历模板、投递管理或面试记录中添加资料。</span>
             </div>
           )}
         </section>

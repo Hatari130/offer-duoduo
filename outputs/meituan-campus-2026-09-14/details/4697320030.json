@@ -1,0 +1,86 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697320030&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:48.957Z",
+  "data": {
+    "jobUnionId": "4697320030",
+    "name": "AI Infra / 推理系统工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 参与大模型训练、推理、部署、调度、监控等基础设施建设。\n2. 优化模型推理性能、资源利用率、服务稳定性和成本效率。\n3. 参与GPU/NPU资源管理、分布式任务调度、模型服务化、缓存和并发优化。\n4. 支撑大模型应用、Agent平台、训练平台和评测平台的基础能力。\n5. 跟踪推理框架、训练框架、云原生和高性能计算方向的技术演进。",
+    "jobRequirement": "岗位要求\n1. 本科及以上学历，计算机、软件工程、人工智能、自动化、电子信息等相关专业。\n2. 编程基础扎实，熟悉 C++、Python、Go、Rust 、Java中至少一门语言。\n3. 理解操作系统、计算机网络、分布式系统、数据库等基础知识。\n4. 对性能优化、系统稳定性、云原生、GPU计算或大模型部署有兴趣。\n5. 具备较强的问题定位和工程实现能力。\n具有以下经验者优先\n1. 熟悉 Kubernetes、Docker、Ray、Slurm、Triton、vLLM、TensorRT等工具。\n2. 有CUDA、GPU编程、模型量化、推理加速经验。\n3. 参与过大模型部署、训练平台、推理服务或高并发系统项目。\n4. 了解MoE模型推理优化、KV Cache管理、Speculative Decoding等前沿方向者优先",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961002000,
+    "refreshTime": 1786961002000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI Infra / 推理系统工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 参与大模型训练、推理、部署、调度、监控等基础设施建设。\n2. 优化模型推理性能、资源利用率、服务稳定性和成本效率。\n3. 参与GPU/NPU资源管理、分布式任务调度、模型服务化、缓存和并发优化。\n4. 支撑大模型应用、Agent平台、训练平台和评测平台的基础能力。\n5. 跟踪推理框架、训练框架、云原生和高性能计算方向的技术演进。\n任职要求\n岗位要求\n1. 本科及以上学历，计算机、软件工程、人工智能、自动化、电子信息等相关专业。\n2. 编程基础扎实，熟悉 C++、Python、Go、Rust 、Java中至少一门语言。\n3. 理解操作系统、计算机网络、分布式系统、数据库等基础知识。\n4. 对性能优化、系统稳定性、云原生、GPU计算或大模型部署有兴趣。\n5. 具备较强的问题定位和工程实现能力。\n具有以下经验者优先\n1. 熟悉 Kubernetes、Docker、Ray、Slurm、Triton、vLLM、TensorRT等工具。\n2. 有CUDA、GPU编程、模型量化、推理加速经验。\n3. 参与过大模型部署、训练平台、推理服务或高并发系统项目。\n4. 了解MoE模型推理优化、KV Cache管理、Speculative Decoding等前沿方向者优先\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

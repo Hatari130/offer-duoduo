@@ -1,0 +1,64 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4555593816&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:02.199Z",
+  "data": {
+    "jobUnionId": "4555593816",
+    "name": "Agent算法实习生",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。",
+    "jobDuty": "1. 后训练研究：深入参与模型对齐工作，重点研究多种后训练算法；探索结果奖励和过程奖励模型的构建，提升模型在复杂逻辑下的推理能力。\n2. Agentic RL优化：针对复杂业务场景，优化 Agent 的任务规划、反思与执行能力；提升模型在长链路任务中的稳定性和成功率。\n3. 前沿技术落地：跟踪业界前沿技术路线，负责相关算法的复现、调优及在业务场景中的工程化落地。",
+    "jobRequirement": "1. 扎实的算法基础，熟悉LLM、NLP相关算法和模型；具备业务场景高质量训练数据构建的实际经验者优先。\n2. 熟悉 Hugging Face Transformers、PyTorch 等主流深度学习框架；具备Agent研发的实际经验者优先。\n3. 有 LangGraph、Swarm 等Agent框架使用经验，熟悉 MCP 协议及工具生态。有多智能体协作或复杂规划任务研发经验。\n4. 在ACL、EMNLP、NAACL、SIGIR等自然语言处理会议或期刊中有论文发表者，或在 Kaggle 及大模型相关榜单中取得优异成绩者优先。\n5. 每周至少全职工作四天，保证实习至少4个月。实习须征得导师同意。",
+    "precedence": "",
+    "highLight": "1. 直接参与大模型最核心的 RL 对齐 与 Agentic Reasoning 研究。\n2. 资深算法专家一对一辅导，团队技术氛围浓厚。\n3. 提供充足的计算资源及高质量的真实业务反馈数据（Human Feedback）。\n4. 支持高水平论文合作发表及开源社区贡献。",
+    "otherInfo": null,
+    "firstPostTime": 1781770776000,
+    "refreshTime": 1789268436000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": true
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAgent算法实习生\n实习-日常实习\n更新时间：2026/09/13\n工作地点：北京市、上海市\n部门：核心本地商业-基础研发平台\n工作经验：不限\n分享\n立即申请\n部门介绍\n基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。\n岗位职责\n1. 后训练研究：深入参与模型对齐工作，重点研究多种后训练算法；探索结果奖励和过程奖励模型的构建，提升模型在复杂逻辑下的推理能力。\n2. Agentic RL优化：针对复杂业务场景，优化 Agent 的任务规划、反思与执行能力；提升模型在长链路任务中的稳定性和成功率。\n3. 前沿技术落地：跟踪业界前沿技术路线，负责相关算法的复现、调优及在业务场景中的工程化落地。\n岗位基本要求\n1. 扎实的算法基础，熟悉LLM、NLP相关算法和模型；具备业务场景高质量训练数据构建的实际经验者优先。\n2. 熟悉 Hugging Face Transformers、PyTorch 等主流深度学习框架；具备Agent研发的实际经验者优先。\n3. 有 LangGraph、Swarm 等Agent框架使用经验，熟悉 MCP 协议及工具生态。有多智能体协作或复杂规划任务研发经验。\n4. 在ACL、EMNLP、NAACL、SIGIR等自然语言处理会议或期刊中有论文发表者，或在 Kaggle 及大模型相关榜单中取得优异成绩者优先。\n5. 每周至少全职工作四天，保证实习至少4个月。实习须征得导师同意。\n岗位亮点\n1. 直接参与大模型最核心的 RL 对齐 与 Agentic Reasoning 研究。\n2. 资深算法专家一对一辅导，团队技术氛围浓厚。\n3. 提供充足的计算资源及高质量的真实业务反馈数据（Human Feedback）。\n4. 支持高水平论文合作发表及开源社区贡献。\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

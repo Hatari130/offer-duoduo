@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4533196877&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:40.360Z",
+  "data": {
+    "jobUnionId": "4533196877",
+    "name": "【北斗】下一代Agent前沿技术研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们致力于用科技创新为用户和生态伙伴创造超预期的交互体验和效率提升，依托生活服务领域多样化且复杂的业务场景，聚焦基座技术与公司战略级应用方向的深度融合，持续推动前沿技术的落地，同时积极探索和挑战技术的无人区，不断定义并刷新行业的最先进技术标准。\n\n1、更聪明：通过Agentic RL、自适应推理等技术提升Agent长程规划与自我纠错能力\n2、好复用：探索Skill的表示、组织与调度机制，让能力可组合可进化\n3、低成本：攻克推理成本控制、上下文治理与长期记忆等核心难题\n4、能应用：从0到1探索C端Agent社区等产品",
+    "jobRequirement": "【岗位要求】\n1、有好奇心，敢想敢做，学习能力强，具备复杂问题深度思考与拆解能力\n2、顶会论文（ACL/EMNLP/NeurIPS/ICLR/KDD等）、开源贡献或算法竞赛成果突出者优先\n3、有OpenClaw/Claude Code深度使用经验与产出优先\n4、GitHub高Star AI原生项目或向OpenClaw/OpenCode提交过核心PR者优先\n\n【岗位吸引力】\n1、聚焦下一代Agent核心技术：聚焦Agentic RL、自适应推理、长程规划与自我纠错、Skill体系、Agent架构、推理成本优化等——这是当前Agent从\"能用\"到\"好用\"的核心技术壁垒，也是全球顶级研究团队正在攻坚的方向\n2、顶会学术氛围：团队同学26年上半年在ICML/ICLR/ACL/EMNLP等顶会发表论文9篇，与多所顶尖高校保持长期联合研究，内部有完善的学术氛围\n3、资源与自由度双保证：充足GPU集群 + Token供给，不以短期业务KPI为导向，共同商定研究问题，弹药和方向都不是瓶颈",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780474608000,
+    "refreshTime": 1780474608000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】下一代Agent前沿技术研究员\n应届-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们致力于用科技创新为用户和生态伙伴创造超预期的交互体验和效率提升，依托生活服务领域多样化且复杂的业务场景，聚焦基座技术与公司战略级应用方向的深度融合，持续推动前沿技术的落地，同时积极探索和挑战技术的无人区，不断定义并刷新行业的最先进技术标准。\n1、更聪明：通过Agentic RL、自适应推理等技术提升Agent长程规划与自我纠错能力\n2、好复用：探索Skill的表示、组织与调度机制，让能力可组合可进化\n3、低成本：攻克推理成本控制、上下文治理与长期记忆等核心难题\n4、能应用：从0到1探索C端Agent社区等产品\n任职要求\n【岗位要求】\n1、有好奇心，敢想敢做，学习能力强，具备复杂问题深度思考与拆解能力\n2、顶会论文（ACL/EMNLP/NeurIPS/ICLR/KDD等）、开源贡献或算法竞赛成果突出者优先\n3、有OpenClaw/Claude Code深度使用经验与产出优先\n4、GitHub高Star AI原生项目或向OpenClaw/OpenCode提交过核心PR者优先\n【岗位吸引力】\n1、聚焦下一代Agent核心技术：聚焦Agentic RL、自适应推理、长程规划与自我纠错、Skill体系、Agent架构、推理成本优化等——这是当前Agent从\"能用\"到\"好用\"的核心技术壁垒，也是全球顶级研究团队正在攻坚的方向\n2、顶会学术氛围：团队同学26年上半年在ICML/ICLR/ACL/EMNLP等顶会发表论文9篇，与多所顶尖高校保持长期联合研究，内部有完善的学术氛围\n3、资源与自由度双保证：充足GPU集群 + Token供给，不以短期业务KPI为导向，共同商定研究问题，弹药和方向都不是瓶颈\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

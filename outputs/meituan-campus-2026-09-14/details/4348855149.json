@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348855149&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:55.298Z",
+  "data": {
+    "jobUnionId": "4348855149",
+    "name": "【基座大模型北斗实习】具身智能前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：参与具身智能方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、具身智能相关的仿真环境、资产、场景、任务自动化生成与重建（3D生成/场景理解）。\n2、仿真环境内的轨迹自动化生成方法（数据引擎/合成数据）。\n3、基于多模态大模型的泛化具身智能 Agent 系统研究。\n4、Training-free的基于few-shot的具身智能大模型研究。\n5、多模态大模型的多视角空间感知与主动探索能力研究。\n6、其他你坚信路线正确的具身智能前沿方向。",
+    "jobRequirement": "1、计算机科学、自动化、机器人或相关领域在读硕士/博士研究生；\n2、具备扎实编程能力，熟练掌握 Python 及 PyTorch；熟悉 C++ 者优先；\n3、对具身智能、机器人、计算机图形学或多模态大模型中至少一个方向有深入的理论基础与研究积累；\n4、有较强的自驱力和独立解决问题的能力，能在模糊环境中推进研究；\n\n具备以下者优先：\n1、在 AI、机器人、计算机图形学等领域 CCF-A 类或同级顶会/顶刊（如 CVPR/ICCV/CoRL/RSS/NeurIPS 等）发表论文（第一作者/共同一作优先）；\n2、参与国际/国内顶级算法竞赛并获得名次；\n3、有大型科研项目或有影响力开源项目的核心贡献经历。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223030000,
+    "refreshTime": 1775223030000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】具身智能前沿研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：参与具身智能方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、具身智能相关的仿真环境、资产、场景、任务自动化生成与重建（3D生成/场景理解）。\n2、仿真环境内的轨迹自动化生成方法（数据引擎/合成数据）。\n3、基于多模态大模型的泛化具身智能 Agent 系统研究。\n4、Training-free的基于few-shot的具身智能大模型研究。\n5、多模态大模型的多视角空间感知与主动探索能力研究。\n6、其他你坚信路线正确的具身智能前沿方向。\n任职要求\n1、计算机科学、自动化、机器人或相关领域在读硕士/博士研究生；\n2、具备扎实编程能力，熟练掌握 Python 及 PyTorch；熟悉 C++ 者优先；\n3、对具身智能、机器人、计算机图形学或多模态大模型中至少一个方向有深入的理论基础与研究积累；\n4、有较强的自驱力和独立解决问题的能力，能在模糊环境中推进研究；\n具备以下者优先：\n1、在 AI、机器人、计算机图形学等领域 CCF-A 类或同级顶会/顶刊（如 CVPR/ICCV/CoRL/RSS/NeurIPS 等）发表论文（第一作者/共同一作优先）；\n2、参与国际/国内顶级算法竞赛并获得名次；\n3、有大型科研项目或有影响力开源项目的核心贡献经历。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

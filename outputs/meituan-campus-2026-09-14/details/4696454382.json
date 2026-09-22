@@ -1,0 +1,226 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4696454382&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:59.322Z",
+  "data": {
+    "jobUnionId": "4696454382",
+    "name": "产品运营岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "运营类",
+    "jobFamilyGroup": "用户运营,内容运营,产品运营",
+    "cityList": [
+      {
+        "code": "001011001",
+        "name": "杭州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "008002001",
+        "name": "科威特城",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001032",
+        "name": "香港特别行政区",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001027001",
+        "name": "西安市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "009001001",
+        "name": "利雅得",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019001",
+        "name": "广州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001008001",
+        "name": "哈尔滨市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001017001",
+        "name": "武汉市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG008",
+        "name": "核心本地商业-点评事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG038",
+        "name": "核心本地商业-闪购事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG011",
+        "name": "人力资源平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG021",
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG048",
+        "name": "核心本地商业-下沉市场发展部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG037",
+        "name": "核心本地商业-到家履约平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "在这里你有机会参与美团的各类运营岗位，可以全方位感受运营的魅力！惊喜无处不在！\n如果你对以下任意一个方向感兴趣，欢迎网申这个岗位。\n1. 用户运营：以用户为中心，遵循用户的需求设置运营活动与规则，制定运营策略与运营目标，并能够做好全过程的项目推进，目标管理，进度管理和执行落地，通过数据对效果进行评估。持续增加用户洞察、为用户创造更多价值的方式实现用户健康增长。\n2. 商家及供给运营：以商家/骑手/司机/供应商为运营主体，通过对行业和市场的理解，运用科学合理的方式制定相应策略，传递公司和平台的价值主张，实现业务渗透、规模增长、结构优化、生态治理等，同时提升商家/骑手/司机/供应商的活跃度、经营效率、服务水平与经营收益。\n3. 内容运营：以内容/信息/数据的生产、消费、业务应用为核心，开展UGC、PGC、POI运营管理、新媒体运营，搭建良性生产循环，持续提升所在业务关键维度的指标，如内容数量、浏览量、内容互动数、内容传播数、信息及数据的质量等。\n4. 工具系统运营：围绕内部用户，通过基础数据分析和建设、系统开发和使用、规则流程或政策制定、培训指导、现场支持等方式推动各方效率提升。\n5. 体验运营：作为助手，为体验问题定位、分析、解决、评估提供全流程支持；站在客户服务体验视角，关注服务工具的迭代和运营，与业务共同推进服务工具的效率和体验；不断推动完善体验评估数据产品，与业务共建高效的体验评估产品工具。",
+    "jobRequirement": "1. 本科及以上学历；\n2. 对用户侧信息有充分的敏感度，最懂他们的心；\n3. 喜欢O2O行业，善于思考富有创意；\n4. 强烈的目标导向和分解、落地的能力，强大的执行力确保目标达成；\n5. 良好的团队合作意识、能有效组织和协调跨职能、跨部门资源，解决问题，达成目标。\n加分项：\n1. 熟练使用SQL、Python；\n2. 有互联网领域的体验研究项目经验，有较好的研究落地成果及相关业务效果数据优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960981000,
+    "refreshTime": 1786960981000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n产品运营岗\n应届-校园招聘\n工作地点：杭州市、北京市、科威特城、香港...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n在这里你有机会参与美团的各类运营岗位，可以全方位感受运营的魅力！惊喜无处不在！\n如果你对以下任意一个方向感兴趣，欢迎网申这个岗位。\n1. 用户运营：以用户为中心，遵循用户的需求设置运营活动与规则，制定运营策略与运营目标，并能够做好全过程的项目推进，目标管理，进度管理和执行落地，通过数据对效果进行评估。持续增加用户洞察、为用户创造更多价值的方式实现用户健康增长。\n2. 商家及供给运营：以商家/骑手/司机/供应商为运营主体，通过对行业和市场的理解，运用科学合理的方式制定相应策略，传递公司和平台的价值主张，实现业务渗透、规模增长、结构优化、生态治理等，同时提升商家/骑手/司机/供应商的活跃度、经营效率、服务水平与经营收益。\n3. 内容运营：以内容/信息/数据的生产、消费、业务应用为核心，开展UGC、PGC、POI运营管理、新媒体运营，搭建良性生产循环，持续提升所在业务关键维度的指标，如内容数量、浏览量、内容互动数、内容传播数、信息及数据的质量等。\n4. 工具系统运营：围绕内部用户，通过基础数据分析和建设、系统开发和使用、规则流程或政策制定、培训指导、现场支持等方式推动各方效率提升。\n5. 体验运营：作为助手，为体验问题定位、分析、解决、评估提供全流程支持；站在客户服务体验视角，关注服务工具的迭代和运营，与业务共同推进服务工具的效率和体验；不断推动完善体验评估数据产品，与业务共建高效的体验评估产品工具。\n任职要求\n1. 本科及以上学历；\n2. 对用户侧信息有充分的敏感度，最懂他们的心；\n3. 喜欢O2O行业，善于思考富有创意；\n4. 强烈的目标导向和分解、落地的能力，强大的执行力确保目标达成；\n5. 良好的团队合作意识、能有效组织和协调跨职能、跨部门资源，解决问题，达成目标。\n加分项：\n1. 熟练使用SQL、Python；\n2. 有互联网领域的体验研究项目经验，有较好的研究落地成果及相关业务效果数据优先。\n工作城市\n杭州市、北京市、科威特城、香港特别行政区、上海市、西安市、利雅得、广州市、哈尔滨市、武汉市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

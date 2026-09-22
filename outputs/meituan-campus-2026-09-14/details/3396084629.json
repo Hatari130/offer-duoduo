@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3396084629&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:10.110Z",
+  "data": {
+    "jobUnionId": "3396084629",
+    "name": "【北斗实习】大模型应用算法工程师-【多场景Agent】",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】\n以大模型对话技术为核心，探索前沿技术问题。研究方向包括角色扮演、个性化对话、记忆管理，拟人化，数字人等，主要业务场景包括运营，招聘，销售，审核等。目标是构建覆盖多个场景的Agent系统，实现“技术驱动业务范式”的升级转变。\n【建议研究方向】\n1. 大模型个性化（Personalized LLM）：通过角色扮演、用户行为数据挖掘与建模、上下文理解等方法，分析用户情感状态，提升模型的个性化回复能力。\n2. 面向语音交互的拟人化技术（Voice Agent）：优化大模型在语音对话场景的效果，提升大模型的拟人化水平，探索下一代端到端语音对话大模型的技术实现。\n3. 记忆管理与增强（Memory）：通过优化模型长上下文能力、设计记忆抽取与管理模块，提升系统的记忆能力。\n4. 基于LLM的RL（LLM-based RL）：通过强化学习，提升模型规划、决策、推理等能力。\n我们将提供充足的计算资源和良好的工作自由度，目标是产出有影响力的工作，解决业务实践中的问题。",
+    "jobRequirement": "海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1）超级学霸：专业成绩排名前1%。\n2）学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3）竞赛大神：在顶级大赛上获奖。\n4）工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1748312854000,
+    "refreshTime": 1748312854000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型应用算法工程师-【多场景Agent】\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n以大模型对话技术为核心，探索前沿技术问题。研究方向包括角色扮演、个性化对话、记忆管理，拟人化，数字人等，主要业务场景包括运营，招聘，销售，审核等。目标是构建覆盖多个场景的Agent系统，实现“技术驱动业务范式”的升级转变。\n【建议研究方向】\n1. 大模型个性化（Personalized LLM）：通过角色扮演、用户行为数据挖掘与建模、上下文理解等方法，分析用户情感状态，提升模型的个性化回复能力。\n2. 面向语音交互的拟人化技术（Voice Agent）：优化大模型在语音对话场景的效果，提升大模型的拟人化水平，探索下一代端到端语音对话大模型的技术实现。\n3. 记忆管理与增强（Memory）：通过优化模型长上下文能力、设计记忆抽取与管理模块，提升系统的记忆能力。\n4. 基于LLM的RL（LLM-based RL）：通过强化学习，提升模型规划、决策、推理等能力。\n我们将提供充足的计算资源和良好的工作自由度，目标是产出有影响力的工作，解决业务实践中的问题。\n任职要求\n海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1）超级学霸：专业成绩排名前1%。\n2）学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3）竞赛大神：在顶级大赛上获奖。\n4）工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697319130&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:56.493Z",
+  "data": {
+    "jobUnionId": "4697319130",
+    "name": "硬件开发工程师(嵌入式系统软件开发方向)",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "硬件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责自动驾驶、骑行、无人机或视觉智能等方向的嵌入式系统软件开发，参与硬件产品全生命周期研发；\n2. 在 MCU/嵌入式平台上构建信号采集、计算处理与实时控制系统，负责接口驱动、通讯协议及控制算法实现；\n3. 参与传感器融合、运动控制、电池/电机管理等算法开发，保障系统实时性、可靠性与容错能力；\n4. 探索 AI 模型端侧部署与优化（如 TinyML、轻量化模型推理加速），推动嵌入式系统智能化升级；\n5. 配合完成系统测试及技术文档工作。",
+    "jobRequirement": "【岗位要求】\n1. 本科及以上学历，控制工程、电子工程、机电工程、计算机等相关专业；\n2. 熟练掌握 C/C++，熟悉 MCU 开发、常用总线与接口（SPI/I2C/UART/CAN 等）；\n3. 熟悉 RTOS、AUTOSAR 或 Linux 系统之一，有实际项目调试经验；\n4. 了解AI端侧部署基本概念（如TensorFlow Lite、ONNX Runtime、OpenVINO等），有嵌入式AI实践经验者优先\n5. 自驱动、责任心强，具备良好的团队协作能力。\n具备以下经验者优先：\n1. 有创新成果（获奖/论文/专利）；\n2. 有 AI 模型在嵌入式平台部署的实践经验；\n3. 有 ROS 开发经验或飞行器/机器人相关研发经历。\n【岗位亮点】\n1. 前沿硬件场景：深度参与自动驾驶、无人机、智能骑行等产品的全链路研发；\n2. AI × 嵌入式：探索端侧智能化前沿，让 AI 真正跑在硬件上；\n3. 与业内大牛同行：和行业顶尖工程师共事，快速成长。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960991000,
+    "refreshTime": 1786960991000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n硬件开发工程师(嵌入式系统软件开发方向)\n应届-校园招聘\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责自动驾驶、骑行、无人机或视觉智能等方向的嵌入式系统软件开发，参与硬件产品全生命周期研发；\n2. 在 MCU/嵌入式平台上构建信号采集、计算处理与实时控制系统，负责接口驱动、通讯协议及控制算法实现；\n3. 参与传感器融合、运动控制、电池/电机管理等算法开发，保障系统实时性、可靠性与容错能力；\n4. 探索 AI 模型端侧部署与优化（如 TinyML、轻量化模型推理加速），推动嵌入式系统智能化升级；\n5. 配合完成系统测试及技术文档工作。\n任职要求\n【岗位要求】\n1. 本科及以上学历，控制工程、电子工程、机电工程、计算机等相关专业；\n2. 熟练掌握 C/C++，熟悉 MCU 开发、常用总线与接口（SPI/I2C/UART/CAN 等）；\n3. 熟悉 RTOS、AUTOSAR 或 Linux 系统之一，有实际项目调试经验；\n4. 了解AI端侧部署基本概念（如TensorFlow Lite、ONNX Runtime、OpenVINO等），有嵌入式AI实践经验者优先\n5. 自驱动、责任心强，具备良好的团队协作能力。\n具备以下经验者优先：\n1. 有创新成果（获奖/论文/专利）；\n2. 有 AI 模型在嵌入式平台部署的实践经验；\n3. 有 ROS 开发经验或飞行器/机器人相关研发经历。\n【岗位亮点】\n1. 前沿硬件场景：深度参与自动驾驶、无人机、智能骑行等产品的全链路研发；\n2. AI × 嵌入式：探索端侧智能化前沿，让 AI 真正跑在硬件上；\n3. 与业内大牛同行：和行业顶尖工程师共事，快速成长。\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

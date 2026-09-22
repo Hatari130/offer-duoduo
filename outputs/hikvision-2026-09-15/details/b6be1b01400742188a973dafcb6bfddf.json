@@ -1,0 +1,107 @@
+{
+  "source_job_id": "b6be1b01400742188a973dafcb6bfddf",
+  "verified_at": "2026-09-15T01:32:11.656Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=b6be1b01400742188a973dafcb6bfddf",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=b6be1b01400742188a973dafcb6bfddf&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "85232d959eda4bd4ad9db839c11c1eaa",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "硬件设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "电路设计",
+        "techDire": "不限",
+        "postContent": "1、参与公司产品需求与产品方案评审，以及开发计划的制定；\n2、负责完成硬件系统方案设计，满足产品功能、性能、成本、质量等多维度需求；\n3、负责单板硬件全流程开发，包括器件选型、原理图设计、调试测试等；\n4、负责硬件相关问题分析与定位解决。",
+        "postRequire": "1、本科及以上学历，电子、通信、电气工程、自动化等相关专业优先；\n2、具有扎实硬件基础知识，精通模拟/数字电路分析及设计；\n3、熟悉常用电子元器件，并熟练使用示波器、万用表等工具；\n4、熟悉电源、时钟、存储、通讯接口等模块电路原理；\n5、掌握一定的信号完整性和EMC设计方面的知识；\n6、具有嵌入式系统单板开发和调试经验，在各类电子竞赛中获得奖项者优先；\n7、热爱硬件设计，并具有较强的责任心、沟通协作能力及团队合作精神。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "b6be1b01400742188a973dafcb6bfddf",
+        "adNeedDept": "海康慧影(已关闭)#海康机器人(已关闭)#海康微影(已关闭)#海康消防(已关闭)#智能硬件-后端业务(已关闭)#智能硬件-交通与停车(已关闭)#智能硬件-门禁(已关闭)#海康存储(已关闭)#智能硬件-前端业务(已关闭)#智能硬件-移动与穿戴(已关闭)#智能硬件-音频与传感(已关闭)#智能硬件-显控(已关闭)#智能硬件-智慧屏与视频会议(已关闭)#智能硬件-硬件技术(已关闭)#统招统分#海康睿影(已关闭)#萤石网络(已关闭)",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:53",
+        "updateTime": "2026-09-02 09:25:46"
+      },
+      "departments": [
+        {
+          "id": "709f5d7c7531481c977a040df654d67f",
+          "name": "统招统分",
+          "description": "统招岗位由海康威视的多个部门联合招聘，所有候选人均由公司参照各部门需求进行统一部门分配。海康威视欢迎你的加入！"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "4a780e42d6264bcda4c946804a5cdaf9",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "硬件设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "电路设计",
+        "techDire": "不限",
+        "postContent": "1.根据需求定义进行相关产品的硬件电路设计；\n2.元器件选型，原理图设计，辅助PCB人员进行layout，完成产品的前期设计开发调试；\n3.协同结构工程师及软件工程师优化电子设计；\n4.进行产品的质量问题分析；\n5.协助环境测试、EMC认证及批量生产。",
+        "postRequire": "1.统招本科及以上学历，电子信息相关专业；\n2.具备硬件设计相关实习或项目经验，熟练使用相关软件进行原理图设计；\n3.熟悉单片机、DSP、FPGA、ARM等嵌入式硬件平台，熟悉TI 平台及mmWave radar sensors 的优先；\n4.有信号完整性、EMC、PI/EMI及信号完整性仿真等相关经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "石家庄市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "b6be1b01400742188a973dafcb6bfddf",
+        "adNeedDept": "海康汽车电子",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:09:51"
+      },
+      "departments": [
+        {
+          "id": "b276e4ba30ae4cd2afe86d0ba755e25f",
+          "name": "海康汽车电子",
+          "description": "海康汽车电子聚焦于智能驾驶领域，以视频为核心，融合雷达等传感器，深入研究人工智能、感知数据分析与处理等技术，致力于成为行业领先的以视频技术为核心的车辆安全和智能化产品供应商。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "cd8f07de0c0743da897a179d94b65e8d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "硬件设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "电路设计",
+        "techDire": "不限",
+        "postContent": "1、参与公司产品需求与产品方案评审，以及开发计划的制定；\n2、负责完成硬件系统方案设计，满足产品功能、性能、成本、质量等多维度需求；\n3、负责单板硬件全流程开发，包括器件选型、原理图设计、调试测试等；\n4、负责硬件相关问题分析与定位解决。",
+        "postRequire": "1、本科及以上学历，电子、通信、电气工程、自动化等相关专业优先；\n2、具有扎实硬件基础知识，精通模拟/数字电路分析及设计；\n3、熟悉常用电子元器件，并熟练使用示波器、万用表等工具；\n4、熟悉电源、时钟、存储、通讯接口等模块电路原理；\n5、掌握一定的信号完整性和EMC设计方面的知识；\n6、具有嵌入式系统单板开发和调试经验，在各类电子竞赛中获得奖项者优先；\n7、热爱硬件设计，并具有较强的责任心、沟通协作能力及团队合作精神。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "武汉市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "b6be1b01400742188a973dafcb6bfddf",
+        "adNeedDept": "智能硬件-IT产品",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-08-20 17:09:51"
+      },
+      "departments": [
+        {
+          "id": "08977f77c3ed4e2ab03ed4e3bb3c459b",
+          "name": "智能硬件-IT产品",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

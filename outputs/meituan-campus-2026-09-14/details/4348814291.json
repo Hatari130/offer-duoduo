@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348814291&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:53.105Z",
+  "data": {
+    "jobUnionId": "4348814291",
+    "name": "【基座大模型北斗实习】Auto Research & Development Agent研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：研发下一代自动化研究智能体系统，专注于提升模型在长周期、高价值复杂任务中的自主执行能力，减少对人类指导的依赖。\n1、自动化研究场景下的大模型能力建设，提升模型在复杂任务分解、长程推理、研究规划、工具使用、代码生成与执行、证据整合与研究写作等方面的能力。\n2、长程任务中的上下文组织与记忆管理，设计优化 context scaling、context compression、memory selection、状态追踪与长期依赖建模，提升模型在复杂研究任务中的上下文利用效率与稳定性。\n3、自主研究任务相关环境与自动实验闭环建设，构建 search、browser、retrieval、code execution、verifier 等训练与评测环境，打通训练脚本迭代、实验编排、结果比对、版本保留/回滚与复现验证流程。\n4、训练策略、数据配方与反馈信号设计，围绕 SFT、RLVR等方法，结合数据构造、数据清洗、超参数优化以及 outcome-level / process-level 信号设计，提升模型在开放研究任务中的完成率、事实正确性和稳定性。\n5、面向真实 research 任务的评测体系与错误分析闭环建设，建立 benchmark、自动化评测指标，系统分析搜索遗漏、证据误判、上下文污染、推理漂移、错误归因与长链路失稳等问题，并推动针对性优化。",
+    "jobRequirement": "1、硕士及以上学历，计算机、人工智能、数学、自然语言处理等相关专业，博士优先；\n2、具备扎实的算法和数学理论基础及良好的编程基础，熟悉Python、Java等至少一种编程语言，熟悉PyTorch等深度学习框架；\n3、在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n4、在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223032000,
+    "refreshTime": 1775223032000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】Auto Research & Development Agent研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：研发下一代自动化研究智能体系统，专注于提升模型在长周期、高价值复杂任务中的自主执行能力，减少对人类指导的依赖。\n1、自动化研究场景下的大模型能力建设，提升模型在复杂任务分解、长程推理、研究规划、工具使用、代码生成与执行、证据整合与研究写作等方面的能力。\n2、长程任务中的上下文组织与记忆管理，设计优化 context scaling、context compression、memory selection、状态追踪与长期依赖建模，提升模型在复杂研究任务中的上下文利用效率与稳定性。\n3、自主研究任务相关环境与自动实验闭环建设，构建 search、browser、retrieval、code execution、verifier 等训练与评测环境，打通训练脚本迭代、实验编排、结果比对、版本保留/回滚与复现验证流程。\n4、训练策略、数据配方与反馈信号设计，围绕 SFT、RLVR等方法，结合数据构造、数据清洗、超参数优化以及 outcome-level / process-level 信号设计，提升模型在开放研究任务中的完成率、事实正确性和稳定性。\n5、面向真实 research 任务的评测体系与错误分析闭环建设，建立 benchmark、自动化评测指标，系统分析搜索遗漏、证据误判、上下文污染、推理漂移、错误归因与长链路失稳等问题，并推动针对性优化。\n任职要求\n1、硕士及以上学历，计算机、人工智能、数学、自然语言处理等相关专业，博士优先；\n2、具备扎实的算法和数学理论基础及良好的编程基础，熟悉Python、Java等至少一种编程语言，熟悉PyTorch等深度学习框架；\n3、在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n4、在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

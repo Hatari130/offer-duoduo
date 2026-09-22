@@ -1,0 +1,41 @@
+{
+  "source_job_id": "92a7418c34f94027b8aa759435746621",
+  "verified_at": "2026-09-15T01:32:04.562Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=92a7418c34f94027b8aa759435746621",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=92a7418c34f94027b8aa759435746621&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "92a7418c34f94027b8aa759435746621",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "NLP算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "NLP",
+        "postContent": "1、参与AI应用场景的端到端落地，从需求分析、方案设计到模型开发与应用上线，持续优化模型效果与准确率；\n2、基于LLM、NLP等技术持续迭代算法能力，推进在意图识别、智能体、信息抽取/分类、内容生成等通用能力的突破；\n3、紧跟行业动态与前沿技术，结合业务需求，为团队引入先进算法与技术框架；\n4、与产品、数据、开发等跨部门团队高效协作，共同推进项目高质量交付。",
+        "postRequire": "1、硕士及以上学历，计算机/模式识别/人工智能/数学相关专业；\n2、具备良好的编程能力，掌握Python及常用算法库和深度学习框架；\n3、了解NLP领域典型模型与技术，如Transformer、BERT等，具备良好的学习能力和动手能力；\n4、在NLP或大模型相关任务中参与过实践项目，包括但不限于分词、词性标注、命名实体识别、语言模型、句法分析、数据抓取、文本分类、文本检索、自动问答、自动批改、自动摘要、机器翻译等。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "3843250e32594d42afc6fcd76533ac71",
+          "name": "数字化部",
+          "description": "数字化部门统筹公司各领域数字化平台和智能化升级的建设，推动公司全业务链的数字化转型，助力企业高质量发展。数据智能团队聚焦智能算法研发与数据价值挖掘，驱动AI技术在业务场景中的深度应用，释放组织效能。加入我们，你将深度参与到研发设计、智能营销、内容创作、产品推荐、智能客服、生产排程等核心业务场景的智能化升级。你的每一份研究、每一行代码，都将成为企业发展的新动力；如何利用AI技术赋能制造型企业的智能化转型，期待与你一起探索与实践。"
+        }
+      ]
+    }
+  ]
+}

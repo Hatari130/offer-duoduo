@@ -1,0 +1,276 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697288183&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:39.360Z",
+  "data": {
+    "jobUnionId": "4697288183",
+    "name": "城市运营管理储备岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "销售、客服与支持类",
+    "jobFamilyGroup": "业务支持",
+    "cityList": [
+      {
+        "code": "001011003",
+        "name": "温州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010013",
+        "name": "苏州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001015007",
+        "name": "烟台市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001011006",
+        "name": "绍兴市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001006001",
+        "name": "沈阳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001020001",
+        "name": "南宁市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001028001",
+        "name": "兰州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001025001",
+        "name": "昆明市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001024001",
+        "name": "贵阳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019003",
+        "name": "珠海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001018001",
+        "name": "长沙市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001030001",
+        "name": "银川市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001022",
+        "name": "重庆市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001015001",
+        "name": "济南市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001016003",
+        "name": "洛阳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001014001",
+        "name": "南昌市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001016001",
+        "name": "郑州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019013",
+        "name": "佛山市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001017001",
+        "name": "武汉市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG012",
+        "name": "软硬件服务-骑行事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 从一线业务场景切入，全方位了解并学习城市运营运作模式、流程及标准；  \n2. 通过现场管理、指标监控和数据分析等方式，制定负责区域的经营策略，促进区域业务目标的达成；   \n3. 负责城市资产的健康管理及仓库现场管理，保障仓库安全及车辆维修质量和效率； \n4. 负责组建和管理运维团队，包括但不限于招聘、选拔，培训、激励等，并能通过排班与考勤管理等方式合理安排团队工作，通过既有的标准流程传达工作目标并检核团队工作；\n5. 对接区域内相关部门，配合各部门对负责区域内的城市运营问题进行管理。",
+    "jobRequirement": "工作要求：  \n1. 本科及以上学历，专业不限，拥有校内外创业、实习或兼职等实践经验；  \n2. 对共享两轮行业兴趣浓厚，能接受户外工作和工作城市调动；  \n3. 拥有较强的沟通协调能力和逻辑思维，以目标为导向，不断学习与成长； \n4. 具备较好的发展意愿，有韧性。\n岗位亮点： \n1. 完善的培养体系和丰富的学习资源：入职后将配备专属专业导师，协助制定发展目标，系统带教和辅导，并提供丰富的课程学习资源，有机会在不同岗位上历练成长。  \n2. 管理者的发展路径：有明确的成长路径，能够通过美团的管理培训体系和实践，快速走向重要管理岗位。\n3. 统筹管理的开阔视野：工作内容涉及管理、运营等方面，可以培养经营和财务思维，助力个人全面发展。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961032000,
+    "refreshTime": 1786961032000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n城市运营管理储备岗\n应届-校园招聘\n工作地点：温州市、苏州市、北京市、烟台市...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 从一线业务场景切入，全方位了解并学习城市运营运作模式、流程及标准；\n2. 通过现场管理、指标监控和数据分析等方式，制定负责区域的经营策略，促进区域业务目标的达成；\n3. 负责城市资产的健康管理及仓库现场管理，保障仓库安全及车辆维修质量和效率；\n4. 负责组建和管理运维团队，包括但不限于招聘、选拔，培训、激励等，并能通过排班与考勤管理等方式合理安排团队工作，通过既有的标准流程传达工作目标并检核团队工作；\n5. 对接区域内相关部门，配合各部门对负责区域内的城市运营问题进行管理。\n任职要求\n工作要求：\n1. 本科及以上学历，专业不限，拥有校内外创业、实习或兼职等实践经验；\n2. 对共享两轮行业兴趣浓厚，能接受户外工作和工作城市调动；\n3. 拥有较强的沟通协调能力和逻辑思维，以目标为导向，不断学习与成长；\n4. 具备较好的发展意愿，有韧性。\n岗位亮点：\n1. 完善的培养体系和丰富的学习资源：入职后将配备专属专业导师，协助制定发展目标，系统带教和辅导，并提供丰富的课程学习资源，有机会在不同岗位上历练成长。\n2. 管理者的发展路径：有明确的成长路径，能够通过美团的管理培训体系和实践，快速走向重要管理岗位。\n3. 统筹管理的开阔视野：工作内容涉及管理、运营等方面，可以培养经营和财务思维，助力个人全面发展。\n工作城市\n温州市、苏州市、北京市、烟台市、绍兴市、沈阳市、南宁市、上海市、兰州市、成都市、昆明市、贵阳市、珠海市、长沙市、银川市、重庆市、济南市、洛阳市、南昌市、郑州市、佛山市、武汉市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

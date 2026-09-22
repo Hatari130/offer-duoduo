@@ -1,0 +1,13 @@
+{
+  "expected": 101,
+  "collected": 101,
+  "unique": 101,
+  "types": {
+    "实习": 4,
+    "校招": 19,
+    "全职": 78
+  },
+  "published": 101,
+  "all_jobs": 843,
+  "all_with_published": 694
+}

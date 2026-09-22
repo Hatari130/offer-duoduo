@@ -1,0 +1,24 @@
+{
+  "entry_url": "https://campus.163.com/app/job/position?id=103",
+  "scope": "用户指定的单个网易校园岗位详情",
+  "collection_method": "官方公开 API（/api/campuspc/position/getJobDetails?id=103）",
+  "started_at": "2026-09-16T15:29:51+08:00",
+  "finished_at": "2026-09-16T15:29:51+08:00",
+  "official_total": null,
+  "list_record_count": 1,
+  "unique_job_count": 1,
+  "detail_success_count": 1,
+  "failed": [],
+  "company_type_stats": {
+    "网易": {
+      "校招": 1
+    }
+  },
+  "published_known_count": 1,
+  "published_missing_count": 0,
+  "duplicate_handling": "按公司名+source_job_id 去重；本次 ID 103 未与现有记录冲突",
+  "evidence": [
+    "raw-detail.json",
+    "netease-103.md"
+  ]
+}

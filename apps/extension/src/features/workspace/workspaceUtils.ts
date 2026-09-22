@@ -292,6 +292,42 @@ function cleanCaptureCompanyValue(value: string): string {
   return cleaned;
 }
 
+const FEISHU_TENANT_MAP: Record<string, string> = {
+  dcar: "懂车帝",
+  nio: "蔚来",
+  lixiang: "理想汽车",
+  liuto: "理想汽车",
+  dewu: "得物",
+  minimax: "MiniMax",
+  xpeng: "小鹏汽车",
+  bytedance: "字节跳动",
+  shopee: "Shopee",
+  mihoyo: "米哈游",
+  bilibili: "哔哩哔哩",
+  douyin: "抖音",
+  volcengine: "火山引擎",
+  pupu: "朴朴超市",
+  shein: "SHEIN",
+  kanzhun: "BOSS直聘",
+  bosszhipin: "BOSS直聘",
+  guazi: "瓜子二手车",
+  anker: "安克创新",
+  chagee: "霸王茶姬",
+  mixue: "蜜雪冰城",
+  heytea: "喜茶",
+  haidilao: "海底捞",
+  transsion: "传音控股",
+  transsnet: "传音控股",
+  oppo: "OPPO",
+  vivo: "vivo",
+  honor: "荣耀",
+  zeekr: "极氪",
+  geely: "吉利汽车",
+  horizon: "地平线",
+  kuaishou: "快手",
+  xiaohongshu: "小红书"
+};
+
 function captureCompany(page: ExtractedJob): string {
   const knownHosts: Array<[RegExp, string]> = [
     [/(?:^|\.)baidu\.com$/i, "百度"],
@@ -309,6 +345,11 @@ function captureCompany(page: ExtractedJob): string {
   const cleaned = cleanCaptureCompanyValue(page.company);
   if (cleaned && cleaned.toLowerCase() !== page.sourceHost.trim().toLowerCase()) {
     return cleaned;
+  }
+
+  const feishuTenant = page.sourceHost.toLowerCase().match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
+  if (feishuTenant && FEISHU_TENANT_MAP[feishuTenant]) {
+    return FEISHU_TENANT_MAP[feishuTenant];
   }
 
   const titleCompany = cleanCaptureCompanyValue(

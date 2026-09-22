@@ -1,0 +1,116 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697320023&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:48.260Z",
+  "data": {
+    "jobUnionId": "4697320023",
+    "name": "大模型应用算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG050",
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 研究大模型和搜索推荐前沿技术，基于AI技术对搜索推荐系统进行技术升级和下一代算法架构新范式的探索。\n2. 负责美团生成式搜索和交互式对话系统的设计与开发，探索Agent、RAG、领域模型调优等相关技术在生活服务场景落地。\n3. 负责生成式推荐技术的探索和开发，并在美团推荐场景落地。\n4. 探索大模型技术在美团平台各场景的落地应用，参与产品需求分析，通过技术提升用户体验，提供有价值的解决方案。",
+    "jobRequirement": "1. 计算机相关专业，熟悉机器学习、深度学习，自然语言处理等领域的专业知识。\n2. 优秀的编程能力，熟悉PyTorch、TensorFlow深度学习框架。\n3. 熟悉主流大模型，如GPT/LLaMA等，对模型背后的原理和差异有深入的理解，有实际动手经验。\n4. 逻辑思维清晰，学习能力强，自驱力好，富有探索精神，能快速适应新环境。\n\n具备以下条件优先：\n1. 有搜索、推荐、广告、AIGC应用产品研发等领域的实习经历，有复杂业务场景下大规模深度学习模型的算法研发及改进经验。\n2. 密切关注业界最新进展，在SIGKDD、ACL、CIKM、ICML、ICLR、SIGIR、RECSYS等顶会发表过创新性论文，或业界最新算法的应用实践。\n3. 在ACM、Kaggle等竞赛平台取得靠前名次。\n\n岗位亮点：\n1. 美团平台搜索推荐，亿级DAU、海量的用户数据、复杂的多业务场景，挑战算法的极限并提升个人技术能力。\n2. 负责大模型和搜索推荐前沿技术研究，基于AI技术对搜索推荐系统进行技术升级和下一代算法架构新范式的探索，拥有广阔的技术创新空间和应用前景。\n3. 充足的计算资源和海量数据，丰富的业务落地场景，场景复杂度高、挑战性大，无需为应用场景和资源操心，快速积累AI在搜推方向的落地经验。\n4. 团队技术卓越，发表多篇顶会论文，技术交流分享氛围浓厚，支持进行前沿技术与业务探索，加入优秀的团队，一起快速成长。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961003000,
+    "refreshTime": 1786961003000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型应用算法工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 研究大模型和搜索推荐前沿技术，基于AI技术对搜索推荐系统进行技术升级和下一代算法架构新范式的探索。\n2. 负责美团生成式搜索和交互式对话系统的设计与开发，探索Agent、RAG、领域模型调优等相关技术在生活服务场景落地。\n3. 负责生成式推荐技术的探索和开发，并在美团推荐场景落地。\n4. 探索大模型技术在美团平台各场景的落地应用，参与产品需求分析，通过技术提升用户体验，提供有价值的解决方案。\n任职要求\n1. 计算机相关专业，熟悉机器学习、深度学习，自然语言处理等领域的专业知识。\n2. 优秀的编程能力，熟悉PyTorch、TensorFlow深度学习框架。\n3. 熟悉主流大模型，如GPT/LLaMA等，对模型背后的原理和差异有深入的理解，有实际动手经验。\n4. 逻辑思维清晰，学习能力强，自驱力好，富有探索精神，能快速适应新环境。\n具备以下条件优先：\n1. 有搜索、推荐、广告、AIGC应用产品研发等领域的实习经历，有复杂业务场景下大规模深度学习模型的算法研发及改进经验。\n2. 密切关注业界最新进展，在SIGKDD、ACL、CIKM、ICML、ICLR、SIGIR、RECSYS等顶会发表过创新性论文，或业界最新算法的应用实践。\n3. 在ACM、Kaggle等竞赛平台取得靠前名次。\n岗位亮点：\n1. 美团平台搜索推荐，亿级DAU、海量的用户数据、复杂的多业务场景，挑战算法的极限并提升个人技术能力。\n2. 负责大模型和搜索推荐前沿技术研究，基于AI技术对搜索推荐系统进行技术升级和下一代算法架构新范式的探索，拥有广阔的技术创新空间和应用前景。\n3. 充足的计算资源和海量数据，丰富的业务落地场景，场景复杂度高、挑战性大，无需为应用场景和资源操心，快速积累AI在搜推方向的落地经验。\n4. 团队技术卓越，发表多篇顶会论文，技术交流分享氛围浓厚，支持进行前沿技术与业务探索，加入优秀的团队，一起快速成长。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

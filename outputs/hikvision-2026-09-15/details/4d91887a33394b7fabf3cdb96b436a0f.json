@@ -1,0 +1,74 @@
+{
+  "source_job_id": "4d91887a33394b7fabf3cdb96b436a0f",
+  "verified_at": "2026-09-15T01:32:17.396Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=4d91887a33394b7fabf3cdb96b436a0f",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=4d91887a33394b7fabf3cdb96b436a0f&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "d902e51bdf18499cbd88ebb895c06a4c",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "模拟IC设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件电路设计",
+        "techDire": "不限",
+        "postContent": "1、制定模拟集成电路模块的指标定义；\n2、设计仿真模拟集成电路；\n3、测试、验证集成电路模块或芯片的功能与性能；\n4、开展产品项目研发过程中电路或系统相关问题分析与解决。",
+        "postRequire": "1、硕士及以上学历，集成电路、电路与系统、微电子等相关专业；\n2、有模拟集成电路设计基础，基本的数字模块设计基础；\n3、有模拟电路相关项目设计经验，如有CMOS运算放大器、AD/DA、BandGap、LDO、DC-DC或其它模拟电路的设计流片经验；\n4、能使用测试仪器进行模拟集成电路的测试；\n5、良好的英语阅读能力，有较好的沟通力和执行力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "4d91887a33394b7fabf3cdb96b436a0f",
+        "adNeedDept": "海康微影",
+        "specialNotes": null,
+        "createTime": "2026-09-03 14:43:46",
+        "updateTime": "2026-09-03 16:58:53"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "90c6c351efe74968ad2fb731102c3637",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "模拟IC设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件电路设计",
+        "techDire": "不限",
+        "postContent": "1、制定模拟集成电路模块的指标定义；\n2、设计仿真模拟集成电路；\n3、测试、验证集成电路模块或芯片的功能与性能；\n4、开展产品项目研发过程中电路或系统相关问题分析与解决。",
+        "postRequire": "1、硕士及以上学历，集成电路、电路与系统、微电子等相关专业；\n2、有模拟集成电路设计基础，基本的数字模块设计基础；\n3、有模拟电路相关项目设计经验，如有CMOS运算放大器、AD/DA、BandGap、LDO、DC-DC或其它模拟电路的设计流片经验；\n4、能使用测试仪器进行模拟集成电路的测试；\n5、良好的英语阅读能力，有较好的沟通力和执行力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "成都市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "4d91887a33394b7fabf3cdb96b436a0f",
+        "adNeedDept": "海康微影",
+        "specialNotes": null,
+        "createTime": "2026-09-03 14:43:46",
+        "updateTime": "2026-09-03 16:58:53"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

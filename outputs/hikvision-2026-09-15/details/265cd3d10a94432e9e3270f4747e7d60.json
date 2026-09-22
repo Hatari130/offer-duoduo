@@ -1,0 +1,41 @@
+{
+  "source_job_id": "265cd3d10a94432e9e3270f4747e7d60",
+  "verified_at": "2026-09-15T01:31:59.002Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=265cd3d10a94432e9e3270f4747e7d60",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=265cd3d10a94432e9e3270f4747e7d60&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "265cd3d10a94432e9e3270f4747e7d60",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "工装开发工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "工装开发",
+        "techDire": "不限",
+        "postContent": "1、负责工装方案的开发工作，工装结构设计出图；\r\n2、负责工装、夹具的安装、调试，并组织工装验收；\r\n3、优化和改进现有工装方案，降低工装成本，提高工装的适用性；\r\n4、工装夹具相关文档维护。",
+        "postRequire": "1、本科及以上学历，机械电子等相关专业优先；\r\n2、掌握AutoCAD、Pro/E等制图软件及office办公软件；\r\n3、掌握机加工工艺及机械原理，了解材料特性，合理选择材料；\r\n4、责任心强，具有良好的团队合作精神。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:30",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "ae21c9cb970d4fad9f5fa578f719a13c",
+          "name": "供应链",
+          "description": "供应链中心在国内设立了杭州桐庐、杭州滨江、重庆、武汉4大制造基地，在海外设立了印度、巴西、英国3大制造基地，与11大海外区域物流中心。 杭州桐庐制造基地作为国内最大的制造基地，向国内外其他基地输出先进的制造工艺、完善可靠的制造标准，快速交付客户的订单，为全球客户提供优质专业服务。杭州桐庐制造基地入选首批国家级智能制造示范工厂揭榜单位、首批浙江省未来工厂-引领型“头雁工厂”、首批杭州市未来工厂-链主工厂。\n供应链中心具备业内领先的自动化生产能力，自主研发的核心设备及制造系统，拥有从原料来料存储、生产装配、测试、包装到成品分拣运输的端到端自动化能力。生产车间配置了集生产排程、物料管控、品质管理于一体的制造执行系统MES，实现生产状态的全方位监控及实时管理。AGV机器人的投入和仓储管理系统WMS的上线，以及与MES系统的对接，实现了物料配送自动化及仓储管理信息化。"
+        }
+      ]
+    }
+  ]
+}

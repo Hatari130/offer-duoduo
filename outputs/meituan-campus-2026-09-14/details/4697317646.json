@@ -1,0 +1,146 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697317646&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:57.438Z",
+  "data": {
+    "jobUnionId": "4697317646",
+    "name": "AI Agent开发工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG050",
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责 AI Agent 应用的创新架构设计与核心模块研发，构建和优化 Agentic 交互逻辑与智能决策引擎。\n2. 推动 AI Agent 的工程化落地，设计和实现高效的 Agentic 工作流，确保大语言模型及相关能力在实际业务场景中的有效应用与闭环。\n3. 与产品及算法团队紧密协作，深度探索 AI Agent 的创新应用场景，包括但不限于自主 Agent (Autonomous Agents)、多智能体系统 (Multi-Agent Systems) 等，快速验证并落地前瞻性技术原型。\n4. 跟踪 LLM、Agent 及相关AI前沿技术的发展，提出创新性解决方案并应用于实践。\n5. 构建和探索面向 Agent 的评估体系与方法，推动复杂业务场景下 Agent 的持续迭代与性能优化。",
+    "jobRequirement": "1. 对 AGI的未来充满热情，具备强烈的技术好奇心，致力于前沿技术的探索与创新。\n2. 计算机科学或相关专业基础扎实，精通 Python /C++/Java 等至少一门主流编程语言，熟悉 Linux 开发环境及常用工具链。\n3. 具备 AI Agent 及 LLM 工程化能力，精通 Prompt Engineering、RAG、Function Calling/Tool Binding，具备复杂 Agent（如任务规划、工具调用、记忆与学习机制）的设计、开发与调优经验。\n4. 熟悉至少一种主流 Agent开发框架，并有实际项目应用经验。\n5. 学习能力强，能快速跟进并应用Agent 领域的研究成果和开源技术，具备优秀的问题分析与解决能力。\n具备以下条件优先\n1. 具备复杂 Agent 系统（如 Multi-Agent 协作框架、Autonomous Agent）的设计、开发、调试和评估经验。\n2. 有 LLM 微调（Fine-tuning）、量化、部署和推理优化经验，熟悉相关工具和框架。\n3. 有高质量相关领域开源项目贡献或顶会论文发表者优先。\n4. 具备全栈开发能力，能够独立完成 Agent 应用原型的快速构建与验证。\n岗位亮点\n1. 专注 AI Agent 领域的小而精技术团队，团队成员均为经验丰富的行业专家，共同探索 AGI 的前沿方向。\n2. 浓厚的创业氛围与工程师文化，鼓励开放交流、快速迭代和大胆创新，为个人能力提升提供广阔平台。\n3. 深度参与 AI Agent 和 LLM 应用的完整生命周期，从概念到落地，获得该领域的前沿认知和丰富的项目操盘与实践机会。\n4. 有机会参与构建下一代Agentic AI 应用，解决富有挑战性的真实世界问题。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960988000,
+    "refreshTime": 1786960988000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI Agent开发工程师\n应届-校园招聘\n工作地点：北京市、上海市、成都市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责 AI Agent 应用的创新架构设计与核心模块研发，构建和优化 Agentic 交互逻辑与智能决策引擎。\n2. 推动 AI Agent 的工程化落地，设计和实现高效的 Agentic 工作流，确保大语言模型及相关能力在实际业务场景中的有效应用与闭环。\n3. 与产品及算法团队紧密协作，深度探索 AI Agent 的创新应用场景，包括但不限于自主 Agent (Autonomous Agents)、多智能体系统 (Multi-Agent Systems) 等，快速验证并落地前瞻性技术原型。\n4. 跟踪 LLM、Agent 及相关AI前沿技术的发展，提出创新性解决方案并应用于实践。\n5. 构建和探索面向 Agent 的评估体系与方法，推动复杂业务场景下 Agent 的持续迭代与性能优化。\n任职要求\n1. 对 AGI的未来充满热情，具备强烈的技术好奇心，致力于前沿技术的探索与创新。\n2. 计算机科学或相关专业基础扎实，精通 Python /C++/Java 等至少一门主流编程语言，熟悉 Linux 开发环境及常用工具链。\n3. 具备 AI Agent 及 LLM 工程化能力，精通 Prompt Engineering、RAG、Function Calling/Tool Binding，具备复杂 Agent（如任务规划、工具调用、记忆与学习机制）的设计、开发与调优经验。\n4. 熟悉至少一种主流 Agent开发框架，并有实际项目应用经验。\n5. 学习能力强，能快速跟进并应用Agent 领域的研究成果和开源技术，具备优秀的问题分析与解决能力。\n具备以下条件优先\n1. 具备复杂 Agent 系统（如 Multi-Agent 协作框架、Autonomous Agent）的设计、开发、调试和评估经验。\n2. 有 LLM 微调（Fine-tuning）、量化、部署和推理优化经验，熟悉相关工具和框架。\n3. 有高质量相关领域开源项目贡献或顶会论文发表者优先。\n4. 具备全栈开发能力，能够独立完成 Agent 应用原型的快速构建与验证。\n岗位亮点\n1. 专注 AI Agent 领域的小而精技术团队，团队成员均为经验丰富的行业专家，共同探索 AGI 的前沿方向。\n2. 浓厚的创业氛围与工程师文化，鼓励开放交流、快速迭代和大胆创新，为个人能力提升提供广阔平台。\n3. 深度参与 AI Agent 和 LLM 应用的完整生命周期，从概念到落地，获得该领域的前沿认知和丰富的项目操盘与实践机会。\n4. 有机会参与构建下一代Agentic AI 应用，解决富有挑战性的真实世界问题。\n工作城市\n北京市、上海市、成都市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

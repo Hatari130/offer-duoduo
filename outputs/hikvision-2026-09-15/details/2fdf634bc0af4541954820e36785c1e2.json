@@ -1,0 +1,41 @@
+{
+  "source_job_id": "2fdf634bc0af4541954820e36785c1e2",
+  "verified_at": "2026-09-15T01:32:08.797Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=2fdf634bc0af4541954820e36785c1e2",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=2fdf634bc0af4541954820e36785c1e2&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "2fdf634bc0af4541954820e36785c1e2",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "基础大模型算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "岗位职责\n1、参与预训练、监督微调、强化学习等算法研发工作。\n2、负责训练数据的收集过滤、质量评估、合成增强及采样策略设计，持续提升模型数据质量。\n3、参与大模型训练和评测环境建设，探索结构优化、高效计算、RL环境扩展等前沿技术。\n4、围绕模型的知识、推理、编程、长上下文等基础能力，开展专项优化与效果验证。\n5、从数据、训练、结构、推理等方向归纳错误模式和瓶颈，提出系统化优化方案。",
+        "postRequire": "任职要求\n1、熟悉机器学习、深度学习等基础知识，理解 Transformer、Attention等基本原理。\n2、熟练使用 Python，熟悉Megatron-LM、FSDP、vLLM、SGLang等大模型框架，具备一定的 C++、CUDA、Triton 性能优化经验。\n3、具备较强的问题分析和实验能力，具备良好的学习、沟通能力和分享贡献意识\n4、拥有顶会论文（如ACL/ICML/AAAI等）或主导有影响力开源项目的同学优先",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

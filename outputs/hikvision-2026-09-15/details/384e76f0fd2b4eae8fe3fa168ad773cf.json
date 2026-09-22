@@ -1,0 +1,41 @@
+{
+  "source_job_id": "384e76f0fd2b4eae8fe3fa168ad773cf",
+  "verified_at": "2026-09-15T01:32:06.119Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=384e76f0fd2b4eae8fe3fa168ad773cf",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=384e76f0fd2b4eae8fe3fa168ad773cf&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "384e76f0fd2b4eae8fe3fa168ad773cf",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器人运筹优化算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "整数规划/数学规划/智能优化/运筹学",
+        "postContent": "1、负责大型仓储系统（十万级仓位）智能管理算法的迭代优化，包括库存分配、波次出库、仓位管理、智能理库等关键任务；\n2、利用业内最全场景数据集，持续优化工业生产和物流仓储系统的整体效率，提升系统的高效性、柔性、智能性；\n3、跟踪前沿运筹OR领域的算法研究进展和仓储系统技术的更新进展，探索应用前景较大的新技术、新方案，推进算法、方案的迭代和革新。",
+        "postRequire": "1、硕士及以上学历；\n2、掌握Java、Python、C/C++；\n3、掌握CPLEX、Gurobi等至少一种优化工具；\n4、熟悉图论、运筹学、数据挖掘等基础理论与方法；\n5、满足以下至少一项：\n（1）掌握分支定界、动态规划等整数规划精确求解方法，熟悉Knapsack、AP、SCP等问题建模与求解；\n（2）掌握常见的邻域搜索类和种群进化类启发式算法，熟悉TSP、VRP、PDP等问题建模与求解；\n6、具备较好的数据敏感度和问题挖掘能力；\n7、参与过运筹OR相关知名竞赛或重要项目者、或在相关顶会期刊发表论文者优先；\n8、对机器学习、深度/强化学习有较深入的理解与认识，在相关技术方向上有所应用者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "西安市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

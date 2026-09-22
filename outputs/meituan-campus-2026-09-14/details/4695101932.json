@@ -1,0 +1,146 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4695101932&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:42.953Z",
+  "data": {
+    "jobUnionId": "4695101932",
+    "name": "销售运营岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "运营类",
+    "jobFamilyGroup": "业务运营",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "008002001",
+        "name": "科威特城",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "009001001",
+        "name": "利雅得",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG021",
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG031",
+        "name": "核心本地商业-到餐事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG048",
+        "name": "核心本地商业-下沉市场发展部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG047",
+        "name": "核心本地商业-酒店旅行",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG012",
+        "name": "软硬件服务-骑行事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "岗位职责 :\n作为专业化的职能团队，在这里你可以与美团销售铁军紧密配合，为前线业务提供销售策略和运营工作。如果你对以下任意一个方向感兴趣，欢迎网申这个岗位。\n1. 供给策略运营：基于业务策略或项目目标，分析市场需求和竞争环境，拆解落地销售策略，联动各部门（如产品、BA）建资源，保持供给竞争力，支持业务达成目标；\n2. 营销策略运营：基于业务策略、用户需求和商家需求，通过洞察、创意、整合相关站内外流量资源和传播资源，完成营销项目交付，实现业务结果；\n3. 销售数据分析：基于组织整体的分析框架，结合销售策略提供数据支持和分析等，以监控业绩和预测趋势，及时发现机会和问题，促进销售队伍业务规划和理性决策能力的提升；\n4. 销售效能优化：结合业务现状及发展方向，通过制定优化销售标准流程，联动各部门（如产品）建立和持续升级销售及管理工具，以促进销售效率和产能的提升；\n5. 业务培训与沟通：结合销售和商家的能力水平和痛点问题，协同内外部资源，完善培训制度，建设充足的培训资源；搭建和运营内外部官方宣传渠道，提升宣传效果，为销售和商家赋能，助力业务策略落地，提升行业影响力。\n\n其中部分境外岗位面向2025年6月至2027年10月毕业的全球毕业生，如遇系统投递问题，请前往Keeta Careers英文招聘官网投递。",
+    "jobRequirement": "工作要求 :\n1. 本科及以上学历，专业不限； \n2. 能够以客户为中心，保持学习并好奇，积极思考并解决问题；\n3. 具备项目推进管理能力，拥有良好的沟通能力和同理心，推动跨部门协作；\n4. 具备商家需求调研能力，通过市场洞察和深入业务一线，理清达成业务目标的关键因素和动作；\n5. 具备基础运营和数据分析能力，通过数据分析发现业务问题，将一线解决方法标准化、可视化、流程化；\n6. 专业能力加分项\n(1）供给策略运营：熟悉供应链运作模式，能够设计撰写产品需求MRD；\n(2）营销策略运营：具有良好的创造性思维、商业逻辑及市场营销理念，文案写作能力强；\n(3）销售数据分析：熟练应用数据处理分析软件；\n(4）销售效能优化：具备产品或产品运营实习经验，能够设计撰写产品需求MRD；\n(5）业务培训与沟通：擅长知识萃取与信息挖掘转化，具备新媒体内容制作能力。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961009000,
+    "refreshTime": 1786961009000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n销售运营岗\n应届-校园招聘\n工作地点：北京市、科威特城、上海市、利雅...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n岗位职责 :\n作为专业化的职能团队，在这里你可以与美团销售铁军紧密配合，为前线业务提供销售策略和运营工作。如果你对以下任意一个方向感兴趣，欢迎网申这个岗位。\n1. 供给策略运营：基于业务策略或项目目标，分析市场需求和竞争环境，拆解落地销售策略，联动各部门（如产品、BA）建资源，保持供给竞争力，支持业务达成目标；\n2. 营销策略运营：基于业务策略、用户需求和商家需求，通过洞察、创意、整合相关站内外流量资源和传播资源，完成营销项目交付，实现业务结果；\n3. 销售数据分析：基于组织整体的分析框架，结合销售策略提供数据支持和分析等，以监控业绩和预测趋势，及时发现机会和问题，促进销售队伍业务规划和理性决策能力的提升；\n4. 销售效能优化：结合业务现状及发展方向，通过制定优化销售标准流程，联动各部门（如产品）建立和持续升级销售及管理工具，以促进销售效率和产能的提升；\n5. 业务培训与沟通：结合销售和商家的能力水平和痛点问题，协同内外部资源，完善培训制度，建设充足的培训资源；搭建和运营内外部官方宣传渠道，提升宣传效果，为销售和商家赋能，助力业务策略落地，提升行业影响力。\n其中部分境外岗位面向2025年6月至2027年10月毕业的全球毕业生，如遇系统投递问题，请前往Keeta Careers英文招聘官网投递。\n任职要求\n工作要求 :\n1. 本科及以上学历，专业不限；\n2. 能够以客户为中心，保持学习并好奇，积极思考并解决问题；\n3. 具备项目推进管理能力，拥有良好的沟通能力和同理心，推动跨部门协作；\n4. 具备商家需求调研能力，通过市场洞察和深入业务一线，理清达成业务目标的关键因素和动作；\n5. 具备基础运营和数据分析能力，通过数据分析发现业务问题，将一线解决方法标准化、可视化、流程化；\n6. 专业能力加分项\n(1）供给策略运营：熟悉供应链运作模式，能够设计撰写产品需求MRD；\n(2）营销策略运营：具有良好的创造性思维、商业逻辑及市场营销理念，文案写作能力强；\n(3）销售数据分析：熟练应用数据处理分析软件；\n(4）销售效能优化：具备产品或产品运营实习经验，能够设计撰写产品需求MRD；\n(5）业务培训与沟通：擅长知识萃取与信息挖掘转化，具备新媒体内容制作能力。\n工作城市\n北京市、科威特城、上海市、利雅得\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -28,7 +28,7 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/applications/, "个人投递管理"],
   [/^\/app\/resumes\/tailor/, "岗位定制简历"],
   [/^\/app\/resumes\/edit/, "制作简历"],
-  [/^\/app\/resumes/, "简历中心"],
+  [/^\/app\/resumes/, "简历模板"],
   [/^\/app\/practice/, "笔试练习 · 题库与极速秒搜"],
   [/^\/app\/settings/, "设置与设备同步"],
   [/^\/browser-extension/, "浏览器插件"],

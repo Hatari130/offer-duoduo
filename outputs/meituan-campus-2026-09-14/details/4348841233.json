@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348841233&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.115Z",
+  "data": {
+    "jobUnionId": "4348841233",
+    "name": "【基座大模型北斗实习】高性能计算与大模型系统优化",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：参与面向大模型训练/推理的高性能计算与系统优化工作，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、面向GPU/NPU 等多硬件平台的算子开发与极致性能优化(CUDA/Cutlass/TileLang)。\n2、跟踪前沿模型算法并完成高性能工程落地，深入框架层开展算子融合、内存/通信优化、流水编排等系统级性能调优。\n3、探索基于大模型的高性能 Kernel 自动合成技术，参考 LLM-driven Kernel Generation 范式，研究高效 GPU/NPU Kernel 的端到端自动生成与迭代优化方法。\n4、基于DSL（如 Triton、TVM TIR、Halide 等）的编译优化与自动调优技术研究。\n5、多硬件后端（NVIDIA/国产芯片）的统一算子库建设与迁移适配。",
+    "jobRequirement": "1、GPU编程:写过CUDA kernel，理解warp/SM/显存层次结构；\n2、训练框架:用过或改过Megatron/DeepSpeed/FSDP，不只是跑过demo；\n3、通信系统:了解NCCL原理，或有网络协议栈/RDMA相关经验；\n4、编译优化：接触过 XLA/TorchInductor/TVM 等编译器，或做过IR优化；\n5、顶会论文：MLSys/OSDI/SOSP/ATC/ISCA 等系统顶会在手。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223031000,
+    "refreshTime": 1775223031000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】高性能计算与大模型系统优化\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：参与面向大模型训练/推理的高性能计算与系统优化工作，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、面向GPU/NPU 等多硬件平台的算子开发与极致性能优化(CUDA/Cutlass/TileLang)。\n2、跟踪前沿模型算法并完成高性能工程落地，深入框架层开展算子融合、内存/通信优化、流水编排等系统级性能调优。\n3、探索基于大模型的高性能 Kernel 自动合成技术，参考 LLM-driven Kernel Generation 范式，研究高效 GPU/NPU Kernel 的端到端自动生成与迭代优化方法。\n4、基于DSL（如 Triton、TVM TIR、Halide 等）的编译优化与自动调优技术研究。\n5、多硬件后端（NVIDIA/国产芯片）的统一算子库建设与迁移适配。\n任职要求\n1、GPU编程:写过CUDA kernel，理解warp/SM/显存层次结构；\n2、训练框架:用过或改过Megatron/DeepSpeed/FSDP，不只是跑过demo；\n3、通信系统:了解NCCL原理，或有网络协议栈/RDMA相关经验；\n4、编译优化：接触过 XLA/TorchInductor/TVM 等编译器，或做过IR优化；\n5、顶会论文：MLSys/OSDI/SOSP/ATC/ISCA 等系统顶会在手。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

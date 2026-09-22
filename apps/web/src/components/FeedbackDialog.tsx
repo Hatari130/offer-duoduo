@@ -120,7 +120,7 @@ export function FeedbackDialog({ open, onClose, pagePath }: { open: boolean; onC
               autoFocus
               aria-invalid={Boolean(error)}
               aria-describedby={error ? `${formId}-error` : `${formId}-hint`}
-              placeholder="例如：我希望简历中心可以……；在这个页面我遇到了……"
+              placeholder="例如：我希望简历模板可以……；在这个页面我遇到了……"
               onChange={(event) => setContent(event.target.value)}
             />
             <small id={`${formId}-hint`}>写得越具体，越有机会进入下一轮改进。</small>

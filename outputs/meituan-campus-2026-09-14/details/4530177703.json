@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4530177703&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:45.192Z",
+  "data": {
+    "jobUnionId": "4530177703",
+    "name": "【北斗】大模型训推引擎工程师（后训练/推理方向）",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "方向一：面向Agent RL的LLM分布式后训练系统\n1.多模态与超长上下文训练优化：针对万级以上超长序列（Long Context）及多模态输入，研究高效的上下文并行（CP/SP）、序列并行策略及分布式通信拓扑，优化内存足迹，支撑长文本与复杂多模态后训练。\n2.计算资源弹性调度与容错容灾：研究超大规模集群下的弹性训练技术（Elastic Training），实现节点动态加入/退出、无感故障自动恢复（Fault Tolerance）与训练超参数自动寻优，提升集群算力有效利用率（MFU）。\n3.Agent RL算法基础设施：构建面向Agent强化学习的高效Rollout引擎、多模型（Policy/Value/Reward/Reference）多阶段流水线编排及动态负载均衡机制；设计并建设支持高并发、低延迟的工具调用（Tool-use）虚拟环境/沙箱模拟器交互系统。\n4.训推一致性协同设计（Co-design）：打通训练与推理底层架构，研究在后训练阶段（如在线RL、Iterative DPO）如何实现训练框架与高性能推理引擎的深度融合，降低在线反馈延迟，实现训推一体化高效演进。\n方向二：大模型高效推理与加速技术\n1.面向Agent场景的动态推理架构：针对Agent多轮对话、工具调用等复杂交互带来的极致动态性，研究智能KV Cache管理优化策略（如动态复用、分级存储、长短时记忆重组），解决长序列及高并发下的显存瓶颈。\n2.极致模型压缩：研究前沿的模型压缩技术，包括先进的高比例量化（INT4/FP4/低比特混合精度）、结构化/非结构化稀疏（Sparsity），并开发对应的硬件友好型Mega算子，压榨硬件极限性能。\n3.下一代投机采样技术： 深入研究并落地最前沿的解码加速技术，包括Draft-Target分离部署架构、Structured Speculative Decoding等异构投机采样方案；探索多Token预测（MTP）在线联合验证、无轻量模型依赖的自投机（Self-Speculative）等免草稿模型加速路径。\n4.前沿推理系统深度开发：跟踪并引领AI Infra业界最新进展，深度参与并优化主流开源推理框架，进行架构级的核心代码重构、极致的通信优化与算子融合，推动最新infra成果在核心业务的高效落地。",
+    "jobRequirement": "【任职资格】\n必备项：\n1.2027届本科及以上学历，计算机、人工智能等相关专业；\n2.具备良好的计算机基础素养和分析解决问题的能力，熟练掌握C/C++或Python编程语言；\n3.学习能力强，对AI Infra方向有技术热情，富有极客精神；\n4.具备扎实的机器学习和深度学习基础，熟悉GPU、NPU硬件架构，熟悉CUDA，CCL，RDMA或者任意机器学习DSL；\n5.具有良好的沟通协作能力，工作积极主动。\n加分项：\n1.具备有影响力的大规模分布式系统、高性能计算项目经验；\n2.在OSDI、SOSP、NSDI、MLSys、ICML、ICLR、NeurIPS等等顶级会议上有论文发表；\n3.在高影响力开源项目（如vLLM/SGLang/Megatron/verl等）有核心代码贡献。\n【愿景】\n打造全球领先的本地生活智能平台，让每一次搜索和推荐都精准理解用户需求，从被动匹配走向主动认知推理。我们致力于成为大模型在搜索与推荐场景落地的标杆团队，推动行业从传统深度模型向生成式智能的范式跃迁，用AI能力重新定义下一代生活服务入口。\n【为什么是我们】\n1.顶级算力资源：超大规模GPU集群，充足的算力支持你的大胆想法；\n2.极致技术挑战：工作内容直面AI Infra方向最前沿的技术问题；\n3.强化开源影响：支持深度参与AI Infra方向顶级开源项目，建设开源社区影响力；\n4.开放研究氛围：鼓励论文发表，支持参加顶会，与学术界保持紧密合作。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459810000,
+    "refreshTime": 1780459810000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】大模型训推引擎工程师（后训练/推理方向）\n应届-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n方向一：面向Agent RL的LLM分布式后训练系统\n1.多模态与超长上下文训练优化：针对万级以上超长序列（Long Context）及多模态输入，研究高效的上下文并行（CP/SP）、序列并行策略及分布式通信拓扑，优化内存足迹，支撑长文本与复杂多模态后训练。\n2.计算资源弹性调度与容错容灾：研究超大规模集群下的弹性训练技术（Elastic Training），实现节点动态加入/退出、无感故障自动恢复（Fault Tolerance）与训练超参数自动寻优，提升集群算力有效利用率（MFU）。\n3.Agent RL算法基础设施：构建面向Agent强化学习的高效Rollout引擎、多模型（Policy/Value/Reward/Reference）多阶段流水线编排及动态负载均衡机制；设计并建设支持高并发、低延迟的工具调用（Tool-use）虚拟环境/沙箱模拟器交互系统。\n4.训推一致性协同设计（Co-design）：打通训练与推理底层架构，研究在后训练阶段（如在线RL、Iterative DPO）如何实现训练框架与高性能推理引擎的深度融合，降低在线反馈延迟，实现训推一体化高效演进。\n方向二：大模型高效推理与加速技术\n1.面向Agent场景的动态推理架构：针对Agent多轮对话、工具调用等复杂交互带来的极致动态性，研究智能KV Cache管理优化策略（如动态复用、分级存储、长短时记忆重组），解决长序列及高并发下的显存瓶颈。\n2.极致模型压缩：研究前沿的模型压缩技术，包括先进的高比例量化（INT4/FP4/低比特混合精度）、结构化/非结构化稀疏（Sparsity），并开发对应的硬件友好型Mega算子，压榨硬件极限性能。\n3.下一代投机采样技术： 深入研究并落地最前沿的解码加速技术，包括Draft-Target分离部署架构、Structured Speculative Decoding等异构投机采样方案；探索多Token预测（MTP）在线联合验证、无轻量模型依赖的自投机（Self-Speculative）等免草稿模型加速路径。\n4.前沿推理系统深度开发：跟踪并引领AI Infra业界最新进展，深度参与并优化主流开源推理框架，进行架构级的核心代码重构、极致的通信优化与算子融合，推动最新infra成果在核心业务的高效落地。\n任职要求\n【任职资格】\n必备项：\n1.2027届本科及以上学历，计算机、人工智能等相关专业；\n2.具备良好的计算机基础素养和分析解决问题的能力，熟练掌握C/C++或Python编程语言；\n3.学习能力强，对AI Infra方向有技术热情，富有极客精神；\n4.具备扎实的机器学习和深度学习基础，熟悉GPU、NPU硬件架构，熟悉CUDA，CCL，RDMA或者任意机器学习DSL；\n5.具有良好的沟通协作能力，工作积极主动。\n加分项：\n1.具备有影响力的大规模分布式系统、高性能计算项目经验；\n2.在OSDI、SOSP、NSDI、MLSys、ICML、ICLR、NeurIPS等等顶级会议上有论文发表；\n3.在高影响力开源项目（如vLLM/SGLang/Megatron/verl等）有核心代码贡献。\n【愿景】\n打造全球领先的本地生活智能平台，让每一次搜索和推荐都精准理解用户需求，从被动匹配走向主动认知推理。我们致力于成为大模型在搜索与推荐场景落地的标杆团队，推动行业从传统深度模型向生成式智能的范式跃迁，用AI能力重新定义下一代生活服务入口。\n【为什么是我们】\n1.顶级算力资源：超大规模GPU集群，充足的算力支持你的大胆想法；\n2.极致技术挑战：工作内容直面AI Infra方向最前沿的技术问题；\n3.强化开源影响：支持深度参与AI Infra方向顶级开源项目，建设开源社区影响力；\n4.开放研究氛围：鼓励论文发表，支持参加顶会，与学术界保持紧密合作。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

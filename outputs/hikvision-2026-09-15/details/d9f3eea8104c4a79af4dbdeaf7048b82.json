@@ -1,0 +1,41 @@
+{
+  "source_job_id": "d9f3eea8104c4a79af4dbdeaf7048b82",
+  "verified_at": "2026-09-15T01:32:07.658Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=d9f3eea8104c4a79af4dbdeaf7048b82",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=d9f3eea8104c4a79af4dbdeaf7048b82&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "d9f3eea8104c4a79af4dbdeaf7048b82",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "配置管理工程师",
+        "postAdSn": "测试/支撑类",
+        "postStdSubSn": "配置管理",
+        "techDire": "不限",
+        "postContent": "1、实施项目或组织级配置管理活动；\n2、负责SWMS/iCoding等配置管理工具的应用支持；\n3、参与持续集成相关工作，并持续优化和改进持续集成平台；\n4、参与软件效能平台的建设工作，为研发提供一流的软件效能服务。",
+        "postRequire": "1、本科学历，计算机、通信及电子类专业优先；\n2、了解SVN/GIT等配置管理工具的配置和使用；\n3、具备Windows、Linux服务器相关知识；\n4、熟悉软件工程基本思想、CMMI及产品开发过程；\n5、具有良好的表达沟通能力，工作细致，责任心强，良好的团队意识；\n5、熟悉软件工程基本思想、CMMI及产品开发过程；\n6、有实际开发或持续集成实施经验者优先考虑；\n7、具有良好的表达沟通能力，工作细致，责任心强，良好的团队意识。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:20",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "85d5f2081a3547bcbad313f471a2ea8a",
+          "name": "质量管理",
+          "description": "质量管理部是全公司质量活动常务执行机构，以“成就客户，创见卓越”为核心，聚焦推动公司管理体系集成化、产品质量风险控制智能化、研发管理数智化等工作的不断完善和建设，主要负责公司产品质量管理、研发管理、体系建设等工作。海康威视以“构建数智时代高质量竞争力”为质量战略，搭建了管理体系、能力&文化、工具方法为三角驱动的质量管理模式，并在2016年获得“2015年杭州市政府质量奖”，2020年获得“2019年浙江省人民政府质量奖”，2021年获得“第四届中国质量奖提名奖”，2024年进入第五届中国质量奖建议名单等荣誉。"
+        }
+      ]
+    }
+  ]
+}

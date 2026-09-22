@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348820765&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.035Z",
+  "data": {
+    "jobUnionId": "4348820765",
+    "name": "【基座大模型北斗实习】大模型架构研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：大模型架构优化探索，算法工程协同设计，涉及到训练和推理的各类算法和工程策略探索落地。参与美团基座大模型项目，包含但不限于：\n1、大模型高效架构设计探索（高效attention，moe架构等）。\n2、预训练 / 后训练算法工程策略。\n3、投机推理算法工程策略。\n4、模型轻量化策略（剪枝，量化，稀疏，蒸馏，结构搜索等） 。\n5、Agentic coding系统优化策略。",
+    "jobRequirement": "1、熟悉一些常用的深度学习框架和大规模训推框架（比如megatron，verl，vllm，sglang等等），在大模型上有训练和推理算法工程优化实际经验的优先；\n2、熟悉机器学习和深度学习理论，具备扎实的编程能力，熟悉常见的主流大模型架构；\n3、有大模型或机器学习相关顶会论文发表，特别是模型架构优化，训推策略相关的算法或工程论文优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223031000,
+    "refreshTime": 1775223031000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大模型架构研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：大模型架构优化探索，算法工程协同设计，涉及到训练和推理的各类算法和工程策略探索落地。参与美团基座大模型项目，包含但不限于：\n1、大模型高效架构设计探索（高效attention，moe架构等）。\n2、预训练 / 后训练算法工程策略。\n3、投机推理算法工程策略。\n4、模型轻量化策略（剪枝，量化，稀疏，蒸馏，结构搜索等） 。\n5、Agentic coding系统优化策略。\n任职要求\n1、熟悉一些常用的深度学习框架和大规模训推框架（比如megatron，verl，vllm，sglang等等），在大模型上有训练和推理算法工程优化实际经验的优先；\n2、熟悉机器学习和深度学习理论，具备扎实的编程能力，熟悉常见的主流大模型架构；\n3、有大模型或机器学习相关顶会论文发表，特别是模型架构优化，训推策略相关的算法或工程论文优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

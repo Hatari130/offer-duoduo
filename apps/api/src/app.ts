@@ -1206,6 +1206,12 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      // Device sessions are for application tracking. Legacy extensions must
+      // not upload, download or delete independently managed web resumes.
+      if (authenticatedSession.scope === "device" && /^\/v1\/(?:resume-templates|resume-versions|tailor-tasks)(?:\/|$)/.test(path)) {
+        throw new HttpError(403, "WEB_RESUMES_ONLY", "简历模板已与本地网申资料分离，请在网页管理简历并更新插件");
+      }
+
       if (method === "POST" && path === "/v1/tailor-tasks") {
         const body = (await readJson(request)) as CreateTailorTaskRequest;
         if (!isCreateTailorTaskRequest(body)) {

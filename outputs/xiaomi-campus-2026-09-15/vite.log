@@ -1,0 +1,75 @@
+
+  VITE v6.4.3  ready in 1192 ms
+
+  ➜  Local:   http://127.0.0.1:5180/
+  ➜  press h + enter to show help
+22:27:04 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+22:27:04 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+22:27:04 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+22:27:04 [vite] (client) page reload src/previews/job-discovery/main.tsx
+22:27:29 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+22:27:29 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+22:27:29 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:19:13 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:19:13 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:19:14 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:19:14 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:21:57 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:21:57 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:21:57 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:21:57 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:22:18 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:22:18 [vite] (client) hmr update /src/previews/job-discovery/style.css
+23:22:18 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:22:18 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:22:53 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:22:53 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:22:53 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:23:11 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:23:11 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:23:11 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:24:15 [vite] (client) hmr update /src/previews/job-discovery/style.css
+23:30:08 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:30:08 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:30:08 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:32:08 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:32:08 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:32:09 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:32:09 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:32:09 [vite] (client) page reload src/previews/job-discovery/main.tsx
+23:48:24 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+23:48:25 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+23:48:25 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:36:11 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:36:11 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:36:11 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:36:40 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:36:40 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:36:40 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:37:31 [vite] (client) hmr update /src/previews/job-discovery/style.css
+00:39:59 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:39:59 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:39:59 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:41:58 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:41:58 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:41:58 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:42:50 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:42:50 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:42:50 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:43:20 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:44:28 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:44:28 [vite] (client) hmr update /src/previews/job-discovery/style.css
+00:44:53 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:46:15 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:46:15 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:46:15 [vite] (client) page reload src/previews/job-discovery/main.tsx
+00:46:38 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+00:46:38 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+00:46:38 [vite] (client) page reload src/previews/job-discovery/main.tsx
+15:29:51 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+15:29:52 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+15:29:52 [vite] (client) page reload src/previews/job-discovery/main.tsx
+15:31:22 [vite] (client) hmr update /src/previews/job-discovery/main.tsx
+15:31:22 [vite] (client) hmr update /src/previews/job-discovery/style.css
+15:31:22 [vite] (client) hmr invalidate /src/previews/job-discovery/main.tsx Could not Fast Refresh ("true" export is incompatible). Learn more at https://github.com/vitejs/vite-plugin-react/tree/main/packages/plugin-react#consistent-components-exports
+15:31:22 [vite] (client) page reload src/previews/job-discovery/main.tsx

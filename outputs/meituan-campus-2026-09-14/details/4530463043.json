@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4530463043&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:44.936Z",
+  "data": {
+    "jobUnionId": "4530463043",
+    "name": "【北斗】推荐大模型算法工程师",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【愿景】\n美团推荐系统日均处理数十亿次请求，是国内规模最大、场景最复杂的本地生活推荐引擎之一。当 Scaling Law 在语言模型上的成功已被充分验证，推荐系统正站在同等量级的范式跃迁临界点——我们已经落地了MTGR等具有影响力的推荐大模型成果；我们正在做的，是让推荐系统进一步进化，构建下一代生成式Agentic推荐系统。\n【你将参与】\n1.生成式推荐建模：探索具有 Scale Up 属性的端到端生成式推荐架构，突破传统判别式模型的效果天花板，对用户行为序列进行深度建模，全方位挖掘用户兴趣。\n2.算法与工程协同：通过算法与系统的协同设计显著提升推荐链路 MFU 水平，解决大参数量模型在毫秒级在线服务下的效果-性能平衡难题。\n3.Agentic Recommendation：打破传统协同过滤的被动匹配局限，设计具备领域专家经验、推理能力与主动规划能力的推荐 Agent，探索意图理解驱动的下一代推荐范式。",
+    "jobRequirement": "【任职资格】\n必要条件：\n1.2027届本科及以上学历，计算机/人工智能/统计学等相关专业；\n2.具备扎实的机器学习与深度学习理论基础；\n3.具有优秀的科研能力与工程实现能力，在搜索、推荐、广告或者大模型等方向具备有影响力的研究和落地成果。\n加分项：\n1.在 WWW/KDD/SIGIR/NeurIPS/ICML/ICLR 等顶会有较为丰富的论文成果；\n2.ACM/ICPC、Kaggle 等竞赛获奖经历。\n【为什么是我们】\n1.顶级算力与数据：千卡 GPU 集群 + 亿级真实用户行为数据直接业务影响；\n2.服务于美团全平台亿级用户，技术价值即刻可见跨领域研究前沿；\n3.LLM × Recommendation 是当前最前沿的交叉研究方向，与学术界保持深度合作成长赛道稀缺；\n4.推荐大模型复合人才极度稀缺，在此领域积累的竞争壁垒将成为职业发展的强力护城河。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459810000,
+    "refreshTime": 1780459810000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】推荐大模型算法工程师\n应届-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【愿景】\n美团推荐系统日均处理数十亿次请求，是国内规模最大、场景最复杂的本地生活推荐引擎之一。当 Scaling Law 在语言模型上的成功已被充分验证，推荐系统正站在同等量级的范式跃迁临界点——我们已经落地了MTGR等具有影响力的推荐大模型成果；我们正在做的，是让推荐系统进一步进化，构建下一代生成式Agentic推荐系统。\n【你将参与】\n1.生成式推荐建模：探索具有 Scale Up 属性的端到端生成式推荐架构，突破传统判别式模型的效果天花板，对用户行为序列进行深度建模，全方位挖掘用户兴趣。\n2.算法与工程协同：通过算法与系统的协同设计显著提升推荐链路 MFU 水平，解决大参数量模型在毫秒级在线服务下的效果-性能平衡难题。\n3.Agentic Recommendation：打破传统协同过滤的被动匹配局限，设计具备领域专家经验、推理能力与主动规划能力的推荐 Agent，探索意图理解驱动的下一代推荐范式。\n任职要求\n【任职资格】\n必要条件：\n1.2027届本科及以上学历，计算机/人工智能/统计学等相关专业；\n2.具备扎实的机器学习与深度学习理论基础；\n3.具有优秀的科研能力与工程实现能力，在搜索、推荐、广告或者大模型等方向具备有影响力的研究和落地成果。\n加分项：\n1.在 WWW/KDD/SIGIR/NeurIPS/ICML/ICLR 等顶会有较为丰富的论文成果；\n2.ACM/ICPC、Kaggle 等竞赛获奖经历。\n【为什么是我们】\n1.顶级算力与数据：千卡 GPU 集群 + 亿级真实用户行为数据直接业务影响；\n2.服务于美团全平台亿级用户，技术价值即刻可见跨领域研究前沿；\n3.LLM × Recommendation 是当前最前沿的交叉研究方向，与学术界保持深度合作成长赛道稀缺；\n4.推荐大模型复合人才极度稀缺，在此领域积累的竞争壁垒将成为职业发展的强力护城河。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,36 @@
+{
+  "source_total": 116,
+  "list_rows": 116,
+  "unique_list_jobs": 116,
+  "detail_records": 116,
+  "normalized_jobs": 116,
+  "duplicate_source_job_ids": [],
+  "commitment_counts": {
+    "校招": 116
+  },
+  "intern_filter_count": 0,
+  "intern_filter_note": "用户指定入口 ?intern=1 对应官网“实习生”分类，官方 API 返回 0 条；顺丰目前主推 2027 届秋季校园招聘应届生岗位（共 116 条），已全量采录并保留证据。",
+  "department_counts": {
+    "顺丰本部": 48,
+    "顺丰科技": 24,
+    "顺丰分公司": 25,
+    "顺丰航空": 19
+  },
+  "direction_counts": {
+    "管培生类": 2,
+    "研发类": 28,
+    "职能类": 60,
+    "经营管理类": 11,
+    "航空类": 15
+  },
+  "missing": {
+    "jd": 0,
+    "published_at": 0,
+    "locations": 0,
+    "education_requirement": 0
+  },
+  "failures": [],
+  "source_url": "https://campus.sf-express.com/#/positionList?intern=1",
+  "started_at": "2026-09-15T15:44:41.438Z",
+  "completed_at": "2026-09-15T15:45:01.368Z"
+}

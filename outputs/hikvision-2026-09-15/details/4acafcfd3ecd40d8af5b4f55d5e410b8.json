@@ -1,0 +1,41 @@
+{
+  "source_job_id": "4acafcfd3ecd40d8af5b4f55d5e410b8",
+  "verified_at": "2026-09-15T01:32:00.293Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=4acafcfd3ecd40d8af5b4f55d5e410b8",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=4acafcfd3ecd40d8af5b4f55d5e410b8&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "4acafcfd3ecd40d8af5b4f55d5e410b8",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "采购专员",
+        "postAdSn": "供应链类",
+        "postStdSubSn": "采购执行",
+        "techDire": "不限",
+        "postContent": "1、负责生产性物料（结构件、电子料、机电）的采购执行工作；\r\n2、负责订单下达、跟进、异常问题处理，确保物料交付；\r\n3、供应商的辅导、管理、考核；\r\n4、协调计划、供应商，制定未来几个月的需求预测。",
+        "postRequire": "1、本科及以上学历，理工类专业优先；\n2、如有辅修/了解业务相关的财务、法律等专业知识更佳；\n3、学生干部优先，责任心和执行力强，良好的沟通协调能力、风险控制能力；\n4、较好的英语读写能力。\n注：【供应链】岗位的工作地点为杭州（含桐庐）、武汉、重庆",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:30",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "ae21c9cb970d4fad9f5fa578f719a13c",
+          "name": "供应链",
+          "description": "供应链中心在国内设立了杭州桐庐、杭州滨江、重庆、武汉4大制造基地，在海外设立了印度、巴西、英国3大制造基地，与11大海外区域物流中心。 杭州桐庐制造基地作为国内最大的制造基地，向国内外其他基地输出先进的制造工艺、完善可靠的制造标准，快速交付客户的订单，为全球客户提供优质专业服务。杭州桐庐制造基地入选首批国家级智能制造示范工厂揭榜单位、首批浙江省未来工厂-引领型“头雁工厂”、首批杭州市未来工厂-链主工厂。\n供应链中心具备业内领先的自动化生产能力，自主研发的核心设备及制造系统，拥有从原料来料存储、生产装配、测试、包装到成品分拣运输的端到端自动化能力。生产车间配置了集生产排程、物料管控、品质管理于一体的制造执行系统MES，实现生产状态的全方位监控及实时管理。AGV机器人的投入和仓储管理系统WMS的上线，以及与MES系统的对接，实现了物料配送自动化及仓储管理信息化。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "source_job_id": "257ba28a2de544d6b6222cf98b6975b7",
+  "verified_at": "2026-09-15T01:32:20.670Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=257ba28a2de544d6b6222cf98b6975b7",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=257ba28a2de544d6b6222cf98b6975b7&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "1e631921dc0844618edc6ef6550dc4bd",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "钣金结构设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "结构",
+        "techDire": "不限",
+        "postContent": "1、主导新产品开发设计、试制阶段加工可行性分析、成本评估以及质量标准的确认；\n2、根据研发提供的产品三维图纸进行结构DFM分析，结构工艺方案确定，并转化输出成生产工艺图纸；\n3、新产品开发手板、试制阶段对生产端提供技术支持，处理现场结构异常，落实产品试制缺陷的闭环，保证产品顺利量产；\n4、主导新业务新项目的产品结构方案评估，制定新产品钣金质量标准；\n5、对量产产品结构的持续优化，提升产品质量，降低生产制造成本。",
+        "postRequire": "1、本科及以上学历，机械设计、机械制造、机电一体化等相关专业；\n2、了解塑料件，压铸件等各种工艺，熟悉钣金加工、机械加工工艺；\n3、熟练使用Creo、CAD等设计软件及常用办公软件；\n4、善于学习，有良好的沟通能力和团队合作意识，具备创新精神和抗压能力，责任心强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "257ba28a2de544d6b6222cf98b6975b7",
+        "adNeedDept": "供应链",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:30",
+        "updateTime": "2026-08-20 17:09:49"
+      },
+      "departments": [
+        {
+          "id": "ae21c9cb970d4fad9f5fa578f719a13c",
+          "name": "供应链",
+          "description": "供应链中心在国内设立了杭州桐庐、杭州滨江、重庆、武汉4大制造基地，在海外设立了印度、巴西、英国3大制造基地，与11大海外区域物流中心。 杭州桐庐制造基地作为国内最大的制造基地，向国内外其他基地输出先进的制造工艺、完善可靠的制造标准，快速交付客户的订单，为全球客户提供优质专业服务。杭州桐庐制造基地入选首批国家级智能制造示范工厂揭榜单位、首批浙江省未来工厂-引领型“头雁工厂”、首批杭州市未来工厂-链主工厂。\n供应链中心具备业内领先的自动化生产能力，自主研发的核心设备及制造系统，拥有从原料来料存储、生产装配、测试、包装到成品分拣运输的端到端自动化能力。生产车间配置了集生产排程、物料管控、品质管理于一体的制造执行系统MES，实现生产状态的全方位监控及实时管理。AGV机器人的投入和仓储管理系统WMS的上线，以及与MES系统的对接，实现了物料配送自动化及仓储管理信息化。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "4d43062adbe3482d9c92377dad5b1d89",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "钣金结构设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "结构",
+        "techDire": "不限",
+        "postContent": "1、主导新产品开发设计、试制阶段加工可行性分析、成本评估以及质量标准的确认；\n2、根据研发提供的产品三维图纸进行结构DFM分析，结构工艺方案确定，并转化输出成生产工艺图纸；\n3、新产品开发手板、试制阶段对生产端提供技术支持，处理现场结构异常，落实产品试制缺陷的闭环，保证产品顺利量产；\n4、主导新业务新项目的产品结构方案评估，制定新产品钣金质量标准；\n5、对量产产品结构的持续优化，提升产品质量，降低生产制造成本。",
+        "postRequire": "1、本科及以上学历，机械设计、机械制造、机电一体化等相关专业；\n2、了解塑料件，压铸件等各种工艺，熟悉钣金加工、机械加工工艺；\n3、熟练使用Creo、CAD等设计软件及常用办公软件；\n4、善于学习，有良好的沟通能力和团队合作意识，具备创新精神和抗压能力，责任心强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "257ba28a2de544d6b6222cf98b6975b7",
+        "adNeedDept": "海康睿影",
+        "specialNotes": null,
+        "createTime": "2026-08-20 09:16:50",
+        "updateTime": "2026-08-20 17:09:49"
+      },
+      "departments": [
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

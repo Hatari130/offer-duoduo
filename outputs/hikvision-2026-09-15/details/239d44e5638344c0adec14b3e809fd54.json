@@ -1,0 +1,41 @@
+{
+  "source_job_id": "239d44e5638344c0adec14b3e809fd54",
+  "verified_at": "2026-09-15T01:32:05.607Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=239d44e5638344c0adec14b3e809fd54",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=239d44e5638344c0adec14b3e809fd54&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "239d44e5638344c0adec14b3e809fd54",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "人力资源专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "综合人力资源/HRBP",
+        "techDire": "不限",
+        "postContent": "1、负责招聘、培训、任职资格、人才测评、薪酬、绩效、员工关系等人力资源日常工作的交付；\n2、协助HRBP了解业务部门需求，分析数据，制定简单的人力资源解决方案，并执行落实。",
+        "postRequire": "1、本科及以上学历，管理类、心理学类相关专业优先；\n2、对人力资源工作感兴趣，愿意在人力资源领域长期发展；\n3、具备良好的人际理解和沟通表达能力；\n4、具备良好的问题分析和解决能力；\n5、具备良好的团队协作和抗压能力，责任心强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

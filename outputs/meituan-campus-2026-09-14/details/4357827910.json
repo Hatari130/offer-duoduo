@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4357827910&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:51.074Z",
+  "data": {
+    "jobUnionId": "4357827910",
+    "name": "【基座大模型北斗实习】Agentic Foundation Model 学习范式前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "随着大语言模型从通用问答走向复杂任务执行，Agent能力正成为模型演进的关键方向。传统大模型虽具备海量知识，但面对复杂任务的自主规划、工具调用及长期记忆管理时，往往难以应对。本课题旨在探索Midtrain这一关键阶段，推动通用基座模型向原生Agentic Foundation Model演进，为构建下一代自主智能体提供坚实的底座支持。\n1. 大规模高质量数据体系与合成数据建设\n数据体系构建：建设 Trillion 级别的大规模跨模态数据处理与合成链路。负责从训练数据获取到配比建模的全流程优化\n合成方法演进：探索大规模合成数据 (Synthetic Data) 与自蒸馏 (Self-distillation) 技术，制定合成数据应用策略\n理论探索：研究Data Scaling Laws，解决数据扩展中的模型坍塌（Model Collapse）与多样性瓶颈问题，通过课程学习（Curriculum Learning）等训练策略，显著优化Token/FLOPs转化效率\n2. 长上下文 (Long Context) 与高效架构演进\n长窗口突破: 持续Scaling Up模型的Context Length，优化超长上下文机制，重点提升LongCat基座模型在长上下文上的表现\n架构优化:  探索并验证MoE（混合专家）、稀疏注意力（Sparse Attention）、线性注意力等模型结构；结合剪枝与稀疏化技术，协同优化训练与推理效率，提升超长上下文场景下的效率\n上下文管理:  探索逐轮次和跨多轮次的上下文管理方法，并建立对应评测体系，从而减少冗余信息堆叠，实现高效思考和性能提升\n3. 多模态能力融合与 Agent 赋能\n模态融合：探索多模态预训练新范式，突破模态融合瓶颈。利用多模态扩展定律指导数据与训练方案，提升模型在多模态交互场景下的原生能力\n复杂场景落地：面向 Agent、具身智能等前沿场景，提升模型的多模态指令遵循与复杂任务规划能力\n4. 下一代训练范式与前沿技术探索\n自进化机制：协同上下游团队，探索模型自进化（Self-evolution）机制，研究RL在Mid-training阶段的应用\n能力扩展：研究推理阶段扩展（Test-time Scaling）及全模态链式思维（Omni-modal CoT），推动模型从单纯的“知识记忆”向“深度推理与问题解决”演进",
+    "jobRequirement": "1. 硕士及以上学历，计算机、人工智能、数学、自然语言处理等相关专业，博士优先；\n2. 具备扎实的算法和数学理论基础及良好的编程基础，熟悉Python、Java等至少一种编程语言，熟悉PyTorch等深度学习框架；\n3. 在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n4. 在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775553138000,
+    "refreshTime": 1775553138000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】Agentic Foundation Model 学习范式前沿研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n随着大语言模型从通用问答走向复杂任务执行，Agent能力正成为模型演进的关键方向。传统大模型虽具备海量知识，但面对复杂任务的自主规划、工具调用及长期记忆管理时，往往难以应对。本课题旨在探索Midtrain这一关键阶段，推动通用基座模型向原生Agentic Foundation Model演进，为构建下一代自主智能体提供坚实的底座支持。\n1. 大规模高质量数据体系与合成数据建设\n数据体系构建：建设 Trillion 级别的大规模跨模态数据处理与合成链路。负责从训练数据获取到配比建模的全流程优化\n合成方法演进：探索大规模合成数据 (Synthetic Data) 与自蒸馏 (Self-distillation) 技术，制定合成数据应用策略\n理论探索：研究Data Scaling Laws，解决数据扩展中的模型坍塌（Model Collapse）与多样性瓶颈问题，通过课程学习（Curriculum Learning）等训练策略，显著优化Token/FLOPs转化效率\n2. 长上下文 (Long Context) 与高效架构演进\n长窗口突破: 持续Scaling Up模型的Context Length，优化超长上下文机制，重点提升LongCat基座模型在长上下文上的表现\n架构优化: 探索并验证MoE（混合专家）、稀疏注意力（Sparse Attention）、线性注意力等模型结构；结合剪枝与稀疏化技术，协同优化训练与推理效率，提升超长上下文场景下的效率\n上下文管理: 探索逐轮次和跨多轮次的上下文管理方法，并建立对应评测体系，从而减少冗余信息堆叠，实现高效思考和性能提升\n3. 多模态能力融合与 Agent 赋能\n模态融合：探索多模态预训练新范式，突破模态融合瓶颈。利用多模态扩展定律指导数据与训练方案，提升模型在多模态交互场景下的原生能力\n复杂场景落地：面向 Agent、具身智能等前沿场景，提升模型的多模态指令遵循与复杂任务规划能力\n4. 下一代训练范式与前沿技术探索\n自进化机制：协同上下游团队，探索模型自进化（Self-evolution）机制，研究RL在Mid-training阶段的应用\n能力扩展：研究推理阶段扩展（Test-time Scaling）及全模态链式思维（Omni-modal CoT），推动模型从单纯的“知识记忆”向“深度推理与问题解决”演进\n任职要求\n1. 硕士及以上学历，计算机、人工智能、数学、自然语言处理等相关专业，博士优先；\n2. 具备扎实的算法和数学理论基础及良好的编程基础，熟悉Python、Java等至少一种编程语言，熟悉PyTorch等深度学习框架；\n3. 在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n4. 在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

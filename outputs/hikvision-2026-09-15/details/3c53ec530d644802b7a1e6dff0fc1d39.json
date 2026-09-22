@@ -1,0 +1,74 @@
+{
+  "source_job_id": "3c53ec530d644802b7a1e6dff0fc1d39",
+  "verified_at": "2026-09-15T01:32:19.876Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=3c53ec530d644802b7a1e6dff0fc1d39",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=3c53ec530d644802b7a1e6dff0fc1d39&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "ecd9478316dd4124be26b274afa18a87",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "智能传感器设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件电路设计",
+        "techDire": "传感器/射频电路/模拟电路",
+        "postContent": "负责传感器及其处理电路、读出电路、射频电路的设计验证",
+        "postRequire": "1、硕士及以上学历，电路、微电子、仪器、通信、自控、物理等相关专业； \n2、具备良好的技术敏感度，了解所在领域的最新技术进展，有良好的调研学习与总结归纳能力，勇于挑战难题；\n3、对智能传感与电路技术前沿技术保持高度热情，具备快速学习和解决问题的能力； \n4、熟悉以下技术之一：射频电路设计，射频系统设计，模拟电路设计，光电器件设计等传感器相关技术方向； \n5、具备以下任一项目经验者优先：UWB/毫米波/太赫兹/光电器件等方向的关键技术开发；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "成都市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "3c53ec530d644802b7a1e6dff0fc1d39",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:09:49"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "a3a035591abd4c668fe6566d28c38b0b",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "智能传感器设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件电路设计",
+        "techDire": "传感器/射频电路/模拟电路",
+        "postContent": "负责传感器及其处理电路、读出电路、射频电路的设计验证",
+        "postRequire": "1、硕士及以上学历，电路、微电子、仪器、通信、自控、物理等相关专业； \n2、具备良好的技术敏感度，了解所在领域的最新技术进展，有良好的调研学习与总结归纳能力，勇于挑战难题；\n3、对智能传感与电路技术前沿技术保持高度热情，具备快速学习和解决问题的能力； \n4、熟悉以下技术之一：射频电路设计，射频系统设计，模拟电路设计，光电器件设计等传感器相关技术方向； \n5、具备以下任一项目经验者优先：UWB/毫米波/太赫兹/光电器件等方向的关键技术开发；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "3c53ec530d644802b7a1e6dff0fc1d39",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:09:49"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "3b3960ccdafe423dabd9b7e7de278853",
+  "verified_at": "2026-09-15T01:32:11.121Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=3b3960ccdafe423dabd9b7e7de278853",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=3b3960ccdafe423dabd9b7e7de278853&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "3b3960ccdafe423dabd9b7e7de278853",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI系统工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "C++/python、数据库开发/中间件开发/算法编排",
+        "postContent": "1 使用python/C++进行云端AI服务引擎、AI算法应用的开发和维护；\n2 开发、制定和维护系统协议和API接口；\n3 根据需要进行算法服务系统特性、方案的设计和开发，提高系统的性能、可用性和扩展性；\n4 参与跨部门AI算法应用的联调工作。",
+        "postRequire": "1 、硕士及以上学历，计算机科学、人工智能或相关专业；\n2 、熟练掌握Python/C++等开发语言和Linux操作系统；\n3 、熟悉云服务相关组件（如Apollo、Zookeeper、kafka等）；\n4 、熟练掌握Redis、Milvus、MySQL、ES等至少一种数据库技术及结构化查询语言；\n5 、熟悉云服务和容器技术（如Kubernetes/Docker）；\n6 、责任心强，工作认真细致，具有良好的团队沟通能力；\n7 、思路清晰，具有较强的问题分析能力，能够解决相对复杂的系统问题；\n\n加分项：\n1、 具备大型分布式系统开发、设计经验；\n2 、具备算法服务、算法应用封装开发经验，如智能语音交互服务、数字人服务、视觉应用服务；\n3、具备一定的AI和机器学习技术基础。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

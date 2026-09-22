@@ -1,0 +1,41 @@
+{
+  "source_job_id": "8dab2e53708145e98a168647bb2ae0f0",
+  "verified_at": "2026-09-15T01:32:10.368Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=8dab2e53708145e98a168647bb2ae0f0",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=8dab2e53708145e98a168647bb2ae0f0&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "8dab2e53708145e98a168647bb2ae0f0",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "SLAM算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "图像分析/导航定位/规划调度",
+        "postContent": "针对移动机器人系统，包括以下一种或者多种职责：\r\n1、负责激光雷达、摄像机多传感器数据融合，实现多目标检测、跟踪、分类、轨迹预测算法设计和开发；\r\n2、利用雷达、摄像机、IMU进行高精度建图和定位算法设计和开发；\r\n3、负责移动机器人行为决策，路径规划，车辆控制仿真模型搭建、算法开发；\r\n4、负责VSLAM算法研究、设计和实现。",
+        "postRequire": "1、硕士及以上学历，计算机、机器人、自动化、电子、数学等相关专业；\r\n2、有较好的编码基础，熟练掌握C/C++、Python等编程语言；\r\n3、满足以下一项或多项要求：\r\n1）熟悉3D点云数据处理、融合图像实现多目标检测、跟踪、分类、运动轨迹预测算法；\r\n2）熟悉VSLAM/激光SLAM，了解高精度地图数据采集和处理，及多传感器组合定位相关算法；\r\n3）熟悉移动机器人行为决策和路径规划算法；\r\n4）熟练掌握机器人运动学建模和机器人运动控制算法；\r\n4、优先考虑具备如下经验者：\r\n1）能够使用至少一种深度学习框架，有丰富的机器学习算法应用经验；\r\n2）移动机器人或无人车系统研发或者参赛经验；\r\n3）利用仿真软件，进行移动机器人行为决策、路径规划、运动控制算法仿真验证。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:03",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

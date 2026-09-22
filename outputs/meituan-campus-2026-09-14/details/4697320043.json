@@ -1,0 +1,136 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697320043&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:50.688Z",
+  "data": {
+    "jobUnionId": "4697320043",
+    "name": "AI全栈工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG050",
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG011",
+        "name": "人力资源平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "岗位职责\n1. 参与 AI 应用的全栈开发：负责 AI 产品功能的前端界面（Web/小程序）与后端服务的设计与实现，保障高可用与用户体验；\n2. 大模型能力工程化：参与LLM 应用架构设计与开发，包括 Prompt 模板工程、RAG检索管线搭建、Agent 工作流编排等；\n3. 模型效果调优与评估：参与模型输出的质量评估，分析 Bad Case，优化提示词策略与检索链路，提升 AI 回答的准确率与可用性；\n4. AI 工程基础设施建设：参与模型服务化部署、推理性能优化、流式响应设计，构建高效稳定的 AI 应用底座；\n5. 技术探索与落地：跟踪前沿AI 技术动态，参与从 0 到 1 的 AI 功能创新验证。",
+    "jobRequirement": "岗位要求\n1. 本科及以上学历，计算机科学、软件工程或相关专业；\n2. 扎实的编程基础：熟练掌握至少一门编程语言（Python / Java / TypeScript / Go 等），具备良好的代码习惯；\n3. 基本功扎实：了解前端框架（React / Vue 等）或后端框架（Spring / Django / Express 等）之一，具备完整 Web 项目开发经验；\n4. AI 素养与好奇心：熟悉大模型基本原理与应用范式，有 ChatGPT / Claude 等工具的深度使用经验，理解 Prompt Engineering 基本技巧；\n5. 学习与解决问题能力：对新技术保持敏感，能快速学习并应用 AI 领域新知识，具备良好的逻辑思维与沟通协作能力。\n6. 有独立完成AI应用（Bot/Agent/自动化工作流）从0到1上线的经历者优先",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960999000,
+    "refreshTime": 1786960999000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI全栈工程师\n应届-校园招聘\n工作地点：北京市、上海市、成都市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n岗位职责\n1. 参与 AI 应用的全栈开发：负责 AI 产品功能的前端界面（Web/小程序）与后端服务的设计与实现，保障高可用与用户体验；\n2. 大模型能力工程化：参与LLM 应用架构设计与开发，包括 Prompt 模板工程、RAG检索管线搭建、Agent 工作流编排等；\n3. 模型效果调优与评估：参与模型输出的质量评估，分析 Bad Case，优化提示词策略与检索链路，提升 AI 回答的准确率与可用性；\n4. AI 工程基础设施建设：参与模型服务化部署、推理性能优化、流式响应设计，构建高效稳定的 AI 应用底座；\n5. 技术探索与落地：跟踪前沿AI 技术动态，参与从 0 到 1 的 AI 功能创新验证。\n任职要求\n岗位要求\n1. 本科及以上学历，计算机科学、软件工程或相关专业；\n2. 扎实的编程基础：熟练掌握至少一门编程语言（Python / Java / TypeScript / Go 等），具备良好的代码习惯；\n3. 基本功扎实：了解前端框架（React / Vue 等）或后端框架（Spring / Django / Express 等）之一，具备完整 Web 项目开发经验；\n4. AI 素养与好奇心：熟悉大模型基本原理与应用范式，有 ChatGPT / Claude 等工具的深度使用经验，理解 Prompt Engineering 基本技巧；\n5. 学习与解决问题能力：对新技术保持敏感，能快速学习并应用 AI 领域新知识，具备良好的逻辑思维与沟通协作能力。\n6. 有独立完成AI应用（Bot/Agent/自动化工作流）从0到1上线的经历者优先\n工作城市\n北京市、上海市、成都市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

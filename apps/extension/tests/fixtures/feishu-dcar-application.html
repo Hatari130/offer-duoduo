@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <title>我的投递 - 懂车帝招聘</title>
+    <script id="js-websiteInfo" type="text/json">
+      {
+        "tenant_info": {
+          "tenant_name": "懂车帝",
+          "tenant_id": "7283056683760388411"
+        },
+        "website_info": {
+          "web_ui_config": {
+            "browser_label_name": "懂车帝招聘"
+          }
+        }
+      }
+    </script>
+    <style>
+      body { margin: 0; padding: 24px; font: 14px/1.5 "PingFang SC", Arial, sans-serif; color: #1f2329; }
+      .positionApplication-title { font-size: 20px; font-weight: bold; margin-bottom: 20px; }
+      .applicationListItem { margin-bottom: 20px; padding: 24px; border: 1px solid #dee0e3; border-radius: 8px; }
+      .title__29d94f { display: flex; justify-content: space-between; margin-bottom: 12px; }
+      .applicationListItem-name { font-size: 18px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+      .volunteer-tag { background: #e8f3ff; color: #3370ff; font-size: 12px; padding: 2px 6px; border-radius: 4px; }
+      .time__29d94f { color: #8f959e; font-size: 14px; }
+      .cityAndSource__29d94f { display: flex; gap: 12px; color: #646a73; margin-bottom: 8px; }
+      .perferedCityInfo { color: #8f959e; font-size: 13px; margin-bottom: 16px; }
+      .stepsContainer { display: flex; gap: 24px; }
+      .step-item { color: #8f959e; }
+      .step-item.active { color: #3370ff; font-weight: 500; }
+    </style>
+  </head>
+  <body>
+    <div class="positionApplication-title">我的投递</div>
+    <div class="listBlock">
+      <div class="listItem__29d94f">
+        <div class="applicationListItem" data-test="applicationListItem">
+          <div class="title__29d94f">
+            <div class="applicationListItem-name">
+              <span class="volunteer-tag">第一志愿</span>
+              <span class="applicationListItem-name-text">大模型产品运营-校招【27届】</span>
+            </div>
+            <div class="time__29d94f">2026-09-19 11:32</div>
+          </div>
+          <div class="applicationListItem-subTitle">
+            <div class="cityAndSource__29d94f">
+              <span>北京、杭州</span>
+              <span class="spaceDivider">/</span>
+              <span>校招 - 正式</span>
+              <span class="spaceDivider">/</span>
+              <span class="jobCategory">产品 - 产品运营</span>
+              <span class="spaceDivider">/</span>
+              <span class="jobProject">项目: AI车青年</span>
+            </div>
+            <div class="perferedCityInfo">
+              <span class="perferedCityInfo-content">意向城市：① 杭州、② 北京</span>
+            </div>
+          </div>
+          <div class="stepsContainer">
+            <div class="step-item active current">
+              <span>投递简历</span>
+            </div>
+            <div class="step-item">
+              <span>简历初筛</span>
+            </div>
+            <div class="step-item">
+              <span>笔试</span>
+            </div>
+            <div class="step-item">
+              <span>面试</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="applicationListItem" data-test="applicationListItem">
+          <div class="title__29d94f">
+            <div class="applicationListItem-name">
+              <span class="volunteer-tag">第二志愿</span>
+              <span class="applicationListItem-name-text">【27届】平台AI产品经理</span>
+            </div>
+            <div class="time__29d94f">2026-09-19 11:32</div>
+          </div>
+          <div class="applicationListItem-subTitle">
+            <div class="cityAndSource__29d94f">
+              <span>北京</span>
+              <span class="spaceDivider">/</span>
+              <span>校招 - 正式</span>
+              <span class="spaceDivider">/</span>
+              <span class="jobCategory">产品 - AI产品经理</span>
+              <span class="spaceDivider">/</span>
+              <span class="jobProject">项目: AI车青年</span>
+            </div>
+            <div class="perferedCityInfo">
+              <span class="perferedCityInfo-content">意向城市：① 北京</span>
+            </div>
+          </div>
+          <div class="stepsContainer">
+            <div class="step-item active current">
+              <span>投递简历</span>
+            </div>
+            <div class="step-item">
+              <span>简历初筛</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      globalThis.__offerflowListeners = [];
+      globalThis.chrome = {
+        runtime: {
+          getURL: (value) => value,
+          onMessage: { addListener: (listener) => globalThis.__offerflowListeners.push(listener) },
+          sendMessage: () => Promise.resolve()
+        }
+      };
+    </script>
+    <script src="../../public/adapter-registry.js"></script>
+    <script src="../../public/extraction-rules.js"></script>
+    <script>
+      const offerFlowRules = globalThis.OfferFlowExtractionRules;
+      const offerFlowGetAdapter = offerFlowRules.getAdapter;
+      globalThis.OfferFlowExtractionRules = {
+        ...offerFlowRules,
+        getAdapter: (hostname) => offerFlowGetAdapter(
+          String(hostname || "").toLowerCase() === "" ? "dcar.jobs.feishu.cn" : hostname
+        )
+      };
+      history.replaceState({}, "", "/campus/position/application");
+    </script>
+    <script src="../../public/content.js"></script>
+    <script>
+      (() => {
+        let captured;
+        const done = (value) => {
+          captured = value;
+          document.body.setAttribute(
+            "data-result",
+            encodeURIComponent(JSON.stringify(value)).replaceAll("&", "&amp;")
+          );
+        };
+        for (const listener of globalThis.__offerflowListeners) {
+          listener({ type: "OFFERFLOW_EXTRACT_PAGE" }, null, done);
+        }
+        if (!captured) done({ ok: false, error: "no listener responded" });
+      })();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "54406511940e43ceb7827990d66afba2",
+  "verified_at": "2026-09-15T01:32:03.535Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=54406511940e43ceb7827990d66afba2",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=54406511940e43ceb7827990d66afba2&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "54406511940e43ceb7827990d66afba2",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "工艺整合工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "工艺",
+        "techDire": "传感器器件工艺/mems器件工艺",
+        "postContent": "1、负责新产品的工艺流程开发和优化，对器件的设计方案进行可行性分析和指标分解，制定出验证方案和计划，并完成实验验证；\n2、负责量产品的良率提升，对异常问题进行分析定位，并完成流程验证和整合。",
+        "postRequire": "1、硕士及以上学历，微电子、无源器件、物理、材料等相关专业优先；\n2、具有传感器器件或者无源器件相关开发经验，熟悉传感器相关工艺；\n3、良好的英语阅读能力，有较好的沟通力和执行力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

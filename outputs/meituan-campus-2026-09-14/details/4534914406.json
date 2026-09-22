@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4534914406&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:40.828Z",
+  "data": {
+    "jobUnionId": "4534914406",
+    "name": "【北斗】多模态理解后训练与Agent算法研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们正在构建具备物理世界感知、理解、仿真能力与支撑数字世界高质量呈现的本地生活视觉技术引擎，让每一次连接更智能，让物理世界的烟火气更美好。\n\n团队介绍：\n作为美团官方的视觉AI基础模型团队，负责数字世界和物理世界等本地生活全场景多模态技术的前沿探索和应用，在AIGC生成、虚拟人交互、多模态理解等领域持续沉淀行业领先的技术成果。\n\n研究方向包括但不限于：\n1、基于多模态预训练和后训练相关技术创新，提升多模态大模型在OCR、文档图表解析、Visual Grounding、细粒度感知、视觉问答等核心视觉理解任务上的能力上限；\n2、索多模态强化学习方案创新设计，实现视觉感知、多模态理解等场景下的高性能可信输出和幻觉抑制；\n3、增强模型的视觉推理能力（Visual CoT、PRM等）、工具调用与Agent能力、长上下文视觉理解能力和GUI能力，提升模型在视觉感知、理解、规划决策的长程复杂任务上的综合表现。",
+    "jobRequirement": "1、具备视觉多模态大模型的预训练或后训练研究经历；\n2、熟悉PyTorch，有充分的动手实践经验。\n加分项：\n1、社区影响力：在多模态大模型领域有影响力的开源项目中做出过核心贡献\n2、学术影响力：发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次\n\n岗位吸引力：\n1、依托本地生活领域海量的物理世界数字化和线上多模态信息重构任务，提升模型的视觉多模态理解能力上限。\n2、立足美团本地生活应用场景，布局前沿的多模态决策智能路线，驱动长程复杂视觉任务中的表现优化和标杆级视觉Agent应用。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780474474000,
+    "refreshTime": 1780474474000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】多模态理解后训练与Agent算法研究员\n应届-北斗计划\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们正在构建具备物理世界感知、理解、仿真能力与支撑数字世界高质量呈现的本地生活视觉技术引擎，让每一次连接更智能，让物理世界的烟火气更美好。\n团队介绍：\n作为美团官方的视觉AI基础模型团队，负责数字世界和物理世界等本地生活全场景多模态技术的前沿探索和应用，在AIGC生成、虚拟人交互、多模态理解等领域持续沉淀行业领先的技术成果。\n研究方向包括但不限于：\n1、基于多模态预训练和后训练相关技术创新，提升多模态大模型在OCR、文档图表解析、Visual Grounding、细粒度感知、视觉问答等核心视觉理解任务上的能力上限；\n2、索多模态强化学习方案创新设计，实现视觉感知、多模态理解等场景下的高性能可信输出和幻觉抑制；\n3、增强模型的视觉推理能力（Visual CoT、PRM等）、工具调用与Agent能力、长上下文视觉理解能力和GUI能力，提升模型在视觉感知、理解、规划决策的长程复杂任务上的综合表现。\n任职要求\n1、具备视觉多模态大模型的预训练或后训练研究经历；\n2、熟悉PyTorch，有充分的动手实践经验。\n加分项：\n1、社区影响力：在多模态大模型领域有影响力的开源项目中做出过核心贡献\n2、学术影响力：发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次\n岗位吸引力：\n1、依托本地生活领域海量的物理世界数字化和线上多模态信息重构任务，提升模型的视觉多模态理解能力上限。\n2、立足美团本地生活应用场景，布局前沿的多模态决策智能路线，驱动长程复杂视觉任务中的表现优化和标杆级视觉Agent应用。\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

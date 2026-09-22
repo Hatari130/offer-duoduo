@@ -1,0 +1,41 @@
+{
+  "source_job_id": "47ea78631cce479eb2863106daff4b11",
+  "verified_at": "2026-09-15T01:32:07.218Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=47ea78631cce479eb2863106daff4b11",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=47ea78631cce479eb2863106daff4b11&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "47ea78631cce479eb2863106daff4b11",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "材料研发工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "结构",
+        "techDire": "色谱柱",
+        "postContent": "1. 色谱柱装填研发；\n2. 填料键合与表面修饰；\n3. 色谱柱性能检测与评价；\n4. 设备维护与环境管理；\n5. 工艺改进与研发支持；\n6. 质量与文档管理；",
+        "postRequire": "一、专业基础\n1. 有机化学专业，硕士及以上学历优先，具备扎实色谱理论基础（HPLC、GC、柱层析原理）；\n2. 掌握硅胶、聚合物等色谱基质材料基本性质，熟悉键合相化学（C18、C8、极性嵌入等）；\n3. 了解化学修饰反应机理（硅烷化、酯化、自由基聚合、表面改性等），能独立完成常规修饰工艺。\n\n二、核心技能\n1. 色谱柱装填：掌握匀浆法/高压装填工艺，能调试压力、流速、匀浆配比，保障柱效、对称性、重复性；\n2. 化学修饰：能独立设计/执行键合反应、封端、清洗、活化等流程，控制反应温度、时间、试剂比例；\n3. 表征与评价：会用HPLC、GC、SEM、元素分析、红外等评价柱性能与表面修饰度；\n4. 实验规范：熟练实验室安全、试剂管理、数据记录、SOP执行与方法验证。\n\n三、能力素质\n1. 动手能力强，实验严谨细致，能排查装填/修饰异常；\n2. 学习能力强，可快速掌握新材料、新键合相、新设备；\n3. 逻辑清晰，具备数据整理、结果分析、问题定位能力；\n4. 责任心强、抗压可靠，能配合工艺优化；\n5. 良好沟通与团队协作，可同步工艺、记录、问题闭环。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "960ded8f450948c98b78c960e0179f04",
+          "name": "智能硬件-工艺材料",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

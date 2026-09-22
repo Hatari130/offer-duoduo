@@ -1,0 +1,41 @@
+{
+  "source_job_id": "f39a1d9ca0ed46e2addccbe1e31c5660",
+  "verified_at": "2026-09-15T01:32:01.492Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=f39a1d9ca0ed46e2addccbe1e31c5660",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=f39a1d9ca0ed46e2addccbe1e31c5660&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "f39a1d9ca0ed46e2addccbe1e31c5660",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "2D视觉算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "2D图像处理/计算机视觉/计算成像/ISP",
+        "postContent": "1. 主导工业场景下2D视觉算法的研究与落地，重点突破：\n1） 计算成像技术：开发相位偏折/光度立体/光谱/偏振等新型成像系统，解决强反光、低对比度、透明材质等传统算法失效场景，升级感知维度，突破传统成像限制；\n2）机器视觉算法：开发行业领先的亚像素精密定位引导、微米即尺寸测量、复杂缺陷检测、高速识别（DPM码/OCR）等算法，持续优化算法精度、速度、抗干扰能力以及易用性；\n2. 开发高性能机器视觉算法组件，构建可复用的2D算法库，赋能公司通用视觉平台和智能硬件；\n3. 深入工业一线需求，为工业核心场景提供算法解决方案，推动行业技术标准化：\n4. 跟踪学术前沿技术（如计算成像与深度学习、传统算法与深度学习的融合应用），推动算法在工业场景的创新突破。",
+        "postRequire": "1、精通C/C++/Python，有算法模块封装与性能调优经验；\n2、深入掌握：\n   1）2D视觉理论（模板匹配/图像处理/相机标定/特征工程等）\n   2）计算成像核心方法（PSF工程/相位恢复/光学编码设计）\n3、加分项：\n   1）多模态成像系统（偏振/高光谱）开发经验\n   2）具备工业视觉项目经验，熟悉定位/检测/测量/识别的完整技术链路；\n   3）深度学习在工业检测的落地案例（分类/检测/分割模型优化）\n   4）CPU/GPU加速（指令集、CUDA）或嵌入式优化（ARM/DSP）\n   5）发表计算成像相关顶会论文（CVPR/ICCP/ICIP）",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

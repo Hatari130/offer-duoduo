@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153873069&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:14.247Z",
+  "data": {
+    "jobUnionId": "3153873069",
+    "name": "【大模型北斗实习】多模态智能体算法研究与自主规划",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "自主任务执行的计算智能体是AI应用的重要场景之一，具备充分的技术深度(如浅层环境感知能力和深层规划决策能力)和广泛的应用价值(如智能助手、具身智能等)。本课题旨在构建业界前沿的多模态智能体，包括2D数字世界的Computer Use和Browser Use，以及3D物理世界的具身智能等能力。探索优化智能体在视觉理解、决策反思、强化学习等方向的技术挑战。\n研究内容包括：\n1）智能体算法优化：提升智能体视觉定位和决策反思水平，探索强化学习在智能体决策的应用价值，构建2D数字和3D物理环境的环境感知能力。\n2）Compute & Brower Use：探索多模态大模型自主规划完成计算机、手机、互联网网页的操作能力。\n3）具身智能：探索多模态大模型的空间理解和自主规划能力，能够完成物理世界操作能力。",
+    "jobRequirement": "1）在CV、NLP、多模态等相关领域有其中一个或多个方向有深入的研究经历。\n2）熟悉TensorFlow、PyTorch等深度学习框架。\n3）熟练使用Python、C++等至少一门编程语言，熟悉LINUX环境。\n加分项：\n1）有影响力的开源项目中做出过核心贡献。\n2）发表过高水平论文优先（如NeurIPS,ICLR,ICML,CVPR,ICCV,ECCV等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309543000,
+    "refreshTime": 1747963941000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】多模态智能体算法研究与自主规划\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n自主任务执行的计算智能体是AI应用的重要场景之一，具备充分的技术深度(如浅层环境感知能力和深层规划决策能力)和广泛的应用价值(如智能助手、具身智能等)。本课题旨在构建业界前沿的多模态智能体，包括2D数字世界的Computer Use和Browser Use，以及3D物理世界的具身智能等能力。探索优化智能体在视觉理解、决策反思、强化学习等方向的技术挑战。\n研究内容包括：\n1）智能体算法优化：提升智能体视觉定位和决策反思水平，探索强化学习在智能体决策的应用价值，构建2D数字和3D物理环境的环境感知能力。\n2）Compute & Brower Use：探索多模态大模型自主规划完成计算机、手机、互联网网页的操作能力。\n3）具身智能：探索多模态大模型的空间理解和自主规划能力，能够完成物理世界操作能力。\n任职要求\n1）在CV、NLP、多模态等相关领域有其中一个或多个方向有深入的研究经历。\n2）熟悉TensorFlow、PyTorch等深度学习框架。\n3）熟练使用Python、C++等至少一门编程语言，熟悉LINUX环境。\n加分项：\n1）有影响力的开源项目中做出过核心贡献。\n2）发表过高水平论文优先（如NeurIPS,ICLR,ICML,CVPR,ICCV,ECCV等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

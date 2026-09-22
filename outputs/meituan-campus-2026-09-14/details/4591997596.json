@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4591997596&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:33.238Z",
+  "data": {
+    "jobUnionId": "4591997596",
+    "name": "【LongCat实习】AI 自进化与自动化研究算法研究员",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "2",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们相信，AI 研发本身，是下一个被 AI 加速和重塑的领域。美团 LongCat 团队正在探索下一代 AI 自进化与自动化研究系统：让模型不仅能够完成任务，也能够参与模型研发过程本身，围绕问题发现、假设生成、实验执行、结果验证、经验沉淀与策略迭代，形成持续改进的研究闭环。加入我们，你将参与构建以研究智能体为核心，联动可验证研究环境、训练与评测体系、研究策略库的 AI for AI 系统，并将自动化研究能力反哺到模型自身的训练、评测与迭代中，推动“用 AI 研发更强 AI”的长期目标。\n\n1. 自动化研究智能体能力建设\n参与提升模型在复杂任务分解、长程推理、研究规划、工具使用、代码生成与执行、证据整合、结果归因与研究报告生成等方面的闭环能力，并在真实模型研发任务中验证效果。\n2. 长程上下文、记忆与状态管理\n探索 context scaling / compression、memory selection、任务状态追踪等机制，解决长周期任务中的一致性衰减、状态丢失、中断恢复与长期依赖管理问题。\n3. 可验证研究环境与自动实验闭环\n构建覆盖 search、browser、retrieval、code execution、training / eval job、sandbox 等能力的交互式研究环境，将研究任务建模为可交互、可验证、可评分的闭环，支持自动实验编排、结果比对与版本回滚。\n4. 训练策略与反馈信号设计\n设计数据配方、环境反馈、过程监督与 reward 信号体系，结合 SFT、强化学习等方法，引导模型在事实正确性、工具调用可靠性、任务完成率与研究轨迹质量上持续提升。\n5. 评测体系与错误分析闭环\n建设面向真实 research workflow 的 benchmark 与自动评测体系，系统分析研究智能体在规划、检索、工具调用、上下文管理、实验执行、结果归因等环节的典型失败模式，并反哺训练策略与 harness 优化。\n6. 研究经验沉淀与策略自进化\n将成功与失败任务轨迹沉淀为 research episode、skill、eval case 等可检索、可复用、可训练的经验资产，支持模型在后续任务中检索、复用、迁移与迭代，推动研究策略的持续自进化。",
+    "jobRequirement": "必备项：\n1. 具备扎实的算法基础和工程实现能力，熟练使用 Python/C++，能够独立完成复杂系统设计、实验实现和问题定位。\n2. 熟悉大语言模型、Agent、强化学习、代码生成、检索增强、训练/评测系统中的至少一个方向，并有真实项目经验。\n3. 具备强研究能力和问题拆解能力，能够从开放问题中提出可验证假设，设计实验并推动结果落地。\n4. 具备良好的沟通协作能力，能在高不确定性前沿方向中持续推进。\n加分项：\n1. 有 Coding Agent、AI Scientist、Deep Research、Multi-Agent、长期记忆系统、自动实验系统经验。\n2. 有模型研发全链路经验，包括数据构造、Pre-training、Post-training、Reward Model、评测诊断或训练基础设施。\n3. 在顶级会议/期刊发表论文，主导高质量开源项目、Benchmark、Agent 系统，或在 ACM/ICPC、NOI/IOI、Kaggle 等比赛中取得优秀成绩。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1782475781000,
+    "refreshTime": 1782475781000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat实习】AI 自进化与自动化研究算法研究员\n实习-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们相信，AI 研发本身，是下一个被 AI 加速和重塑的领域。美团 LongCat 团队正在探索下一代 AI 自进化与自动化研究系统：让模型不仅能够完成任务，也能够参与模型研发过程本身，围绕问题发现、假设生成、实验执行、结果验证、经验沉淀与策略迭代，形成持续改进的研究闭环。加入我们，你将参与构建以研究智能体为核心，联动可验证研究环境、训练与评测体系、研究策略库的 AI for AI 系统，并将自动化研究能力反哺到模型自身的训练、评测与迭代中，推动“用 AI 研发更强 AI”的长期目标。\n1. 自动化研究智能体能力建设\n参与提升模型在复杂任务分解、长程推理、研究规划、工具使用、代码生成与执行、证据整合、结果归因与研究报告生成等方面的闭环能力，并在真实模型研发任务中验证效果。\n2. 长程上下文、记忆与状态管理\n探索 context scaling / compression、memory selection、任务状态追踪等机制，解决长周期任务中的一致性衰减、状态丢失、中断恢复与长期依赖管理问题。\n3. 可验证研究环境与自动实验闭环\n构建覆盖 search、browser、retrieval、code execution、training / eval job、sandbox 等能力的交互式研究环境，将研究任务建模为可交互、可验证、可评分的闭环，支持自动实验编排、结果比对与版本回滚。\n4. 训练策略与反馈信号设计\n设计数据配方、环境反馈、过程监督与 reward 信号体系，结合 SFT、强化学习等方法，引导模型在事实正确性、工具调用可靠性、任务完成率与研究轨迹质量上持续提升。\n5. 评测体系与错误分析闭环\n建设面向真实 research workflow 的 benchmark 与自动评测体系，系统分析研究智能体在规划、检索、工具调用、上下文管理、实验执行、结果归因等环节的典型失败模式，并反哺训练策略与 harness 优化。\n6. 研究经验沉淀与策略自进化\n将成功与失败任务轨迹沉淀为 research episode、skill、eval case 等可检索、可复用、可训练的经验资产，支持模型在后续任务中检索、复用、迁移与迭代，推动研究策略的持续自进化。\n任职要求\n必备项：\n1. 具备扎实的算法基础和工程实现能力，熟练使用 Python/C++，能够独立完成复杂系统设计、实验实现和问题定位。\n2. 熟悉大语言模型、Agent、强化学习、代码生成、检索增强、训练/评测系统中的至少一个方向，并有真实项目经验。\n3. 具备强研究能力和问题拆解能力，能够从开放问题中提出可验证假设，设计实验并推动结果落地。\n4. 具备良好的沟通协作能力，能在高不确定性前沿方向中持续推进。\n加分项：\n1. 有 Coding Agent、AI Scientist、Deep Research、Multi-Agent、长期记忆系统、自动实验系统经验。\n2. 有模型研发全链路经验，包括数据构造、Pre-training、Post-training、Reward Model、评测诊断或训练基础设施。\n3. 在顶级会议/期刊发表论文，主导高质量开源项目、Benchmark、Agent 系统，或在 ACM/ICPC、NOI/IOI、Kaggle 等比赛中取得优秀成绩。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

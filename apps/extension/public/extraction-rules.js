@@ -68,6 +68,11 @@
       hostPattern: /(?:^|\.)jobs\.feishu\.cn$/i,
       defaultCompany: "",
       positionSelectors: [
+        '[class*="applicationListItem-name-text"]',
+        '[class*="applicationListItem-name"]',
+        '[class*="title__"] [class*="name__"]',
+        '[class*="title__"] a',
+        '[class*="title__"]',
         '[class*="position-title"]',
         '[class*="positionTitle"]',
         '[class*="position-name"]',
@@ -80,8 +85,11 @@
         "h4"
       ],
       cardSelectors: [
+        '[data-test="applicationListItem"]',
+        ".applicationListItem",
+        '[class*="applicationItem__"]',
         '[class*="application-item"]',
-        '[class*="applicationItem"]',
+        '[class*="application-row"]',
         '[class*="position-item"]',
         '[class*="positionItem"]',
         '[class*="job-card"]',

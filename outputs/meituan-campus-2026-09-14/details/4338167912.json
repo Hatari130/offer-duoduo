@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4338167912&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:56.543Z",
+  "data": {
+    "jobUnionId": "4338167912",
+    "name": "【北斗实习】大模型应用软件开发工程师",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】\n本课题以美团酒旅业务为研究场景——该场景具有供给侧 SKU 品类异构、C/B 双端研发并行、节假日促销驱动的高频需求迭代等特征，是验证 AI-Augmented SDLC 有效性的高复杂度典型场景。课题旨在构建 AI-Augmented SDLC 的理论框架，研究 LLM 深度介入需求→设计→开发→验收全链路后的最优人机协作形态，形成可量化的效率度量体系与可复制的工程实践方法论。\n【建议研究方向】\n1.AI 友好型需求（AI-Ready PRD/Spec）构建方法：研究如何将自然语言需求转化为结构化、机器可读的规格表示（如 Spec、DSL、AI-Ready PRD 等），探索作为需求表达与机器理解交接的规格语言设计原则与 LLM 解析效果之间的关系。\n2.跨职能协作流程重构与 Agent 化（PM-RD-QA 分工边界重构）：参照 Human-AI Collaboration 及 Multi-Agent Systems 理论框架，研究在产品→研发→测试协作链路中引入 Agentic Workflow 的可行路径与边界条件，探索 AI 在不同角色中的自主程度与人工干预策略。\n3.产研范式相关指标体系与度量方法（交付效率、交付质量等）：借鉴 DORA Metrics、DevEx 等业界度量框架，结合 AI 介入后的新型产研链路，构建涵盖交付周期压缩率、AI 代码采纳率、规格对齐准确率、需求返工率等维度的量化指标体系。\n4.棕地 vs 绿地项目的分场景落地策略：研究 SDD 范式在存量代码重构（Brownfield）与全新需求开发（Greenfield）两类场景下的适配性差异，识别影响落地效果的关键情境因素（Contextual Factors）。\n5.范式转型的组织配套与推广机制：参照 Technology Adoption Model（TAM）及 Organizational Learning 理论，研究产研范式转型过程中的阻力来源、推广路径与组织能力建设模式，沉淀可复用的转型 Playbook。",
+    "jobRequirement": "海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1.超级学霸：专业成绩排名前1%。\n2.学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3.竞赛大神：在顶级大赛上获奖。\n4.工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775014911000,
+    "refreshTime": 1775014911000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型应用软件开发工程师\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n本课题以美团酒旅业务为研究场景——该场景具有供给侧 SKU 品类异构、C/B 双端研发并行、节假日促销驱动的高频需求迭代等特征，是验证 AI-Augmented SDLC 有效性的高复杂度典型场景。课题旨在构建 AI-Augmented SDLC 的理论框架，研究 LLM 深度介入需求→设计→开发→验收全链路后的最优人机协作形态，形成可量化的效率度量体系与可复制的工程实践方法论。\n【建议研究方向】\n1.AI 友好型需求（AI-Ready PRD/Spec）构建方法：研究如何将自然语言需求转化为结构化、机器可读的规格表示（如 Spec、DSL、AI-Ready PRD 等），探索作为需求表达与机器理解交接的规格语言设计原则与 LLM 解析效果之间的关系。\n2.跨职能协作流程重构与 Agent 化（PM-RD-QA 分工边界重构）：参照 Human-AI Collaboration 及 Multi-Agent Systems 理论框架，研究在产品→研发→测试协作链路中引入 Agentic Workflow 的可行路径与边界条件，探索 AI 在不同角色中的自主程度与人工干预策略。\n3.产研范式相关指标体系与度量方法（交付效率、交付质量等）：借鉴 DORA Metrics、DevEx 等业界度量框架，结合 AI 介入后的新型产研链路，构建涵盖交付周期压缩率、AI 代码采纳率、规格对齐准确率、需求返工率等维度的量化指标体系。\n4.棕地 vs 绿地项目的分场景落地策略：研究 SDD 范式在存量代码重构（Brownfield）与全新需求开发（Greenfield）两类场景下的适配性差异，识别影响落地效果的关键情境因素（Contextual Factors）。\n5.范式转型的组织配套与推广机制：参照 Technology Adoption Model（TAM）及 Organizational Learning 理论，研究产研范式转型过程中的阻力来源、推广路径与组织能力建设模式，沉淀可复用的转型 Playbook。\n任职要求\n海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1.超级学霸：专业成绩排名前1%。\n2.学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3.竞赛大神：在顶级大赛上获奖。\n4.工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

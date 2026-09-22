@@ -1,0 +1,41 @@
+{
+  "source_job_id": "bda8472966794a5491e9df1e8b3d3a18",
+  "verified_at": "2026-09-15T01:32:09.977Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=bda8472966794a5491e9df1e8b3d3a18",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=bda8472966794a5491e9df1e8b3d3a18&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "bda8472966794a5491e9df1e8b3d3a18",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "大数据开发工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "大数据开发",
+        "techDire": "不限",
+        "postContent": "1、追踪研究主流大数据技术。\n2、评测、引入和优化开源大数据组件。\n3、参与设计大数据基础技术平台架构。\n4、根据公司各业务部门的具体需求，提供相应的大数据解决方案。",
+        "postRequire": "1、硕士及以上学历，计算机相关专业（计算机、软件工程、应用数学、电子信息工程、通信工程）。\n2、具有较好的编码能力，有较好的编程习惯，熟练掌握Java/Go等编程语言。\n3、熟悉Linux操作系统的使用，具有较好的网络编程基础。\n4、熟悉主流开源大数据组件者优先，包括但不限于Hadoop、HBase、Spark、Flink、ES、Kafka、Zookeeper等。\n5、有较强的沟通表达能力、分析能力、问题解决能力和组织能力。\n6、有良好的专业英文阅读能力，具备较好的文档撰写能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 10:12:09",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    }
+  ]
+}

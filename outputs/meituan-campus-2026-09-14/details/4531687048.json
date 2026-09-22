@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531687048&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:18.156Z",
+  "data": {
+    "jobUnionId": "4531687048",
+    "name": "【北斗】AutoResearch算法研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【愿景】\n研发下一代自动化算法研究智能体系统，在美团配送亿级业务场景中探索 AI 驱动的算法创新闭环。\n\n【你将参与】\n方向一：自动化算法研究 Agent 能力研究与harness建设\n1.研究并实现基于多 Agent 协作的自动化算法研发框架，探索 LLM 在研究规划、实验假设生成、复杂任务分解、工具使用、代码生成与执行、指标分析与策略复盘等自主科研全链路上的能力边界。\n2.设计AutoResearch的harness建设，建设算法的知识库与记忆系统，优化长程任务的上下文组织与记忆管理，包括 context scaling、memory selection、状态追踪，提升模型在复杂研究任务中的稳定性。\n方向二：AutoResearch 训练策略与评测体系\n1.协助构建 AutoResearch 评估基准，设计自动评审机制，量化 AI 生成算法方案的质量；围绕 SFT、RLVR 等方法，设计面向算法研究任务的数据配方与 outcome/process-level 反馈信号。\n2.跟踪 AI Scientist、AIDE、MLR-Bench 等前沿工作，结合业务场景复现并改进 SOTA 方案，系统分析推理漂移、长链路失稳等失败模式。\n方向三：业务闭环与落地\n1.在外卖配送、骑手调度、定价决策等真实业务场景上验证 AutoResearch 范式，将研究成果转化为可量化的线上收益，探索 AI 驱动算法创新的新范式。\n2.将研究系统从单点模块扩展至履约全链路，打通特征工程→模型调优→A/B部署的端到端pipeline；探索Agentic RL与跨轮学习，使系统具备自主迭代进化能力。",
+    "jobRequirement": "【任职资格】\n必备条件：\n1.2027届计算机、人工智能、数学、统计等相关专业在读或应届，本科及以上学历，博士/硕士优先。\n2.具备业务洞察与问题定义能力：能将模糊的研究目标拆解为可验证的实验假设，定对指标、选好方向，而非只会执行。\n3.具备AI驾驭能力：能引导LLM Agent完成复杂研究任务及工程实现，能够独立完成问题建模、论文阅读、算法复现、实验设计、结果分析和迭代优化。有识别AI输出质量问题的技术判断力与review能力。\n4.熟悉LLM及Agent基本机制，包括Agent Loop、Tool Use、Multi-Agent、Reasoning等；熟练使用Python及PyTorch等主流框架。\n5.自驱力强，能在开放性问题中主动推进，在不完美条件下快速验证假设，动手能力和执行能力强。\n加分项：\n1.有AutoML、Neural Architecture Search、AI驱动科研工具（如AI Scientist、AIDE、MLR-Bench类）的研究或工程经验。\n2.熟悉ClaudeCode、OpenClaw等开源Harness的设计与实现，或有Agent评估框架搭建经验。\n3.具有跨学科视野，能将运筹优化、强化学习等方法引入AutoResearch体系。\n4.在NeurIPS、ICML、ICLR、KDD等顶会发表过论文（含在投），或有被广泛使用的开源项目。\n5.对 AI Agent、Agentic RL、AI for Optimization、AI for Science、智能化算法研发系统等前沿方向有持续关注和独立思考，愿意探索 AI 改变算法研究范式的长期问题。\n【为什么是我们】\n1.真实战场：千万级日订单、百万级骑手，提供业界罕见的 Agent 大规模真实落地环境，参与即时配送中的超大规模实时决策问题研究，你将把真实业务中的复杂决策问题抽象为可研究、可评测、可迭代的算法问题，并推动研究成果在真实系统中验证与落地。AI 驱动算法研发前沿阵地，不是玩具 Demo。\n2.资源保障：充足的 GPU 集群资源，顶尖模型Token 供给有保证。\n3.成果导向：团队鼓励发表顶会论文，内部有完善的学术合作通道。\n4.高密度氛围：团队论文产出稳定，组内多名同学在顶会发表论文，并与多所顶尖高校保持长期联合研究。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459808000,
+    "refreshTime": 1780459808000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】AutoResearch算法研究员\n应届-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【愿景】\n研发下一代自动化算法研究智能体系统，在美团配送亿级业务场景中探索 AI 驱动的算法创新闭环。\n【你将参与】\n方向一：自动化算法研究 Agent 能力研究与harness建设\n1.研究并实现基于多 Agent 协作的自动化算法研发框架，探索 LLM 在研究规划、实验假设生成、复杂任务分解、工具使用、代码生成与执行、指标分析与策略复盘等自主科研全链路上的能力边界。\n2.设计AutoResearch的harness建设，建设算法的知识库与记忆系统，优化长程任务的上下文组织与记忆管理，包括 context scaling、memory selection、状态追踪，提升模型在复杂研究任务中的稳定性。\n方向二：AutoResearch 训练策略与评测体系\n1.协助构建 AutoResearch 评估基准，设计自动评审机制，量化 AI 生成算法方案的质量；围绕 SFT、RLVR 等方法，设计面向算法研究任务的数据配方与 outcome/process-level 反馈信号。\n2.跟踪 AI Scientist、AIDE、MLR-Bench 等前沿工作，结合业务场景复现并改进 SOTA 方案，系统分析推理漂移、长链路失稳等失败模式。\n方向三：业务闭环与落地\n1.在外卖配送、骑手调度、定价决策等真实业务场景上验证 AutoResearch 范式，将研究成果转化为可量化的线上收益，探索 AI 驱动算法创新的新范式。\n2.将研究系统从单点模块扩展至履约全链路，打通特征工程→模型调优→A/B部署的端到端pipeline；探索Agentic RL与跨轮学习，使系统具备自主迭代进化能力。\n任职要求\n【任职资格】\n必备条件：\n1.2027届计算机、人工智能、数学、统计等相关专业在读或应届，本科及以上学历，博士/硕士优先。\n2.具备业务洞察与问题定义能力：能将模糊的研究目标拆解为可验证的实验假设，定对指标、选好方向，而非只会执行。\n3.具备AI驾驭能力：能引导LLM Agent完成复杂研究任务及工程实现，能够独立完成问题建模、论文阅读、算法复现、实验设计、结果分析和迭代优化。有识别AI输出质量问题的技术判断力与review能力。\n4.熟悉LLM及Agent基本机制，包括Agent Loop、Tool Use、Multi-Agent、Reasoning等；熟练使用Python及PyTorch等主流框架。\n5.自驱力强，能在开放性问题中主动推进，在不完美条件下快速验证假设，动手能力和执行能力强。\n加分项：\n1.有AutoML、Neural Architecture Search、AI驱动科研工具（如AI Scientist、AIDE、MLR-Bench类）的研究或工程经验。\n2.熟悉ClaudeCode、OpenClaw等开源Harness的设计与实现，或有Agent评估框架搭建经验。\n3.具有跨学科视野，能将运筹优化、强化学习等方法引入AutoResearch体系。\n4.在NeurIPS、ICML、ICLR、KDD等顶会发表过论文（含在投），或有被广泛使用的开源项目。\n5.对 AI Agent、Agentic RL、AI for Optimization、AI for Science、智能化算法研发系统等前沿方向有持续关注和独立思考，愿意探索 AI 改变算法研究范式的长期问题。\n【为什么是我们】\n1.真实战场：千万级日订单、百万级骑手，提供业界罕见的 Agent 大规模真实落地环境，参与即时配送中的超大规模实时决策问题研究，你将把真实业务中的复杂决策问题抽象为可研究、可评测、可迭代的算法问题，并推动研究成果在真实系统中验证与落地。AI 驱动算法研发前沿阵地，不是玩具 Demo。\n2.资源保障：充足的 GPU 集群资源，顶尖模型Token 供给有保证。\n3.成果导向：团队鼓励发表顶会论文，内部有完善的学术合作通道。\n4.高密度氛围：团队论文产出稳定，组内多名同学在顶会发表论文，并与多所顶尖高校保持长期联合研究。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

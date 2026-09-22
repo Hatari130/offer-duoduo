@@ -289,7 +289,91 @@
   const companyCampaignLabelPattern =
     /^(?:校园招聘|社会招聘|实习生招聘|应届生招聘|应届生|校招生|人才招聘|招聘官网|招聘平台|招聘门户|招聘首页|秋招|春招|校招|社招|招聘|\d{4}届(?:应届生|校招生|实习生)?)$/i;
 
-  const companyFromDocumentTitle = () => {
+  const feishuTenantMap = {
+    dcar: "懂车帝",
+    nio: "蔚来",
+    lixiang: "理想汽车",
+    liuto: "理想汽车",
+    dewu: "得物",
+    minimax: "MiniMax",
+    xpeng: "小鹏汽车",
+    bytedance: "字节跳动",
+    shopee: "Shopee",
+    mihoyo: "米哈游",
+    bilibili: "哔哩哔哩",
+    douyin: "抖音",
+    volcengine: "火山引擎",
+    pupu: "朴朴超市",
+    shein: "SHEIN",
+    kanzhun: "BOSS直聘",
+    bosszhipin: "BOSS直聘",
+    guazi: "瓜子二手车",
+    anker: "安克创新",
+    chagee: "霸王茶姬",
+    mixue: "蜜雪冰城",
+    heytea: "喜茶",
+    haidilao: "海底捞",
+    transsion: "传音控股",
+    transsnet: "传音控股",
+    oppo: "OPPO",
+    vivo: "vivo",
+    honor: "荣耀",
+    zeekr: "极氪",
+    geely: "吉利汽车",
+    horizon: "地平线",
+    kuaishou: "快手",
+    xiaohongshu: "小红书"
+  };
+
+  const feishuTenantFromContext = () => {
+    const host = (location.hostname || "").toLowerCase();
+    const hostMatch = host.match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
+    if (hostMatch) return hostMatch;
+    const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute("href");
+    if (canonical) {
+      try {
+        const u = new URL(canonical);
+        const m = u.hostname.toLowerCase().match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
+        if (m) return m;
+      } catch {}
+    }
+    return undefined;
+  };
+
+  const companyFromFeishu = () => {
+    const websiteScript = document.getElementById("js-websiteInfo");
+    if (websiteScript && websiteScript.textContent) {
+      try {
+        const data = JSON.parse(websiteScript.textContent);
+        const tenantName = clean(data?.tenant_info?.tenant_name || "");
+        if (tenantName && !companyCampaignLabelPattern.test(tenantName)) {
+          return tenantName;
+        }
+        const browserLabel = clean(data?.website_info?.web_ui_config?.browser_label_name || "");
+        const fromBrowserLabel = browserLabel
+          .replace(/[\s｜|·_-]*(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘|招聘)$/i, "")
+          .trim();
+        if (fromBrowserLabel && !companyCampaignLabelPattern.test(fromBrowserLabel)) {
+          return fromBrowserLabel;
+        }
+      } catch {}
+    }
+
+    const logoEl = document.querySelector('header [class*="logo"], [class*="header"] [class*="logo"]');
+    if (logoEl) {
+      const imgAlt = clean(logoEl.querySelector("img")?.getAttribute("alt") || "");
+      if (imgAlt && !companyCampaignLabelPattern.test(imgAlt)) {
+        return imgAlt.replace(/[\s｜|·_-]*(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘|招聘)$/i, "").trim();
+      }
+      const logoText = clean(logoEl.innerText || logoEl.textContent || "");
+      const cleanedLogo = logoText
+        .replace(/[\s｜|·_-]*(?:官方)?(?:校园招聘|社会招聘|招聘官网|招聘平台|招聘门户|招聘首页|人才招聘|招聘)$/i, "")
+        .trim();
+      if (cleanedLogo && !companyCampaignLabelPattern.test(cleanedLogo) && cleanedLogo.length <= 20) {
+        return cleanedLogo;
+      }
+    }
+
     const title = clean(document.title);
     const titleCompany = title.match(
       /(?:^|[-–—_|｜]\s*)([^\s｜|_-]{2,30}?)(?:官方)?(?:校招|校园招聘|招聘官网|招聘平台|招聘门户|人才招聘|招聘)(?:\s*[-–—_|｜]|$)/i
@@ -297,12 +381,36 @@
     if (
       titleCompany &&
       !companyCampaignLabelPattern.test(titleCompany) &&
-      !/^(?:应聘记录|投递记录|申请记录|我的申请)$/.test(titleCompany)
+      !/^(?:应聘记录|投递记录|申请记录|我的申请|我的投递)$/.test(titleCompany)
     ) {
       return titleCompany;
     }
-    const tenant = location.hostname.toLowerCase().match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
-    return tenant === "nio" ? "蔚来" : undefined;
+
+    const tenant = feishuTenantFromContext();
+    if (tenant) {
+      return feishuTenantMap[tenant] || (tenant === "nio" ? "蔚来" : undefined);
+    }
+    return undefined;
+  };
+
+  const companyFromDocumentTitle = () => {
+    if (platformAdapter.id === "feishu-jobs") {
+      const feishuCo = companyFromFeishu();
+      if (feishuCo) return feishuCo;
+    }
+    const title = clean(document.title);
+    const titleCompany = title.match(
+      /(?:^|[-–—_|｜]\s*)([^\s｜|_-]{2,30}?)(?:官方)?(?:校招|校园招聘|招聘官网|招聘平台|招聘门户|人才招聘|招聘)(?:\s*[-–—_|｜]|$)/i
+    )?.[1];
+    if (
+      titleCompany &&
+      !companyCampaignLabelPattern.test(titleCompany) &&
+      !/^(?:应聘记录|投递记录|申请记录|我的申请|我的投递)$/.test(titleCompany)
+    ) {
+      return titleCompany;
+    }
+    const tenant = (location.hostname || "").toLowerCase().match(/^([a-z0-9-]+)\.jobs\.feishu\.cn$/)?.[1];
+    return tenant ? feishuTenantMap[tenant] || (tenant === "nio" ? "蔚来" : undefined) : undefined;
   };
 
   const feishuPositionCandidateFromCard = (card, excludedRegions) => {
@@ -312,10 +420,12 @@
       if (!value || value.length < 2 || value.length > 80) return [];
       if (extractionRules.isHardRejectedPosition(value)) return [];
       if (/项目[：:]|意向城市|投递简历|申请时间|投递时间|20\d{2}[./-]\d{1,2}/.test(value)) return [];
-      // Feishu renders taxonomy as “产品 - 产品经理”. It contains an
-      // occupation token but is metadata, while real titles are independent
-      // leaf lines such as “提前批-AI产品经理（创新产品）”.
-      if (/^.{1,12}\s+[-–—]\s+.{1,30}$/.test(value)) return [];
+      // Feishu renders taxonomy as “产品 - 产品经理”. Filter pure taxonomy metadata lines
+      // but retain real position titles such as “大模型产品运营 - 校招【27届】” or “提前批 - AI产品经理”.
+      const isTaxonomy =
+        /^(?:产品|技术|研发|运营|设计|职能|市场|销售|供应链|财务|法务|人力|行政|综合|教研|交付)\s*[-–—]\s*(?:产品|技术|研发|运营|设计|职能|市场|销售|供应链|财务|法务|人力|行政|综合|教研|交付|[^\s-]{2,8}(?:专员|经理|工程师|主管|总监|设计|开发|运维|测试|运营))$/i.test(value);
+      const hasJobQualifiers = /【|】|届|校招|社招|实习|提前批|大模型|AI|商业化|平台/i.test(value);
+      if (isTaxonomy && !hasJobQualifiers) return [];
       const occupationScore = extractionRules.occupationScore(value);
       if (occupationScore < 3) return [];
       const style = getComputedStyle(element);
@@ -366,37 +476,177 @@
       return [];
     }
 
-    const allElements = Array.from(document.body.querySelectorAll("*")).slice(0, 16000);
-    const anchors = allElements.filter((element) => {
-      if (!isVisibleElement(element)) return false;
-      const value = ownText(element);
-      return /^(?:投递简历|已投递|申请成功|已申请)$/.test(value);
-    });
-    const cards = [];
-    for (const anchor of anchors) {
-      let current = anchor.parentElement;
-      let best;
-      for (let depth = 0; current && current !== document.body && depth < 9; depth += 1) {
-        const text = clean(current.innerText || "");
-        if (!text || text.length > 1800) break;
-        const date = applicationDateFromText(text, true);
-        const position =
-          feishuPositionCandidateFromCard(current, [anchor]) ||
-          positionCandidateFromCard(current, [anchor]);
-        const otherAnchorCount = anchors.filter(
-          (candidate) => candidate !== anchor && current.contains(candidate)
-        ).length;
-        if (date && position && !otherAnchorCount) {
-          best = { card: current, position, appliedAt: date };
+    const company = companyFromFeishu() || companyFromDocumentTitle();
+
+    const cardSelectors = [
+      '[data-test="applicationListItem"]',
+      ".applicationListItem",
+      '[class*="applicationItem__"]',
+      '[class*="application-item"]',
+      '[class*="application-row"]'
+    ];
+
+    let cardElements = Array.from(
+      document.querySelectorAll(cardSelectors.join(","))
+    ).filter((el) => isVisibleElement(el));
+
+    // Keep only top-level card containers (strip descendants)
+    cardElements = cardElements.filter(
+      (card, _, list) => !list.some((parent) => parent !== card && parent.contains(card))
+    );
+
+    if (!cardElements.length) {
+      const allElements = Array.from(document.body.querySelectorAll("*")).slice(0, 16000);
+      const anchors = allElements.filter((element) => {
+        if (!isVisibleElement(element)) return false;
+        const value = ownText(element);
+        return /^(?:投递简历|已投递|申请成功|已申请|简历筛选|初筛|笔试|面试|录用|已结束)$/.test(value);
+      });
+      for (const anchor of anchors) {
+        let current = anchor.parentElement;
+        let bestCard;
+        for (let depth = 0; current && current !== document.body && depth < 12; depth += 1) {
+          const text = clean(current.innerText || "");
+          if (!text || text.length > 2500) break;
+          const pos =
+            feishuPositionCandidateFromCard(current, [anchor]) ||
+            positionCandidateFromCard(current, [anchor]);
+          const otherAnchorCount = anchors.filter(
+            (candidate) => candidate !== anchor && current.contains(candidate)
+          ).length;
+          if (pos && !otherAnchorCount) {
+            bestCard = current;
+          }
+          current = current.parentElement;
         }
-        current = current.parentElement;
+        if (bestCard && !cardElements.includes(bestCard)) {
+          cardElements.push(bestCard);
+        }
       }
-      if (best && !cards.some((item) => item.card === best.card)) cards.push(best);
     }
 
-    const company = companyFromDocumentTitle();
-    return cards.map(({ card, position, appliedAt }) => {
+    const results = [];
+    for (const card of cardElements) {
       const cardText = clean(card.innerText || "");
+      if (!cardText) continue;
+
+      let position;
+      const titleSelectors = [
+        '[class*="applicationListItem-name-text"]',
+        '[class*="applicationListItem-name"]',
+        '[class*="title__"] [class*="name__"]',
+        '[class*="title__"] a',
+        '[class*="title__"]',
+        '[class*="position-title"]',
+        '[class*="positionTitle"]',
+        '[class*="position-name"]',
+        '[class*="positionName"]',
+        "h2",
+        "h3",
+        "h4"
+      ];
+      for (const sel of titleSelectors) {
+        const titleEl = card.querySelector(sel);
+        if (titleEl && isVisibleElement(titleEl)) {
+          let val = clean(titleEl.innerText || titleEl.textContent || "");
+          val = val.replace(/^(?:第[一二三四五1-5]志愿|volunteer[-_]?tag)\s*/i, "").trim();
+          val = val.replace(/\s*(?:第[一二三四五1-5]志愿|volunteer[-_]?tag)$/i, "").trim();
+          if (val && !extractionRules.isHardRejectedPosition(val)) {
+            position = val;
+            break;
+          }
+        }
+      }
+      if (!position) {
+        const candidate =
+          feishuPositionCandidateFromCard(card, []) ||
+          positionCandidateFromCard(card, []);
+        if (candidate) position = candidate.value;
+      }
+      if (!position) continue;
+
+      let city;
+      const citySourceEl = card.querySelector('[class*="cityAndSource"]');
+      if (citySourceEl) {
+        const firstSpan = citySourceEl.querySelector("span");
+        const spanText = clean(firstSpan?.innerText || firstSpan?.textContent || "");
+        if (spanText && /[\u4e00-\u9fa5]/.test(spanText) && !/校招|社招|项目|正式|实习/.test(spanText)) {
+          city = spanText;
+        }
+      }
+      if (!city) {
+        const preferredEl = card.querySelector('[class*="perferedCityInfo"]');
+        if (preferredEl) {
+          const prefText = clean(preferredEl.innerText || preferredEl.textContent || "");
+          const m = prefText.match(/(?:意向城市|期望城市)[：:\s]*([^\n;；]{2,30})/);
+          if (m) {
+            city = m[1].replace(/[①②③④⑤1-5]\s*/g, "").replace(/[、,，\s]+$/, "").trim();
+          }
+        }
+      }
+      if (!city) {
+        city = cardText.match(
+          /(?:^|[\s/／|｜])(北京(?:[、/，,]杭州)?|杭州(?:[、/，,]北京)?|上海|广州|深圳|武汉|成都|南京|苏州|西安|天津|重庆|长沙|郑州|青岛|合肥|厦门|福州|大连|济南|宁波|无锡|沈阳|长春|哈尔滨)(?:市)?(?=[\s/／|｜、,，]|$)/
+        )?.[1];
+      }
+
+      let appliedAt;
+      const timeEl = card.querySelector('[class*="time__"], [class*="time-"], [class*="time"], [class*="date-"], [class*="date__"]');
+      if (timeEl) {
+        const tText = clean(timeEl.innerText || timeEl.textContent || "");
+        const dMatch = tText.match(/(20\d{2}[年./-]\d{1,2}[月./-]\d{1,2}日?)/);
+        if (dMatch) {
+          appliedAt = applicationDateValue(dMatch[1]);
+        }
+      }
+      if (!appliedAt) {
+        appliedAt = applicationDateFromText(cardText, true);
+      }
+
+      let currentStage = "已投递";
+      let terminalStatus;
+      const steps = [];
+
+      const stepItems = Array.from(
+        card.querySelectorAll(
+          '[class*="step-item"], [class*="stepItem"], [class*="semi-steps-item"], [class*="timeline-item"]'
+        )
+      );
+      if (stepItems.length) {
+        for (const sEl of stepItems) {
+          const sText = clean(sEl.innerText || sEl.textContent || "");
+          const cls = String(sEl.className || "");
+          const isCurrent = /current|active|process/i.test(cls);
+          const isDone = /done|finish|success|completed/i.test(cls);
+          const isFailed = /fail|error|reject|terminate/i.test(cls);
+          const label = sText.split(/\s+/)[0] || sText;
+          const state = isFailed ? "failed" : isCurrent ? "current" : isDone ? "completed" : "pending";
+          steps.push({ label, state });
+          if (isCurrent) {
+            currentStage = /^(?:投递简历|简历投递)$/.test(label) ? "已投递" : label;
+          }
+          if (isFailed) {
+            terminalStatus = label;
+          }
+        }
+      }
+
+      if (!steps.length) {
+        if (/已结束|流程终止|未通过|不合适|已淘汰/.test(cardText)) {
+          terminalStatus = "已结束";
+          currentStage = "已结束";
+        } else if (/面试/.test(cardText) && !/投递简历/.test(cardText)) {
+          currentStage = "面试";
+        } else if (/笔试|在线测评/.test(cardText) && !/投递简历/.test(cardText)) {
+          currentStage = "笔试";
+        } else if (/简历筛选|初筛/.test(cardText) && !/投递简历/.test(cardText)) {
+          currentStage = "简历初筛";
+        } else {
+          currentStage = "已投递";
+        }
+        steps.push({ label: currentStage, state: "current" });
+      }
+
       const recordUrl = Array.from(card.querySelectorAll("a[href]"))
         .map((anchor) => anchor.href)
         .find((href) => /(?:position|job|detail)/i.test(href));
@@ -410,24 +660,24 @@
             return undefined;
           }
         })();
-      const city = cardText.match(
-        /(?:^|\s)(北京|天津|上海|重庆|广州|深圳|杭州|南京|苏州|武汉|成都|西安|郑州|济南|青岛|长沙|厦门|福州|合肥|南昌|昆明|贵阳|南宁|海口|沈阳|大连|长春|哈尔滨)(?:市)?(?=\s|$)/
-      )?.[1];
-      return {
+
+      results.push({
         jobId,
         recordUrl,
-        position: position.value,
+        position,
         company,
         city,
         appliedAt,
-        currentStage: "已投递",
-        terminalStatus: undefined,
+        currentStage,
+        terminalStatus,
         context: cardText.slice(0, 1200),
         adapterId: platformAdapter.id,
-        steps: [{ label: "已投递", state: "current" }],
+        steps,
         confidence: 0.98
-      };
-    });
+      });
+    }
+
+    return results;
   };
 
   const positionCandidateFromCard = (card, progressRegions) => {
@@ -835,23 +1085,67 @@
       })
       .find(Boolean);
 
+    const progressEvidence = extractProgressEvidence();
+
+    let finalCompany = normalizedCompany || company;
+    let finalPosition = position;
+    let finalCity = city;
+    let finalJobId = jobId;
+    let finalAppliedAt = appliedAtRaw
+      ? appliedAtRaw.replace(/[年月./]/g, "-").replace(/日(?=\s|$)/, "")
+      : undefined;
+    let finalRecruitmentType = recruitmentType;
+
+    if (progressEvidence.length > 0) {
+      const first = progressEvidence[0];
+      if (first.company && (!finalCompany || finalCompany.toLowerCase() === location.hostname.toLowerCase())) {
+        finalCompany = first.company;
+      }
+      if (
+        !finalPosition ||
+        extractionRules.isHardRejectedPosition(finalPosition) ||
+        /^(?:应聘记录|应聘进度|投递记录|申请记录|我的申请|我的投递|职位列表|职位详情)$/i.test(finalPosition)
+      ) {
+        finalPosition = first.position;
+      }
+      if (!finalCity && first.city) {
+        finalCity = first.city;
+      }
+      if (!finalJobId && first.jobId) {
+        finalJobId = first.jobId;
+      }
+      if (!finalAppliedAt && first.appliedAt) {
+        finalAppliedAt = first.appliedAt;
+      }
+      if (!finalRecruitmentType && first.position) {
+        if (/提前批/i.test(first.position)) finalRecruitmentType = "autumn_early";
+        else if (/暑期实习|summer/i.test(first.position)) finalRecruitmentType = "summer_internship";
+        else if (/春招/i.test(first.position)) finalRecruitmentType = "spring";
+        else if (/日常实习|实习/i.test(first.position)) finalRecruitmentType = "daily_internship";
+        else if (/校招|届|秋招/i.test(first.position)) finalRecruitmentType = "autumn";
+      }
+    }
+
+    const calculatedConfidence =
+      progressEvidence.length > 0 && finalPosition && !extractionRules.isHardRejectedPosition(finalPosition)
+        ? Math.max(0.98, Math.min(0.98, 0.45 + confidenceParts * 0.1))
+        : Math.min(0.98, 0.45 + confidenceParts * 0.1);
+
     return {
-      company: normalizedCompany || company,
-      position,
-      jobId,
-      city,
-      recruitmentType,
-      appliedAt: appliedAtRaw
-        ? appliedAtRaw.replace(/[年月./]/g, "-").replace(/日(?=\s|$)/, "")
-        : undefined,
+      company: finalCompany,
+      position: finalPosition,
+      jobId: finalJobId,
+      city: finalCity,
+      recruitmentType: finalRecruitmentType,
+      appliedAt: finalAppliedAt,
       summary: (description || responsibilities.slice(0, 2).join(" ")).slice(0, 280),
       responsibilities,
       requirements,
       sourceUrl: location.href,
       sourceHost: location.hostname,
       rawExcerpt: text.slice(0, 16000),
-      progressEvidence: extractProgressEvidence(),
-      confidence: Math.min(0.98, 0.45 + confidenceParts * 0.1)
+      progressEvidence,
+      confidence: calculatedConfidence
     };
   };
 

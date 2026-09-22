@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348833221&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.645Z",
+  "data": {
+    "jobUnionId": "4348833221",
+    "name": "【基座大模型北斗实习】大模型训练研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：大模型的能力上限，很大程度取决于训练系统的天花板。我们在做的事：让千亿参数的模型在万卡集群上跑得更快、更稳、更省——把每一张GPU的算力榨干，把每一次训练崩溃的损失降到最低，把工程师等待结果的时间从“几天”压到“几小时”。\n\n1、分布式训练框架优化\n①深入源码，针对美团训练场景做定制化改造。\n②设计和实现更高效的张量并行、流水线并行、数据并行混合策略。\n③探索 MoE（混合专家） 模型的并行训练方案，解决专家负载均衡、通信爆炸等硬问题。\n2、计算效率优化\n①基于 CUDA / Triton 编写和优化高性能算子（FlashAttention、FusedMLP等）。\n②分析训练 profiling 数据，定位计算/通信/内存的瓶颈并针对性优化。\n③推进混合精度训练、梯度压缩等技术落地。",
+    "jobRequirement": "1、GPU编程：写过CUDA kernel，理解warp/SM/显存层次结构；\n2、训练框架：用过或改过Megatron/DeepSpeed/FSDP，不只是跑过demo；\n3、通信系统：了解NCCL原理，或有网络协议栈/RDMA相关经验；\n4、编译优化：接触过 XLA/TorchInductor/TVM 等编译器，或做过IR优化；\n5、顶会论文：MLSys/OSDI/SOSP/ATC/ISCA 等系统顶会在手。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223031000,
+    "refreshTime": 1775223031000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大模型训练研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：大模型的能力上限，很大程度取决于训练系统的天花板。我们在做的事：让千亿参数的模型在万卡集群上跑得更快、更稳、更省——把每一张GPU的算力榨干，把每一次训练崩溃的损失降到最低，把工程师等待结果的时间从“几天”压到“几小时”。\n1、分布式训练框架优化\n①深入源码，针对美团训练场景做定制化改造。\n②设计和实现更高效的张量并行、流水线并行、数据并行混合策略。\n③探索 MoE（混合专家） 模型的并行训练方案，解决专家负载均衡、通信爆炸等硬问题。\n2、计算效率优化\n①基于 CUDA / Triton 编写和优化高性能算子（FlashAttention、FusedMLP等）。\n②分析训练 profiling 数据，定位计算/通信/内存的瓶颈并针对性优化。\n③推进混合精度训练、梯度压缩等技术落地。\n任职要求\n1、GPU编程：写过CUDA kernel，理解warp/SM/显存层次结构；\n2、训练框架：用过或改过Megatron/DeepSpeed/FSDP，不只是跑过demo；\n3、通信系统：了解NCCL原理，或有网络协议栈/RDMA相关经验；\n4、编译优化：接触过 XLA/TorchInductor/TVM 等编译器，或做过IR优化；\n5、顶会论文：MLSys/OSDI/SOSP/ATC/ISCA 等系统顶会在手。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4346490662&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:52.278Z",
+  "data": {
+    "jobUnionId": "4346490662",
+    "name": "【基座大模型北斗实习】大语言模型后训练前沿算法研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：大语言模型后训练前沿算法研究包括但不限于：\n1、对齐算法研发：包括 SFT 数据建设，指令微调等。构建高质量的训练数据，包括自动化数据清洗、合成数据生产、高质量 Prompt Engineering 等。优化模型复杂指令遵循、逻辑推理、创作写作、代码生成以及工具调用等能力，提升模型综合能力和用户体验。\n2、人类偏好对齐：包括奖励模型、人类偏好对齐等前沿强化算法的探索和实践，提升模型在包括创意写作、对话风格以及模型内生安全对齐等人类偏好上的可控性，生成更符合人类价值观、逻辑习惯和审美偏好的内容。\n3、跟踪并实现最新的后训练技术（如数据领域自动化配比、后训练机制设计和优化等）。",
+    "jobRequirement": "1、硕士及以上学历，计算机、人工智能、数学等相关专业，博士优先；\n2、熟悉NLP、LLM、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实践经验；\n3、有较强的分析和解决问题能力，能够自主探索、设计验证和推进落地。\n\n加分项：\n1、在有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文（如NeurIPS, ICLR, ICML, ACL, EMNLP等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223033000,
+    "refreshTime": 1775223033000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大语言模型后训练前沿算法研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：大语言模型后训练前沿算法研究包括但不限于：\n1、对齐算法研发：包括 SFT 数据建设，指令微调等。构建高质量的训练数据，包括自动化数据清洗、合成数据生产、高质量 Prompt Engineering 等。优化模型复杂指令遵循、逻辑推理、创作写作、代码生成以及工具调用等能力，提升模型综合能力和用户体验。\n2、人类偏好对齐：包括奖励模型、人类偏好对齐等前沿强化算法的探索和实践，提升模型在包括创意写作、对话风格以及模型内生安全对齐等人类偏好上的可控性，生成更符合人类价值观、逻辑习惯和审美偏好的内容。\n3、跟踪并实现最新的后训练技术（如数据领域自动化配比、后训练机制设计和优化等）。\n任职要求\n1、硕士及以上学历，计算机、人工智能、数学等相关专业，博士优先；\n2、熟悉NLP、LLM、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实践经验；\n3、有较强的分析和解决问题能力，能够自主探索、设计验证和推进落地。\n加分项：\n1、在有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文（如NeurIPS, ICLR, ICML, ACL, EMNLP等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,46 @@
+{
+  "source_job_id": "8d748921eea948cca0d82150889ee03c",
+  "verified_at": "2026-09-15T01:32:06.106Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=8d748921eea948cca0d82150889ee03c",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=8d748921eea948cca0d82150889ee03c&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "8d748921eea948cca0d82150889ee03c",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "超声算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "超声无损、超声成像、超声流量",
+        "postContent": "1、 负责工业超声阵列信号的信号收发系统、声场设计、波束形成、信号处理和成像算法研究、仿真和设计实现。\n2、 主导或参与制定试验方案，并进行试验数据分析和方案验证。现场的数据采集和分析，负责问题解决和算法迭代。",
+        "postRequire": "1. 硕士及以上学历，电子信息、雷达信号、水声工程、无损检测、生物医学工程等信号处理相关专业；\n2. 掌握信号处理和数据处理的基础理论，熟练应用信号处理算法、声场仿真、波束形成算法、聚焦成像算法等，熟练使用matlab、C/C++编程；\n3、具备较强的学习和调研能力，有较强的数据分析、逻辑推理能力；\n4、有超声无损检测、工业/医疗/水声超声成像等开发经验者优先；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        },
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

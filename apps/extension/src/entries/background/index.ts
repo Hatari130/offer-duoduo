@@ -143,7 +143,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 
 let cloudSyncDebounce: ReturnType<typeof setTimeout> | undefined;
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName !== "local" || (!changes[CLOUD_SYNC_OUTBOX_KEY] && !changes["offerflow.resumes"])) return;
+  if (areaName !== "local" || !changes[CLOUD_SYNC_OUTBOX_KEY]) return;
   if (cloudSyncDebounce) clearTimeout(cloudSyncDebounce);
   cloudSyncDebounce = setTimeout(() => {
     cloudSyncDebounce = undefined;

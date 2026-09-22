@@ -1,0 +1,24 @@
+{
+  "source": "https://campushr.hikvision.com/school?schoolType=nozxf&activeTab=0",
+  "scope": "用户链接 activeTab=0 应届生入口，2027校园招聘；不含实习生标签",
+  "started_at": "2026-09-15T01:31:33.994Z",
+  "finished_at": "2026-09-15T01:32:21.337Z",
+  "method": "程序化官方接口",
+  "expected": 168,
+  "pages": 17,
+  "list_count": 168,
+  "unique": 168,
+  "detail_verified": 168,
+  "variant_count": 429,
+  "failures": [],
+  "published_known": 0,
+  "published_unknown": 168,
+  "counts_by_type": {
+    "校招": 168
+  },
+  "raw_evidence": [
+    "raw-pages.json",
+    "raw-jobs.json",
+    "details/"
+  ]
+}

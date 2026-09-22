@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348779862&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:52.805Z",
+  "data": {
+    "jobUnionId": "4348779862",
+    "name": "【基座大模型北斗实习】开放域智能体交互与自动化评测演进机制研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：随着 OpenClaw、Claude Code 等 Agent 进入实战领域，传统的静态评测已无法衡量 Agent 的长程规划、自主纠错与真实环境交互能力。我们寻找对 Agent 评测范式有独特见解的同学，共同定义下一代 Agent 的考卷。你将参与的工作有：\n\n1、评测范式研究与落地：\n①针对 OpenClaw 及 Claude Code 等主流 Agent，构建基于真实生产力场景，如自动化办公、复杂代码重构、多工具协同等的动态评测沙盒环境。\n②探索从“单轮对话”转向“长程任务”的评测机制，研究如何量化 Agent 的记忆一致性与环境感知力。\n2、高价值方案产出：\n①设计并构建能反映用户体感的评测集，不仅关注 通过率，更深入拆解用户在交互过程中的使用体验。\n②建立 Agent 错误归因体系，针对 Agent 陷入死循环、幻觉指令、工具调用失败等典型场景进行深度诊断。\n3、未来形态探索：\n①跟踪前沿 Agent 发展，研究在多智能体协同、自主进化等未来形态下的 Agent 形态和相应的评测基准。\n②利用 LLM/Agent-as-a-Judge 的方式，提升自动化评测的准确性与效率。",
+    "jobRequirement": "1、硕士及以上学历，计算机或相关专业，博士优先；\n2、在 ML / NLP / RL / CV / Speech 等相关方向有扎实的研究基础，在 ACL / EMNLP / NAACL / NeurIPS / ICML / ICLR / CVPR / ICCV / ICASSP 等顶级会议发表论文者优先；\n3、优秀的代码和算法功底，具备工匠精神，ACM/ICPC、NOI/IOI、Top Coder、Kaggle等比赛获奖者优先；\n4、在大模型领域或强化学习领域，主导过大影响力的项目或论文者优先；\n5、出色的问题分析和解决能力，有自主探索、深耕一个领域的决心和定力。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223033000,
+    "refreshTime": 1775223033000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】开放域智能体交互与自动化评测演进机制研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：随着 OpenClaw、Claude Code 等 Agent 进入实战领域，传统的静态评测已无法衡量 Agent 的长程规划、自主纠错与真实环境交互能力。我们寻找对 Agent 评测范式有独特见解的同学，共同定义下一代 Agent 的考卷。你将参与的工作有：\n1、评测范式研究与落地：\n①针对 OpenClaw 及 Claude Code 等主流 Agent，构建基于真实生产力场景，如自动化办公、复杂代码重构、多工具协同等的动态评测沙盒环境。\n②探索从“单轮对话”转向“长程任务”的评测机制，研究如何量化 Agent 的记忆一致性与环境感知力。\n2、高价值方案产出：\n①设计并构建能反映用户体感的评测集，不仅关注 通过率，更深入拆解用户在交互过程中的使用体验。\n②建立 Agent 错误归因体系，针对 Agent 陷入死循环、幻觉指令、工具调用失败等典型场景进行深度诊断。\n3、未来形态探索：\n①跟踪前沿 Agent 发展，研究在多智能体协同、自主进化等未来形态下的 Agent 形态和相应的评测基准。\n②利用 LLM/Agent-as-a-Judge 的方式，提升自动化评测的准确性与效率。\n任职要求\n1、硕士及以上学历，计算机或相关专业，博士优先；\n2、在 ML / NLP / RL / CV / Speech 等相关方向有扎实的研究基础，在 ACL / EMNLP / NAACL / NeurIPS / ICML / ICLR / CVPR / ICCV / ICASSP 等顶级会议发表论文者优先；\n3、优秀的代码和算法功底，具备工匠精神，ACM/ICPC、NOI/IOI、Top Coder、Kaggle等比赛获奖者优先；\n4、在大模型领域或强化学习领域，主导过大影响力的项目或论文者优先；\n5、出色的问题分析和解决能力，有自主探索、深耕一个领域的决心和定力。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

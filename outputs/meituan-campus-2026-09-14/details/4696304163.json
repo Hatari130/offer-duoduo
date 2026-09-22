@@ -1,0 +1,176 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4696304163&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:57.875Z",
+  "data": {
+    "jobUnionId": "4696304163",
+    "name": "AI产品Builder",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "产品类",
+    "jobFamilyGroup": "产品",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG039",
+        "name": "核心本地商业-医药健康事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG011",
+        "name": "人力资源平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG044",
+        "name": "核心本地商业-平台及职能部门",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG032",
+        "name": "核心本地商业-服务零售事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG047",
+        "name": "核心本地商业-酒店旅行",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG012",
+        "name": "软硬件服务-骑行事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 参与AI原生产品、Agent产品、内部效率工具的从0到1设计与验证。\n2. 使用AI工具快速完成需求分析、原型设计、Prompt设计、流程搭建和效果验证。\n3. 与研发、算法、设计、运营团队协作，推动AI产品从概念到可用版本落地。\n4. 分析用户需求和模型能力边界，设计更自然、高效、可信的AI交互方式。\n5. 跟踪AI产品和Agent工具趋势，持续探索新的产品形态。",
+    "jobRequirement": "1. 本科及以上学历，专业不限，计算机、产品设计、交互设计、数据科学背景优先。\n2. 对AI产品有强兴趣，是AI工具的高频使用者。\n3. 具备良好的逻辑表达、需求拆解、文档写作和原型设计能力。\n4. 能使用AI工具提升自己的工作效率，如写PRD、做原型、搭Demo、分析用户反馈。\n5. 对用户体验敏感，能判断一个AI功能是否真正解决问题。\n具备以下经验者优先\n1. 有个人AI产品、Bot、Agent、Workflow、插件或小程序项目。\n2. 会基础编程，能写\n  Python、JavaScript、SQL 或自动化脚本。\n3. 有作品集、产品分析文章、技术博客或开源项目。\n岗位亮点\n1. 前沿的业务方向：100％精力投入AI，兼具发展前景与挑战性，具有丰富的业务落地场景和海量的用户； \n2. 与懂AI的人同行：AI领域专家直接带教，团队人才云集，日常在用最好的模型/工具，成长迅速；  \n3. 产研合作效率高：不写复杂的PRD，自己可以写Demo，快速做实验，并支持去生产环境做实验",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960987000,
+    "refreshTime": 1786960987000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI产品Builder\n应届-校园招聘\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 参与AI原生产品、Agent产品、内部效率工具的从0到1设计与验证。\n2. 使用AI工具快速完成需求分析、原型设计、Prompt设计、流程搭建和效果验证。\n3. 与研发、算法、设计、运营团队协作，推动AI产品从概念到可用版本落地。\n4. 分析用户需求和模型能力边界，设计更自然、高效、可信的AI交互方式。\n5. 跟踪AI产品和Agent工具趋势，持续探索新的产品形态。\n任职要求\n1. 本科及以上学历，专业不限，计算机、产品设计、交互设计、数据科学背景优先。\n2. 对AI产品有强兴趣，是AI工具的高频使用者。\n3. 具备良好的逻辑表达、需求拆解、文档写作和原型设计能力。\n4. 能使用AI工具提升自己的工作效率，如写PRD、做原型、搭Demo、分析用户反馈。\n5. 对用户体验敏感，能判断一个AI功能是否真正解决问题。\n具备以下经验者优先\n1. 有个人AI产品、Bot、Agent、Workflow、插件或小程序项目。\n2. 会基础编程，能写\nPython、JavaScript、SQL 或自动化脚本。\n3. 有作品集、产品分析文章、技术博客或开源项目。\n岗位亮点\n1. 前沿的业务方向：100％精力投入AI，兼具发展前景与挑战性，具有丰富的业务落地场景和海量的用户；\n2. 与懂AI的人同行：AI领域专家直接带教，团队人才云集，日常在用最好的模型/工具，成长迅速；\n3. 产研合作效率高：不写复杂的PRD，自己可以写Demo，快速做实验，并支持去生产环境做实验\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

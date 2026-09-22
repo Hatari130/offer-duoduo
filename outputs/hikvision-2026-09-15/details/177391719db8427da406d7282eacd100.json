@@ -1,0 +1,74 @@
+{
+  "source_job_id": "177391719db8427da406d7282eacd100",
+  "verified_at": "2026-09-15T01:32:11.748Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=177391719db8427da406d7282eacd100",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=177391719db8427da406d7282eacd100&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "7aa65d0e62a3495ea2911a8688a846f6",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "结构设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "结构",
+        "techDire": "不限",
+        "postContent": "1、负责公司产品结构设计工作；\r\n2、负责样机、小批量导入、验证及改进；\r\n3、负责开发过程中的各部门沟通协作。",
+        "postRequire": "1、本科及以上学历，机械设计、机械制造、机电一体化等相关专业优先；\r\n2、对塑胶、钣金、压铸等加工成型工艺、表面处理及材料特性有初步了解；\r\n3、熟悉常见机构的原理及应用；\r\n4、熟练使用3D、2D设计软件；\r\n5、具备较强的学习能力、问题分析与解决能力、团队协作能力，良好的沟通表达能力，具有责任心、创新精神；\r\n6、有机械设计大赛相关获奖经历者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "177391719db8427da406d7282eacd100",
+        "adNeedDept": "海康机器人(已关闭)#海康微影(已关闭)#海康消防(已关闭)#智能硬件-交通与停车(已关闭)#智能硬件-前端业务(已关闭)#智能硬件-IT产品(已关闭)#智能硬件-门禁(已关闭)#智能硬件-移动与穿戴(已关闭)#智能硬件-显控(已关闭)#智能硬件-音频与传感(已关闭)#统招统分#萤石网络(已关闭)",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-23 21:41:07"
+      },
+      "departments": [
+        {
+          "id": "709f5d7c7531481c977a040df654d67f",
+          "name": "统招统分",
+          "description": "统招岗位由海康威视的多个部门联合招聘，所有候选人均由公司参照各部门需求进行统一部门分配。海康威视欢迎你的加入！"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "33b387d10df94a22943943bc33b7fd8e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "结构设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "结构",
+        "techDire": "不限",
+        "postContent": "1、负责公司产品结构设计工作；\r\n2、负责样机、小批量导入、验证及改进；\r\n3、负责开发过程中的各部门沟通协作。",
+        "postRequire": "1、本科及以上学历，机械设计、机械制造、机电一体化等相关专业优先；\r\n2、对塑胶、钣金、压铸等加工成型工艺、表面处理及材料特性有初步了解；\r\n3、熟悉常见机构的原理及应用；\r\n4、熟练使用3D、2D设计软件；\r\n5、具备较强的学习能力、问题分析与解决能力、团队协作能力，良好的沟通表达能力，具有责任心、创新精神；\r\n6、有机械设计大赛相关获奖经历者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "西安市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "177391719db8427da406d7282eacd100",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-23 21:41:07"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

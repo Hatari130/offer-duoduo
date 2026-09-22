@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694790935&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:58.371Z",
+  "data": {
+    "jobUnionId": "4694790935",
+    "name": "公共关系岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "职能类",
+    "jobFamilyGroup": "公司事务",
+    "cityList": [
+      {
+        "code": "001010001",
+        "name": "南京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG010",
+        "name": "公司事务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "岗位职责：\n掌握公司和各业务的大事和发展战略，协助相关负责人推动公司和各业务的品牌形象建设。\n根据公司和相关业务传播目标，与团队配合制定内容传播策略和创意事件策划，协调相关合作渠道，联动打造良好公司品牌公共形象。\n参与相关公关稿件的撰写，拟定对外口径，监控、评估发布媒体的宣传效果；能运用AI工具辅助内容创作与舆情监测等。\n协助相关负责人支持公司和各业务BG线下公关活动，负责活动的统筹管理、沟通协作与落地执行。\n参与部门AI应用探索，包括Agent开发、知识库建设、Skill开发、智能工作流搭建等，推动大模型应用在公共沟通实际业务场景中的落地。",
+    "jobRequirement": "岗位要求：\n专业基础：新闻传播，中文，社会学，理工科等专业不限。\n为人正直、诚信，踏实，善用第一性原理思考问题。\n有敏锐的舆情嗅觉和风险研判意识，对社会热点、行业趋势、政策走势有初级洞察。\n具备极强的学习能力，对新事物充满好奇心；高度责任心，良好的内外沟通和协作能力。\n加分项：\n了解或使用过 AI 编码/Agent 工具，对知识库、Agent、自动化工作流有基本理解。不要求工程开发能力，但需要理解这些应用能解决什么问题、适用什么场景。若有动手开发经验并产出Demo或案例者更佳。\n愿意花时间琢磨“AI+PR”产品。初步感知AI的能力边界，具备一定的产品审美能力，且能从用户视角评估AI产品的体验质量，愿意执着追求“好的内容及产品”，并在落地中不断打磨细节。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960984000,
+    "refreshTime": 1786960984000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n公共关系岗\n应届-校园招聘\n工作地点：南京市、北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n岗位职责：\n掌握公司和各业务的大事和发展战略，协助相关负责人推动公司和各业务的品牌形象建设。\n根据公司和相关业务传播目标，与团队配合制定内容传播策略和创意事件策划，协调相关合作渠道，联动打造良好公司品牌公共形象。\n参与相关公关稿件的撰写，拟定对外口径，监控、评估发布媒体的宣传效果；能运用AI工具辅助内容创作与舆情监测等。\n协助相关负责人支持公司和各业务BG线下公关活动，负责活动的统筹管理、沟通协作与落地执行。\n参与部门AI应用探索，包括Agent开发、知识库建设、Skill开发、智能工作流搭建等，推动大模型应用在公共沟通实际业务场景中的落地。\n任职要求\n岗位要求：\n专业基础：新闻传播，中文，社会学，理工科等专业不限。\n为人正直、诚信，踏实，善用第一性原理思考问题。\n有敏锐的舆情嗅觉和风险研判意识，对社会热点、行业趋势、政策走势有初级洞察。\n具备极强的学习能力，对新事物充满好奇心；高度责任心，良好的内外沟通和协作能力。\n加分项：\n了解或使用过 AI 编码/Agent 工具，对知识库、Agent、自动化工作流有基本理解。不要求工程开发能力，但需要理解这些应用能解决什么问题、适用什么场景。若有动手开发经验并产出Demo或案例者更佳。\n愿意花时间琢磨“AI+PR”产品。初步感知AI的能力边界，具备一定的产品审美能力，且能从用户视角评估AI产品的体验质量，愿意执着追求“好的内容及产品”，并在落地中不断打磨细节。\n工作城市\n南京市、北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

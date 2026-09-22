@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4499868041&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:48.093Z",
+  "data": {
+    "jobUnionId": "4499868041",
+    "name": "【无人车北斗实习】世界模型实习生（感知数据生成方向）",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【工作内容】\n1. 探索世界模型在感知数据生成中的应用，提升自动驾驶训练数据的多样性与真实性\n2. 研究世界模型在端到端闭环评估中的作用机制，推动评估体系的智能化升级\n3. 参与模型迭代与大规模数据实验，输出可复现的研究结论与工程方案\n【岗位吸引点】\n1. 海量真实数据资源：美团 RoboVan 车队积累了丰富的真实物流驾驶数据，为世界模型训练与感知数据生成提供高质量、多样化的数据基础\n2. 研究价值高、应用空间大：感知数据生成直接服务于车队的训练数据扩充与安全场景覆盖，研究成果对业务有直接影响\n3. 评估体系共建机会：有机会主导或深度参与闭环评估体系建设，形成在业界有独特价值的技术积累",
+    "jobRequirement": "1. 硕士期间发表至少1篇、博士期间发表至少3篇 CCF-A 类 World Model 或闭环仿真方向论文\n2. 具有头部自动驾驶公司 E2E 相关方向实习经历，理解感知数据生成与评估全流程\n3. 工程能力突出，具备生成模型训练与大规模数据处理的实践经验",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1779432404000,
+    "refreshTime": 1779432404000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【无人车北斗实习】世界模型实习生（感知数据生成方向）\n实习-北斗计划\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【工作内容】\n1. 探索世界模型在感知数据生成中的应用，提升自动驾驶训练数据的多样性与真实性\n2. 研究世界模型在端到端闭环评估中的作用机制，推动评估体系的智能化升级\n3. 参与模型迭代与大规模数据实验，输出可复现的研究结论与工程方案\n【岗位吸引点】\n1. 海量真实数据资源：美团 RoboVan 车队积累了丰富的真实物流驾驶数据，为世界模型训练与感知数据生成提供高质量、多样化的数据基础\n2. 研究价值高、应用空间大：感知数据生成直接服务于车队的训练数据扩充与安全场景覆盖，研究成果对业务有直接影响\n3. 评估体系共建机会：有机会主导或深度参与闭环评估体系建设，形成在业界有独特价值的技术积累\n任职要求\n1. 硕士期间发表至少1篇、博士期间发表至少3篇 CCF-A 类 World Model 或闭环仿真方向论文\n2. 具有头部自动驾驶公司 E2E 相关方向实习经历，理解感知数据生成与评估全流程\n3. 工程能力突出，具备生成模型训练与大规模数据处理的实践经验\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

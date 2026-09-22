@@ -1,0 +1,107 @@
+{
+  "source_job_id": "3d5022426daa4305be735b3f5b3cfbf7",
+  "verified_at": "2026-09-15T01:32:18.821Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=3d5022426daa4305be735b3f5b3cfbf7",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=3d5022426daa4305be735b3f5b3cfbf7&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "e58297c45629479ab82671510ea3ddd8",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "智能传感算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "传感器/深度感知/三维重建/VSLAM/AR/移动机器人/计算光学成像",
+        "postContent": "负责毫米波雷达、激光雷达、深度感知（TOF、双目、结构光等）、三维重建、VSLAM、AR、计算光学、生物医疗传感的算法或者系统的设计及开发。",
+        "postRequire": "1、硕士及以上学历，计算机、光学、电子、仪器、通信、自控、数学等相关专业；\n2、有较好的系统思维，知识面丰富，熟悉计算机视觉、软件工程、传感器、信号处理、光学设计、嵌入式、硬件等相关技术之一；\n3、具备较强的全局观，良好的沟通与协作能力，能够系统、全面地看待及分析问题；\n4、具备下述项目经验之一者优先：\n1)  具备雷达信号处理、深度感知（双目/TOF/结构光等）、激光雷达、AR、三维重建、VSLAM、计算光学（多/高/超光谱等）、生物医疗传感等系统设计或算法开发经验之一；\n2)  具备光学、传感器件系统设计开发经验之一；\n3)  具备DSP、ARM等软硬件系统设计开发优化经验；\n4）熟悉C/C++，熟悉计算机体系结构，具备丰富的软件工程实践经验，有大型软件系统开发经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "石家庄市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "3d5022426daa4305be735b3f5b3cfbf7",
+        "adNeedDept": "海康汽车电子",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-09-02 11:40:45"
+      },
+      "departments": [
+        {
+          "id": "b276e4ba30ae4cd2afe86d0ba755e25f",
+          "name": "海康汽车电子",
+          "description": "海康汽车电子聚焦于智能驾驶领域，以视频为核心，融合雷达等传感器，深入研究人工智能、感知数据分析与处理等技术，致力于成为行业领先的以视频技术为核心的车辆安全和智能化产品供应商。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "2d23fabfff0d4c37a9619d8528328f6d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "智能传感算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "传感器/深度感知/三维重建/VSLAM/AR/移动机器人/计算光学成像",
+        "postContent": "负责毫米波雷达、激光雷达、深度感知（TOF、双目、结构光等）、三维重建、VSLAM、AR、计算光学、生物医疗传感的算法或者系统的设计及开发。",
+        "postRequire": "1、硕士及以上学历，计算机、光学、电子、仪器、通信、自控、数学等相关专业；\n2、有较好的系统思维，知识面丰富，熟悉计算机视觉、软件工程、传感器、信号处理、光学设计、嵌入式、硬件等相关技术之一；\n3、具备较强的全局观，良好的沟通与协作能力，能够系统、全面地看待及分析问题；\n4、具备下述项目经验之一者优先：\n1)  具备雷达信号处理、深度感知（双目/TOF/结构光等）、激光雷达、AR、三维重建、VSLAM、计算光学（多/高/超光谱等）、生物医疗传感等系统设计或算法开发经验之一；\n2)  具备光学、传感器件系统设计开发经验之一；\n3)  具备DSP、ARM等软硬件系统设计开发优化经验；\n4）熟悉C/C++，熟悉计算机体系结构，具备丰富的软件工程实践经验，有大型软件系统开发经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "3d5022426daa4305be735b3f5b3cfbf7",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-09-02 11:40:45"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "15ef4ae253c049ffbb1f9ed87b170de5",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "智能传感算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "多模态感知/信号处理/毫米波雷达/数据仿真/三维重建",
+        "postContent": "1. 负责多传感器（视觉、毫米波雷达、激光雷达、X光等）信号与数据的智能处理算法调研、研究与开发；\n2. 负责基于人工智能/深度学习方法的传感器信号处理、数据增强、降噪与抗干扰等算法研究；\n3. 负责多传感器数据与特征级融合算法的设计与实现；\n4. 面向垂直应用场景，负责传感智能处理算法的方案设计、仿真验证与工程化落地；\n5. 跟踪传感信号处理与人工智能前沿技术，完成算法仿真与开发。",
+        "postRequire": "1、硕士及以上学历，专业不限；\n2、具有良好的数学功底和扎实的编程基础；熟练掌握Python，熟悉C/C++；熟练使用PyTorch或其它开源训练框架；\n3、对机器学习、深度学习有较深入的理解与认识；\n4、有计算机视觉、目标检测/识别/分割、大模型等AI算法项目或知名竞赛经验者优先；\n5、在AI领域国际顶级会议或期刊上发表过文章或在开源社区有代码突出贡献者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "3d5022426daa4305be735b3f5b3cfbf7",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-09-01 19:03:42",
+        "updateTime": "2026-09-02 11:40:45"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

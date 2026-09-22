@@ -1,0 +1,96 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697304732&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:49.827Z",
+  "data": {
+    "jobUnionId": "4697304732",
+    "name": "大模型智能体算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 研究大模型智能体和对话技术的基础核心能力，包括推理、规划、复杂指令遵循、知识注入、偏好对齐、拟人沟通等核心能力；\n2. 基于大模型，研发语音/对话交互场景各类智能体应用，支持智能客服、语音智能分析等项目，提升美团服务能力和效率；\n3. 深入理解智能体和对话交互相关业务场景，进行重点难点技术攻关工作，将技术优化与业务场景联系起来，快速解决业务痛点问题；\n4. 不断探索技术新领域，持续推动技术能力的沉淀和技术氛围的建设。",
+    "jobRequirement": "1. 熟悉大模型的原理，具备精调、预训练、强化学习等方面的经验；\n2. 熟悉自然语言处理常见算法与模型，具备深度学习技术在NLP领域的应用实践；\n3. 具备良好的编程实现能力，熟悉C++、Python、Java等常用编程语言中至少一种；\n4. 较强的分析问题和解决问题的能力，对解决具有挑战性问题充满激情；\n5. 具备强烈的进取心、求知欲及团队合作精神，热衷于追求技术创新；\n6. 在ACL、EMNLP、NAACL、SIGIR等自然语言处理会议或期刊中有论文发表者优先。\n\n【岗位亮点】\n1. 参与美团大模型智能体的全链路研发，从算法设计到业务落地；\n2. 充足的计算资源和海量数据，快速积累Agent核心研发经验；",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961001000,
+    "refreshTime": 1786961001000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型智能体算法工程师\n应届-校园招聘\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 研究大模型智能体和对话技术的基础核心能力，包括推理、规划、复杂指令遵循、知识注入、偏好对齐、拟人沟通等核心能力；\n2. 基于大模型，研发语音/对话交互场景各类智能体应用，支持智能客服、语音智能分析等项目，提升美团服务能力和效率；\n3. 深入理解智能体和对话交互相关业务场景，进行重点难点技术攻关工作，将技术优化与业务场景联系起来，快速解决业务痛点问题；\n4. 不断探索技术新领域，持续推动技术能力的沉淀和技术氛围的建设。\n任职要求\n1. 熟悉大模型的原理，具备精调、预训练、强化学习等方面的经验；\n2. 熟悉自然语言处理常见算法与模型，具备深度学习技术在NLP领域的应用实践；\n3. 具备良好的编程实现能力，熟悉C++、Python、Java等常用编程语言中至少一种；\n4. 较强的分析问题和解决问题的能力，对解决具有挑战性问题充满激情；\n5. 具备强烈的进取心、求知欲及团队合作精神，热衷于追求技术创新；\n6. 在ACL、EMNLP、NAACL、SIGIR等自然语言处理会议或期刊中有论文发表者优先。\n【岗位亮点】\n1. 参与美团大模型智能体的全链路研发，从算法设计到业务落地；\n2. 充足的计算资源和海量数据，快速积累Agent核心研发经验；\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

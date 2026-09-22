@@ -134,7 +134,7 @@ test("cloud account security flows", { timeout: 30000 }, async t => {
     assert.equal(overview.requiresUploadConsent, false);
     assert.equal(h.calls.some(call => call.path === "/v1/auth/device-token"), false);
     assert.equal(h.calls.some(call => call.path === "/v1/applications/sync"), true);
-    assert.match(h.confirmations[0], /兴趣、到岗时间及简历图片和排版/);
+    assert.match(h.confirmations[0], /网申资料和原文件仅保存在本机/);
   });
 
   await t.test("declining the expanded sync scope leaves the previous consent unchanged", async st => {
@@ -157,17 +157,16 @@ test("cloud account security flows", { timeout: 30000 }, async t => {
     assert.equal(await h.worker.state.loadCloudConnection(), undefined);
     assert.equal(h.calls.some(call => call.path.endsWith("/sync")), false);
     assert.equal(h.sessions.size, 0);
-    assert.match(h.confirmations[0], /1 份通用简历/);
+    assert.match(h.confirmations[0], /投递记录/);
   });
 
-  await t.test("UI delegates sync to one worker and sends only allowed profile fields", async st => {
+  await t.test("UI delegates application sync to one worker without transferring any resume data", async st => {
     const h = await harness(st);
     await h.seed();
     await h.ui.runCloudSync();
     assert.equal(h.messages[0].command.action, "sync");
-    const upload = h.calls.find(call => call.path === "/v1/resume-templates/sync");
-    assert.equal(JSON.stringify(upload.body).includes("PRIVATE_"), false);
-    assert.equal(upload.body.templates[0].profile.fullName, "A");
+    assert.equal(h.calls.some(call => /resume|tailor/.test(call.path)), false);
+    assert.equal(JSON.stringify(h.calls).includes("PRIVATE_"), false);
     assert.equal((await h.worker.storage.loadResumeLibrary())[0].profile.idNumber, "PRIVATE_ID");
   });
 
@@ -234,54 +233,35 @@ test("cloud account security flows", { timeout: 30000 }, async t => {
     assert.equal(JSON.stringify(bUploads).includes("Resume A"), false);
   });
 
-  await t.test("acknowledged not-found deletions cannot re-upload stale local copies", async st => {
+  await t.test("legacy pending deletions are not replayed and local records stay intact", async st => {
     const h = await harness(st);
     await h.seed();
     await h.worker.storage.recordPendingDeletedResumeId("resume-a", h.scope("A"));
     await h.worker.runCloudSync();
-    const upload = h.calls.find(call => call.path === "/v1/resume-templates/sync");
-    assert.deepEqual(upload.body.templates, []);
-    assert.equal((await h.worker.storage.loadResumeLibrary()).length, 0);
-    assert.deepEqual(await h.worker.storage.loadPendingDeletedResumeIds(h.scope("A")), []);
+    assert.equal(h.calls.some(call => /resume|tailor/.test(call.path)), false);
+    assert.equal((await h.worker.storage.loadResumeLibrary()).length, 1);
+    assert.deepEqual(await h.worker.storage.loadPendingDeletedResumeIds(h.scope("A")), ["resume-a"]);
   });
 
-  await t.test("deleting the conflicting resume clears its stale sync warning", async st => {
+  await t.test("retired cloud commands cannot delete cloud or local resume data", async st => {
     const h = await harness(st);
     await h.seed();
-    const [local] = await h.worker.storage.loadResumeLibrary();
-    await h.worker.storage.saveResumeLibrary([{
-      ...local,
-      syncConflict: {
-        id: local.id,
-        revision: 2,
-        name: "Cloud Resume",
-        profile: createEmptyPersonalProfile(),
-        createdAt: now,
-        updatedAt: now
-      }
-    }], { origin: "cloud" });
-    await h.worker.state.saveCloudSyncState({
-      cursor: "1",
-      conflicts: [],
-      lastError: "通用简历存在多端修改，双方内容已保留。请打开网申信息中心处理同步冲突。"
-    });
-
-    await h.ui.deleteCloudResumeTemplate(local.id);
-
-    const overview = await h.worker.getCloudSyncOverview();
-    assert.equal((await h.worker.storage.loadResumeLibrary()).length, 0);
-    assert.equal(overview.state.lastError, undefined);
-    assert.equal((await h.worker.state.loadCloudSyncState()).lastError, undefined);
+    await assert.rejects(h.ui.deleteCloudResumeTemplate("resume-a"), /同步已停用/);
+    await assert.rejects(h.worker.handleCloudSyncCommand({ action: "deleteTemplate", templateId: "resume-a" }), /不能删除/);
+    await assert.rejects(h.worker.handleCloudSyncCommand({ action: "clearTemplates" }), /不能清空/);
+    assert.equal((await h.worker.storage.loadResumeLibrary()).length, 1);
+    assert.equal(h.calls.length, 0);
   });
 
-  await t.test("failed cloud reset does not erase local source files or claim success", async st => {
+  await t.test("local reset works offline and preserves existing cloud templates", async st => {
     const h = await harness(st);
     await h.seed();
     h.remote.set(h.scope("A"), new Map([["resume-a", resume()]]));
-    h.intercept = async call => call.method === "DELETE" ? new Response(JSON.stringify({ ok: false, error: { code: "OFFLINE", message: "offline" } }), { status: 503 }) : undefined;
-    await assert.rejects(h.ui.resetLocalAndCloudResumes(), /本地资料已保留/);
-    assert.equal((await h.worker.storage.loadResumeLibrary()).length, 1);
-    assert.equal((await h.worker.storage.loadProfile()).idNumber, "PRIVATE_ID");
+    h.intercept = async () => { throw new Error("offline"); };
+    await h.ui.resetLocalAndCloudResumes();
+    assert.equal((await h.worker.storage.loadResumeLibrary()).length, 0);
+    assert.equal(h.remote.get(h.scope("A")).size, 1);
+    assert.equal(h.calls.length, 0);
   });
 
   await t.test("a stale pair confirmation cannot take over a newly bound account", async st => {
@@ -293,15 +273,11 @@ test("cloud account security flows", { timeout: 30000 }, async t => {
     assert.equal((await h.worker.state.loadCloudDataOwner()).userId, "B");
   });
 
-  await t.test("tailoring re-reads the bound library and rejects stale account scopes", async st => {
+  await t.test("retired tailoring cannot upload local form data even with a valid account", async st => {
     const h = await harness(st);
     await h.seed();
     const jd = { company: "Company", position: "Role", sourceUrl: "", responsibilities: [], requirements: [] };
-    await assert.rejects(h.ui.createCloudTailorTask("resume-a", jd, h.scope("B")), /账号已变化/);
-    await h.ui.createCloudTailorTask("resume-a", jd, h.scope("A"));
-    const upload = h.calls.find(call => call.path === "/v1/tailor-tasks");
-    assert.equal(JSON.stringify(upload.body).includes("PRIVATE_"), false);
-    assert.equal(upload.body.sourceProfile.fullName, "A");
-    assert.equal(upload.body.sourceEvidence, undefined);
+    await assert.rejects(h.ui.createCloudTailorTask("resume-a", jd, h.scope("A")), /不再上传/);
+    assert.equal(h.calls.length, 0);
   });
 });

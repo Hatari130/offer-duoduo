@@ -1,0 +1,46 @@
+{
+  "source_job_id": "a7947e95f49b43cda00d76f6595f540c",
+  "verified_at": "2026-09-15T01:32:07.784Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=a7947e95f49b43cda00d76f6595f540c",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=a7947e95f49b43cda00d76f6595f540c&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "a7947e95f49b43cda00d76f6595f540c",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "云计算开发工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "云计算",
+        "postContent": "1、与团队内外部同事沟通协作，理解并实现云计算平台业务功能需求；\n2、设计和优化核心的计算、网络、存储等虚拟化或容器化组件；\n3、完善并增强云基础设施产品的安全和性能；\n4、协助云计算平台在项目中实践落地。",
+        "postRequire": "1、本科及以上学历，计算机相关专业优先，有较好的计算机系统软硬件基础；\r\n2、熟练掌握C/Python/Go语言中一种或以上，具有良好编码风格；\r\n3、熟悉Linux内核技术，了解kvm、OpenStack或容器、kubernetes一种或多种云计算相关技术，有云计算产品开发或项目经验的优先；\r\n4、熟悉TCP协议栈和常用网络通信协议；\r\n5、具有较强的逻辑分析和解决问题的能力；\r\n6、具有较强的责任心和沟通协作能力和团队合作精神。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:20",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "f0aee2597bac459c9fbb091cfacf15b7",
+          "name": "海康存储",
+          "description": "海康存储致力于为全球用户提供专业的存储整体解决方案，业务聚焦工业控制、数据中心、视频监控、终端消费等应用场景。海康存储具备完整的设计、开发与制造能力，业务涵盖固态硬盘、前置存储、嵌入式存储和闪存应用四大产品线。智慧存储始终秉承“存储留住美好，智慧改变生活”的初心，以“成就客户，价值为本”为企业理念，持续为企业和消费者提供安全可靠的存储设备、系统和存储解决方案。"
+        },
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697283165&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:54.782Z",
+  "data": {
+    "jobUnionId": "4697283165",
+    "name": "安全AI算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "你将有机会参与到AI for Security、Security for AI的各项前沿建设中，在 AI × Security 方向长期复合型发展：\n1. 参与构建 Security\n  Agent，基于大模型实现安全告警智能研判、攻击链推理与溯源、代码漏洞检测与自动修复、敏感资产识别检测分析、检测规则生成与优化，探索 AI for Security 的下一代产品形态。\n2. 参与面向办公网反入侵、反爬风控、数据安全等丰富安全场景，对账号、终端、资产、网络行为和攻击路径进行威胁建模，基于流量、终端及认证日志，研发异常检测、攻击识别、实体关联、攻击链还原和风险评分算法，推动算法在真实攻防场景中落地。\n3 .参与研究代码语义表示、程序分析、图表示学习（Code Graph）、代码检索等前沿技术，跟踪最新 AI 技术，持续探索在软件安全与数据智能领域的应用。\n4. 参与安全领域大模型的适配与训练，包括高质量安全数据构建、SFT/LoRA 微调、强化学习、Prompt 优化、模型评测，持续提升安全防护的智能化水平。",
+    "jobRequirement": "1. 2027届本科及以上学历，计算机、人工智能、信息安全、网络安全、软件工程、自然语言处理等相关专业。\n2. 具备扎实的机器学习/深度学习基础，熟悉分类、聚类、异常检测、序列建模、图神经网络等方法。\n3. 熟练使用 Python，熟悉 PyTorch、Transformers 等主流深度学习框架。\n4. 了解大语言模型训练与推理机制，熟悉或实践过 SFT、LoRA、DPO、RLHF、RAG、Prompt Engineering 中的一项或多项。\n5. 对 AI Agent 方向有兴趣，了解工具调用、多步推理、任务规划、记忆管理等基本概念。\n6. 具备安全攻防的基础认知，了解常见入侵手法、攻击链及检测思路，能将安全问题抽象为算法问题。\n7. 具备良好的工程能力和沟通协作能力，能根据数据与业务反馈持续优化模型效果。\n\n加分项\n\n1. 做过 LLM Agent、RAG、模型微调、异常检测、代码分析、日志分析、威胁建模等项目。\n2. 熟悉 LangChain、LlamaIndex、OpenAI Agents SDK、MCP 等 Agent 框架或协议。\n3. 了解代码大模型（CodeLLaMA/DeepSeek-Coder等）或程序分析工具（CodeQL/Semgrep 等）。\n4. 有 CTF比赛、漏洞研究、攻防演练实战、安全实习等安全领域经历。\n5. 有算法竞赛获奖（ACM/Kaggle等）、顶会论文发表、开源项目或技术分享经历。\n岗位亮点\n1. 五大安全实战场，选你最想打——反爬风控、入侵对抗、办公安全、数据安全、软件安全与数据智能，可根据兴趣和特长匹配具体方向。\n2. 成为新一代安全产品的建设者——深度参与 Security Agent 从 0 到 1 的构建，用 AI 对抗 AI。\n3. 日均数十亿级请求、复杂多元的国际化业务形态、快速获得 AI × Security 的实战落地经验，你的代码直接影响防线。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960993000,
+    "refreshTime": 1786960993000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n安全AI算法工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n你将有机会参与到AI for Security、Security for AI的各项前沿建设中，在 AI × Security 方向长期复合型发展：\n1. 参与构建 Security\nAgent，基于大模型实现安全告警智能研判、攻击链推理与溯源、代码漏洞检测与自动修复、敏感资产识别检测分析、检测规则生成与优化，探索 AI for Security 的下一代产品形态。\n2. 参与面向办公网反入侵、反爬风控、数据安全等丰富安全场景，对账号、终端、资产、网络行为和攻击路径进行威胁建模，基于流量、终端及认证日志，研发异常检测、攻击识别、实体关联、攻击链还原和风险评分算法，推动算法在真实攻防场景中落地。\n3 .参与研究代码语义表示、程序分析、图表示学习（Code Graph）、代码检索等前沿技术，跟踪最新 AI 技术，持续探索在软件安全与数据智能领域的应用。\n4. 参与安全领域大模型的适配与训练，包括高质量安全数据构建、SFT/LoRA 微调、强化学习、Prompt 优化、模型评测，持续提升安全防护的智能化水平。\n任职要求\n1. 2027届本科及以上学历，计算机、人工智能、信息安全、网络安全、软件工程、自然语言处理等相关专业。\n2. 具备扎实的机器学习/深度学习基础，熟悉分类、聚类、异常检测、序列建模、图神经网络等方法。\n3. 熟练使用 Python，熟悉 PyTorch、Transformers 等主流深度学习框架。\n4. 了解大语言模型训练与推理机制，熟悉或实践过 SFT、LoRA、DPO、RLHF、RAG、Prompt Engineering 中的一项或多项。\n5. 对 AI Agent 方向有兴趣，了解工具调用、多步推理、任务规划、记忆管理等基本概念。\n6. 具备安全攻防的基础认知，了解常见入侵手法、攻击链及检测思路，能将安全问题抽象为算法问题。\n7. 具备良好的工程能力和沟通协作能力，能根据数据与业务反馈持续优化模型效果。\n加分项\n1. 做过 LLM Agent、RAG、模型微调、异常检测、代码分析、日志分析、威胁建模等项目。\n2. 熟悉 LangChain、LlamaIndex、OpenAI Agents SDK、MCP 等 Agent 框架或协议。\n3. 了解代码大模型（CodeLLaMA/DeepSeek-Coder等）或程序分析工具（CodeQL/Semgrep 等）。\n4. 有 CTF比赛、漏洞研究、攻防演练实战、安全实习等安全领域经历。\n5. 有算法竞赛获奖（ACM/Kaggle等）、顶会论文发表、开源项目或技术分享经历。\n岗位亮点\n1. 五大安全实战场，选你最想打——反爬风控、入侵对抗、办公安全、数据安全、软件安全与数据智能，可根据兴趣和特长匹配具体方向。\n2. 成为新一代安全产品的建设者——深度参与 Security Agent 从 0 到 1 的构建，用 AI 对抗 AI。\n3. 日均数十亿级请求、复杂多元的国际化业务形态、快速获得 AI × Security 的实战落地经验，你的代码直接影响防线。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

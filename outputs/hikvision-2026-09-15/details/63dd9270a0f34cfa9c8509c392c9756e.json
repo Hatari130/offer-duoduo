@@ -1,0 +1,41 @@
+{
+  "source_job_id": "63dd9270a0f34cfa9c8509c392c9756e",
+  "verified_at": "2026-09-15T01:32:08.896Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=63dd9270a0f34cfa9c8509c392c9756e",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=63dd9270a0f34cfa9c8509c392c9756e&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "63dd9270a0f34cfa9c8509c392c9756e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "新媒体运营",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "数字营销",
+        "techDire": "不限",
+        "postContent": "1、协助制定小红书、抖音、知乎等社交媒体的内容运营方案，参与KOL/KOC种草内容策划与执行；\n2、负责基础内容创作（图文/短视频脚本撰写、基础剪辑），协助官方账号日常运营及数据记录；\n3、跟踪社交媒体热点趋势，收集竞品营销案例，协助大促/新品节点的营销素材准备；\n4、参与达人资源库维护，整理KOL合作数据及效果反馈；\n5、协助完成投放数据统计，制作基础效果报告。",
+        "postRequire": "1、本科及以上学历，广告、新闻、市场营销、数字媒体等相关专业；\n2、熟悉主流社交媒体平台特性（抖音/小红书内容偏好、知乎问答机制等）；\n3、具备基础内容生产能力，对智能硬件、数码产品和智能家居有浓厚兴趣。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,79 @@
+{
+  "source_job_id": "92ce7bfc836a4c369746380bc36307af",
+  "verified_at": "2026-09-15T01:32:19.773Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=92ce7bfc836a4c369746380bc36307af",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=92ce7bfc836a4c369746380bc36307af&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "7351de9d8ac44f8cb119a227e23fecee",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI Agent算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1. 核心应用开发：负责基于大语言模型（LLM）的智能体（Agent）应用架构设计与核心功能开发，围绕业务需求落地高可用的智能解决方案。\n2. 系统性能优化：深度参与Agent系统的效果调优，从准确率、响应延迟、系统稳定性及推理成本等维度持续迭代，提升业务指标。\n3. 评测体系建设：搭建Agent自动化评测与可观测性平台，通过数据分析和Badcase归因，建立驱动效果迭代的闭环机制。\n4. 前沿技术探索：跟踪Agent领域国际前沿技术动态，主导技术预研，推动创新技术在业务场景中的落地应用。",
+        "postRequire": "1. 硕士及以上学历，拥有顶会论文（如ACL/ICML/NeurIPS等）发表者优先。\n2. 精通 Python、Go、Java 中至少一门语言，具备扎实的系统设计与问题排查能力。\n3. 深入了解 Agent开发框架和Agent harness框架，有完整智能体系统（从0到1）搭建经验者优先。\n4. 深入理解Transformer架构，熟悉 Qwen、DeepSeek、GPT等主流大模型的原理与使用。\n5. 熟悉Agent工程化工具链（如 Claude Code 等AI辅助工具），并能将其有效应用于研发流程提效。\n6. 具备优秀的技术抽象与问题拆解能力，能够将复杂的业务需求转化为清晰的Agent工程方案。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "92ce7bfc836a4c369746380bc36307af",
+        "adNeedDept": "研究院#萤石网络",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:09:50"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        },
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "bf58d084d0814a5ea89252144add01f1",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI Agent算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1. 核心应用开发：负责基于大语言模型（LLM）的智能体（Agent）应用架构设计与核心功能开发，围绕业务需求落地高可用的智能解决方案。\n2. 系统性能优化：深度参与Agent系统的效果调优，从准确率、响应延迟、系统稳定性及推理成本等维度持续迭代，提升业务指标。\n3. 评测体系建设：搭建Agent自动化评测与可观测性平台，通过数据分析和Badcase归因，建立驱动效果迭代的闭环机制。\n4. 前沿技术探索：跟踪Agent领域国际前沿技术动态，主导技术预研，推动创新技术在业务场景中的落地应用。",
+        "postRequire": "1. 硕士及以上学历，拥有顶会论文（如ACL/ICML/NeurIPS等）发表者优先。\n2. 精通 Python、Go、Java 中至少一门语言，具备扎实的系统设计与问题排查能力。\n3. 深入了解 Agent开发框架和Agent harness框架，有完整智能体系统（从0到1）搭建经验者优先。\n4. 深入理解Transformer架构，熟悉 Qwen、DeepSeek、GPT等主流大模型的原理与使用。\n5. 熟悉Agent工程化工具链（如 Claude Code 等AI辅助工具），并能将其有效应用于研发流程提效。\n6. 具备优秀的技术抽象与问题拆解能力，能够将复杂的业务需求转化为清晰的Agent工程方案。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "上海市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "92ce7bfc836a4c369746380bc36307af",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:47",
+        "updateTime": "2026-08-20 17:09:50"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

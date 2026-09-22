@@ -1,0 +1,21 @@
+{
+  "source_total": 2009,
+  "list_rows": 2009,
+  "unique_list_jobs": 2009,
+  "detail_records": 2009,
+  "normalized_jobs": 2009,
+  "duplicate_source_job_ids": [],
+  "commitment_counts": {
+    "全职": 2009
+  },
+  "missing": {
+    "jd": 0,
+    "published_at": 0,
+    "locations": 0,
+    "education_requirement": 0
+  },
+  "failures": [],
+  "source_url": "https://app.mokahr.com/campus-recruitment/geely/78436?locale=zh-CN#/jobs?page=1&anchorName=jobsList&commitment[0]=%E5%85%A8%E8%81%8C",
+  "started_at": "2026-09-15T07:24:20.772Z",
+  "completed_at": "2026-09-15T07:29:07.802Z"
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "a1965e30aed2433bb004a50867af9bb2",
+  "verified_at": "2026-09-15T01:31:59.313Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=a1965e30aed2433bb004a50867af9bb2",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=a1965e30aed2433bb004a50867af9bb2&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "a1965e30aed2433bb004a50867af9bb2",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "热线技术支持工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "热线服务",
+        "techDire": "不限",
+        "postContent": "1、通过电话及在线等方式，面向客户提供咨询服务，协助客户解决各类产品技术问题；\r\n2、受理客户反馈的各类问题，根据规则进行处理、转处理及跟进回访；\r\n3、收集并反馈客户意见和建议。",
+        "postRequire": "1、本科及以上学历；\n2、计算机、通信、电子、自动化等相关专业优先；\r\n3、普通话流利、标准；\r\n4、具有较强的责任心、耐心及服务意识。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "5700520166314fd1bfb3e5dfa2d0a711",
+          "name": "技术支持与服务部",
+          "description": "技术支持与服务部是海康威视总部的技术服务团队，以杭州为中心，建有武汉、西安、成都等分中心，辐射华东、华中、西北、西南等多个区域。部门致力于海康威视技术支持与服务体系的建设和优化，拥有涵盖所有海康威视产品线的专家级技术力量，全面支撑公司各项业务的售前、售中、售后服务工作，并为分支机构的技术支持与服务业务提供坚强后盾，保证客用户在公司产品各阶段的需求得到合理、快速的响应和解决。"
+        }
+      ]
+    }
+  ]
+}

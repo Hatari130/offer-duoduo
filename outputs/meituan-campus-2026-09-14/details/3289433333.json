@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3289433333&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:15.913Z",
+  "data": {
+    "jobUnionId": "3289433333",
+    "name": "【无人车北斗实习】自动驾驶算法与系统研究实习生",
+    "projectId": "104",
+    "projectName": "技术人才实习生专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "基于数据驱动模型端到端一体化的长期需求，我们寻找有极强的技术信仰与热情，富有好奇心和驱动力的候选人。参与探索自动驾驶面向未来的算法设计和工程优化的综合性问题。\n1.探究自动驾驶领域分布式训练的效率极限，通过底层硬件和分布式集群/存储优化，结合深度学习框架特性和算子性能优化，达到MFU上限。\n2.基于VLM、LLM等大模型技术和无人配送的业务特点，探索自动驾驶新一代的模型结构范式，推动自动驾驶技术的进一步发展。",
+    "jobRequirement": "1.2026届本科及以上学历，人工智能、计算机、自动化、数学相关专业优先；\n2.扎实的机器学习、CV、LLM基础和出色的探索能力。具备自动驾驶或大模型领域相关算法知识；\n3.优秀的代码能力、数据结构和基础算法功底，熟练掌握C/C++或Python。有竞赛经历优先；\n4.极强的技术信仰与热情，对自动驾驶充满乐趣；\n5.富有好奇心和驱动力，了解大模型社区相关技术发展。\n\n岗位亮点：\n1.可以参与自动车团队部门级别的核心工程优化项目，学习到包括大模型领域前沿的算力效率优化技巧，锻炼ai infra相关技能。\n2.基于VLM、LLM等大模型技术，结合工程和算法，探索业务可落地的自动驾驶端到端方案。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1745313254000,
+    "refreshTime": 1745313767000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【无人车北斗实习】自动驾驶算法与系统研究实习生\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n基于数据驱动模型端到端一体化的长期需求，我们寻找有极强的技术信仰与热情，富有好奇心和驱动力的候选人。参与探索自动驾驶面向未来的算法设计和工程优化的综合性问题。\n1.探究自动驾驶领域分布式训练的效率极限，通过底层硬件和分布式集群/存储优化，结合深度学习框架特性和算子性能优化，达到MFU上限。\n2.基于VLM、LLM等大模型技术和无人配送的业务特点，探索自动驾驶新一代的模型结构范式，推动自动驾驶技术的进一步发展。\n任职要求\n1.2026届本科及以上学历，人工智能、计算机、自动化、数学相关专业优先；\n2.扎实的机器学习、CV、LLM基础和出色的探索能力。具备自动驾驶或大模型领域相关算法知识；\n3.优秀的代码能力、数据结构和基础算法功底，熟练掌握C/C++或Python。有竞赛经历优先；\n4.极强的技术信仰与热情，对自动驾驶充满乐趣；\n5.富有好奇心和驱动力，了解大模型社区相关技术发展。\n岗位亮点：\n1.可以参与自动车团队部门级别的核心工程优化项目，学习到包括大模型领域前沿的算力效率优化技巧，锻炼ai infra相关技能。\n2.基于VLM、LLM等大模型技术，结合工程和算法，探索业务可落地的自动驾驶端到端方案。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

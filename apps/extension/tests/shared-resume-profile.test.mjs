@@ -12,87 +12,142 @@ const { build } = createRequire(import.meta.resolve("vite"))("esbuild");
 const now = "2026-09-13T00:00:00.000Z";
 const candidate = () => ({ ...createEmptyPersonalProfile(), fullName: "测试用户", phone: "13800000000", hobbies: "摄影", earliestStartDate: "两周内", idNumber: "LOCAL_ID", experiences: [{ id: "exp-1", organization: "测试公司", title: "产品经理", startDate: "2024", endDate: "2026", description: "完成用户调研", salary: "LOCAL_SALARY", refereeContact: "LOCAL_REFEREE" }] });
 
-test("application-first and web-first share facts without sharing private data or overwriting prose", async t => {
-  const folder = await mkdtemp(join(tmpdir(), "offerflow-profile-"));
+test("local application profiles migrate without loss and stay independent", async t => {
+  const folder = await mkdtemp(join(tmpdir(), "offerflow-local-profiles-"));
   t.after(() => rm(folder, { recursive: true, force: true }));
   const out = join(folder, "storage.mjs");
   const root = fileURLToPath(new URL("../src/", import.meta.url));
   await build({ entryPoints: [join(root, "infrastructure/storage/storage.ts")], outfile: out, bundle: true, format: "esm", platform: "node", alias: { "@": root }, logLevel: "silent" });
   const savedChrome = globalThis.chrome;
   const data = {};
-  let storageWrites = 0;
+  let writes = 0;
+  let failWrite = false;
   globalThis.chrome = { storage: { local: {
     async get(keys) { return structuredClone(keys === null ? data : Object.fromEntries((Array.isArray(keys) ? keys : [keys]).filter(key => key in data).map(key => [key, data[key]]))); },
-    async set(values) { storageWrites += 1; Object.assign(data, structuredClone(values)); },
+    async set(values) { if (failWrite) throw new Error("quota"); writes++; Object.assign(data, structuredClone(values)); },
     async remove(keys) { for (const key of Array.isArray(keys) ? keys : [keys]) delete data[key]; }
   } } };
   t.after(() => { globalThis.chrome = savedChrome; });
   const storage = await import(pathToFileURL(out).href);
+  const clear = () => { for (const key of Object.keys(data)) delete data[key]; };
 
-  const initial = await storage.saveApplicationProfile(candidate());
-  const masterId = initial[0].id;
-  assert.equal(initial.length, 1);
-  assert.equal(initial[0].kind, "base");
-  assert.equal(data[storage.RESUMES_KEY][0].profile.fullName, "测试用户");
-  assert.equal(data[storage.RESUMES_KEY][0].profile.hobbies, "摄影");
-  assert.equal(data[storage.RESUMES_KEY][0].profile.earliestStartDate, "两周内");
-  assert.equal(JSON.stringify(data[storage.RESUMES_KEY]).includes("LOCAL_"), false);
-  assert.equal(JSON.stringify(data[storage.PROFILE_KEY]).includes("LOCAL_"), false);
-  assert.equal((await storage.loadProfile()).idNumber, "LOCAL_ID");
-  assert.equal((await storage.loadProfile()).experiences[0].refereeContact, "LOCAL_REFEREE");
+  await t.test("old supplements, application prose, attachments, conflicts and source keys survive migration", async () => {
+    const source = { fileName: "original.pdf", base64: "ORIGINAL_BYTES", size: 8, importedAt: now };
+    const old = [
+      { id: "base", name: "原母版", kind: "base", profile: toCloudResumeProfile(candidate()), sourcePdf: source, createdAt: now, updatedAt: now,
+        syncConflict: { id: "base", revision: 2, name: "云端编辑", profile: { ...toCloudResumeProfile(candidate()), phone: "CLOUD_PHONE" }, createdAt: now, updatedAt: now } },
+      { id: "job", name: "旧岗位版", kind: "job", parentResumeId: "base", profile: { ...toCloudResumeProfile(candidate()), selfIntroduction: "岗位独立文案" }, createdAt: now, updatedAt: now }
+    ];
+    data["offerflow.resumes"] = structuredClone(old);
+    data["offerflow.profile"] = candidate();
+    data["offerflow.activeResumeId"] = "base";
+    data[storage.APPLICATION_PROFILE_KEY] = { schemaVersion: 1, fields: { idNumber: "LOCAL_ID" }, entries: {}, expressions: { base: { "experiences:exp-1:description": "网申专用文案" } } };
+    failWrite = true;
+    await assert.rejects(storage.loadResumeLibrary(), /quota/);
+    assert.equal(data[storage.RESUMES_KEY], undefined);
+    assert.deepEqual(data["offerflow.resumes"], old);
+    failWrite = false;
+    const library = await storage.loadResumeLibrary();
+    assert.equal(library.length, 3);
+    assert.equal((await storage.loadProfile()).idNumber, "LOCAL_ID");
+    assert.equal((await storage.loadProfile()).experiences[0].description, "网申专用文案");
+    assert.equal(library.find(row => row.id === "job").sourcePdf.base64, "ORIGINAL_BYTES");
+    assert.equal(library.find(row => row.id === "job").parentResumeId, undefined);
+    assert.equal(library.find(row => row.id === "local_conflict_base").profile.phone, "CLOUD_PHONE");
+    assert.deepEqual(data["offerflow.resumes"], old);
+    const before = writes;
+    await storage.loadProfile(); await storage.loadResumeLibrary(); await storage.loadResumeLibrary();
+    assert.equal(writes, before, "migration is idempotent and reads do not trigger storage loops");
+    await storage.deleteLocalApplicationRecord("base");
+    assert.equal((await storage.loadResumeLibrary()).length, 2, "deleting one record does not cascade to old job versions");
+    assert.equal((await storage.loadResumeLibrary()).find(row => row.id === "job").sourcePdf.base64, "ORIGINAL_BYTES");
+  });
 
-  // Chrome serializes dictionaries with its own key order. Reading an already
-  // migrated profile must not write again and recursively trigger onChanged.
-  data[storage.RESUMES_KEY] = JSON.parse(JSON.stringify(data[storage.RESUMES_KEY], (_key, value) =>
-    value && typeof value === "object" && !Array.isArray(value)
-      ? Object.fromEntries(Object.keys(value).sort().map(key => [key, value[key]]))
-      : value));
-  const writesBeforeRead = storageWrites;
-  await storage.loadResumeLibrary();
-  await storage.loadResumeLibrary();
-  assert.equal(storageWrites, writesBeforeRead, "loading normalized Chrome storage must be read-only");
+  await t.test("manual additions are blank and private fields/text never bleed between profiles", async () => {
+    clear();
+    const a = await storage.createLocalApplicationProfile("资料 A");
+    await storage.saveApplicationProfile(candidate(), a.id);
+    const b = await storage.createLocalApplicationProfile("资料 B");
+    assert.equal(b.profile.fullName, "");
+    assert.equal(b.profile.idNumber, undefined);
+    assert.equal(b.profile.experiences.length, 0);
+    await storage.saveApplicationProfile({ ...candidate(), fullName: "另一份", idNumber: "SECOND_ID", selfIntroduction: "独立表达" }, b.id);
+    await storage.setActiveResumeId(a.id);
+    assert.equal((await storage.loadProfile()).fullName, "测试用户");
+    assert.equal((await storage.loadProfile()).idNumber, "LOCAL_ID");
+    assert.equal((await storage.loadProfile()).selfIntroduction, "");
+    await storage.setActiveResumeId(b.id);
+    assert.equal((await storage.loadProfile()).idNumber, "SECOND_ID");
+    await storage.saveApplicationProfile({ ...await storage.loadProfile(), idNumber: "", experiences: [] }, b.id);
+    assert.equal((await storage.loadProfile()).idNumber, "", "cleared fields never come back from a shared archive");
+    await assert.rejects(storage.saveResumeLibrary([], { origin: "cloud" }), /不能由云端/);
+    assert.equal((await storage.loadResumeLibrary()).length, 2);
+    await storage.deleteLocalApplicationRecord(b.id);
+    assert.equal(await storage.loadActiveResumeId(), a.id);
+    await storage.deleteLocalApplicationRecord(a.id);
+    assert.equal((await storage.loadProfile()).fullName, "");
+    assert.equal((await storage.loadResumeLibrary()).length, 0);
+    await assert.rejects(storage.saveApplicationProfile(candidate(), a.id), /已被删除/);
+  });
 
-  // A web edit arrives after initial acknowledgement; it changes a shared fact
-  // and independently rewrites the resume description.
-  const remote = { id: masterId, name: initial[0].name, profile: toCloudResumeProfile(candidate()), revision: 1, createdAt: now, updatedAt: now };
-  let library = mergeRemoteResumeTemplates(await storage.loadResumeLibrary(), [remote]);
-  await storage.saveResumeLibrary(library, { origin: "cloud" });
-  remote.revision = 2;
-  remote.profile.phone = "13900000000";
-  remote.profile.experiences[0].description = "通过用户调研明确产品需求";
-  library = mergeRemoteResumeTemplates(await storage.loadResumeLibrary(), [remote]);
-  await storage.saveResumeLibrary(library, { origin: "cloud" });
-  assert.equal((await storage.loadProfile()).phone, "13900000000");
-  const editedForm = await storage.loadProfile();
-  editedForm.experiences[0].title = "高级产品经理";
-  editedForm.experiences[0].description = "网申的详细职责表达";
-  await storage.saveApplicationProfile(editedForm, masterId);
-  const master = (await storage.loadResumeLibrary())[0];
-  assert.equal(master.profile.experiences[0].title, "高级产品经理");
-  assert.equal(master.profile.experiences[0].description, "通过用户调研明确产品需求");
-  assert.equal((await storage.loadProfile()).experiences[0].description, "网申的详细职责表达");
+  await t.test("concurrent additions and unrelated edits survive; stale saves cannot overwrite or resurrect records", async () => {
+    clear();
+    const [a, b] = await Promise.all([storage.createLocalApplicationProfile("A"), storage.createLocalApplicationProfile("B")]);
+    await storage.saveLocalApplicationRecord({ ...a, profile: candidate() }, a.localRevision);
+    assert.equal((await storage.loadResumeLibrary()).length, 2);
+    await assert.rejects(storage.saveLocalApplicationRecord(a, a.localRevision), /其他页面修改/);
+    await assert.rejects(storage.saveApplicationProfile(candidate(), a.id, undefined, a.localRevision), /另一页面/);
+    await storage.deleteLocalApplicationRecord(b.id);
+    await assert.rejects(storage.saveLocalApplicationRecord(b, b.localRevision), /其他页面修改或删除/);
+    assert.equal((await storage.loadResumeLibrary()).length, 1);
+    assert.equal((await storage.loadResumeLibrary())[0].profile.fullName, "测试用户");
+  });
 
-  // A cloud removal cannot destroy the detached referee/salary record.
-  const acknowledged = { ...remote, revision: 3, profile: toCloudResumeProfile(master.profile) };
-  library = mergeRemoteResumeTemplates(await storage.loadResumeLibrary(), [acknowledged]);
-  await storage.saveResumeLibrary(library, { origin: "cloud" });
-  library = mergeRemoteResumeTemplates(await storage.loadResumeLibrary(), [{ ...acknowledged, revision: 4, profile: { ...acknowledged.profile, experiences: [] } }]);
-  await storage.saveResumeLibrary(library, { origin: "cloud" });
-  assert.equal((await storage.loadProfile()).experiences.length, 0);
-  const detached = detachedApplicationEntries(await storage.loadProfile(), await storage.loadLocalApplicationProfile());
-  assert.equal(detached[0].entry.refereeContact, "LOCAL_REFEREE");
-  assert.equal(detached[0].entry.salary, "LOCAL_SALARY");
+  await t.test("standalone legacy profiles migrate; explicit reset clears backups and prevents resurrection", async () => {
+    clear();
+    data["offerflow.profile"] = candidate();
+    assert.equal((await storage.loadResumeLibrary()).length, 1);
+    const active = await storage.loadActiveResumeId();
+    await storage.recordResumeUsage(active, candidate(), "https://jobs.example/apply?token=SECRET", 7);
+    const usage = await storage.loadResumeUsage();
+    assert.equal(usage[0].pageUrl, "https://jobs.example/apply");
+    assert.equal(JSON.stringify(usage).includes("LOCAL_"), false);
+    await storage.clearLocalProfileAndResumes();
+    assert.equal(JSON.stringify(data).includes("LOCAL_"), false);
+    assert.equal(data["offerflow.profile"], undefined);
+    assert.deepEqual(await storage.loadResumeLibrary(), []);
+    assert.deepEqual(await storage.loadResumeUsage(), []);
+  });
+  await t.test("browser-preview storage preserves legacy plain active IDs and new selection survives reload", async () => {
+    const chrome = globalThis.chrome;
+    const originalLocalStorage = globalThis.localStorage;
+    const values = new Map();
+    globalThis.chrome = undefined;
+    globalThis.localStorage = {
+      getItem: key => values.get(key) ?? null,
+      setItem: (key, value) => values.set(key, String(value)),
+      removeItem: key => values.delete(key),
+      key: i => [...values.keys()][i] ?? null,
+      get length() { return values.size; }
+    };
+    try {
+      values.set("offerflow.resumes", JSON.stringify([{ id: "legacy", name: "旧资料", kind: "base", profile: candidate(), createdAt: now, updatedAt: now }]));
+      values.set("offerflow.activeResumeId", "legacy");
+      assert.equal(await storage.loadActiveResumeId(), "legacy");
+      const b = await storage.createLocalApplicationProfile("空白资料");
+      assert.equal(await storage.loadActiveResumeId(), b.id);
+      assert.equal((await storage.loadProfile()).fullName, "");
+      await storage.setActiveResumeId("legacy");
+      assert.equal(await storage.loadActiveResumeId(), "legacy");
+      assert.equal((await storage.loadProfile()).fullName, "测试用户");
+      await storage.deleteLocalApplicationRecord("legacy");
+      assert.equal(await storage.loadActiveResumeId(), b.id);
+    } finally {
+      globalThis.chrome = chrome;
+      globalThis.localStorage = originalLocalStorage;
+    }
+  });
 
-  // Filling records the actual selected resume fields, without private values.
-  await storage.recordResumeUsage(masterId, editedForm, "https://jobs.example/apply?token=SECRET", 7);
-  const usage = await storage.loadResumeUsage();
-  assert.equal(usage.length, 1);
-  assert.equal(usage[0].profile.experiences[0].description, "网申的详细职责表达");
-  assert.equal(JSON.stringify(usage).includes("LOCAL_"), false);
-  assert.equal(usage[0].pageUrl, "https://jobs.example/apply");
-  await storage.clearLocalProfileAndResumes();
-  assert.equal(JSON.stringify(data).includes("LOCAL_"), false);
-  assert.deepEqual(await storage.loadResumeUsage(), []);
 });
 
 test("revision conflicts preserve both edits regardless of device clocks; explicit asset removal is honored", () => {

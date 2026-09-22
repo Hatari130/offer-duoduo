@@ -1,0 +1,41 @@
+{
+  "source_job_id": "eaa040ed77ba4ce6880a0f8f132656b1",
+  "verified_at": "2026-09-15T01:32:07.035Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=eaa040ed77ba4ce6880a0f8f132656b1",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=eaa040ed77ba4ce6880a0f8f132656b1&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "eaa040ed77ba4ce6880a0f8f132656b1",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "超声换能器设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件设计",
+        "techDire": "不限",
+        "postContent": "1、 负责压电超声传感器/阵列化超声传感器声学设计、建模仿真、材料和工艺设计开发； \n2、 负责阵列化超声器件的加工制备、封装、电学及声学性能测试。",
+        "postRequire": "1、 熟悉换能器基础知识，有两年以上超声换能器设计经验，硕士学历及以上，博士优先； \n2、掌握和熟悉以下技能：COMSOL仿真、Matlab信号处理； \n3、具备良好的团队合作精神，有较强动手能力和钻研能力；\n4、具有医学、工业、水声等领域超声换能器设计和加工的丰富经验者优先；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

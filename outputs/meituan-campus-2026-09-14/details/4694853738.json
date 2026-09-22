@@ -1,0 +1,106 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694853738&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:47.806Z",
+  "data": {
+    "jobUnionId": "4694853738",
+    "name": "AI测试开发工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "测试",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 智能化测试体系，构建AI驱动的测试方案，覆盖LLM应用、Agent系统、多模态产品；基于大模型实现用例自动生成、回归智能筛选、日志根因定位。\n2. AI系统专项评测，搭建LLM评测体系：幻觉检测、指令遵循度、输出稳定性；设计Agent端到端测试框架：工具调用、多轮对话、任务执行链路；建设RAG检索质量评估方案。\n3. 评测基建与数据。设计评测数据集与benchmark，量化模型能力；构建质量数据飞轮，将缺陷反馈转化为质量洞察；开发智能缺陷分析工具。\n4. 工程化平台。打造AI-Native测试平台，集成Prompt管理、A/B评测、自动报告；推动CI/CD智能化升级，质量看板数据驱动。",
+    "jobRequirement": "1. 本科及以上学历，良好的计算机基础，熟练使用C家族/Java/Python/Ruby/JavaScript/Shell中至少一种；\n2. 广阔的技术视野，对前沿技术和方法有极强的探索欲；\n3. 严谨负责、思维缜密，有很强的主动性和逻辑思维能力；\n4. 对提升应用交付质量及效率有浓厚兴趣；\n5. 了解大语言模型的基本能力，对AI赋能测试效率提升有好奇心，有使用AI工具辅助测试或开发的经验者优先。\n具备以下经验者优先：\n1. 有hacker精神；\n2. 有使用大模型辅助测试的经验，如利用LLM生成测试用例、分析缺陷根因等；\n3. 了解AI模型测试方法，如大模型输出质量评估、幻觉检测、安全测试等。\n【岗位亮点】\n1. 广阔的平台，多样化的业务，足够的技术探索空间；\n2. 良好的导师指导和培训机制；\n3. 大模型与测试深度融合，可参与构建AI驱动的智能质量保障体系。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961003000,
+    "refreshTime": 1786961003000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI测试开发工程师\n应届-校园招聘\n工作地点：北京市、上海市、成都市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 智能化测试体系，构建AI驱动的测试方案，覆盖LLM应用、Agent系统、多模态产品；基于大模型实现用例自动生成、回归智能筛选、日志根因定位。\n2. AI系统专项评测，搭建LLM评测体系：幻觉检测、指令遵循度、输出稳定性；设计Agent端到端测试框架：工具调用、多轮对话、任务执行链路；建设RAG检索质量评估方案。\n3. 评测基建与数据。设计评测数据集与benchmark，量化模型能力；构建质量数据飞轮，将缺陷反馈转化为质量洞察；开发智能缺陷分析工具。\n4. 工程化平台。打造AI-Native测试平台，集成Prompt管理、A/B评测、自动报告；推动CI/CD智能化升级，质量看板数据驱动。\n任职要求\n1. 本科及以上学历，良好的计算机基础，熟练使用C家族/Java/Python/Ruby/JavaScript/Shell中至少一种；\n2. 广阔的技术视野，对前沿技术和方法有极强的探索欲；\n3. 严谨负责、思维缜密，有很强的主动性和逻辑思维能力；\n4. 对提升应用交付质量及效率有浓厚兴趣；\n5. 了解大语言模型的基本能力，对AI赋能测试效率提升有好奇心，有使用AI工具辅助测试或开发的经验者优先。\n具备以下经验者优先：\n1. 有hacker精神；\n2. 有使用大模型辅助测试的经验，如利用LLM生成测试用例、分析缺陷根因等；\n3. 了解AI模型测试方法，如大模型输出质量评估、幻觉检测、安全测试等。\n【岗位亮点】\n1. 广阔的平台，多样化的业务，足够的技术探索空间；\n2. 良好的导师指导和培训机制；\n3. 大模型与测试深度融合，可参与构建AI驱动的智能质量保障体系。\n工作城市\n北京市、上海市、成都市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

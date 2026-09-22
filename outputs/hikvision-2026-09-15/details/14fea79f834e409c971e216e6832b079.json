@@ -1,0 +1,112 @@
+{
+  "source_job_id": "14fea79f834e409c971e216e6832b079",
+  "verified_at": "2026-09-15T01:32:19.530Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=14fea79f834e409c971e216e6832b079",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=14fea79f834e409c971e216e6832b079&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "82cdd274e25b480ebdff55ae0736af1e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售后服务工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "维修服务",
+        "techDire": "不限",
+        "postContent": "1、负责公司相关产品的维修工作；\n2、帮助客户解决产品售后问题；\n3、参与产品返修情况分析，提出改善建议。",
+        "postRequire": "1、本科及以上学历；\n2、电子、机电、计算机等相关专业优先；\n3、精通模拟、数字电路相关知识，能读懂产品电路图；\n4、熟练使用烙铁、风枪、示波器等维修工具，熟悉电子元器件并了解其电气性能；\n5、做事仔细认真，责任心强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "14fea79f834e409c971e216e6832b079",
+        "adNeedDept": "技术支持与服务部",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "5700520166314fd1bfb3e5dfa2d0a711",
+          "name": "技术支持与服务部",
+          "description": "技术支持与服务部是海康威视总部的技术服务团队，以杭州为中心，建有武汉、西安、成都等分中心，辐射华东、华中、西北、西南等多个区域。部门致力于海康威视技术支持与服务体系的建设和优化，拥有涵盖所有海康威视产品线的专家级技术力量，全面支撑公司各项业务的售前、售中、售后服务工作，并为分支机构的技术支持与服务业务提供坚强后盾，保证客用户在公司产品各阶段的需求得到合理、快速的响应和解决。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "d3dc5444d19a4c8e81fe0c474e1e3795",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售后服务工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "维修服务",
+        "techDire": "不限",
+        "postContent": "1、负责公司相关产品的维修工作；\n2、帮助客户解决产品售后问题；\n3、参与产品返修情况分析，提出改善建议。",
+        "postRequire": "1、本科及以上学历；\n2、电子、机电、计算机等相关专业优先；\n3、精通模拟、数字电路相关知识，能读懂产品电路图；\n4、熟练使用烙铁、风枪、示波器等维修工具，熟悉电子元器件并了解其电气性能；\n5、做事仔细认真，责任心强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "海口市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "14fea79f834e409c971e216e6832b079",
+        "adNeedDept": "国内营销-海南业务中心",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:54",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "1ad543354ad8478d96ac12efbf76dae4",
+          "name": "国内营销-海南业务中心",
+          "description": "国内营销中心坚持“客户为先，持续创新”的精神，以市场为驱动，通过数字化营销、多渠道覆盖等形式，为全行业各领域的客用户提供优质的智能物联解决方案及技术服务，助力建设便捷、高效、安心的智能世界。国内营销中心在全国设有32家省级业务中心、300多个国内城市分公司及办事处，正式员工一万多人，构成了“以城市为中心”的本地化营销服务网络（截止2023年底）。\n海康威视国内营销中心为你提供涵盖全国307多个城市的销售工程师、解决方案行销工程师、技术支持工程师、商务运营等各类营销岗位。欢迎你加入国内营销中心，为所在地的公共服务和城市数字化转型、企业数字化转型提供产品、方案以及服务的全方位支持，助力人人享有美好未来。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "b5d906abb6f74ae580ba3724d0717672",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "售后服务工程师",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "维修服务",
+        "techDire": "不限",
+        "postContent": "1、负责公司相关产品的维修工作；\n2、帮助客户解决产品售后问题；\n3、参与产品返修情况分析，提出改善建议。",
+        "postRequire": "1、本科及以上学历；\n2、电子、机电、计算机等相关专业优先；\n3、精通模拟、数字电路相关知识，能读懂产品电路图；\n4、熟练使用烙铁、风枪、示波器等维修工具，熟悉电子元器件并了解其电气性能；\n5、做事仔细认真，责任心强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "14fea79f834e409c971e216e6832b079",
+        "adNeedDept": "海康机器人#萤石网络",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:31:48",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        },
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

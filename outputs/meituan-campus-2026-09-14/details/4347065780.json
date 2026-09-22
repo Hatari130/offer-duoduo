@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4347065780&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:53.576Z",
+  "data": {
+    "jobUnionId": "4347065780",
+    "name": "【基座大模型北斗实习】全模态Computer Use Agent前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：下一代智能体将超越纯文本交互，在屏幕、软件乃至物理世界中运作——这要求模型具备将图像、视频、音频、文本等多模态感知与可靠的实时行动能力统一融合的底层能力。本课题聚焦于将全模态（Omni-modal）理解能力深度融入Computer Use Agent（CUA），构建\"边看、边听、边想、边做\"的原生全模态智能体系统，推动智能体从单一文本工具调用走向真实数字环境中的多模态自主操作。\n\n具体地，我们关注如下研究方向：\n1、全模态感知与GUI交互的统一建模：探索将视觉（屏幕截图、视频流）、听觉（语音指令、系统音频）、文本等多模态信号在统一架构下进行融合理解，使Agent能够基于多模态上下文进行精准的GUI元素定位、状态识别与操作决策，提升在复杂真实桌面/移动端环境下的任务完成能力。\n2、长时序跨应用任务规划与执行：研究Agent在跨小时级、多应用协同的长程数字任务中的持续意图保持、动态重规划与自主纠错能力，解决当前CUA在长交互链中出现的上下文丢失、计划漂移与误差累积问题，使Agent能够自主稳定地完成复杂的端到端工作流。\n3、实时流式感知与连续决策：从\"处理静态截图\"升级到\"实时屏幕流+音频流\"的连续感知模式，探索Agent在动态变化的数字环境中进行实时状态追踪与即时响应的能力，支撑直播监控、实时协作等需要持续交互的场景。\n4、全模态Agent的高效学习范式：探索面向全模态CUA场景的强化学习训练方法，包括但不限于：多模态环境下的奖励建模与过程奖励设计、GUI交互轨迹的大规模RL Scaling、基于环境反馈的自进化与持续学习机制，以及多模态推理与行动的联合优化策略。",
+    "jobRequirement": "1、本科及以上学历，计算机、人工智能、自动化、数学等相关专业在读；\n2、在以下一个或多个领域有较深入的研究或实践经验：多模态大模型（MLLM）、强化学习（RL）、Agent系统、GUI Agent / Computer Use、视觉-语言模型、跨模态融合；\n3、熟悉Python，具备较强的工程实现能力，有大模型训练或推理实践经验者优先；\n4、好奇心驱动，具备出色的问题分析与自主探索能力，能够在前沿不确定性较高的方向中持续推进；\n5、具有良好的沟通协作能力，对追求前沿技术有强烈热情，能够与团队融洽合作，快速试验想法。\n\n加分项：\n1、在ICLR/NeurIPS/ICML/ACL/CVPR等顶会发表论文者优先；\n2、有影响力的开源项目中做出过核心贡献者优先；\n3、有GUI Grounding、Screen Agent、Computer Use Agent、Browser Use/Web Agent等相关项目经验者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223032000,
+    "refreshTime": 1775223032000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】全模态Computer Use Agent前沿研究\n实习-北斗计划\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：下一代智能体将超越纯文本交互，在屏幕、软件乃至物理世界中运作——这要求模型具备将图像、视频、音频、文本等多模态感知与可靠的实时行动能力统一融合的底层能力。本课题聚焦于将全模态（Omni-modal）理解能力深度融入Computer Use Agent（CUA），构建\"边看、边听、边想、边做\"的原生全模态智能体系统，推动智能体从单一文本工具调用走向真实数字环境中的多模态自主操作。\n具体地，我们关注如下研究方向：\n1、全模态感知与GUI交互的统一建模：探索将视觉（屏幕截图、视频流）、听觉（语音指令、系统音频）、文本等多模态信号在统一架构下进行融合理解，使Agent能够基于多模态上下文进行精准的GUI元素定位、状态识别与操作决策，提升在复杂真实桌面/移动端环境下的任务完成能力。\n2、长时序跨应用任务规划与执行：研究Agent在跨小时级、多应用协同的长程数字任务中的持续意图保持、动态重规划与自主纠错能力，解决当前CUA在长交互链中出现的上下文丢失、计划漂移与误差累积问题，使Agent能够自主稳定地完成复杂的端到端工作流。\n3、实时流式感知与连续决策：从\"处理静态截图\"升级到\"实时屏幕流+音频流\"的连续感知模式，探索Agent在动态变化的数字环境中进行实时状态追踪与即时响应的能力，支撑直播监控、实时协作等需要持续交互的场景。\n4、全模态Agent的高效学习范式：探索面向全模态CUA场景的强化学习训练方法，包括但不限于：多模态环境下的奖励建模与过程奖励设计、GUI交互轨迹的大规模RL Scaling、基于环境反馈的自进化与持续学习机制，以及多模态推理与行动的联合优化策略。\n任职要求\n1、本科及以上学历，计算机、人工智能、自动化、数学等相关专业在读；\n2、在以下一个或多个领域有较深入的研究或实践经验：多模态大模型（MLLM）、强化学习（RL）、Agent系统、GUI Agent / Computer Use、视觉-语言模型、跨模态融合；\n3、熟悉Python，具备较强的工程实现能力，有大模型训练或推理实践经验者优先；\n4、好奇心驱动，具备出色的问题分析与自主探索能力，能够在前沿不确定性较高的方向中持续推进；\n5、具有良好的沟通协作能力，对追求前沿技术有强烈热情，能够与团队融洽合作，快速试验想法。\n加分项：\n1、在ICLR/NeurIPS/ICML/ACL/CVPR等顶会发表论文者优先；\n2、有影响力的开源项目中做出过核心贡献者优先；\n3、有GUI Grounding、Screen Agent、Computer Use Agent、Browser Use/Web Agent等相关项目经验者优先。\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

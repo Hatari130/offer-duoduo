@@ -1,0 +1,41 @@
+{
+  "source_job_id": "f4781f5a2cd14381a00327c72b0d6c93",
+  "verified_at": "2026-09-15T01:32:05.341Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=f4781f5a2cd14381a00327c72b0d6c93",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=f4781f5a2cd14381a00327c72b0d6c93&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "f4781f5a2cd14381a00327c72b0d6c93",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "文档开发工程师",
+        "postAdSn": "测试/支撑类",
+        "postStdSubSn": "文档开发",
+        "techDire": "英文",
+        "postContent": "1、参与产品完整开发周期，熟悉产品、目标客用户群体与应用场景等，设计与开发多形式用户资料；\n2、深刻理解用户需要通过产品实现的目标，参与产品界面信息的设计以及本地化翻译；\n3、进行产品各类用户的调研，挖掘、分析、提炼其对用户资料与信息的多维度诉求并进行转化落地；\n4、与产品研发团队各领域专家保持有效协作，熟悉产品资料的开发流程与规范，确保各环节运作通畅与高效；\n5、具备结构化写作的思维，可将技术信息整理输出匹配用户需求的用户资料；\n6、了解DITA标准与XML开发工具，学习并使用同源发布工具进行资料开发；具备本地化翻译的基础知识，了解机器辅助翻译工具；\n7、维护产品资料内外部发布渠道，维护与管理知识库。",
+        "postRequire": "1、本科及以上学历，计算机类、通信类等相关专业优先；\r\n2、具有良好的文字撰写技巧，能准确简洁地表达策略、计划、流程等；\r\n3、熟练使用Office软件，了解并会使用位图与矢量图绘制与编辑软件有DITA开发工作经验者优先；\r\n4、具备良好的沟通及学习能力，对资料开发岗位具有较高的认同感；\r\n5、有资料开发工作经验者优先；\r\n6、加分项：\n1）英文专业类达到专八，非英语专业达到6级540分及以上，或同等英语能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

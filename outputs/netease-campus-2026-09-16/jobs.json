@@ -1,0 +1,32 @@
+[
+  {
+    "source_job_id": "103",
+    "company_name": "网易",
+    "job_title": "语音算法工程师（网易北京）",
+    "locations": [
+      "北京市"
+    ],
+    "job_direction": "人工智能",
+    "job_subdirection": null,
+    "recruitment_project": "2019届网易互联网秋招",
+    "education_requirement": null,
+    "major_requirement": null,
+    "skills": [
+      "语音识别",
+      "深度学习",
+      "深度学习算法"
+    ],
+    "jd": "工作职责\n负责语音识别系统针对不同应用领域的开发及优化工作；\n负责语音识别核心引擎的持续优化工作，同时跟踪业界最新进展，对新技术进行预研及评估。\n\n任职要求\n正直诚信、有责任感、有激情；\n负责语音识别核心引擎的持续优化工作，同时跟踪业界最新进展，对新技术进行预研及评估；\n了解深度学习技术在语音识别领域的相关应用，熟悉常用深度学习算法；\n学习能力强，能独立分析并解决问题。",
+    "salary": null,
+    "department": null,
+    "published_at": "2018-07-17",
+    "published_at_source": "官网 publishTime",
+    "last_verified_at": "2026-09-16T15:29:51+08:00",
+    "verified_date": "2026-09-16",
+    "source_list_url": "https://campus.163.com/app/job/position",
+    "detail_url": "https://campus.163.com/app/job/position?id=103",
+    "application_url": "https://campus.163.com/app/job/position?id=103",
+    "recruitment_category": "校招",
+    "recruitment_type": "校招"
+  }
+]

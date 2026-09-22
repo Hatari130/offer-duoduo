@@ -1,0 +1,30 @@
+{
+  "source": "https://campus.dewu.com/578078/position/list",
+  "fetched_at": "2026-09-15T00:00:00+08:00",
+  "expected_count": 167,
+  "actual_count": 167,
+  "unique_source_job_ids": 167,
+  "pages": 17,
+  "page_sizes": [
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    10,
+    7
+  ],
+  "published_at_disclosed": 0,
+  "published_at_note": "官网列表与该岗位详情页未披露发布时间",
+  "validation": "validate_jobs.py --expected 167 passed"
+}

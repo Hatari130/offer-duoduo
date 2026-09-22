@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4530729606&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:42.252Z",
+  "data": {
+    "jobUnionId": "4530729606",
+    "name": "【LongCat大模型人才校招】Agentic Coding算法研究员",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "和我们一起开发前沿Agentic Coding模型，持续提升模型在长程复杂任务和真实开发场景中的表现，并通过代码提升数字世界的智能上限。加入团队，你将参与如下工作：\n1.代码全链路训练：包括pretrain、midtrain、SFT、RL等环节，持续提升模型在代码生成、代码理解、代码修复等方向的能力边界。\n2.高质量数据建设：构建高质量Coding数据生产、数据配比与数据质量评估体系，覆盖软件工程任务、仓库级代码生成、终端任务、Web开发等方向，推动模型能力持续演进。\n3.Coding 强化学习：构建面向 Coding 场景的大规模 RL 训练体系，研究 Reward Design、Self-Improvement 等关键技术，提升模型在真实任务中的稳定性与泛化能力。\n4.长上下文与 Repo-Level 建模：研究超长上下文代码建模、多文件关联理解、仓库级知识记忆与代码结构建模能力，提升模型对复杂大型项目的理解和生成能力。\n【为什么是我们】\n1.充分参与基模全链路的工作的机会，包括万卡集群上的超大规模训练，前沿算法研究，模型评测与行为研究，以及真实业务落地；\n2.极具挑战的目标和远期愿景，通过代码去持续探索并突破模型智能上限；\n3.对标行业极具竞争力的薪酬与资源支持。",
+    "jobRequirement": "1.具备扎实的机器学习、深度学习、强化学习功底。计算机、人工智能等相关专业硕士/博士学位优先；\n2.动手能力出色，熟练掌握 Python 等编程语言，ACM/ICPC、NOI/IOI、TopCoder、Kaggle 等竞赛获奖者优先；\n3.在 NeurIPS、ICML、ICLR、ACL等国际顶级会议发表论文，或在高质量开源项目中有重要贡献者优先；\n4.具备良好的问题分析与研究能力，能够深入解决大模型训练、推理与 Agent 执行中的复杂问题，对通用智能与下一代软件开发范式有热情。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459822000,
+    "refreshTime": 1780459822000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】Agentic Coding算法研究员\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n和我们一起开发前沿Agentic Coding模型，持续提升模型在长程复杂任务和真实开发场景中的表现，并通过代码提升数字世界的智能上限。加入团队，你将参与如下工作：\n1.代码全链路训练：包括pretrain、midtrain、SFT、RL等环节，持续提升模型在代码生成、代码理解、代码修复等方向的能力边界。\n2.高质量数据建设：构建高质量Coding数据生产、数据配比与数据质量评估体系，覆盖软件工程任务、仓库级代码生成、终端任务、Web开发等方向，推动模型能力持续演进。\n3.Coding 强化学习：构建面向 Coding 场景的大规模 RL 训练体系，研究 Reward Design、Self-Improvement 等关键技术，提升模型在真实任务中的稳定性与泛化能力。\n4.长上下文与 Repo-Level 建模：研究超长上下文代码建模、多文件关联理解、仓库级知识记忆与代码结构建模能力，提升模型对复杂大型项目的理解和生成能力。\n【为什么是我们】\n1.充分参与基模全链路的工作的机会，包括万卡集群上的超大规模训练，前沿算法研究，模型评测与行为研究，以及真实业务落地；\n2.极具挑战的目标和远期愿景，通过代码去持续探索并突破模型智能上限；\n3.对标行业极具竞争力的薪酬与资源支持。\n任职要求\n1.具备扎实的机器学习、深度学习、强化学习功底。计算机、人工智能等相关专业硕士/博士学位优先；\n2.动手能力出色，熟练掌握 Python 等编程语言，ACM/ICPC、NOI/IOI、TopCoder、Kaggle 等竞赛获奖者优先；\n3.在 NeurIPS、ICML、ICLR、ACL等国际顶级会议发表论文，或在高质量开源项目中有重要贡献者优先；\n4.具备良好的问题分析与研究能力，能够深入解决大模型训练、推理与 Agent 执行中的复杂问题，对通用智能与下一代软件开发范式有热情。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

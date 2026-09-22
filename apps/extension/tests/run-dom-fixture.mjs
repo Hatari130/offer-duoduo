@@ -30,6 +30,9 @@ const zhiyeFixturePath = fileURLToPath(
 const feishuFixturePath = fileURLToPath(
   new URL("./fixtures/feishu-jobs-application.html", import.meta.url)
 );
+const feishuDcarFixturePath = fileURLToPath(
+  new URL("./fixtures/feishu-dcar-application.html", import.meta.url)
+);
 const zhiyeDetailEndedPath = fileURLToPath(
   new URL("./fixtures/zhiye-detail-ended.html", import.meta.url)
 );
@@ -199,6 +202,27 @@ try {
   assert.equal(feishu.recruitmentType, "autumn_early");
   assert.equal(feishu.progressEvidence.some((item) => item.position.includes("项目：")), false);
   console.log("DOM extraction fixture passed for the Feishu Jobs application page.");
+
+  const feishuDcar = runFixture(feishuDcarFixturePath);
+  assert.equal(feishuDcar.company, "懂车帝");
+  assert.equal(feishuDcar.progressEvidence.length, 2);
+  assert.deepEqual(
+    feishuDcar.progressEvidence.map((item) => ({
+      company: item.company,
+      position: item.position,
+      city: item.city,
+      progress: item.currentStage,
+      appliedAt: item.appliedAt
+    })),
+    [
+      { company: "懂车帝", position: "大模型产品运营-校招【27届】", city: "北京、杭州", progress: "已投递", appliedAt: "2026-09-19" },
+      { company: "懂车帝", position: "【27届】平台AI产品经理", city: "北京", progress: "已投递", appliedAt: "2026-09-19" }
+    ]
+  );
+  assert.equal(feishuDcar.position, "大模型产品运营-校招【27届】");
+  assert.equal(feishuDcar.city, "北京、杭州");
+  assert.equal(feishuDcar.confidence, 0.98);
+  console.log("DOM extraction fixture passed for the Feishu ATS Dongchedi application page.");
 
   const detail = runFixture(zhiyeDetailEndedPath);
   assert.equal(

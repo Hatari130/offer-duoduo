@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4534892925&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:40.432Z",
+  "data": {
+    "jobUnionId": "4534892925",
+    "name": "【北斗】多模态后训练及Agent能力拓展研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们致力于用科技创新为用户和生态伙伴创造超预期的交互体验和效率提升，依托生活服务领域多样化且复杂的业务场景，聚焦基座技术与公司战略级应用方向的深度融合，持续推动前沿技术的落地，同时积极探索和挑战技术的无人区，不断定义并刷新行业的最先进技术标准。\n\n1、跟踪SFT/DPO/GRPO等后训练前沿方法，快速完成技术预研与可行性验证\n2、面向多轮交互、长序列推理等复杂场景进行垂域数据建设与指令微调\n3、建设后训练评估体系与数据飞轮，驱动评测-数据-训练闭环迭代\n4、探索多模态大模型与Claude Code/OpenClaw深度结合，研究工具调用与多步规划能力边界",
+    "jobRequirement": "【岗位要求】\n1、对前沿技术有强烈探索欲，有出色的团队协作精神\n2、有OpenClaw/Claude Code深度使用经验与产出优先\n3、发表过顶级会议文章（NeurIPS/ICML/ICLR/ACL/Interspeech/ICASSP等）优先\n4、ACM竞赛获奖者优先\n\n【岗位吸引力】\n1、交叉前沿赛道：聚焦多模态大模型、Agent 等核心方向，探索技术边界——不只是执行，你可以主导关键技术模块的设计与落地\n2、顶级研究氛围 + 充足资源保障：团队26年上半年在ICML/ICLR/ACL/EMNLP发表论文9篇，与顶尖高校长期联合研究；充足GPU集群 + Token供给，实验不被资源卡脖子\n3、AI-Native 研发文化：团队把 AI 当日常工具，用它加速研究的同时，也把\"怎么用好 AI\"本身当作研究课题——不设条条框框，鼓励大胆尝试",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780474726000,
+    "refreshTime": 1780474726000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】多模态后训练及Agent能力拓展研究员\n应届-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们致力于用科技创新为用户和生态伙伴创造超预期的交互体验和效率提升，依托生活服务领域多样化且复杂的业务场景，聚焦基座技术与公司战略级应用方向的深度融合，持续推动前沿技术的落地，同时积极探索和挑战技术的无人区，不断定义并刷新行业的最先进技术标准。\n1、跟踪SFT/DPO/GRPO等后训练前沿方法，快速完成技术预研与可行性验证\n2、面向多轮交互、长序列推理等复杂场景进行垂域数据建设与指令微调\n3、建设后训练评估体系与数据飞轮，驱动评测-数据-训练闭环迭代\n4、探索多模态大模型与Claude Code/OpenClaw深度结合，研究工具调用与多步规划能力边界\n任职要求\n【岗位要求】\n1、对前沿技术有强烈探索欲，有出色的团队协作精神\n2、有OpenClaw/Claude Code深度使用经验与产出优先\n3、发表过顶级会议文章（NeurIPS/ICML/ICLR/ACL/Interspeech/ICASSP等）优先\n4、ACM竞赛获奖者优先\n【岗位吸引力】\n1、交叉前沿赛道：聚焦多模态大模型、Agent 等核心方向，探索技术边界——不只是执行，你可以主导关键技术模块的设计与落地\n2、顶级研究氛围 + 充足资源保障：团队26年上半年在ICML/ICLR/ACL/EMNLP发表论文9篇，与顶尖高校长期联合研究；充足GPU集群 + Token供给，实验不被资源卡脖子\n3、AI-Native 研发文化：团队把 AI 当日常工具，用它加速研究的同时，也把\"怎么用好 AI\"本身当作研究课题——不设条条框框，鼓励大胆尝试\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

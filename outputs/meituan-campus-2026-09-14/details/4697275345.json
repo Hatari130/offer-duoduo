@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697275345&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:54.446Z",
+  "data": {
+    "jobUnionId": "4697275345",
+    "name": "大模型算法工程师（强化方向）",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责大语言模型强化学习全链路优化，包括高质量训练数据构建、奖励模型迭代（Reward Model / Process RM）、RL策略训练（PPO/DPO/GRPO等），持续提升模型推理质量与对齐效果；\n2. 探索强化学习前沿技术并推动落地，包括但不限于：推理时计算优化（Test-time Compute）、基于搜索的推理增强、多步Agent决策优化、在线学习与自我进化；\n3. 将大模型能力与美团搜索、推荐、广告等核心业务场景深度结合，设计并迭代基于RL的策略模型，实现可量化的业务目标提升。",
+    "jobRequirement": "1. 计算机科学、自动化、数学、统计学等相关专业硕士或博士，扎实的数学基础和编程能力；\n2. 精通强化学习核心算法（Policy Gradient、PPO、DPO、GRPO等），理解Reward Modeling和RLHF/RLAIF对齐技术原理，有LLM对齐相关项目实践经验优先；\n3. 熟悉PyTorch，有大规模分布式训练经验（DeepSpeed/Megatron-LM/FSDP），能独立完成从数据处理到模型训练部署的全流程；\n4. 有以下经验者优先：大语言模型推理优化（vLLM/TensorRT-LLM）、Agent/工具调用场景RL训练、搜索推荐系统强化学习应用；\n5. 在ICML、NeurIPS、ICLR等顶级会议发表RL/LLM方向论文者优先；\n6. 良好的逻辑思维和沟通能力，自驱力强，乐于挑战开放性技术问题。\n岗位亮点：\n1. 前沿技术深水区：直接参与千亿参数大模型的RL训练，每天面对业界最前沿的Scaling RL挑战；\n2. 端到端闭环落地：从算法研究到亿级用户场景验证，你的每一行代码都能产生真实业务价值，拒绝纸上谈兵；\n3. 技术驱动文化：团队鼓励顶会投稿、内部技术分享，你可以在工作中同步保持学术竞争力。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960993000,
+    "refreshTime": 1786960993000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型算法工程师（强化方向）\n应届-校园招聘\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责大语言模型强化学习全链路优化，包括高质量训练数据构建、奖励模型迭代（Reward Model / Process RM）、RL策略训练（PPO/DPO/GRPO等），持续提升模型推理质量与对齐效果；\n2. 探索强化学习前沿技术并推动落地，包括但不限于：推理时计算优化（Test-time Compute）、基于搜索的推理增强、多步Agent决策优化、在线学习与自我进化；\n3. 将大模型能力与美团搜索、推荐、广告等核心业务场景深度结合，设计并迭代基于RL的策略模型，实现可量化的业务目标提升。\n任职要求\n1. 计算机科学、自动化、数学、统计学等相关专业硕士或博士，扎实的数学基础和编程能力；\n2. 精通强化学习核心算法（Policy Gradient、PPO、DPO、GRPO等），理解Reward Modeling和RLHF/RLAIF对齐技术原理，有LLM对齐相关项目实践经验优先；\n3. 熟悉PyTorch，有大规模分布式训练经验（DeepSpeed/Megatron-LM/FSDP），能独立完成从数据处理到模型训练部署的全流程；\n4. 有以下经验者优先：大语言模型推理优化（vLLM/TensorRT-LLM）、Agent/工具调用场景RL训练、搜索推荐系统强化学习应用；\n5. 在ICML、NeurIPS、ICLR等顶级会议发表RL/LLM方向论文者优先；\n6. 良好的逻辑思维和沟通能力，自驱力强，乐于挑战开放性技术问题。\n岗位亮点：\n1. 前沿技术深水区：直接参与千亿参数大模型的RL训练，每天面对业界最前沿的Scaling RL挑战；\n2. 端到端闭环落地：从算法研究到亿级用户场景验证，你的每一行代码都能产生真实业务价值，拒绝纸上谈兵；\n3. 技术驱动文化：团队鼓励顶会投稿、内部技术分享，你可以在工作中同步保持学术竞争力。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

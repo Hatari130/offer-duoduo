@@ -1,0 +1,41 @@
+{
+  "source_job_id": "652054bbd4db4a56a7e14352d5803b54",
+  "verified_at": "2026-09-15T01:32:11.200Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=652054bbd4db4a56a7e14352d5803b54",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=652054bbd4db4a56a7e14352d5803b54&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "652054bbd4db4a56a7e14352d5803b54",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "火灾算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "音视频/AIGC/模型压缩",
+        "postContent": "1. 多模态大模型方向：负责多模态大模型（文本 / 图像 / 语音 / 视频）的数据治理与合成、算法调研与研究、模型训练与应用落地；\n2. Agent 方向：负责AI Agent算法的调研与研究，负责Agent Harnesss设计实现、数据合成管线搭建、构建评测体系和后训练优化，提升大模型在复杂场景下的推理规划能力与应用落地；\n3. AIGC 方向：跟进业界 AIGC 最新发展，探索图像增强、图像生成、图像编辑、视频生成、3D 生成等前沿技术；\n4. 模型压缩方向：负责大模型量化、剪枝、Token压缩等模型压缩与推理加速算法的调研与研究，推动模型在端侧/边缘设备的高效部署与落地。",
+        "postRequire": "1、硕士及以上学历，专业不限； \n2、具有良好的数学功底和扎实的编程基础；熟练掌握Python，熟悉C/C++；熟练使用PyTorch或其它开源训练框架；\n3、对计算机视觉、机器学习、深度学习、大模型、AI Agent、AIGC、模型压缩有较深入的理解与认识，有相关领域的研究经验 ； \n4、有实际项目开发或参加知名竞赛经验者优先； \n5、在国际顶级会议或期刊上发表过文章或在开源社区有代码突出贡献者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-09-10 18:01:03",
+        "updateTime": "2026-09-10 18:01:05"
+      },
+      "departments": [
+        {
+          "id": "0ec0bc24c0154ab99aee05f4aec7a433",
+          "name": "海康消防",
+          "description": "海康消防是以物联可视为核心的智能消防物联网和智慧化管理解决方案提供商，服务于单位和城市消防物联网的建设和运营，构建开放的消防产业生态和服务生态合作体系，为城市公共服务领域用户、企事业单位用户、中小微用户提供一站式消防安全系统解决方案和一站式消防管理服务解决方案，旨在构筑智慧感知、智慧防控、智慧管理、智慧救援四维一体的智慧消防管理体系。"
+        }
+      ]
+    }
+  ]
+}

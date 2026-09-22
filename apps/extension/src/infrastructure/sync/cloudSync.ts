@@ -7,25 +7,13 @@ import type {
   SessionUser
 } from "@offerflow/contracts";
 import type { JobApplication, TailorJobContext } from "@offerflow/domain";
-import { cloudResumeToPersonalProfile, createResumeDocument, toCloudResumeDocument, toCloudResumeAssets, toCloudResumeProfile } from "@offerflow/domain";
 import {
-  EMPTY_PROFILE,
   clearGuestJobs,
   clearLocalProfileAndResumes,
   clearUserJobs,
-  isStarterProfile,
   loadJobs,
-  loadPendingDeletedResumeIds,
-  loadProfile,
-  loadResumeLibrary,
-  migrateLegacyResumeDeletions,
-  recordPendingDeletedResumeId,
-  removePendingDeletedResumeIds,
   saveJobs,
-  saveProfile,
-  saveResumeLibrary
 } from "@/infrastructure/storage/storage";
-import { mergeRemoteResumeTemplates, mergeRemoteResumeVersions, resumeSyncFingerprint } from "./resumeTemplateSync";
 import {
   clearCloudSyncStorage,
   clearCloudConnection,
@@ -165,7 +153,7 @@ async function requireBoundConnection(): Promise<CloudConnection | undefined> {
     return connection;
   }
   if (owner.consentVersion !== CLOUD_RESUME_CONSENT_VERSION) {
-    throw new Error("请重新登录并确认投递与简历的云端同步范围");
+    throw new Error("请重新登录并确认投递记录的云端同步范围");
   }
   return connection;
 }
@@ -271,17 +259,12 @@ function defaultDeviceName(): string {
 
 export async function getCloudSyncOverview(): Promise<CloudSyncOverview> {
   const connection = await migrateLegacyLocalConnection(await loadCloudConnection());
-  const [storedState, outbox, library] = await Promise.all([
-    loadCloudSyncState(),
-    loadCloudSyncOutbox(),
-    loadResumeLibrary()
-  ]);
+  const [storedState, outbox] = await Promise.all([loadCloudSyncState(), loadCloudSyncOutbox()]);
   // A resume conflict is stored as both an actionable candidate on the resume
   // and a summary error for the settings page. Deleting or resolving the
   // candidate must also retire that summary instead of leaving a permanent
   // red warning behind.
-  const staleResumeConflict = storedState.lastError?.startsWith("通用简历存在多端修改")
-    && !library.some((resume) => resume.syncConflict);
+  const staleResumeConflict = storedState.lastError?.startsWith("通用简历存在多端修改");
   const state: CloudSyncState = { ...storedState };
   if (staleResumeConflict) delete state.lastError;
   if (staleResumeConflict) await saveCloudSyncState(state);
@@ -328,8 +311,8 @@ function cloudConsentMessage(input: {
   migration?: boolean;
 }): string {
   return `同步至 ${input.email}（${input.apiBaseUrl}）？\n\n` +
-    `包括 ${input.jobCount} 条投递、${input.resumeCount} 份通用简历，以及之后保存的投递与通用简历。\n` +
-    "简历上传姓名、联系方式、教育、经历、项目、技能、兴趣、到岗时间及简历图片和排版。证件、家庭、健康、紧急联系人等网申专用字段及原文件留在本地。\n\n" +
+    `包括 ${input.jobCount} 条投递，以及之后保存的投递记录。\n` +
+    "网申资料和原文件仅保存在本机，与网页云端简历模板相互独立。\n\n" +
     (input.migration ? "旧账号的本地资料将绑定至这个账号；旧账号云端数据不变。\n" : "") +
     "确认后开始同步；取消不会删除或迁移任何本地资料。";
 }
@@ -337,11 +320,10 @@ function cloudConsentMessage(input: {
 /** Renew an expanded sync boundary without forcing an already authenticated
  * account through the browser login flow again. */
 export async function renewCloudSyncConsent(): Promise<CloudSyncOverview> {
-  const [connection, owner, localJobs, library] = await Promise.all([
+  const [connection, owner, localJobs] = await Promise.all([
     loadCloudConnection(),
     loadCloudDataOwner(),
-    loadJobs(),
-    loadResumeLibrary()
+    loadJobs()
   ]);
   if (!connection) return loginAndSync();
   const scope = connectionScope(connection);
@@ -352,7 +334,7 @@ export async function renewCloudSyncConsent(): Promise<CloudSyncOverview> {
     email: connection.user.email,
     apiBaseUrl: connection.apiBaseUrl,
     jobCount: localJobs.length,
-    resumeCount: library.filter((resume) => (resume.kind || "base") === "base").length
+    resumeCount: 0
   }));
   if (!approved) throw new Error("已取消同步授权，本地资料保持不变");
   return command<CloudSyncOverview>({ action: "approveConsent", scope });
@@ -376,16 +358,12 @@ async function prepareCloudPair(code: string, apiBaseUrl: string, deviceName: st
   const normalizedCode = code.replace(/\s/g, "").toUpperCase();
   if (!normalizedCode) throw new Error("未收到有效的插件授权信息");
 
-  const [normalizedUrl, owner, previousConnection, localJobs, library] = await Promise.all([
+  const [normalizedUrl, owner, previousConnection, localJobs] = await Promise.all([
     Promise.resolve(normalizeApiBaseUrl(apiBaseUrl)),
     loadCloudDataOwner(),
     loadCloudConnection(),
-    loadJobs(),
-    loadResumeLibrary()
+    loadJobs()
   ]);
-  if (previousConnection && owner && cloudDataScope(owner) === connectionScope(previousConnection)) {
-    await migrateLegacyResumeDeletions(connectionScope(previousConnection));
-  }
   const deviceId = await getOrCreateCloudDeviceId();
   const client = createApiClient({ baseUrl: normalizedUrl });
   const session = await client.auth.exchangeDeviceCode({
@@ -401,7 +379,7 @@ async function prepareCloudPair(code: string, apiBaseUrl: string, deviceName: st
   const preview: PairPreview = {
     pendingId, user: session.user, apiBaseUrl: normalizedUrl,
     jobCount: localJobs.length,
-    resumeCount: library.filter(resume => (resume.kind || "base") === "base").length,
+    resumeCount: 0,
     migration,
     requiresConsent: Boolean(owner?.consentVersion !== CLOUD_RESUME_CONSENT_VERSION)
   };
@@ -436,10 +414,6 @@ async function finishCloudPair(pendingId: string): Promise<CloudSyncOverview> {
   const owner = await loadCloudDataOwner();
   const sameScope = owner && cloudDataScope(owner) === connectionScope(pending.connection);
   if (!sameScope) await clearCloudSyncStorage();
-  const currentProfile = await loadProfile();
-  if (isStarterProfile(currentProfile)) {
-    await saveProfile({ ...EMPTY_PROFILE, fullName: pending.connection.user.displayName || "", email: pending.connection.user.email || "" });
-  }
   const nextOwner: CloudDataOwner = {
     userId: pending.connection.user.id,
     apiBaseUrl: pending.connection.apiBaseUrl,
@@ -554,71 +528,23 @@ async function performClearLocal(): Promise<void> {
   await clearGuestJobs();
 }
 
-export async function deleteCloudResumeTemplate(templateId: string): Promise<void> {
-  const owner = await loadCloudDataOwner();
-  return command<void>({ action: "deleteTemplate", templateId, scope: owner ? cloudDataScope(owner) : undefined });
+// Retired commands fail closed even if an already-open older plugin page calls
+// the updated service worker. Local deletion must never mutate cloud templates.
+export async function deleteCloudResumeTemplate(_templateId: string): Promise<void> {
+  throw new Error("简历同步已停用，请刷新插件后在本地资料库删除");
 }
-
-async function performDeleteTemplate(templateId: string, expectedScope?: string): Promise<void> {
-  const owner = await loadCloudDataOwner();
-  const scope = owner && cloudDataScope(owner);
-  if (scope !== expectedScope) throw new Error("账号已变化，未删除简历，请刷新后重试");
-  if (scope) await recordPendingDeletedResumeId(templateId, scope);
-  const library = await loadResumeLibrary();
-  await saveResumeLibrary(library.filter(resume => resume.id !== templateId));
-  const connection = await loadCloudConnection();
-  if (!connection || !scope) return;
-  await requireBoundConnection();
-  try {
-    const client = createApiClient({
-      baseUrl: connection.apiBaseUrl,
-      getAccessToken: () => connection.accessToken
-    });
-    await client.resumes.removeTemplate(templateId);
-    await removePendingDeletedResumeIds([templateId], scope);
-  } catch (error) {
-    if (error instanceof OfferFlowApiError && error.status === 404) await removePendingDeletedResumeIds([templateId], scope);
-    // Retained in pending deleted list for the next sync attempt
-  }
+async function performDeleteTemplate(_templateId: string, _scope?: string): Promise<void> {
+  throw new Error("插件不能删除网页简历模板，请刷新插件");
 }
-
 export async function clearAllCloudResumeTemplates(): Promise<void> {
-  return command<void>({ action: "clearTemplates" });
+  throw new Error("请在网页简历模板中管理云端资料");
 }
-
 async function performClearCloudTemplates(): Promise<void> {
-  const connection = await requireBoundConnection();
-  if (!connection) throw new Error("请先登录，再清空云端通用简历");
-  const scope = connectionScope(connection);
-  const client = createApiClient({ baseUrl: connection.apiBaseUrl, getAccessToken: () => connection.accessToken });
-  const remote = await client.resumes.listTemplates();
-  for (const template of remote.templates) await recordPendingDeletedResumeId(template.id, scope);
-  for (const template of remote.templates) {
-    try {
-      await client.resumes.removeTemplate(template.id);
-      await removePendingDeletedResumeIds([template.id], scope);
-    } catch (error) {
-      if (error instanceof OfferFlowApiError && error.status === 404) {
-        await removePendingDeletedResumeIds([template.id], scope);
-      } else throw new Error("部分云端简历尚未删除，本地资料已保留，请联网后重试");
-    }
-  }
+  throw new Error("插件不能清空网页简历模板");
 }
-
 async function performResetResumes(): Promise<void> {
-  const connection = await requireBoundConnection();
-  if (!connection) throw new Error("请先登录，再清空本地与云端简历");
-  await performClearCloudTemplates();
   await clearLocalProfileAndResumes();
-  if (connection) {
-    await saveProfile({
-      ...EMPTY_PROFILE,
-      fullName: connection.user.displayName || "",
-      email: connection.user.email || ""
-    });
-  }
 }
-
 export async function resetLocalAndCloudResumes(): Promise<void> {
   return command<void>({ action: "resetResumes" });
 }
@@ -681,64 +607,6 @@ function preserveLocalConflicts(
   }));
 }
 
-/** Mirrors reusable extension resumes without transferring the source PDF. */
-async function syncResumeTemplates(client: ReturnType<typeof createApiClient>, scope: string): Promise<void> {
-  const pendingDeletes = await loadPendingDeletedResumeIds(scope);
-  if (pendingDeletes.length) {
-    const successfullyDeleted: string[] = [];
-    for (const id of pendingDeletes) {
-      try {
-        await client.resumes.removeTemplate(id);
-        successfullyDeleted.push(id);
-      } catch (error) {
-        if (error instanceof OfferFlowApiError && error.status === 404) successfullyDeleted.push(id);
-      }
-    }
-    if (successfullyDeleted.length) {
-      await removePendingDeletedResumeIds(successfullyDeleted, scope);
-    }
-  }
-
-  const library = await loadResumeLibrary();
-  // Suppress this run's IDs even after acknowledgement, before reading local
-  // copies. Otherwise a not-found delete could be re-uploaded in this round.
-  const currentPendingDeletes = new Set([...pendingDeletes, ...await loadPendingDeletedResumeIds(scope)]);
-  const filteredLibrary = library.filter((resume) => !currentPendingDeletes.has(resume.id));
-  const templates = filteredLibrary
-    .filter((resume) => (resume.kind || "base") === "base" && !resume.syncConflict && (!resume.cloudBaseline || resumeSyncFingerprint(resume) !== resume.cloudBaseline))
-    .map((resume) => ({
-      id: resume.id,
-      revision: resume.cloudRevision ?? 0,
-      name: resume.name,
-      profile: toCloudResumeProfile(resume.profile),
-      document: toCloudResumeDocument({
-        ...createResumeDocument({ id: resume.id, title: resume.name, profile: resume.profile, assets: resume.assets, portraitAssetId: resume.portraitAssetId, now: resume.createdAt }),
-        ...(resume.template ? { template: resume.template } : {}),
-        updatedAt: resume.updatedAt
-      }),
-      origin: "extension" as const,
-      createdAt: resume.createdAt,
-      updatedAt: resume.updatedAt
-    }));
-  let remoteTemplates;
-  try {
-    remoteTemplates = (await client.resumes.syncTemplates({ templates })).templates;
-  } catch (error) {
-    if (!(error instanceof OfferFlowApiError) || error.status !== 409) throw error;
-    // Read tombstones too; a read-only sync has no payload to conflict with.
-    remoteTemplates = (await client.resumes.syncTemplates({ templates: [] })).templates;
-  }
-  // A network round-trip must not replace edits made while it was in flight.
-  const latestLibrary = (await loadResumeLibrary()).filter(resume => !currentPendingDeletes.has(resume.id));
-  const activeRemote = remoteTemplates.filter((t) => !currentPendingDeletes.has(t.id));
-  let nextLibrary = mergeRemoteResumeTemplates(latestLibrary, activeRemote);
-  const versions = await client.resumes.listVersions();
-  nextLibrary = mergeRemoteResumeVersions(nextLibrary, versions.versions);
-  if (JSON.stringify(nextLibrary) !== JSON.stringify(library)) await saveResumeLibrary(nextLibrary, { origin: "cloud" });
-  if (nextLibrary.some(resume => resume.syncConflict)) throw new Error("通用简历存在多端修改，双方内容已保留。请打开网申信息中心处理同步冲突。");
-
-}
-
 async function performCloudSync(): Promise<CloudSyncOverview> {
   const connection = await loadConnectionWithFreshToken();
   if (!connection) return getCloudSyncOverview();
@@ -797,7 +665,6 @@ async function performCloudSync(): Promise<CloudSyncOverview> {
         lastReceivedCount: response.changes.length
       })
     ]);
-    await syncResumeTemplates(client, connectionScope(connection));
     return getCloudSyncOverview();
   } catch (error) {
     const message = cloudErrorMessage(error, "云端同步失败");
@@ -898,7 +765,6 @@ async function performBatchedCloudSync(): Promise<CloudSyncOverview> {
         lastReceivedCount: receivedCount
       })
     ]);
-    await syncResumeTemplates(client, connectionScope(connection));
     return getCloudSyncOverview();
   } catch (error) {
     const message = cloudErrorMessage(error, "云端同步失败");
@@ -958,26 +824,8 @@ export async function createCloudTailorTask(sourceResumeId: string, job: TailorJ
   return command<CreateTailorTaskResponse>({ action: "tailor", sourceResumeId, job, scope, applicationId });
 }
 
-async function performCreateTailor(request: Extract<CloudSyncCommand, { action: "tailor" }>): Promise<CreateTailorTaskResponse> {
-  const connection = await requireBoundConnection();
-  if (!connection || connectionScope(connection) !== request.scope) throw new Error("账号已变化，请重新选择简历后再定制");
-  const client = createApiClient({ baseUrl: connection.apiBaseUrl, getAccessToken: () => connection.accessToken });
-  await syncResumeTemplates(client, request.scope);
-  const resume = (await loadResumeLibrary()).find(item => item.id === request.sourceResumeId);
-  if (!resume) throw new Error("这份本地简历已变化或已删除，请刷新简历库后重试");
-  if (resume.kind === "job") throw new Error("请选择通用母版创建岗位简历");
-  if (resume.syncConflict) throw new Error("请先处理通用母版的同步冲突，再生成岗位简历");
-  const assets = toCloudResumeAssets(resume.assets);
-  return client.resumes.createTailorTask({
-    sourceResumeId: resume.id,
-    sourceRevision: resume.cloudRevision,
-    sourceResumeName: resume.name,
-    sourceProfile: cloudResumeToPersonalProfile(resume.profile),
-    sourceAssets: assets,
-    sourcePortraitAssetId: assets.some(asset => asset.id === resume.portraitAssetId) ? resume.portraitAssetId : undefined,
-    applicationId: request.applicationId,
-    job: request.job
-  });
+async function performCreateTailor(_request: Extract<CloudSyncCommand, { action: "tailor" }>): Promise<CreateTailorTaskResponse> {
+  throw new Error("本地网申资料不再上传，请在网页简历模板中制作简历");
 }
 
 export type { ApplicationSyncChange };

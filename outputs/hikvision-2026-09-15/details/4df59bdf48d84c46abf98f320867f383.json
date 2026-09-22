@@ -1,0 +1,41 @@
+{
+  "source_job_id": "4df59bdf48d84c46abf98f320867f383",
+  "verified_at": "2026-09-15T01:32:08.555Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=4df59bdf48d84c46abf98f320867f383",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=4df59bdf48d84c46abf98f320867f383&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "4df59bdf48d84c46abf98f320867f383",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "力学工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "电路设计",
+        "techDire": "结构力学方向",
+        "postContent": "1、负责静力学和动力学分析并形成报告，提出结构设计及优化方案；\n2、在产品设计过程中，结合理论及相关软件完成产品的重量、刚度及工艺性匹配；\n3、构建振动测试条件并完成相应动力学特性测试、结果分析及故障诊断；\n4、根据振动测试结果对有限元模型进行修正，提供合理的机电联合仿真中的被控对象模型。",
+        "postRequire": "1、硕士及以上学历，机械、力学、声学等相关专业；\n2、熟悉有限元及相关力学理论，会使用有限元软件；\n3、熟悉振动测试及信号处理等相关的基础理论知识，能够进行相关仿真的优先；\n4、掌握三维建模软件的使用；\n5、善于倾听与表达，有较强的逻辑分析能力、学习能力及主观能动性。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

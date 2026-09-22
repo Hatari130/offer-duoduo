@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348830639&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:55.769Z",
+  "data": {
+    "jobUnionId": "4348830639",
+    "name": "【基座大模型北斗实习】视觉生成与世界模型技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：参与视觉生成与世界模型方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、高效率、低损失、高压缩比的图像视频 VAE 和 tokenizer 研究。\n2、统一生成模型的架构、训练与推理探索（稀疏架构、大尺寸 MoE、自回归生成等）。\n3、功能模型研究，包括参考生成、长视频生成、流式实时视频生成、音视频生成等。\n4、隐式世界模型、WorldActionModel 及 Action-conditioned WorldModel 的方法研究。\n5、世界模型在具身智能、实时交互等场景中的应用探索。\n6、其他你坚信路线正确的视觉生成与世界模型前沿方向。",
+    "jobRequirement": "1、熟悉扩散模型、VAE等相关研究进展；\n2、熟悉PyTorch，有充分的动手实践经验。\n\n加分项：\n1、有图像/视频生成、Video-based世界模型相关研究和实习经历，有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223030000,
+    "refreshTime": 1775223030000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】视觉生成与世界模型技术研究\n实习-北斗计划\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：参与视觉生成与世界模型方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、高效率、低损失、高压缩比的图像视频 VAE 和 tokenizer 研究。\n2、统一生成模型的架构、训练与推理探索（稀疏架构、大尺寸 MoE、自回归生成等）。\n3、功能模型研究，包括参考生成、长视频生成、流式实时视频生成、音视频生成等。\n4、隐式世界模型、WorldActionModel 及 Action-conditioned WorldModel 的方法研究。\n5、世界模型在具身智能、实时交互等场景中的应用探索。\n6、其他你坚信路线正确的视觉生成与世界模型前沿方向。\n任职要求\n1、熟悉扩散模型、VAE等相关研究进展；\n2、熟悉PyTorch，有充分的动手实践经验。\n加分项：\n1、有图像/视频生成、Video-based世界模型相关研究和实习经历，有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次。\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

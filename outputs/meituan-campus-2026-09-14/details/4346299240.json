@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4346299240&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.290Z",
+  "data": {
+    "jobUnionId": "4346299240",
+    "name": "【基座大模型北斗实习】大模型预训练研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：千亿参数、万亿Token、万卡集群——预训练的核心命题只有一个：在极限规模下，让每一张GPU都跑满，每一次迭代都不浪费。这是工程复杂度最高、也最能锻炼系统能力的地方。\n\n你可能会做以下方向研究：\n1、超大规模分布式训练\n①设计和优化ND并行（EP/CP/DP/TP/PP）+ MoE并行混合策略，支撑万亿参数模型训练。\n②深入 Megatron-LM 内核，针对美团模型架构做定制化设计、改造，性能优化。\n③解决流水线气泡、显存碎片、梯度累积等大规模训练特有的工程难题，细粒度控制平衡计算通行的精度和效率。\n2、计算 & 算子优化\n①基于 CUDA / Triton 开发高性能训练算子（FlashAttention变体、FusedMLP、RMSNorm等）。\n②推进 8bit、4bit 混合精度训练落地，在精度与速度之间找到最优平衡。\n③通过 profiling 定位热点，把MFU（模型算力利用率）推向理论上限。\n3、通信链路优化\n①深挖 NCCL / RDMA / InfiniBand 通信性能，优化 AllReduce/AllGather/MoE层Dispatch/Combine 等集合通信原语。\n②结合网络拓扑设计通信-计算重叠策略，让通信开销近乎透明。\n4、稳定性 & 大规模容错\n①构建万卡级自动故障检测、弹性容错、断点续训机制。\n②设计高效的异步checkpoint方案，千亿模型保存时间压到分钟级。\n③开发训练健康度监控系统：loss异常、梯度爆炸、卡间通信超时等实时告警。\n5、存储 & 数据IO\n①解决 PB级预训练语料的高并发高吞吐读取问题。\n②设计 tokenized 数据的分布式缓存与预取，IO不成为训练瓶颈。",
+    "jobRequirement": "1、具备 CUDA kernel 开发和 Profile 能力，理解并行计算、存储层级架构，或具备国产AI算力开发经验；\n2、改过 Megatron-LM / DeepSpeed / FSDP 源码（不是只跑过）；\n3、了解 NCCL 原理 或有 RDMA / 网络协议栈经验；\n4、MLSys / OSDI / SOSP / ISCA 等系统顶会论文；\n5、PyTorch / Megatron 开源贡献记录。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223031000,
+    "refreshTime": 1775223031000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大模型预训练研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：千亿参数、万亿Token、万卡集群——预训练的核心命题只有一个：在极限规模下，让每一张GPU都跑满，每一次迭代都不浪费。这是工程复杂度最高、也最能锻炼系统能力的地方。\n你可能会做以下方向研究：\n1、超大规模分布式训练\n①设计和优化ND并行（EP/CP/DP/TP/PP）+ MoE并行混合策略，支撑万亿参数模型训练。\n②深入 Megatron-LM 内核，针对美团模型架构做定制化设计、改造，性能优化。\n③解决流水线气泡、显存碎片、梯度累积等大规模训练特有的工程难题，细粒度控制平衡计算通行的精度和效率。\n2、计算 & 算子优化\n①基于 CUDA / Triton 开发高性能训练算子（FlashAttention变体、FusedMLP、RMSNorm等）。\n②推进 8bit、4bit 混合精度训练落地，在精度与速度之间找到最优平衡。\n③通过 profiling 定位热点，把MFU（模型算力利用率）推向理论上限。\n3、通信链路优化\n①深挖 NCCL / RDMA / InfiniBand 通信性能，优化 AllReduce/AllGather/MoE层Dispatch/Combine 等集合通信原语。\n②结合网络拓扑设计通信-计算重叠策略，让通信开销近乎透明。\n4、稳定性 & 大规模容错\n①构建万卡级自动故障检测、弹性容错、断点续训机制。\n②设计高效的异步checkpoint方案，千亿模型保存时间压到分钟级。\n③开发训练健康度监控系统：loss异常、梯度爆炸、卡间通信超时等实时告警。\n5、存储 & 数据IO\n①解决 PB级预训练语料的高并发高吞吐读取问题。\n②设计 tokenized 数据的分布式缓存与预取，IO不成为训练瓶颈。\n任职要求\n1、具备 CUDA kernel 开发和 Profile 能力，理解并行计算、存储层级架构，或具备国产AI算力开发经验；\n2、改过 Megatron-LM / DeepSpeed / FSDP 源码（不是只跑过）；\n3、了解 NCCL 原理 或有 RDMA / 网络协议栈经验；\n4、MLSys / OSDI / SOSP / ISCA 等系统顶会论文；\n5、PyTorch / Megatron 开源贡献记录。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

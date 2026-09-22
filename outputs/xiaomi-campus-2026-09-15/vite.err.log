@@ -1,0 +1,503 @@
+00:43:20 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Expected corresponding JSX closing tag for <section>. (69:5)
+
+  67 |     <section className="detail-panel" aria-label="岗位详情">
+  68 |       <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+> 69 |      </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |      ^
+  70 |     </aside>
+  71 |     <section className="detail-panel" aria-label="岗位详情">
+  72 |      {!job?<div className="empty detail-empty"><BriefcaseBusiness size={36}/><h2>好机会，值得慢慢找</h2><p>调整筛选条件后，在左侧选择一个岗位。</p></div>:<>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:69:5
+  67 |      <section className="detail-panel" aria-label="岗位详情">
+  68 |        <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+  69 |       </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |                                                                     ^
+  70 |      </aside>
+  71 |      <section className="detail-panel" aria-label="岗位详情">
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4739:16)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12764:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:61)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseBlock (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13314:10)
+      at TypeScriptParserMixin.parseFunctionBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12117:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12103:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9189:18)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13462:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12420:14)
+      at TypeScriptParserMixin.parseFunction (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13461:10)
+      at TypeScriptParserMixin.parseFunctionStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13142:17)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12808:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseModuleItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12761:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:36)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseProgram (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12639:10)
+      at TypeScriptParserMixin.parseTopLevel (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12629:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14505:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10143:18)
+      at parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+core@7.29.7\node_modules\@babel\core\lib\parser\index.js:41:34)
+00:43:20 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Expected corresponding JSX closing tag for <section>. (69:5)
+
+  67 |     <section className="detail-panel" aria-label="岗位详情">
+  68 |       <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+> 69 |      </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |      ^
+  70 |     </aside>
+  71 |     <section className="detail-panel" aria-label="岗位详情">
+  72 |      {!job?<div className="empty detail-empty"><BriefcaseBusiness size={36}/><h2>好机会，值得慢慢找</h2><p>调整筛选条件后，在左侧选择一个岗位。</p></div>:<>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:69:5
+  67 |      <section className="detail-panel" aria-label="岗位详情">
+  68 |        <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+  69 |       </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |                                                                     ^
+  70 |      </aside>
+  71 |      <section className="detail-panel" aria-label="岗位详情">
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4739:16)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12764:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:61)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseBlock (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13314:10)
+      at TypeScriptParserMixin.parseFunctionBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12117:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12103:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9189:18)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13462:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12420:14)
+      at TypeScriptParserMixin.parseFunction (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13461:10)
+      at TypeScriptParserMixin.parseFunctionStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13142:17)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12808:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseModuleItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12761:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:36)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseProgram (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12639:10)
+      at TypeScriptParserMixin.parseTopLevel (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12629:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14505:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10143:18)
+      at parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+core@7.29.7\node_modules\@babel\core\lib\parser\index.js:41:34)
+00:44:28 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Expected corresponding JSX closing tag for <section>. (70:5)
+
+  68 |     <section className="detail-panel" aria-label="岗位详情">
+  69 |       <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+> 70 |      </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |      ^
+  71 |     </aside>
+  72 |     <section className="detail-panel" aria-label="岗位详情">
+  73 |      {!job?<div className="empty detail-empty"><BriefcaseBusiness size={36}/><h2>好机会，值得慢慢找</h2><p>调整筛选条件后，在左侧选择一个岗位。</p></div>:<>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:70:5
+  68 |      <section className="detail-panel" aria-label="岗位详情">
+  69 |        <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+  70 |       </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |                                                                     ^
+  71 |      </aside>
+  72 |      <section className="detail-panel" aria-label="岗位详情">
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4739:16)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12764:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:61)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseBlock (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13314:10)
+      at TypeScriptParserMixin.parseFunctionBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12117:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12103:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9189:18)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13462:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12420:14)
+      at TypeScriptParserMixin.parseFunction (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13461:10)
+      at TypeScriptParserMixin.parseFunctionStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13142:17)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12808:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseModuleItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12761:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:36)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseProgram (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12639:10)
+      at TypeScriptParserMixin.parseTopLevel (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12629:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14505:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10143:18)
+      at parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+core@7.29.7\node_modules\@babel\core\lib\parser\index.js:41:34)
+00:44:28 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Expected corresponding JSX closing tag for <section>. (70:5)
+
+  68 |     <section className="detail-panel" aria-label="岗位详情">
+  69 |       <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+> 70 |      </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |      ^
+  71 |     </aside>
+  72 |     <section className="detail-panel" aria-label="岗位详情">
+  73 |      {!job?<div className="empty detail-empty"><BriefcaseBusiness size={36}/><h2>好机会，值得慢慢找</h2><p>调整筛选条件后，在左侧选择一个岗位。</p></div>:<>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:70:5
+  68 |      <section className="detail-panel" aria-label="岗位详情">
+  69 |        <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+  70 |       </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |                                                                     ^
+  71 |      </aside>
+  72 |      <section className="detail-panel" aria-label="岗位详情">
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4739:16)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12764:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:61)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseBlock (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13314:10)
+      at TypeScriptParserMixin.parseFunctionBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12117:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12103:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9189:18)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13462:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12420:14)
+      at TypeScriptParserMixin.parseFunction (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13461:10)
+      at TypeScriptParserMixin.parseFunctionStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13142:17)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12808:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseModuleItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12761:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:36)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseProgram (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12639:10)
+      at TypeScriptParserMixin.parseTopLevel (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12629:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14505:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10143:18)
+      at parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+core@7.29.7\node_modules\@babel\core\lib\parser\index.js:41:34)
+00:44:39 [vite] Pre-transform error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Expected corresponding JSX closing tag for <section>. (70:5)
+
+  68 |     <section className="detail-panel" aria-label="岗位详情">
+  69 |       <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+> 70 |      </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |      ^
+  71 |     </aside>
+  72 |     <section className="detail-panel" aria-label="岗位详情">
+  73 |      {!job?<div className="empty detail-empty"><BriefcaseBusiness size={36}/><h2>好机会，值得慢慢找</h2><p>调整筛选条件后，在左侧选择一个岗位。</p></div>:<>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:70:5
+  68 |      <section className="detail-panel" aria-label="岗位详情">
+  69 |        <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+  70 |       </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |                                                                     ^
+  71 |      </aside>
+  72 |      <section className="detail-panel" aria-label="岗位详情">
+00:44:39 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Expected corresponding JSX closing tag for <section>. (70:5)
+
+  68 |     <section className="detail-panel" aria-label="岗位详情">
+  69 |       <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+> 70 |      </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |      ^
+  71 |     </aside>
+  72 |     <section className="detail-panel" aria-label="岗位详情">
+  73 |      {!job?<div className="empty detail-empty"><BriefcaseBusiness size={36}/><h2>好机会，值得慢慢找</h2><p>调整筛选条件后，在左侧选择一个岗位。</p></div>:<>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:70:5
+  68 |      <section className="detail-panel" aria-label="岗位详情">
+  69 |        <button aria-label={`${saved.includes(j.source_job_id)?'取消收藏':'收藏'} ${shortTitle(j.job_title)}`} className={`save-card ${saved.includes(j.source_job_id)?'is-saved':''}`} onClick={()=>toggleSave(j.source_job_id)}><Bookmark size={17} fill={saved.includes(j.source_job_id)?'currentColor':'none'}/></button>
+  70 |       </article>)}</div><footer className="list-footer"><ShieldCheck size={13}/>官网岗位 · 采集于 2026 年 9 月 13–15 日</footer>
+     |                                                                     ^
+  71 |      </aside>
+  72 |      <section className="detail-panel" aria-label="岗位详情">
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4739:16)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12438:16)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.parseReturnStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13159:28)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12815:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseStatementListItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12764:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:61)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseBlock (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13314:10)
+      at TypeScriptParserMixin.parseFunctionBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12117:24)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12103:10)
+      at TypeScriptParserMixin.parseFunctionBodyAndFinish (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9189:18)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13462:12
+      at TypeScriptParserMixin.withSmartMixTopicForbiddingContext (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12420:14)
+      at TypeScriptParserMixin.parseFunction (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13461:10)
+      at TypeScriptParserMixin.parseFunctionStatement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13142:17)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12808:21)
+      at TypeScriptParserMixin.parseStatementContent (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9525:18)
+      at TypeScriptParserMixin.parseStatementLike (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12784:17)
+      at TypeScriptParserMixin.parseModuleItem (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12761:17)
+      at TypeScriptParserMixin.parseBlockOrModuleBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13333:36)
+      at TypeScriptParserMixin.parseBlockBody (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:13326:10)
+      at TypeScriptParserMixin.parseProgram (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12639:10)
+      at TypeScriptParserMixin.parseTopLevel (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12629:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14505:25)
+      at TypeScriptParserMixin.parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10143:18)
+      at parse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:14539:38)
+      at parser (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+core@7.29.7\node_modules\@babel\core\lib\parser\index.js:41:34)
+00:44:53 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (76:5)
+
+  74 |        </div>}
+  75 |       </div>
+> 76 |      </>}
+     |      ^
+  77 |     </section>
+  78 |    </div>
+  79 |   </main>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:76:5
+  78 |     </div>
+  79 |    </main>
+  80 |    {toast&&<div className="toast" role="status"><CheckCircle2 size={17}/>{toast}</div>}
+     |                         ^
+  81 |    <dialog ref={dialog} className="profile-dialog"><div className="dialog-header"><h2>{dialogKind==='profile'?'你的求职档案':'关于这个本地预览'}</h2><button className="icon-button" aria-label="关闭弹窗" onClick={()=>dialog.current?.close()}><X size={20}/></button></div>{dialogKind==='help'?<div className="help-content"><p>{source.length} 个岗位来自招聘官网：{companies.map(name=>`${name} ${companyCount(name)} 个`).join("，")}。采集于 2026 年 9 月 13–15 日。招聘类型按官网信息标注；发布时间未公布的岗位不会使用采集日期替代。</p><p>可以搜索、筛选、收藏和标记投递。收藏、档案与投递标记仅保存在当前浏览器，不会提交到招聘网站。</p><p>“官网投递”会打开招聘官网。只有手动标记，岗位才会进入投递记录。</p><button className="primary" onClick={()=>dialog.current?.close()}>知道了</button></div>:<form onSubmit={e=>{e.preventDefault();setProfile(draft);dialog.current?.close();setToast('求职档案已保存在当前浏览器');}}><p className="muted">用技能和经历找到匹配线索。此预览不会上传你的资料。</p><label>学历<select aria-label="学历" value={draft.education} onChange={e=>setDraft({...draft,education:e.target.value})}><option value="">请选择学历</option>{['大专','本科','硕士','博士'].map(x=><option key={x}>{x}</option>)}</select></label><label>技能与项目经历<textarea required rows={8} value={draft.text} onChange={e=>setDraft({...draft,text:e.target.value})} placeholder="例如：熟悉 React、TypeScript，使用 Python 搭建过一个数据分析项目……"/></label><div className="dialog-footer"><button type="button" className="secondary" onClick={()=>dialog.current?.close()}>取消</button><button type="submit" className="primary">保存档案</button></div></form>}</dialog>
+  82 |   </div>;
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10910:29)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10910:29)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+00:44:55 [vite] Pre-transform error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (76:5)
+
+  74 |        </div>}
+  75 |       </div>
+> 76 |      </>}
+     |      ^
+  77 |     </section>
+  78 |    </div>
+  79 |   </main>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:76:5
+  78 |     </div>
+  79 |    </main>
+  80 |    {toast&&<div className="toast" role="status"><CheckCircle2 size={17}/>{toast}</div>}
+     |                         ^
+  81 |    <dialog ref={dialog} className="profile-dialog"><div className="dialog-header"><h2>{dialogKind==='profile'?'你的求职档案':'关于这个本地预览'}</h2><button className="icon-button" aria-label="关闭弹窗" onClick={()=>dialog.current?.close()}><X size={20}/></button></div>{dialogKind==='help'?<div className="help-content"><p>{source.length} 个岗位来自招聘官网：{companies.map(name=>`${name} ${companyCount(name)} 个`).join("，")}。采集于 2026 年 9 月 13–15 日。招聘类型按官网信息标注；发布时间未公布的岗位不会使用采集日期替代。</p><p>可以搜索、筛选、收藏和标记投递。收藏、档案与投递标记仅保存在当前浏览器，不会提交到招聘网站。</p><p>“官网投递”会打开招聘官网。只有手动标记，岗位才会进入投递记录。</p><button className="primary" onClick={()=>dialog.current?.close()}>知道了</button></div>:<form onSubmit={e=>{e.preventDefault();setProfile(draft);dialog.current?.close();setToast('求职档案已保存在当前浏览器');}}><p className="muted">用技能和经历找到匹配线索。此预览不会上传你的资料。</p><label>学历<select aria-label="学历" value={draft.education} onChange={e=>setDraft({...draft,education:e.target.value})}><option value="">请选择学历</option>{['大专','本科','硕士','博士'].map(x=><option key={x}>{x}</option>)}</select></label><label>技能与项目经历<textarea required rows={8} value={draft.text} onChange={e=>setDraft({...draft,text:e.target.value})} placeholder="例如：熟悉 React、TypeScript，使用 Python 搭建过一个数据分析项目……"/></label><div className="dialog-footer"><button type="button" className="secondary" onClick={()=>dialog.current?.close()}>取消</button><button type="submit" className="primary">保存档案</button></div></form>}</dialog>
+  82 |   </div>;
+00:44:55 [vite] Internal server error: D:\2026\2026product\offerflow\apps\web\src\previews\job-discovery\main.tsx: Adjacent JSX elements must be wrapped in an enclosing tag. Did you want a JSX fragment <>...</>? (76:5)
+
+  74 |        </div>}
+  75 |       </div>
+> 76 |      </>}
+     |      ^
+  77 |     </section>
+  78 |    </div>
+  79 |   </main>
+  Plugin: vite:react-babel
+  File: D:/2026/2026product/offerflow/apps/web/src/previews/job-discovery/main.tsx:76:5
+  78 |     </div>
+  79 |    </main>
+  80 |    {toast&&<div className="toast" role="status"><CheckCircle2 size={17}/>{toast}</div>}
+     |                         ^
+  81 |    <dialog ref={dialog} className="profile-dialog"><div className="dialog-header"><h2>{dialogKind==='profile'?'你的求职档案':'关于这个本地预览'}</h2><button className="icon-button" aria-label="关闭弹窗" onClick={()=>dialog.current?.close()}><X size={20}/></button></div>{dialogKind==='help'?<div className="help-content"><p>{source.length} 个岗位来自招聘官网：{companies.map(name=>`${name} ${companyCount(name)} 个`).join("，")}。采集于 2026 年 9 月 13–15 日。招聘类型按官网信息标注；发布时间未公布的岗位不会使用采集日期替代。</p><p>可以搜索、筛选、收藏和标记投递。收藏、档案与投递标记仅保存在当前浏览器，不会提交到招聘网站。</p><p>“官网投递”会打开招聘官网。只有手动标记，岗位才会进入投递记录。</p><button className="primary" onClick={()=>dialog.current?.close()}>知道了</button></div>:<form onSubmit={e=>{e.preventDefault();setProfile(draft);dialog.current?.close();setToast('求职档案已保存在当前浏览器');}}><p className="muted">用技能和经历找到匹配线索。此预览不会上传你的资料。</p><label>学历<select aria-label="学历" value={draft.education} onChange={e=>setDraft({...draft,education:e.target.value})}><option value="">请选择学历</option>{['大专','本科','硕士','博士'].map(x=><option key={x}>{x}</option>)}</select></label><label>技能与项目经历<textarea required rows={8} value={draft.text} onChange={e=>setDraft({...draft,text:e.target.value})} placeholder="例如：熟悉 React、TypeScript，使用 Python 搭建过一个数据分析项目……"/></label><div className="dialog-footer"><button type="button" className="secondary" onClick={()=>dialog.current?.close()}>取消</button><button type="submit" className="primary">保存档案</button></div></form>}</dialog>
+  82 |   </div>;
+      at constructor (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:365:19)
+      at TypeScriptParserMixin.raise (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6616:19)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4754:18)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10910:29)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)
+      at TypeScriptParserMixin.jsxParseExpressionContainer (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4644:31)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4723:36)
+      at TypeScriptParserMixin.jsxParseElementAt (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4710:32)
+      at TypeScriptParserMixin.jsxParseElement (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4761:17)
+      at TypeScriptParserMixin.parseExprAtom (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:4771:19)
+      at TypeScriptParserMixin.parseExprSubscripts (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11098:23)
+      at TypeScriptParserMixin.parseUpdate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11083:21)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:11063:23)
+      at TypeScriptParserMixin.parseMaybeUnary (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9854:18)
+      at TypeScriptParserMixin.parseMaybeUnaryOrPrivate (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10916:61)
+      at TypeScriptParserMixin.parseExprOps (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10921:23)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10898:23)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:39
+      at TypeScriptParserMixin.tryParse (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:6924:20)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9792:18)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10910:29)
+      at TypeScriptParserMixin.parseConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9620:18)
+      at TypeScriptParserMixin.parseMaybeConditional (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10902:17)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10848:21)
+      at TypeScriptParserMixin.parseMaybeAssign (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:9803:20)
+      at TypeScriptParserMixin.parseExpressionBase (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10801:23)
+      at D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:39
+      at TypeScriptParserMixin.allowInAnd (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:12443:12)
+      at TypeScriptParserMixin.parseExpression (D:\2026\2026product\offerflow\node_modules\.pnpm\@babel+parser@7.29.7\node_modules\@babel\parser\lib\index.js:10797:17)

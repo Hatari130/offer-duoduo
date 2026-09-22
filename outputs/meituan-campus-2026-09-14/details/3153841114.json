@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153841114&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:14.087Z",
+  "data": {
+    "jobUnionId": "3153841114",
+    "name": "【大模型北斗实习】大模型推理系统前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "大模型推理是大模型应用的核心能力，是影响大模型应用成本和效率的关键因素。本课题专注于大模型推理加速与分布式系统优化的前沿技术探索，通过软硬件协同设计和算法工程联合优化，降低大模型推理的应用成本，提高推理性能。\n研究内容包括但不限于：\n1）投机推理（Speculative Decoding），研究基于预测性执行的动态推理优化方法，参与设计低延迟推理框架，通过概率模型预生成候选序列以降低解码计算开销。\n2）分布式系统优化，探索多节点协同推理中的通信-计算负载均衡策略，提出基于异构硬件的混合并行调度方案，实现吞吐量提升。\n3）稀疏Transformer优化与模型压缩，通过稀疏Transformer优化以及模型压缩技术提升模型的计算效率。\n4）算子优化，熟悉硬件架构的算子优化方法，通过更高效的算子优化模型的吞吐和延时。",
+    "jobRequirement": "岗位要求：\n1）熟悉TensorFlow、PyTorch等深度学习框架。\n2）熟悉Python、C++等至少一门编程语言，熟悉LINUX环境。\n加分项：\n1）有影响力的开源项目中做出过核心贡献。\n2）发表过高水平论文优先（如ICLR,ICML,ACL,EMNLP等）。\n3）有CUDA/Triton编程经验。\n4）熟悉vllm/sglang/trt-llm/lmdeploy等开源推理框架。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309542000,
+    "refreshTime": 1747963941000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】大模型推理系统前沿研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n大模型推理是大模型应用的核心能力，是影响大模型应用成本和效率的关键因素。本课题专注于大模型推理加速与分布式系统优化的前沿技术探索，通过软硬件协同设计和算法工程联合优化，降低大模型推理的应用成本，提高推理性能。\n研究内容包括但不限于：\n1）投机推理（Speculative Decoding），研究基于预测性执行的动态推理优化方法，参与设计低延迟推理框架，通过概率模型预生成候选序列以降低解码计算开销。\n2）分布式系统优化，探索多节点协同推理中的通信-计算负载均衡策略，提出基于异构硬件的混合并行调度方案，实现吞吐量提升。\n3）稀疏Transformer优化与模型压缩，通过稀疏Transformer优化以及模型压缩技术提升模型的计算效率。\n4）算子优化，熟悉硬件架构的算子优化方法，通过更高效的算子优化模型的吞吐和延时。\n任职要求\n岗位要求：\n1）熟悉TensorFlow、PyTorch等深度学习框架。\n2）熟悉Python、C++等至少一门编程语言，熟悉LINUX环境。\n加分项：\n1）有影响力的开源项目中做出过核心贡献。\n2）发表过高水平论文优先（如ICLR,ICML,ACL,EMNLP等）。\n3）有CUDA/Triton编程经验。\n4）熟悉vllm/sglang/trt-llm/lmdeploy等开源推理框架。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

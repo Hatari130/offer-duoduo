@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348771151&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:51.764Z",
+  "data": {
+    "jobUnionId": "4348771151",
+    "name": "【基座大模型北斗实习】原生多模态大模型研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：原生多模态旨在以统一的范式处理文本、视觉、语音等各个模态的数据，从而更加自然地进行模态融合，以及通过scaling友好的训练范式，解锁模型智能的新维度。\n\n研究课题包括但不限于：\n1、探索early fusion阶段，引入图文交错/audio等多模态序列数据自监督预训练带来的scaling价值。\n2、原生全模态预训练的training dynamic探究，模态之间的关系建模。\n3、通过SFT / RL等手段，借助多模态token解锁模型新的智能维度，提升模型解决Robot/Gaming等物理世界问题的能力。",
+    "jobRequirement": "岗位要求：\n1、熟悉NLP、LLM、MLLM、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实际项目经验；\n2、熟悉Python、C++等至少一门编程语言，熟悉LINUX环境；\n3、熟悉 Megatron、DeepSpeed 等开源训练框架。\n\n加分项：\n1、有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文优先（如NeurIPS,ICLR,ICML,ACL,EMNLP等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223034000,
+    "refreshTime": 1775223034000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】原生多模态大模型研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：原生多模态旨在以统一的范式处理文本、视觉、语音等各个模态的数据，从而更加自然地进行模态融合，以及通过scaling友好的训练范式，解锁模型智能的新维度。\n研究课题包括但不限于：\n1、探索early fusion阶段，引入图文交错/audio等多模态序列数据自监督预训练带来的scaling价值。\n2、原生全模态预训练的training dynamic探究，模态之间的关系建模。\n3、通过SFT / RL等手段，借助多模态token解锁模型新的智能维度，提升模型解决Robot/Gaming等物理世界问题的能力。\n任职要求\n岗位要求：\n1、熟悉NLP、LLM、MLLM、RL等相关领域，对其中一个或多个方向有深入的研究经历，且有相关实际项目经验；\n2、熟悉Python、C++等至少一门编程语言，熟悉LINUX环境；\n3、熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1、有影响力的开源项目中做出过核心贡献；\n2、发表过高水平论文优先（如NeurIPS,ICLR,ICML,ACL,EMNLP等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "a0d6ecf88d7b4d688124b999222168db",
+  "verified_at": "2026-09-15T01:31:57.209Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=a0d6ecf88d7b4d688124b999222168db",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=a0d6ecf88d7b4d688124b999222168db&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "a0d6ecf88d7b4d688124b999222168db",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "注册专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "体系管理",
+        "techDire": "医疗器械",
+        "postContent": "1、根据公司产品要求，编制产品送检、注册和生产体系相关申报资料；\n2、根据项目需求，开展送检注册事项，并持续跟进工作进度，及时根据相关部门的意见组织沟通和解决；\n3、收集药监部门出台的相关行业法规、产品等技术资料；\n4、定期收集行业相关资讯，行业竞品的相关注册信息及资料。",
+        "postRequire": "1、本科及以上学历，生物学、化学、药学、医学等相关专业；\n2、熟练使用office办公软件，有较强的文档编写能力和信息检索能力，英语熟练（四级及以上）；\n3、较强的学习能力、沟通表达能力、抗压能力和团队合作精神；\n4、工作条理性强，细致认真，良好的责任心和进取心。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:55",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "4134f892b762449cb91ff26de06fb86f",
+          "name": "海康慧影",
+          "description": "海康慧影植根于医疗科技行业，致力于医疗场景下的多维感知、智能分析、视音频传输计算显示控制等相关技术研究与应用，为医疗器械行业客户提供硬镜内窥镜、电子内窥镜、手术影音管理等产品和解决方案，努力与客户携手推动手术室和诊疗室两大场景的数字化和智能化转型。"
+        }
+      ]
+    }
+  ]
+}

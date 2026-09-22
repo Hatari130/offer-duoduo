@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4347161746&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:55.198Z",
+  "data": {
+    "jobUnionId": "4347161746",
+    "name": "【基座大模型北斗实习】多模态推理前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：我们聚焦于多模态推理的前沿探索。你将参与具有前瞻性的研究，并可根据个人背景与兴趣，选择以下任一方向进行深入：\n1、下一代多模态推理架构： 定义并实现复杂/统一多模态模型的高效推理框架。\n2、实时交互演进： 针对多模态语音视频流，探索极致的系统级优化。\n3、长文本/长视频突破： 深入研究长序列下的创新压缩算法与高性能推理加速方案。",
+    "jobRequirement": "1、熟悉大模型推理原理及主流优化技术，拥有扎实的编程能力；\n2、对多模态技术发展趋势有独立见解与思考；\n3、具备极强的自驱力、创新意识与执行闭环能力；\n\n加分项：\n1、在相关领域有研究或项目实践经验；\n2、对系统性能优化、压缩算法、实时计算等某一方向有深入理解。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223030000,
+    "refreshTime": 1775223030000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】多模态推理前沿研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：我们聚焦于多模态推理的前沿探索。你将参与具有前瞻性的研究，并可根据个人背景与兴趣，选择以下任一方向进行深入：\n1、下一代多模态推理架构： 定义并实现复杂/统一多模态模型的高效推理框架。\n2、实时交互演进： 针对多模态语音视频流，探索极致的系统级优化。\n3、长文本/长视频突破： 深入研究长序列下的创新压缩算法与高性能推理加速方案。\n任职要求\n1、熟悉大模型推理原理及主流优化技术，拥有扎实的编程能力；\n2、对多模态技术发展趋势有独立见解与思考；\n3、具备极强的自驱力、创新意识与执行闭环能力；\n加分项：\n1、在相关领域有研究或项目实践经验；\n2、对系统性能优化、压缩算法、实时计算等某一方向有深入理解。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

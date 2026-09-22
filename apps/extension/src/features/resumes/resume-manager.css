@@ -4037,3 +4037,32 @@ body,
     grid-row: 2;
   }
 }
+
+/* Text actions need their own sizing; the heading toolbar is icon-only. */
+.resume-library-create-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px 0;
+}
+.resume-library-create-actions > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  min-height: 36px;
+  padding: 7px 10px;
+  border: 1px solid var(--of-line, #d9dff2);
+  border-radius: 8px;
+  background: var(--of-surface, #fff);
+  color: var(--of-brand-700, #283b9b);
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.resume-library-create-actions > button:focus-visible {
+  outline: 2px solid var(--of-brand-700, #283b9b);
+  outline-offset: 2px;
+}
+.resume-library-create-actions > button:disabled { opacity: 0.5; cursor: wait; }

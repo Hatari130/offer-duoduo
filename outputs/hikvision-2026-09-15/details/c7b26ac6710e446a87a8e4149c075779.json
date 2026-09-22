@@ -1,0 +1,41 @@
+{
+  "source_job_id": "c7b26ac6710e446a87a8e4149c075779",
+  "verified_at": "2026-09-15T01:32:04.289Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=c7b26ac6710e446a87a8e4149c075779",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=c7b26ac6710e446a87a8e4149c075779&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "c7b26ac6710e446a87a8e4149c075779",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "红外测温算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、主导红外辐射测温算法的调研、业界测温产品竞争力分析工作；\n2、负责测温算法设计与开发，能部署算法至平台端；\n3、参与测温产品效果调试，测温问题分析工作。",
+        "postRequire": "1、硕士及以上学历，红外物理学、电子信息、信号处理、仪器仪表等专业优先；\n2、精通C语言，掌握Matlab，具备较好的数学基础和建模能力；\n3、熟悉红外探测器的工作原理，对辐射测温有深入理解和认知；\n4、具有较强的文献获取能力，英文文献检索和阅读能力；\n5、有热成像，热电堆等相关红外测温算法设计经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697300779&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:47.514Z",
+  "data": {
+    "jobUnionId": "4697300779",
+    "name": "硬件开发工程师(嵌入式硬件开发方向)",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "硬件",
+    "cityList": [
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责车载控制器硬件开发，包括器件选型、原理设计、信号完整性、EMC分析与设计；\n2. 负责车载控制器的调试/测试及优化迭代；\n3. 配合完成整车测试，解决生产和实验过程的问题、硬件缺陷、可靠性等问题。\n4. 主动探索并运用各类AI工具优化日常工作流程，积极推动AI在业务场景中的落地实践，持续提升个人及团队的工作效率与产出质量；",
+    "jobRequirement": "工作要求： \n1. 电子、自动化、通信或相关专业，本科及以上学历；\n2. 有过硬件项目开发经验，做过单片机或者ARM单板设计，对电源/时钟/Layout/高速信号有所了解；\n3. 熟练使用orCAD等EDA工具实现原理图/原理图设计。 \n4. 具备主动学习与探索AI新工具、新方法的意识，能持续将AI能力融入实际工作场景并独立落地；",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961004000,
+    "refreshTime": 1786961004000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n硬件开发工程师(嵌入式硬件开发方向)\n应届-校园招聘\n工作地点：深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责车载控制器硬件开发，包括器件选型、原理设计、信号完整性、EMC分析与设计；\n2. 负责车载控制器的调试/测试及优化迭代；\n3. 配合完成整车测试，解决生产和实验过程的问题、硬件缺陷、可靠性等问题。\n4. 主动探索并运用各类AI工具优化日常工作流程，积极推动AI在业务场景中的落地实践，持续提升个人及团队的工作效率与产出质量；\n任职要求\n工作要求：\n1. 电子、自动化、通信或相关专业，本科及以上学历；\n2. 有过硬件项目开发经验，做过单片机或者ARM单板设计，对电源/时钟/Layout/高速信号有所了解；\n3. 熟练使用orCAD等EDA工具实现原理图/原理图设计。\n4. 具备主动学习与探索AI新工具、新方法的意识，能持续将AI能力融入实际工作场景并独立落地；\n工作城市\n深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "85ea9480181042f2b517905c2adf12ad",
+  "verified_at": "2026-09-15T01:32:08.567Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=85ea9480181042f2b517905c2adf12ad",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=85ea9480181042f2b517905c2adf12ad&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "85ea9480181042f2b517905c2adf12ad",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器人底盘控制算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "运动控制/底盘控制/力控/多机协同/运动规划/AI",
+        "postContent": "1、负责移动机器人底盘的运动学/动力学建模、运动规划、控制、仿真与性能测试优化，探索将AI技术与运动控制相结合落地应用的可能性。\n2、通过不断优化底盘运动控制技术赋予机器人更强的运动能力，使机器人更加精准、高效、稳定地完成任务。",
+        "postRequire": "1、硕士及以上学历；\n2、熟练掌握C/C++、Python；\n3、深入理解经典与现代控制理论，熟悉运动学与动力学建模，熟练掌握主流控制方法（PID、LQR、MPC等）；\n4、了解强化学习、迭代学习等学习类控制算法；\n5、具备相关控制算法实际开发、调试、优化经验；\n6、参与过相关知名竞赛或重要项目者、或在相关顶会期刊发表论文者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

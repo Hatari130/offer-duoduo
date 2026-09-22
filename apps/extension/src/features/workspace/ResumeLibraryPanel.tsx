@@ -6,11 +6,10 @@ import {
   loadActiveResumeId,
   loadProfile,
   loadResumeLibrary,
-  saveResumeLibrary,
+  deleteLocalApplicationRecord,
   setActiveResumeId,
   type StoredResume
 } from "@/infrastructure/storage/storage";
-import { deleteCloudResumeTemplate } from "@/infrastructure/sync/cloudSync";
 import type { PersonalProfile } from "@/shared/types";
 
 type ResumeLibraryPanelProps = {
@@ -104,12 +103,8 @@ export default function ResumeLibraryPanel({ onOpenManager, onSaveProfile }: Res
 
   const removeResume = async (resume: StoredResume) => {
     if (!window.confirm(`确定删除《${resumeDisplayName(resume)}》吗？删除后不能恢复。`)) return;
-    const next = resumes.filter((item) => item.id !== resume.id);
+    const next = await deleteLocalApplicationRecord(resume.id);
     setResumes(next);
-    await Promise.all([
-      saveResumeLibrary(next),
-      deleteCloudResumeTemplate(resume.id)
-    ]);
     if (resume.id === activeId) {
       const replacement = next[0];
       if (replacement) {
@@ -131,8 +126,8 @@ export default function ResumeLibraryPanel({ onOpenManager, onSaveProfile }: Res
   return (
     <section className="overlay-resume-library">
       <div className="overlay-resume-intro">
-        <div><span className="overlay-resume-kicker">简历档案</span><h2>简历库</h2><p>按岗位自动收纳，支持折叠文件夹、切换和删除投递版本。</p></div>
-        <button className="overlay-resume-open" onClick={onOpenManager}><FolderOpen size={15} />打开简历中心</button>
+        <div><span className="overlay-resume-kicker">简历档案</span><h2>简历库</h2><p>每份网申资料独立保存在本机，可手动添加、切换和删除。</p></div>
+        <button className="overlay-resume-open" onClick={onOpenManager}><FolderOpen size={15} />打开本地网申资料</button>
       </div>
 
       {activeResume && <div className="overlay-resume-current"><span className="overlay-resume-current-icon"><Check size={16} /></span><div><small>当前用于一键网申</small><strong>{resumeDisplayName(activeResume)}</strong><span>{fieldCount(activeResume)} 个可用字段 · {activeResume.sourceFileName || "本地资料"}</span></div></div>}
@@ -170,7 +165,7 @@ export default function ResumeLibraryPanel({ onOpenManager, onSaveProfile }: Res
             })}
           </div>}
         </section>;
-      })}</div> : <div className="overlay-resume-empty"><FileText size={24} /><strong>还没有上传简历</strong><span>去简历中心上传后，这里会显示所有可投递版本。</span><button onClick={onOpenManager}>去上传简历 <ArrowRight size={14} /></button></div>}
+      })}</div> : <div className="overlay-resume-empty"><FileText size={24} /><strong>还没有上传简历</strong><span>去本地网申资料上传后，这里会显示所有可投递版本。</span><button onClick={onOpenManager}>去上传简历 <ArrowRight size={14} /></button></div>}
 
       <div className="overlay-resume-footer"><ShieldCheck size={14} /><span>{notice || "切换后，下一次一键填写会使用所选简历。"}</span><button onClick={() => void load()} aria-label="刷新简历库"><RefreshCw size={14} /></button></div>
     </section>

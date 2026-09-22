@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4346251550&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.881Z",
+  "data": {
+    "jobUnionId": "4346251550",
+    "name": "【基座大模型北斗实习】多模态大模型技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：参与多模态大模型方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、多模态预训练与后训练技术创新，提升模型在 OCR、文档图表解析、Visual Grounding、细粒度感知、视觉问答等核心任务上的能力上限。\n2、多模态强化学习方案设计，实现视觉感知与多模态理解场景下的高性能可信输出与幻觉抑制。\n3、视觉推理能力增强研究（Visual CoT、PRM 等），提升模型在复杂视觉任务上的推理深度。\n4、工具调用与 Agent 能力构建，探索多模态模型在规划决策场景中的综合表现。\n5、长上下文视觉理解与 GUI 能力研究，提升模型在长程复杂任务上的综合能力。\n6、其他你坚信路线正确的多模态大模型前沿方向。",
+    "jobRequirement": "1、具备视觉多模态大模型的预训练或后训练研究经历；\n2、熟悉PyTorch，有充分的动手实践经验。\n\n加分项：\n1、社区影响力：在多模态大模型领域有影响力的开源项目中做出过核心贡献；\n2、学术影响力：发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223030000,
+    "refreshTime": 1775223030000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】多模态大模型技术研究\n实习-北斗计划\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：参与多模态大模型方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、多模态预训练与后训练技术创新，提升模型在 OCR、文档图表解析、Visual Grounding、细粒度感知、视觉问答等核心任务上的能力上限。\n2、多模态强化学习方案设计，实现视觉感知与多模态理解场景下的高性能可信输出与幻觉抑制。\n3、视觉推理能力增强研究（Visual CoT、PRM 等），提升模型在复杂视觉任务上的推理深度。\n4、工具调用与 Agent 能力构建，探索多模态模型在规划决策场景中的综合表现。\n5、长上下文视觉理解与 GUI 能力研究，提升模型在长程复杂任务上的综合能力。\n6、其他你坚信路线正确的多模态大模型前沿方向。\n任职要求\n1、具备视觉多模态大模型的预训练或后训练研究经历；\n2、熟悉PyTorch，有充分的动手实践经验。\n加分项：\n1、社区影响力：在多模态大模型领域有影响力的开源项目中做出过核心贡献；\n2、学术影响力：发表过高水平论文（如ICLR、CVPR、ICCV等），有相关竞赛经历并取得名次。\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

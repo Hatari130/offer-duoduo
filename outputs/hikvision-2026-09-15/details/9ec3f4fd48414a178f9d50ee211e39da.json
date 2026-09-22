@@ -1,0 +1,41 @@
+{
+  "source_job_id": "9ec3f4fd48414a178f9d50ee211e39da",
+  "verified_at": "2026-09-15T01:32:07.604Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=9ec3f4fd48414a178f9d50ee211e39da",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=9ec3f4fd48414a178f9d50ee211e39da&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "9ec3f4fd48414a178f9d50ee211e39da",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "光学工艺工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "光学",
+        "techDire": "光学冷加工方向",
+        "postContent": "1、负责各类光学镜片的加工工艺（传统冷加工，数控冷加工，光学镀膜）开发与试制工作，制定各类工艺参数文档；\n2、负责对光学镜片加工过程中的各类异常进行分析与解决。",
+        "postRequire": "1、本科及以上学历，光学工程、物理或机械等相关专业优先； \n2、具备良好的逻辑思维能力与实验操作能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "fabb91e8fd8945fea4ea55a8b16142f0",
+          "name": "智能硬件-光学图像实验室",
+          "description": "光学图像实验室，是隶属于硬件产品研发中心，面向全公司的公共光学技术平台。光学图像实验室致力于全领域的光学和图像技术开发，承担多样广泛的系统方案以及基础的底层技术研究，是公司实现智能物联战略的关键技术之一。\n业务方向广泛，涵盖安防、工业、传感、医疗、仪器等领域。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "378cfa5683334f3786e1f20a066fbec8",
+  "verified_at": "2026-09-15T01:32:09.984Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=378cfa5683334f3786e1f20a066fbec8",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=378cfa5683334f3786e1f20a066fbec8&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "378cfa5683334f3786e1f20a066fbec8",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "云存储开发工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "云存储",
+        "postContent": "1、理解云存储平台业务需求，参与大规模分布式存储产品研发；\n2、团队协作，持续提升存储系统稳定性、可用性、可扩展性和可维护性，提升产品竞争力；\n3、协助云存储平台在项目中实践落地，针对性的为不同业务场景提供最合适的存储方案。",
+        "postRequire": "1、掌握LinuxC/C++开发环境，精通Linux下的多线程编程；并熟练使用STL,熟悉各种设计模式，对面向对象的编程有一定深度的理解；\n2、熟练掌握网络编程的基本模型和方法，有实际项目实践经验，熟悉tcp/ip网络协议族；\n3、了解高并发服务器的常见优化手段，有高并发大型系统架构和实现者优先；\n4、熟悉linux文件系统，内存管理，网络IO，进程间IPC,等linux下的开发技术。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "武汉市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 10:12:08",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    }
+  ]
+}

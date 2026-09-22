@@ -1,0 +1,41 @@
+{
+  "source_job_id": "231990b454cc46cd9789e86c13bbb8dd",
+  "verified_at": "2026-09-15T01:32:09.456Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=231990b454cc46cd9789e86c13bbb8dd",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=231990b454cc46cd9789e86c13bbb8dd&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "231990b454cc46cd9789e86c13bbb8dd",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "市场推广专员",
+        "postAdSn": "国内营销/国内技术支持类",
+        "postStdSubSn": "策划与推广",
+        "techDire": "市场推广",
+        "postContent": "1、根据业务策略制定活动计划和实施方案，整合内外部资源，组织实施展会/会议等市场活动，确保活动的顺利开展，并组织活动效果评估；\n2、根据业务推广目标和内容，协同业务和媒体团队策划主题性营销推广专题并能在落到一线中去；\n3、建立与维护主办关系，督导委托方的工作执行，确保传播符合公司的需求。",
+        "postRequire": "1、了解市场推广的相关知识，有一定的审美水平、创意能力和文案策划能力；\n2、具备基本活动策划能力和活动执行能力，对活动整体规划和活动相关物料制作均有一定的了解；\n3、积极向上，自我时间管理能力强，具有良好的团队精神和沟通协调能力；\n4、能熟练使用WORD、PPT及EXCEL。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:19",
+        "updateTime": "2026-09-01 18:29:46"
+      },
+      "departments": [
+        {
+          "id": "277ed0677ffe4542a7b5084d8d02ab66",
+          "name": "国内营销-中小企业事业部",
+          "description": "国内营销中心坚持“客户为先，持续创新”的精神，以市场为驱动，通过数字化营销、多渠道覆盖等形式，为全行业各领域的客用户提供优质的智能物联解决方案及技术服务，助力建设便捷、高效、安心的智能世界。国内营销中心在全国设有32家省级业务中心、300多个国内城市分公司及办事处，正式员工一万多人，构成了“以城市为中心”的本地化营销服务网络（截止2023年底）。\n海康威视国内营销中心为你提供涵盖全国300多个城市的销售工程师、解决方案行销工程师、技术支持工程师、商务运营等各类营销岗位。欢迎你加入国内营销中心，为所在地的公共服务和城市数字化转型、企业数字化转型提供产品、方案以及服务的全方位支持，助力人人享有美好未来。"
+        }
+      ]
+    }
+  ]
+}

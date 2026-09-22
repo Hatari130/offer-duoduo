@@ -1,0 +1,46 @@
+{
+  "source_job_id": "9cf23db0de4a49ffb84a99ae2bd3ff29",
+  "verified_at": "2026-09-15T01:31:57.671Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=9cf23db0de4a49ffb84a99ae2bd3ff29",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=9cf23db0de4a49ffb84a99ae2bd3ff29&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "9cf23db0de4a49ffb84a99ae2bd3ff29",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "海外产品售前工程师",
+        "postAdSn": "国际营销/国际技术支持类",
+        "postStdSubSn": "产品售前",
+        "techDire": "英语工科",
+        "postContent": "1、负责产品售前支持，包括售前产品交流、市场调研、行业机会点挖掘、竞品分析等，配合区域制定产品推广策略与销售策略；\n2、负责产品线上/线下推广活动策划与执行，完成产品内容运营等营销动作，促进产品销售转化；\n3、负责产品的售后技术支持，产品问题处理，为用户撰写产品方案，负责产品技术部分的编写及答疑等。",
+        "postRequire": "1、本科及以上学历，英语工科等复合专业背景优先；\n2、良好的英文读写及沟通能力，能接受海外出差；\n3、较强的沟通交流与文档组织能力，具备良好的组织协调及宣贯能力；\n4、有创造性思维和同时管理多个任务的能力，能适应高强度工作压力；\n5、具有良好的责任意识与服务意识。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:30",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "b36ef1ffd8d849b3a094a66044f591ea",
+          "name": "国际业务中心",
+          "description": "国际业务中心致力于开拓和发展国际业务，通过提供有竞争力的产品和解决方案，不断完善全球营销与技术支持网络，快速响应客户需求，努力提升服务品质。公司已在国际及港澳台地区设立 72 个分支机构和3个海外研发中心，为全球150多个国家和地区提供产品和服务（截止2023年底）。我们以扎实的研发技术和完备的营销能力双轨驱动，为国际用户提供适配于不同场景的产品和解决方案，引领智能物联新未来。 \n海康威视国际业务中心为你提供全球化的舞台。如果你是营销精英，你能接触多样化的客户、渠道和机遇；如果你是技术达人，你能学习国际化的研发技术、研发项目。欢迎加入国际业务中心，在海康威视的海外战略布局中，与志同道合的伙伴们并肩探索全球市场的无限可能！"
+        },
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

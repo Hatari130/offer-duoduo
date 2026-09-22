@@ -1,0 +1,41 @@
+{
+  "source_job_id": "9348cd6790cb4d2b8625f728409a6ddc",
+  "verified_at": "2026-09-15T01:32:05.034Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=9348cd6790cb4d2b8625f728409a6ddc",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=9348cd6790cb4d2b8625f728409a6ddc&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "9348cd6790cb4d2b8625f728409a6ddc",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "国际物流单证员",
+        "postAdSn": "供应链类",
+        "postStdSubSn": "综合物流",
+        "techDire": "不限",
+        "postContent": "1. 负责单证系统中录入出运货物信息，制作报、清关文件（包括托书、报关单据、货物保函、清关单据、产地证等），确保出口报关与清关的准确性和及时性。\n2. 负责联系货代租船订舱。合理安排交付方案，满足客户时效等交付要求。\n3.跟踪订单，协调处理出口环节中物流和报关上发生的异常情况；\n4.把控国际物流成本，包含不限于国际运输费、本地费用等。\n5.整理归档和保存各类需要保存的单证相关文件。\n6.协助处理开票、退税等工作。\n7.工作相关的系统、流程的优化和推进。",
+        "postRequire": "1. 本科及以上学历，国贸、国际物流或英语等相关专业。\n2.熟悉外贸出口流程；有单证报关和国际物流实际操作经验者优先\n3.具有良好的沟通协调能力，较强的责任心和服务意识\n4.有一定的英文基础，CET4及以上，可以同客户沟通交流\n5.学习能力强，愿意承担更多组织需要的职责和任务。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

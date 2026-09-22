@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4501197131&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:48.282Z",
+  "data": {
+    "jobUnionId": "4501197131",
+    "name": "【无人车北斗实习】世界模型实习生",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【工作内容】\n1. 探索端到端隐式世界模型的架构设计与训练范式，推动自动驾驶感知-决策一体化研究\n2. 开展模型结构创新与对比实验，挖掘隐式表征在闭环系统中的潜力\n3. 参与大规模数据管道建设与实验平台搭建，提升研究效率\n【岗位吸引点】\n1. 前沿方向 + 真实数据：隐式世界模型研究结合美团大规模真实物流驾驶数据，让前沿探索有充足的数据支撑\n2. 端到端全栈自研优势：智能驾驶与硬件全线自研，实习生可深入了解从传感器数据到端到端模型输出的完整链路，视角系统而稀缺\n3. 成果快速落地：研究成果有机会直接集成进量产系统并在真实运营车队中验证效果",
+    "jobRequirement": "1. 硕士期间发表至少1篇、博士期间发表至少3篇 CCF-A 类端到端或世界模型方向论文\n2. 具有头部自动驾驶公司强化学习或世界模型相关方向实习经历\n3. 工程能力突出，具备从零搭建并训练端到端大模型的实际经验",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1779432404000,
+    "refreshTime": 1779432404000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【无人车北斗实习】世界模型实习生\n实习-北斗计划\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【工作内容】\n1. 探索端到端隐式世界模型的架构设计与训练范式，推动自动驾驶感知-决策一体化研究\n2. 开展模型结构创新与对比实验，挖掘隐式表征在闭环系统中的潜力\n3. 参与大规模数据管道建设与实验平台搭建，提升研究效率\n【岗位吸引点】\n1. 前沿方向 + 真实数据：隐式世界模型研究结合美团大规模真实物流驾驶数据，让前沿探索有充足的数据支撑\n2. 端到端全栈自研优势：智能驾驶与硬件全线自研，实习生可深入了解从传感器数据到端到端模型输出的完整链路，视角系统而稀缺\n3. 成果快速落地：研究成果有机会直接集成进量产系统并在真实运营车队中验证效果\n任职要求\n1. 硕士期间发表至少1篇、博士期间发表至少3篇 CCF-A 类端到端或世界模型方向论文\n2. 具有头部自动驾驶公司强化学习或世界模型相关方向实习经历\n3. 工程能力突出，具备从零搭建并训练端到端大模型的实际经验\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

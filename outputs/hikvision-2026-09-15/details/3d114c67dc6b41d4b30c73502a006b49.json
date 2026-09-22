@@ -1,0 +1,41 @@
+{
+  "source_job_id": "3d114c67dc6b41d4b30c73502a006b49",
+  "verified_at": "2026-09-15T01:32:03.389Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=3d114c67dc6b41d4b30c73502a006b49",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=3d114c67dc6b41d4b30c73502a006b49&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "3d114c67dc6b41d4b30c73502a006b49",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "安全方案工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "安全方案",
+        "techDire": "不限",
+        "postContent": "1、负责公司安全产品和解决方案的售前支持工作,协助销售人员进行售前需求调研,分析客户需求,撰写技术方案建议书和投标书;\n2、协助销售人员推广、销售公司产品和解决方案;协同销售人员与客户进行商务谈判,并拟订、签署技术合同;\n3、负责产品信息收集，包括但不限于收集产品需求、竞争信息等对产品设计开发、功能改进有帮助的信息，并向研发部门提供产品设计参考意见，推动产品完善与快速迭代；\n4、负责分公司及大客户产品交流培训，包括但不限于向分公司或大客户演示产品、宣讲PPT，对外传递产品价值，并收集客户需求，反馈产品部门。",
+        "postRequire": "1、本科及以上学历，计算机、自动化及通信类或市场营销类专业优先；\n2、具备较好的解决方案技术沟通能力和演说技能；\n3、具备良好的沟通能力以及团队合作精神，能适应出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "346aad2db1fc442b85e37227bb0e8e72",
+          "name": "网络安全",
+          "description": "我们是网安世界的建筑师，为用户筑建起牢固的数智屏障；我们是物联网上的巡逻兵，在黑白混杂的网络中将威胁与风险精准定位捉拿；我们是信息丛林中的守护者，在01编织的信息里用标准与规范拉起安全红线，推动打造更安全的数字环境。\n我们是前沿科技的先锋队，手握“技术”与“创新”利剑，敢探索，寻突破，主要研究方向覆盖 WEB 安全、移动安全、协议安全、无线安全、固件安全、威胁情报、机器学习等多个领域。荣获浙江省科学技术进步一等奖、中国电子学会科技进步一等奖、世界物联网博览会金奖等诸多奖项。"
+        }
+      ]
+    }
+  ]
+}

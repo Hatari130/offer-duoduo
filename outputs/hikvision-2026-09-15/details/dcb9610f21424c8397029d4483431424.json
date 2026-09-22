@@ -1,0 +1,140 @@
+{
+  "source_job_id": "dcb9610f21424c8397029d4483431424",
+  "verified_at": "2026-09-15T01:32:16.488Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=dcb9610f21424c8397029d4483431424",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=dcb9610f21424c8397029d4483431424&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "fe1aeb5583ed4f00a31c51dd6fd95938",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "信号处理算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "AI信号处理",
+        "postContent": "负责传感器AI信号处理技术的预研与实现，提升传感器的信号质量。",
+        "postRequire": "1. 计算机、模式识别、通信工程、数学等相关专业，硕士及以上学历；\n2. 深入理解深度学习、机器学习及强化学习，熟悉主流的深度学习模型和算法；\n3. 具备扎实的数学基础，能够熟练使用PyTorch、TensorFlow等至少一种开源框架，具备良好的编程能力；\n4. 具备较强的信息收集与分析能力，能够独立完成技术方案的调研与实现；\n5. 具备良好的沟通与团队协作能力，能够从全局角度系统地分析和解决问题；\n7. 有AI与传感器信号处理结合的研究或开发经验者优先，包括但不限于雷达、光谱、气体传感、声学传感等。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "dcb9610f21424c8397029d4483431424",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-31 15:05:57"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "a34b9f48c1ee4bc68c2f66e2e9389e16",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "信号处理算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "传感信号处理",
+        "postContent": "1. 负责雷达信号处理算法方案设计；\n2. 负责雷达目标检测、测距、测速、测角等算法开发；\n3. 负责项目中外场试验与测试数据的采集、处理、分析与问题排查等工作；\n4. 负责雷达领域前沿算法技术的调研、仿真及开发工作；\n5. 配合软件工程师共同完成嵌入式代码编写。",
+        "postRequire": "1. 硕士及以上学历，电子、计算机、数学等相关专业；\n2. 熟练掌握雷达原理和数字信号处理原理，对MIMO、超分辨算法、压缩感知算法、分布式孔径雷达相参处理算法有深刻理解；\n3. 至少熟练掌握一种编程语言：C/C++、python、matlab；\n4. 具有雷达项目设计与研发经验者优先考虑。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "石家庄市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "dcb9610f21424c8397029d4483431424",
+        "adNeedDept": "海康汽车电子",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-31 15:05:57"
+      },
+      "departments": [
+        {
+          "id": "b276e4ba30ae4cd2afe86d0ba755e25f",
+          "name": "海康汽车电子",
+          "description": "海康汽车电子聚焦于智能驾驶领域，以视频为核心，融合雷达等传感器，深入研究人工智能、感知数据分析与处理等技术，致力于成为行业领先的以视频技术为核心的车辆安全和智能化产品供应商。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "a4358a27963f41adba4501482242e035",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "信号处理算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "传感信号处理",
+        "postContent": "1. 负责雷达信号处理算法方案设计；\n2. 负责雷达目标检测、测距、测速、测角等算法开发；\n3. 负责项目中外场试验与测试数据的采集、处理、分析与问题排查等工作；\n4. 负责雷达领域前沿算法技术的调研、仿真及开发工作；\n5. 配合软件工程师共同完成嵌入式代码编写。",
+        "postRequire": "1. 硕士及以上学历，电子、计算机、数学等相关专业；\n2. 熟练掌握雷达原理和数字信号处理原理，对MIMO、超分辨算法、压缩感知算法、分布式孔径雷达相参处理算法有深刻理解；\n3. 至少熟练掌握一种编程语言：C/C++、python、matlab；\n4. 具有雷达项目设计与研发经验者优先考虑。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "西安市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "dcb9610f21424c8397029d4483431424",
+        "adNeedDept": "海康汽车电子",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-31 15:05:53"
+      },
+      "departments": [
+        {
+          "id": "b276e4ba30ae4cd2afe86d0ba755e25f",
+          "name": "海康汽车电子",
+          "description": "海康汽车电子聚焦于智能驾驶领域，以视频为核心，融合雷达等传感器，深入研究人工智能、感知数据分析与处理等技术，致力于成为行业领先的以视频技术为核心的车辆安全和智能化产品供应商。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "7e95d60547c0483d96c49564738d8d06",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "信号处理算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "流量仪表、液位仪表、压力仪表",
+        "postContent": "1、 负责仪表产品前端传感器超声换能器信号、FMCW雷达信号、电磁传感信号等微小信号的信号处理算法研究、仿真和设计实现；\n2、 主导或参与制定试验方案，并进行试验数据分析和方案验证及算法迭代。",
+        "postRequire": "1、 硕士或博士学历，电子、通信、数学、自动化、水声工程等信号处理相关专业；\n2.、掌握信号处理和数据处理的基础理论，熟练应用信号处理算法、互相关算法、波束合成算法等，熟练使用matlab、C++编程基础；\n3、具备较强的学习和调研能力，有较强的数据分析、逻辑推理能力；\n4、有超声、电磁、质量等流量仪表、导波和雷达液位仪表、毫米波雷达算法开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "dcb9610f21424c8397029d4483431424",
+        "adNeedDept": "海康微影",
+        "specialNotes": null,
+        "createTime": "2026-09-03 14:43:46",
+        "updateTime": "2026-09-03 14:43:48"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

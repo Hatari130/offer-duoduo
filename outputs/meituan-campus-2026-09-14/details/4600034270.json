@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4600034270&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:30.649Z",
+  "data": {
+    "jobUnionId": "4600034270",
+    "name": "【LongCat实习】Longcat 大模型研究员-Agentic Model",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "2",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "大模型从通用问答走向复杂任务执行，Agent 能力正成为模型演进的关键方向。为此我们探索将通用基座模型向原生 Agentic Foundation Model 演进，为构建下一代自主智能体提供坚实的底座支持。\n团队在以下方向上进行探索，若你对以下一个或者多个课题感兴趣均欢迎投递：\n1.大规模高质量数据体系与轨迹合成数据建设\n建设 Trillion 级别的大规模跨模态数据处理与合成链路，负责从训练数据获取到配比建模的全流程优化。\n探索大规模合成数据 与自蒸馏技术，制定合成数据应用策略，构建模型持续进化的数据飞轮。\n2.长上下文 (Long Context) 与高效架构演进长窗口突破\n持续 Scaling Up 模型的上下文窗口，优化超长上下文机制，重点提升 LongCat 基座模型在长上下文上的表现。\n探索并验证 MoE（混合专家）、稀疏注意力（Sparse Attention）、线性注意力等模型结构；结合剪枝与稀疏化技术，协同优化训练与推理效率，提升超长上下文场景下的效率。\n3.多模态能力融合\n探索多模态预训练新范式，突破模态融合瓶颈。利用多模态扩展定律指导数据与训练方案，提升模型在多模态交互场景下的原生能力。\n【为什么是我们】\n1.团队扁平，人才密度高，美团“顶尖人才计划”比例高，近年团队在ICLR、NeurIPS、ICML、ACL等顶会累计发表论文数十篇，团队员工获EMNLP/ACL等Outstanding Paper；  \n2.参与大语言模型核心技术研发，接触大规模RL、超长上下文、分布式训练和推理优化等前沿技术；  \n3.充足算力保障，拥有大规模分布式训练环境和丰富数据资源。",
+    "jobRequirement": "【必要项】\n1.来自全球Top高校计算机科学、人工智能、数学、物理或相关领域；\n2.在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文；\n3.具备扎实的算法和数学理论基础及良好的编程基础，熟悉自然语言处理、生成式AI和机器学习等技术，对技术开发及应用有热情。\n【加分项】\n1.目标感强，善于分析和发现问题，拆解简化，有想法并乐于挑战自我，能够从日常工作中发现新的空间；  \n2.条理性强且有推动力，能够梳理繁杂的工作并建立有效机制，推动上下游配合完成目标；\n3.在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1782832485000,
+    "refreshTime": 1782832485000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat实习】Longcat 大模型研究员-Agentic Model\n实习-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n大模型从通用问答走向复杂任务执行，Agent 能力正成为模型演进的关键方向。为此我们探索将通用基座模型向原生 Agentic Foundation Model 演进，为构建下一代自主智能体提供坚实的底座支持。\n团队在以下方向上进行探索，若你对以下一个或者多个课题感兴趣均欢迎投递：\n1.大规模高质量数据体系与轨迹合成数据建设\n建设 Trillion 级别的大规模跨模态数据处理与合成链路，负责从训练数据获取到配比建模的全流程优化。\n探索大规模合成数据 与自蒸馏技术，制定合成数据应用策略，构建模型持续进化的数据飞轮。\n2.长上下文 (Long Context) 与高效架构演进长窗口突破\n持续 Scaling Up 模型的上下文窗口，优化超长上下文机制，重点提升 LongCat 基座模型在长上下文上的表现。\n探索并验证 MoE（混合专家）、稀疏注意力（Sparse Attention）、线性注意力等模型结构；结合剪枝与稀疏化技术，协同优化训练与推理效率，提升超长上下文场景下的效率。\n3.多模态能力融合\n探索多模态预训练新范式，突破模态融合瓶颈。利用多模态扩展定律指导数据与训练方案，提升模型在多模态交互场景下的原生能力。\n【为什么是我们】\n1.团队扁平，人才密度高，美团“顶尖人才计划”比例高，近年团队在ICLR、NeurIPS、ICML、ACL等顶会累计发表论文数十篇，团队员工获EMNLP/ACL等Outstanding Paper；\n2.参与大语言模型核心技术研发，接触大规模RL、超长上下文、分布式训练和推理优化等前沿技术；\n3.充足算力保障，拥有大规模分布式训练环境和丰富数据资源。\n任职要求\n【必要项】\n1.来自全球Top高校计算机科学、人工智能、数学、物理或相关领域；\n2.在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文；\n3.具备扎实的算法和数学理论基础及良好的编程基础，熟悉自然语言处理、生成式AI和机器学习等技术，对技术开发及应用有热情。\n【加分项】\n1.目标感强，善于分析和发现问题，拆解简化，有想法并乐于挑战自我，能够从日常工作中发现新的空间；\n2.条理性强且有推动力，能够梳理繁杂的工作并建立有效机制，推动上下游配合完成目标；\n3.在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

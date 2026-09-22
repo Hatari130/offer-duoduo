@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4177302566&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:02.071Z",
+  "data": {
+    "jobUnionId": "4177302566",
+    "name": "【北斗实习】大模型应用算法工程师 -【搜索系统】",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】 \n构建面向美团本地多业务场景的搜索系统，探索基于LLM的下一代本地生活服务搜索系统。通过探索LLM在搜索的意图理解、相关性建模、生成式召回、展示素材和样式的应用，提升搜索系统端到端的体验、匹配效率。\n【建议研究方向】\n1.基于LLM的轻量级搜索相关性模型\n参与设计和实现基于LLM的可解释、可蒸馏、低延迟的大模型相关性判别器，提升搜索的体验。\n2.多业务多目标混排机制\n参与设计多业务多目标混排机制，实现多业务混合排序架构，融合多业务多目标排序，实现全局最优。\n3.基于Transformer架构的高稠密精排模型\n探索融合全域样本、多业务全域特征，基于Transformer和MOE构建多业务全域统一基础模型，在Data scaling的基础上持续摸高模型稠密化Scaling up。\n4.多模态建模展示素材与创意\n探索搜索场景下的创意素材展示策略，基于多模态内容理解表征建模、在线多目标创意素材排序建模，提升搜索的展示体验与效率。",
+    "jobRequirement": "1.海内外高校计算机、人工智能、数学等相关专业 硕士或博士在读（2027年6月前毕业优先）。\n2.扎实的机器学习/深度学习基础，熟悉 Transformer、BERT、LLM 原理。\n3.热爱搜索、LLM，有技术热情，相信技术改造世界。\n4.有较强的编程能力，有大厂实验室的实习经验，或有贡献突出的开源项目，或在在顶级大赛上获奖经历。\n\n5、学术达人，在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）优先",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1770363344000,
+    "refreshTime": 1770363344000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型应用算法工程师 -【搜索系统】\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n构建面向美团本地多业务场景的搜索系统，探索基于LLM的下一代本地生活服务搜索系统。通过探索LLM在搜索的意图理解、相关性建模、生成式召回、展示素材和样式的应用，提升搜索系统端到端的体验、匹配效率。\n【建议研究方向】\n1.基于LLM的轻量级搜索相关性模型\n参与设计和实现基于LLM的可解释、可蒸馏、低延迟的大模型相关性判别器，提升搜索的体验。\n2.多业务多目标混排机制\n参与设计多业务多目标混排机制，实现多业务混合排序架构，融合多业务多目标排序，实现全局最优。\n3.基于Transformer架构的高稠密精排模型\n探索融合全域样本、多业务全域特征，基于Transformer和MOE构建多业务全域统一基础模型，在Data scaling的基础上持续摸高模型稠密化Scaling up。\n4.多模态建模展示素材与创意\n探索搜索场景下的创意素材展示策略，基于多模态内容理解表征建模、在线多目标创意素材排序建模，提升搜索的展示体验与效率。\n任职要求\n1.海内外高校计算机、人工智能、数学等相关专业 硕士或博士在读（2027年6月前毕业优先）。\n2.扎实的机器学习/深度学习基础，熟悉 Transformer、BERT、LLM 原理。\n3.热爱搜索、LLM，有技术热情，相信技术改造世界。\n4.有较强的编程能力，有大厂实验室的实习经验，或有贡献突出的开源项目，或在在顶级大赛上获奖经历。\n5、学术达人，在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）优先\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

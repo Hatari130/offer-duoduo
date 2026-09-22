@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4347503230&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:51.691Z",
+  "data": {
+    "jobUnionId": "4347503230",
+    "name": "【基座大模型北斗实习】大模型预训练数据科学与模型潜力前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：本课题聚焦于超大规模预训练数据的深度理解、提纯与价值挖掘，建立数据与模型能力之间的因果联系，打造下一代万亿基座模型的高效数据引擎，致力于提升基座模型的智能上限。研究内容包括但不限于：\n1、研发基于模型的高效数据质量评估、去重与清洗算法，提高数据质量、多样性和覆盖度。\n2、深入探究数据分布与模型能力的因果关系，建立“训练数据-模型效果”归因机制，探索并突破基座模型的能力上限。\n3、探索自动化数据筛选机制、动态配比（Data Mixture）与多阶段训练范式，探索不同类型数据对模型能力的Scaling Law。\n4、构建科学、多维度的基座模型能力和潜力评估，驱动预训练数据策略的优化，形成高效的数据迭代闭环。",
+    "jobRequirement": "1、硕士及以上学历，计算机、人工智能、数学、NLP等相关专业，博士优先；\n2、在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n3、对大模型有浓厚兴趣，对“什么是好数据”有深刻洞察和理解，有较强的问题分析、自主探索和快速迭代的能力。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223034000,
+    "refreshTime": 1775223034000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大模型预训练数据科学与模型潜力前沿研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：本课题聚焦于超大规模预训练数据的深度理解、提纯与价值挖掘，建立数据与模型能力之间的因果联系，打造下一代万亿基座模型的高效数据引擎，致力于提升基座模型的智能上限。研究内容包括但不限于：\n1、研发基于模型的高效数据质量评估、去重与清洗算法，提高数据质量、多样性和覆盖度。\n2、深入探究数据分布与模型能力的因果关系，建立“训练数据-模型效果”归因机制，探索并突破基座模型的能力上限。\n3、探索自动化数据筛选机制、动态配比（Data Mixture）与多阶段训练范式，探索不同类型数据对模型能力的Scaling Law。\n4、构建科学、多维度的基座模型能力和潜力评估，驱动预训练数据策略的优化，形成高效的数据迭代闭环。\n任职要求\n1、硕士及以上学历，计算机、人工智能、数学、NLP等相关专业，博士优先；\n2、在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n3、对大模型有浓厚兴趣，对“什么是好数据”有深刻洞察和理解，有较强的问题分析、自主探索和快速迭代的能力。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

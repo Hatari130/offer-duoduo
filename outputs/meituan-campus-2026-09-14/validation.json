@@ -1,0 +1,21 @@
+{
+  "source": "https://zhaopin.meituan.com/web/campus",
+  "date": "2026-09-14",
+  "expected": 593,
+  "collected": 593,
+  "unique": 593,
+  "detail_verified": 593,
+  "counts_by_type": {
+    "日常实习": 281,
+    "应届生": 189,
+    "转正实习": 123
+  },
+  "counts_by_project": {
+    "日常实习": 281,
+    "常规校招": 118,
+    "北斗计划": 153,
+    "食杂零售管培生计划": 1,
+    "LongCat 大模型人才校招": 40
+  },
+  "note": "三轮官网逐页采集交叉去重，补齐分页重复造成的缺项。学历和专业为简洁提取，未明确确认留null；原文见raw-jobs.json及details目录。"
+}

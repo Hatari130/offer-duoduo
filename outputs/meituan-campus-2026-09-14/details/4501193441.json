@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4501193441&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:47.945Z",
+  "data": {
+    "jobUnionId": "4501193441",
+    "name": "【无人车北斗实习】前馈式3D重建实习生",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【工作内容】\n1. 探索前馈式3D重建模型在大规模真实驾驶数据上的训练策略与泛化能力提升方法\n2. 参与数据预处理管道建设，优化大规模训练的工程效率与资源利用率\n3. 对重建质量进行系统性评估，输出模型迭代方案并推动应用落地\n【岗位吸引点】\n1. 大规模真实驾驶数据：美团 RoboVan 在多城市持续采集物流场景数据，为前馈式重建模型的训练与泛化提供充足且多样的真实数据\n2. 应用驱动的研究闭环：重建能力直接服务于高精地图生成与仿真场景构建，研究成果有明确的业务价值出口\n3. 基础设施完善：团队具备成熟的大规模分布式训练平台与数据工程体系，实习生可专注于算法本身而非工程搭建",
+    "jobRequirement": "1. 具有前馈式3D重建模型的实际训练经验（实习或科研均可），熟悉主流重建框架\n2. 理解三维场景重建的核心技术原理，有处理大规模真实数据集的经验\n3. 有相关领域 CCF-A 类论文发表者优先考虑",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1779432404000,
+    "refreshTime": 1779432404000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【无人车北斗实习】前馈式3D重建实习生\n实习-北斗计划\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【工作内容】\n1. 探索前馈式3D重建模型在大规模真实驾驶数据上的训练策略与泛化能力提升方法\n2. 参与数据预处理管道建设，优化大规模训练的工程效率与资源利用率\n3. 对重建质量进行系统性评估，输出模型迭代方案并推动应用落地\n【岗位吸引点】\n1. 大规模真实驾驶数据：美团 RoboVan 在多城市持续采集物流场景数据，为前馈式重建模型的训练与泛化提供充足且多样的真实数据\n2. 应用驱动的研究闭环：重建能力直接服务于高精地图生成与仿真场景构建，研究成果有明确的业务价值出口\n3. 基础设施完善：团队具备成熟的大规模分布式训练平台与数据工程体系，实习生可专注于算法本身而非工程搭建\n任职要求\n1. 具有前馈式3D重建模型的实际训练经验（实习或科研均可），熟悉主流重建框架\n2. 理解三维场景重建的核心技术原理，有处理大规模真实数据集的经验\n3. 有相关领域 CCF-A 类论文发表者优先考虑\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

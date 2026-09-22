@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4530490380&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:43.340Z",
+  "data": {
+    "jobUnionId": "4530490380",
+    "name": "【LongCat大模型人才校招】基座评测与认知分析算法研究员-多模态与前沿交互研究",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "多模态大模型能力在近年飞速发展，模态的统一、任务的统一、多种模态联合生成和实时交互带来了崭新的应用体验和生产力提升。在这个过程中，我们需要脚踏实地的同时仰望星空，发挥想象力预判新模型能力带来的应用场景革新，研究达到理想态的关键演进路径并进行度量分析，指引长期有潜力的模型迭代方向。方向包括但不限于\n1.多模Agent方向：包括在多模态的工具调用和GUI/CUA，探索结合多模原生能力的OpenClaw展现出的生产力提升潜力，从基座模型能力角度分析其中的关键影响因素并进行自动化度量，指引基座模型的迭代；\n2.多模态统一方向：包括全模态统一模型、音视频联合生成等，思考在模态统一、任务统一和多种模态联合生成过程带来新的能力跃迁并进行度量，分析模态和任务间的相互关联，指引模型架构、训练策略等选型；\n3.多模交互方向：包括通用世界模型、音视频交互等，研究动态多轮交互中的一致性、真实性和长程记忆等关键能力的自动化度量，指引基座模型的迭代；\n【为什么是我们】\n一起建立行业评测标杆，推动行业认知进展，代表工作包括：\n1.UNOBench 行业首个考察全模态协作能力，并得出全模态和单模态能力Compositional Law，指引1+1+1>3的全模态能力发展。\n2.EvalTalker 行业首个多人、多姿态、全景覆盖的数字人评测基准，指引自研Longcat-Avatar模型稳居业界前沿。\n3.UniHetero 行业首个验证生成能促进理解的unified model，以简洁的结构在大规模数据上得到更好的data-scaling。",
+    "jobRequirement": "1. 硕士及以上学历，计算机、数学、统计学或相关专业。\n2. 熟悉Java/Python/C++等编程语言，良好的编码习惯和一定的工程能力 。\n3. 具有深度学习和大模型原理的基础知识，具有多模态大模型、具身智能之一的研究经验。\n4. 良好的沟通能力、团队合作精神以及较强的问题解决能力。 \n5. 对每一行代码负责，对业务方负责，具备工匠精神。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459822000,
+    "refreshTime": 1780459822000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】基座评测与认知分析算法研究员-多模态与前沿交互研究\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n多模态大模型能力在近年飞速发展，模态的统一、任务的统一、多种模态联合生成和实时交互带来了崭新的应用体验和生产力提升。在这个过程中，我们需要脚踏实地的同时仰望星空，发挥想象力预判新模型能力带来的应用场景革新，研究达到理想态的关键演进路径并进行度量分析，指引长期有潜力的模型迭代方向。方向包括但不限于\n1.多模Agent方向：包括在多模态的工具调用和GUI/CUA，探索结合多模原生能力的OpenClaw展现出的生产力提升潜力，从基座模型能力角度分析其中的关键影响因素并进行自动化度量，指引基座模型的迭代；\n2.多模态统一方向：包括全模态统一模型、音视频联合生成等，思考在模态统一、任务统一和多种模态联合生成过程带来新的能力跃迁并进行度量，分析模态和任务间的相互关联，指引模型架构、训练策略等选型；\n3.多模交互方向：包括通用世界模型、音视频交互等，研究动态多轮交互中的一致性、真实性和长程记忆等关键能力的自动化度量，指引基座模型的迭代；\n【为什么是我们】\n一起建立行业评测标杆，推动行业认知进展，代表工作包括：\n1.UNOBench 行业首个考察全模态协作能力，并得出全模态和单模态能力Compositional Law，指引1+1+1>3的全模态能力发展。\n2.EvalTalker 行业首个多人、多姿态、全景覆盖的数字人评测基准，指引自研Longcat-Avatar模型稳居业界前沿。\n3.UniHetero 行业首个验证生成能促进理解的unified model，以简洁的结构在大规模数据上得到更好的data-scaling。\n任职要求\n1. 硕士及以上学历，计算机、数学、统计学或相关专业。\n2. 熟悉Java/Python/C++等编程语言，良好的编码习惯和一定的工程能力 。\n3. 具有深度学习和大模型原理的基础知识，具有多模态大模型、具身智能之一的研究经验。\n4. 良好的沟通能力、团队合作精神以及较强的问题解决能力。 \n5. 对每一行代码负责，对业务方负责，具备工匠精神。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

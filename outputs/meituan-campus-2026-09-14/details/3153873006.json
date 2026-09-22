@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153873006&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:13.764Z",
+  "data": {
+    "jobUnionId": "3153873006",
+    "name": "【大模型北斗实习】统一化的检索生成框架探索与评测",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "引入外部知识检索是处理 agent 在有限记忆存储下知识局限性的主流路径（如检索增强生成），可以有效降低幻觉比例，使生成内容具备时效性和事实性。但现有问题是检索和生成模块通常作为异质系统交替使用，无法深度协同和统一优化。近期生成式检索方向的研究为二者统一创造了条件。\n本课题希望彻底统一检索生成，研究内容包括但不限于：\n1）统一检索生成的推理和优化算法构建。\n2）优化实验在数据和计算维度的规模化。\n3）agent 视角对 RAG 和 long-context 的解读和相应评测评估方案。\n4）从统一检索生成到模型记忆的外推。",
+    "jobRequirement": "1）熟悉大模型相关的推理、训练框架，有较强的工程实践能力和经验。\n2）有一定的学术研究背景，对前沿技术保持好奇心，学习能力和自驱力强。\n加分项：\n1）在有影响力的开源项目中做出核心贡献。\n2）发表过高质量学术论文。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309543000,
+    "refreshTime": 1747963941000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】统一化的检索生成框架探索与评测\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n引入外部知识检索是处理 agent 在有限记忆存储下知识局限性的主流路径（如检索增强生成），可以有效降低幻觉比例，使生成内容具备时效性和事实性。但现有问题是检索和生成模块通常作为异质系统交替使用，无法深度协同和统一优化。近期生成式检索方向的研究为二者统一创造了条件。\n本课题希望彻底统一检索生成，研究内容包括但不限于：\n1）统一检索生成的推理和优化算法构建。\n2）优化实验在数据和计算维度的规模化。\n3）agent 视角对 RAG 和 long-context 的解读和相应评测评估方案。\n4）从统一检索生成到模型记忆的外推。\n任职要求\n1）熟悉大模型相关的推理、训练框架，有较强的工程实践能力和经验。\n2）有一定的学术研究背景，对前沿技术保持好奇心，学习能力和自驱力强。\n加分项：\n1）在有影响力的开源项目中做出核心贡献。\n2）发表过高质量学术论文。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,74 @@
+{
+  "source_job_id": "ccf9243ec47842b28930146c21e5783a",
+  "verified_at": "2026-09-15T01:32:17.758Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=ccf9243ec47842b28930146c21e5783a",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=ccf9243ec47842b28930146c21e5783a&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "a001a928022c4844bc799f1ff7f9b43a",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI算法成效工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "AI应用",
+        "techDire": "不限",
+        "postContent": "1、负责AI项目从需求洞察、方案设计、模型训练优化到最终成效达成的全生命周期管理，驱动AI技术在各行业场景中实现业务闭环。\n2、评估与输出智能化需求的必要性、技术可行性及整体算法方案。\n3、基于业务需求及系统架构，完成可落地的智能算法方案设计。\n4、运用多种策略（如设备调整、场景治理、规则调优、模型迭代）推动解决实际场景问题，提升算法准确性和业务效果。",
+        "postRequire": "1、本科及以上学历，人工智能、计算机、通信工程等理工科相关专业；对机器学习、深度学习等AI技术原理有一定了解。\n2、具备较强的逻辑能力和抽象能力，有能力根据现象定位问题，准确判断问题解决方案可行性。\n3、具备技术好奇心，快速学习能力，能适应AI技术快速迭代和复杂多变的业务场景。\n4、能主动发现问题、推进解决问题，并对结果负责；能适应项目型短期出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "ccf9243ec47842b28930146c21e5783a",
+        "adNeedDept": "软件产品",
+        "specialNotes": null,
+        "createTime": "2026-08-20 10:12:09",
+        "updateTime": "2026-08-20 17:09:52"
+      },
+      "departments": [
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "2c4a2efec1894389b96b77a6d91a7171",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI算法成效工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "AI应用",
+        "techDire": "不限",
+        "postContent": "1、负责AI项目从需求洞察、方案设计、模型训练优化到最终成效达成的全生命周期管理，驱动AI技术在各行业场景中实现业务闭环。\n2、评估与输出智能化需求的必要性、技术可行性及整体算法方案。\n3、基于业务需求及系统架构，完成可落地的智能算法方案设计。\n4、运用多种策略（如设备调整、场景治理、规则调优、模型迭代）推动解决实际场景问题，提升算法准确性和业务效果。",
+        "postRequire": "1、本科及以上学历，人工智能、计算机、通信工程等理工科相关专业；对机器学习、深度学习等AI技术原理有一定了解。\n2、具备较强的逻辑能力和抽象能力，有能力根据现象定位问题，准确判断问题解决方案可行性。\n3、具备技术好奇心，快速学习能力，能适应AI技术快速迭代和复杂多变的业务场景。\n4、能主动发现问题、推进解决问题，并对结果负责；能适应项目型短期出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "南京市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "ccf9243ec47842b28930146c21e5783a",
+        "adNeedDept": "软件产品",
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:03",
+        "updateTime": "2026-08-20 17:09:52"
+      },
+      "departments": [
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    }
+  ]
+}

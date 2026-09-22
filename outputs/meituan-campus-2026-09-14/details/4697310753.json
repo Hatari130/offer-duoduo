@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697310753&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:52.490Z",
+  "data": {
+    "jobUnionId": "4697310753",
+    "name": "具身智能算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 基础模型与算法研发：深入理解美团业务场景，研究并落地通用视觉-语言-动作基础模型，针对非结构化环境下的感知与决策难题研发创新算法，推动机器人通用操作能力落地（含预训练/后训练）；\n2. 大规模数据体系建设：设计构建大规模真机与第一人称操作数据采集体系，探索类人形具身数据最优闭环范式；推动超大规模数据工具链建设，研究数据混合策略，探索 Foundation Model 在机器人中的 Scaling Law 与泛化边界；\n3. 真机部署与自我迭代：构建迈向商用的真机部署方案，结合美团真实业务场景（如无人机/机器人），研究基于人类反馈的强化学习与示范学习，使智能体实现技能的快速增量学习与迭代；\n4. 评测体系与前沿探索：建立具身智能系统化评测体系（任务成功率、泛化性等）指导模型迭代；依托公司真实场景数据与高校合作资源，定义并解决具身智能领域的关键科学问题，参与前沿学术会议的高质量论文产出。",
+    "jobRequirement": "1. 计算机科学、机器人学、自动化、人工智能等相关专业。\n2. 在以下至少一个领域有一定理论理解与研究：机器人、计算机视觉、多模态大模型、强化学习、仿真与规划控制。\n3. 有一定工程化与代码能力，有一定从前沿研究到工程落地开发的能力，可运用AI工具辅助coding及解决工程问题。\n加分项\n1. 有顶级期刊或会议（如CVPR、ICCV、ICRA、IROS、NeurIPS 等）高质量论文发表经历优先。\n2. 有机械臂、移动机器人或无人机真机部署与实际操作经验；有大规模仿真训练（如 Isaac Sim、Sapien）经验者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960996000,
+    "refreshTime": 1786960996000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n具身智能算法工程师\n应届-校园招聘\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 基础模型与算法研发：深入理解美团业务场景，研究并落地通用视觉-语言-动作基础模型，针对非结构化环境下的感知与决策难题研发创新算法，推动机器人通用操作能力落地（含预训练/后训练）；\n2. 大规模数据体系建设：设计构建大规模真机与第一人称操作数据采集体系，探索类人形具身数据最优闭环范式；推动超大规模数据工具链建设，研究数据混合策略，探索 Foundation Model 在机器人中的 Scaling Law 与泛化边界；\n3. 真机部署与自我迭代：构建迈向商用的真机部署方案，结合美团真实业务场景（如无人机/机器人），研究基于人类反馈的强化学习与示范学习，使智能体实现技能的快速增量学习与迭代；\n4. 评测体系与前沿探索：建立具身智能系统化评测体系（任务成功率、泛化性等）指导模型迭代；依托公司真实场景数据与高校合作资源，定义并解决具身智能领域的关键科学问题，参与前沿学术会议的高质量论文产出。\n任职要求\n1. 计算机科学、机器人学、自动化、人工智能等相关专业。\n2. 在以下至少一个领域有一定理论理解与研究：机器人、计算机视觉、多模态大模型、强化学习、仿真与规划控制。\n3. 有一定工程化与代码能力，有一定从前沿研究到工程落地开发的能力，可运用AI工具辅助coding及解决工程问题。\n加分项\n1. 有顶级期刊或会议（如CVPR、ICCV、ICRA、IROS、NeurIPS 等）高质量论文发表经历优先。\n2. 有机械臂、移动机器人或无人机真机部署与实际操作经验；有大规模仿真训练（如 Isaac Sim、Sapien）经验者优先。\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

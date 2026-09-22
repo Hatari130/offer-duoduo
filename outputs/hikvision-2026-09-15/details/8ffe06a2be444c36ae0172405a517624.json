@@ -1,0 +1,41 @@
+{
+  "source_job_id": "8ffe06a2be444c36ae0172405a517624",
+  "verified_at": "2026-09-15T01:32:04.738Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=8ffe06a2be444c36ae0172405a517624",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=8ffe06a2be444c36ae0172405a517624&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "8ffe06a2be444c36ae0172405a517624",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "红外图像算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、跟进业界前沿成像技术，如非均匀性校正、图像增强去噪、超分辨率、双光融合等，参与热成像、可见光图像算法预研、设计开发；\n2、负责图像算法性能优化加速，协助DSP、FPGA移植到嵌入式平台，提升产品的画质与性能；\n3、进行算法参数调优，适配多场景、多模式下的图像效果；\n4、分析、优化和解决图像类客诉问题。",
+        "postRequire": "1、计算机、电子信息、信号处理、图像处理类专业，研究生及以上学历；\n2、精通C语言，掌握Matlab，熟悉OpenCV 、Python等开发工具；\n3、具有较强的文献获取能力，新知识的学习能力；\n4、精通图像信号特点，具有热成像、可见光算法模块设计经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

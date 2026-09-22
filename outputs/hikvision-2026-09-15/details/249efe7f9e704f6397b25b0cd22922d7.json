@@ -1,0 +1,74 @@
+{
+  "source_job_id": "249efe7f9e704f6397b25b0cd22922d7",
+  "verified_at": "2026-09-15T01:32:21.337Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=249efe7f9e704f6397b25b0cd22922d7",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=249efe7f9e704f6397b25b0cd22922d7&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "eb35f6f8114d4bd0be7cbc5c3848b12e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "器件工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "器件可靠性与应用",
+        "techDire": "不限",
+        "postContent": "1、负责相关元器件及部件的选型及测试规范的制定；\n2、负责相关元器件及部件选型、测试认证及失效分析；\n3、负责相关元器件及部件的基本信息审核、维护等管理；\n4、参与相关元器件及部件供应商审核。",
+        "postRequire": "1、本科及以上学历，机电、电子、通讯、物理、材料、自动化等相关专业本科及以上学历；\n2、仔细认真，有较强的责任心及良好的沟通能力；\n3、熟练使用Office等相关办公软件，具备较好的英文阅读能力，可使用PLM系统可优先考虑；\n4、有相关器件可靠性测试及失效分析经验者优先；\n5、具有良好的综合素质和团队意识，热爱学习，责任感强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "249efe7f9e704f6397b25b0cd22922d7",
+        "adNeedDept": "智能硬件-硬件技术",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:19",
+        "updateTime": "2026-08-20 17:09:48"
+      },
+      "departments": [
+        {
+          "id": "c85e437f543c4494bf31fe6524368e6d",
+          "name": "智能硬件-硬件技术",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "10ac7f0b30b84d60a2b890ed74ef309d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "器件工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "器件可靠性与应用",
+        "techDire": "结构/线缆方向",
+        "postContent": "1、负责器件结构类设计及技术交付工作；\n2、负责结构/线缆相关业务流程的建立和完善;\n3、负责结构/线缆设计工具平台的集成设计及数据平台的应用推广；\n4、负责结构/线缆物料标准化审核，参与设计变更评估和生命周期管理；\n5、参与结构/线缆件相关行业技术标准规范研究和应用。",
+        "postRequire": "1、本科及以上学历，机械、机电等相关专业优先；\n2、对塑胶、钣金、压铸等加工成型工艺、表面处理及材料特性有初步了解；\n3、熟练使用3D、2D设计软件、Office等相关办公软件，具备较好的英文阅读能力；\n4、有相关结构设计经验者优先；\n5、具备严谨细致的工作态度，良好的沟通能力、团队合作意识等。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "249efe7f9e704f6397b25b0cd22922d7",
+        "adNeedDept": "智能硬件-硬件技术",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:19",
+        "updateTime": "2026-08-20 17:09:48"
+      },
+      "departments": [
+        {
+          "id": "c85e437f543c4494bf31fe6524368e6d",
+          "name": "智能硬件-硬件技术",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153985413&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:14.404Z",
+  "data": {
+    "jobUnionId": "3153985413",
+    "name": "【大模型北斗实习】具身智能技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "深度参与具身智能“感知-决策-行动”技术全链路的技术攻关，在以下一个或多个方向上进行深入研究：\n1.感知与决策规划：提升多模态大模型在具身场景下的能力表现，包括在复杂动态环境中对物体位姿、状态、物理属性的精准理解，以及对复杂任务的任务推理与拆解能力。\n2.行动与控制：基于真机示教数据以及海量互联网视频数据，训练机器人掌握高精度的操作技能。在机器人上研究并实践强化学习算法，优化机器人的动作策略，提升其在物理世界中的动作鲁棒性和技能泛化。\n3.仿真与虚实迁移：参与构建高逼真度的物理仿真环境（如 Isaac Sim, SAPIEN 等），用于大规模、低成本地训练和验证具身智能算法。",
+    "jobRequirement": "1.计算机科学、机器人学、人工智能、自动化或相关领域的在读硕士或博士研究生。\n2.具备扎实的编程能力，精通 Python，熟悉 C++者优先，且熟练掌握 PyTorch 框架。\n3.对机器学习、深度学习、计算机视觉等领域有深入的理论理解。\n4.在具身智能领域有深入研究，熟悉 VLA的前沿模型。\n5.对具身智能和机器人技术抱有浓厚兴趣和热情，具备出色的自驱力、快速学习能力和解决问题的能力。\n6.在ICRA, CVPR, ICLR, IROS等人工智能或机器人学会议上有论文发表者。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309543000,
+    "refreshTime": 1747963941000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】具身智能技术研究\n实习-北斗计划\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n深度参与具身智能“感知-决策-行动”技术全链路的技术攻关，在以下一个或多个方向上进行深入研究：\n1.感知与决策规划：提升多模态大模型在具身场景下的能力表现，包括在复杂动态环境中对物体位姿、状态、物理属性的精准理解，以及对复杂任务的任务推理与拆解能力。\n2.行动与控制：基于真机示教数据以及海量互联网视频数据，训练机器人掌握高精度的操作技能。在机器人上研究并实践强化学习算法，优化机器人的动作策略，提升其在物理世界中的动作鲁棒性和技能泛化。\n3.仿真与虚实迁移：参与构建高逼真度的物理仿真环境（如 Isaac Sim, SAPIEN 等），用于大规模、低成本地训练和验证具身智能算法。\n任职要求\n1.计算机科学、机器人学、人工智能、自动化或相关领域的在读硕士或博士研究生。\n2.具备扎实的编程能力，精通 Python，熟悉 C++者优先，且熟练掌握 PyTorch 框架。\n3.对机器学习、深度学习、计算机视觉等领域有深入的理论理解。\n4.在具身智能领域有深入研究，熟悉 VLA的前沿模型。\n5.对具身智能和机器人技术抱有浓厚兴趣和热情，具备出色的自驱力、快速学习能力和解决问题的能力。\n6.在ICRA, CVPR, ICLR, IROS等人工智能或机器人学会议上有论文发表者。\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

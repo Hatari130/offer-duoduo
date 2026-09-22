@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694810490&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:41.044Z",
+  "data": {
+    "jobUnionId": "4694810490",
+    "name": "运维开发工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "运维",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责公司网络、系统和大数据运维、管理及优化工作，包括处理日常运维需求、运维变更、资源管理、服务管理、问题排查等，善于使用AI工具辅助日常运维操作，提升工作效率；\n2. 负责及时响应和处理故障，能够使用AI工具辅助故障快速定位、根因分析和处置方案生成，积累经验缩短故障处理时长，并通过深度复盘和改进避免故障重复发生\n3. 负责收集和分析网络和业务系统的运行数据，善于使用AI工具对海量运维数据进行智能分析和异常挖掘，找到系统风险点，推进稳定性改进项目，\n4. 负责承接内部运维相关项目立项及实施工作，协助一线工程师解决后台技术问题，能够通过AI工具将更多专业领域技能赋能一线，降低技术问题的解决门槛；\n5. 负责运维工具开发，提升日常工作效率，积极探索用Skill替代传统脚本，构建智能化运维工具；\n6. 探索AI技术在运维场景中的应用，将Agentic Engineering融入现有运维流程，推动运维模式从\"人工驱动\"向\"人+Agent协作\"演进。",
+    "jobRequirement": "工作要求：\n1. 本科及以上学历，计算机相关专业；\n2. 熟练掌握至少一种编程语言（Python、Java、Ruby、Go、Shell、PHP等），能够独立编写脚本；\n3. 熟练使用和管理Windows Server或Linux系统，熟悉相关系统下基本的命令行工具；\n4. 了解操作系统相关知识，熟悉TCP/IP、HTTP等协议，了解DNS、DHCP、Nginx工作原理及可做常规操作配置；\n5. 了解关系型数据库的基本原理，熟练使用MySQL/Oracle/Sql Server等中的一种；\n6. 具有良好的自驱能力，具备团队合作意识，拥有良好的沟通、协调与调度能力；\n7. 对AI技术有热情，了解大语言模型（LLM）、AI Agent、Agentic Engineering等概念，有实际使用或探索经验者优先；\n8. 面对重复性工作能主动思考\"如何用AI解决\"，而非仅停留在手工或传统脚本自动化层面。\n具备以下经验者优先：\n1. 有大型互联网公司运维开发实习经验；\n2. 提供技术Blog者；\n3. 开源项目贡献者，Github等社区活跃者；\n4. 有AI Agent开发、RAG应用等相关实践经验者；\n5. 在校期间参与过AI辅助开发或运维工具建设者。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961030000,
+    "refreshTime": 1786961030000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n运维开发工程师\n应届-校园招聘\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责公司网络、系统和大数据运维、管理及优化工作，包括处理日常运维需求、运维变更、资源管理、服务管理、问题排查等，善于使用AI工具辅助日常运维操作，提升工作效率；\n2. 负责及时响应和处理故障，能够使用AI工具辅助故障快速定位、根因分析和处置方案生成，积累经验缩短故障处理时长，并通过深度复盘和改进避免故障重复发生\n3. 负责收集和分析网络和业务系统的运行数据，善于使用AI工具对海量运维数据进行智能分析和异常挖掘，找到系统风险点，推进稳定性改进项目，\n4. 负责承接内部运维相关项目立项及实施工作，协助一线工程师解决后台技术问题，能够通过AI工具将更多专业领域技能赋能一线，降低技术问题的解决门槛；\n5. 负责运维工具开发，提升日常工作效率，积极探索用Skill替代传统脚本，构建智能化运维工具；\n6. 探索AI技术在运维场景中的应用，将Agentic Engineering融入现有运维流程，推动运维模式从\"人工驱动\"向\"人+Agent协作\"演进。\n任职要求\n工作要求：\n1. 本科及以上学历，计算机相关专业；\n2. 熟练掌握至少一种编程语言（Python、Java、Ruby、Go、Shell、PHP等），能够独立编写脚本；\n3. 熟练使用和管理Windows Server或Linux系统，熟悉相关系统下基本的命令行工具；\n4. 了解操作系统相关知识，熟悉TCP/IP、HTTP等协议，了解DNS、DHCP、Nginx工作原理及可做常规操作配置；\n5. 了解关系型数据库的基本原理，熟练使用MySQL/Oracle/Sql Server等中的一种；\n6. 具有良好的自驱能力，具备团队合作意识，拥有良好的沟通、协调与调度能力；\n7. 对AI技术有热情，了解大语言模型（LLM）、AI Agent、Agentic Engineering等概念，有实际使用或探索经验者优先；\n8. 面对重复性工作能主动思考\"如何用AI解决\"，而非仅停留在手工或传统脚本自动化层面。\n具备以下经验者优先：\n1. 有大型互联网公司运维开发实习经验；\n2. 提供技术Blog者；\n3. 开源项目贡献者，Github等社区活跃者；\n4. 有AI Agent开发、RAG应用等相关实践经验者；\n5. 在校期间参与过AI辅助开发或运维工具建设者。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

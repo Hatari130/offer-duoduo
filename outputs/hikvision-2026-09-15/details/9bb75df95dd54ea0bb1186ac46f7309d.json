@@ -1,0 +1,46 @@
+{
+  "source_job_id": "9bb75df95dd54ea0bb1186ac46f7309d",
+  "verified_at": "2026-09-15T01:32:01.223Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=9bb75df95dd54ea0bb1186ac46f7309d",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=9bb75df95dd54ea0bb1186ac46f7309d&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "9bb75df95dd54ea0bb1186ac46f7309d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "电气工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "射频/天线/音频",
+        "techDire": "不限",
+        "postContent": "1、根据产品规划，和硬件工程师一起完成新产品的竞品分析、器件测试及方案框架设计； \n2、 根据项目需求，梳理整机硬件系统方案，输出总体设计方案，以及输出PCB设计需求包到硬件工程师，同步输出电气原理图；\n3、与结构工程师协作完成产品元器件三维布置，运用相关软件进行三维设计； \n4、熟练完成线缆三维布线，并提交线缆设计流程，跟进线缆工程师输出线束加工图，并对样品线缆进行验证； \n5、负责研发样机装配试制工作,识别电气相关问题并完成问题整改工作； \n6、协调解决生产异常问题，协助NPE完善生产工艺； \n7、协助技术支持工程师，解决各类现场问题； \n8、负责研发项目的相关成果物整理更新和归档。",
+        "postRequire": "1、本科及以上专业，电气自动化、机电类相关专业； \n2、熟悉整机硬件系统方案设计，具备较好的沟通协作能力； \n3、熟悉电气原理设计，三维线束设计；熟练运用原理图相关设计软件；\n4、熟悉批量产品标准化设计，了解安规、EMC等电气设计开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        },
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

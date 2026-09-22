@@ -1,0 +1,74 @@
+{
+  "source_job_id": "ba6054c9f9fb40e6b3a7c6575de573af",
+  "verified_at": "2026-09-15T01:32:18.814Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=ba6054c9f9fb40e6b3a7c6575de573af",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=ba6054c9f9fb40e6b3a7c6575de573af&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "fb483baf9e55445c8a52ca3169584487",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "系统全栈开发工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件电路设计",
+        "techDire": "不限",
+        "postContent": "1、负责AI器件系统的优化研究和开发工作，包括但不限于AI编译器，AI算法引擎，视频图像媒体系统优化等；\n2、调研业界先进技术，结合业务和算法需求，参与前期的系统架构分析与定义工作；\n3、完成业务系统功能/性能的开发、优化、验证；通过软硬件协同工作提升整个系统的性能；\n4、根据需求完善器件业务系统，支撑产品业务；并根据公司规范要求，完成相关设计与用户文档。",
+        "postRequire": "1、硕士及以上学历，计算机、通信、电子及相关专业；\n2、熟练掌握嵌入式C、C++，或HLS（高级综合语言）中至少一种编程语言，具备系统开发经验；\n3、具备团队合作经验及能力，责任心良好；\n4、具备以下经验者优先：\n1）具备异构SOC或者FPGA（Zynq/MPsoc）平台嵌系统开发经验；\n2）熟练掌握深度学习主流框架，有AI算法开发及实现优化的经验；或具备计算机体系架构相关背景，有编译器开发经验或具备图像视频多媒体嵌入式系统优化经验；\n3）熟悉至少一种嵌入式操作系统，例如Linux/RTOS，具有在不同操作系统的开发经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "成都市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "ba6054c9f9fb40e6b3a7c6575de573af",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:09:51"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "3108ff5bc4594432b515a147618f5839",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "系统全栈开发工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件电路设计",
+        "techDire": "不限",
+        "postContent": "1、负责AI器件系统的优化研究和开发工作，包括但不限于AI编译器，AI算法引擎，视频图像媒体系统优化等；\n2、调研业界先进技术，结合业务和算法需求，参与前期的系统架构分析与定义工作；\n3、完成业务系统功能/性能的开发、优化、验证；通过软硬件协同工作提升整个系统的性能；\n4、根据需求完善器件业务系统，支撑产品业务；并根据公司规范要求，完成相关设计与用户文档。",
+        "postRequire": "1、硕士及以上学历，计算机、通信、电子及相关专业；\n2、熟练掌握嵌入式C、C++，或HLS（高级综合语言）中至少一种编程语言，具备系统开发经验；\n3、具备团队合作经验及能力，责任心良好；\n4、具备以下经验者优先：\n1）具备异构SOC或者FPGA（Zynq/MPsoc）平台嵌系统开发经验；\n2）熟练掌握深度学习主流框架，有AI算法开发及实现优化的经验；或具备计算机体系架构相关背景，有编译器开发经验或具备图像视频多媒体嵌入式系统优化经验；\n3）熟悉至少一种嵌入式操作系统，例如Linux/RTOS，具有在不同操作系统的开发经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "ba6054c9f9fb40e6b3a7c6575de573af",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:09:51"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

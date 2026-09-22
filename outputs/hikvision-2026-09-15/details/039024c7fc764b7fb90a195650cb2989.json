@@ -1,0 +1,41 @@
+{
+  "source_job_id": "039024c7fc764b7fb90a195650cb2989",
+  "verified_at": "2026-09-15T01:32:06.844Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=039024c7fc764b7fb90a195650cb2989",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=039024c7fc764b7fb90a195650cb2989&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "039024c7fc764b7fb90a195650cb2989",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "无损检测算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "超声算法/无损检测/机械故障诊断/工业智能",
+        "postContent": "1、负责超声无损检测技术研究，设计与实现；\n2、负责超声成像算法研究与实现；\n3、研究设备故障诊断方法，并进行方案验证及算法迭代。",
+        "postRequire": "1、硕士及以上学历，博士优先；通信、计算机、软件、工业自动化等专业；\n2、熟悉机器学习、深度学习、信号处理技术，熟练使用matlab、Python、C++编程基础，以及scipy,sklearn等科学计算库；\n3、能够运用信号处理及特征提取工具，如时频分析、包络分析、小波分析、主成分分析等方法提取故障特征；\n4、熟悉常见机械及电气设备,如泵、风机、电机、齿轮箱、轴承、皮带机等设备结构及运行机理，有实际项目经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

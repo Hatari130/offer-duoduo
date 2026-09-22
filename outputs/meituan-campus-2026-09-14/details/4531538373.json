@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531538373&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:43.374Z",
+  "data": {
+    "jobUnionId": "4531538373",
+    "name": "【LongCat大模型人才校招】基础模型通用 agent 算法研究员",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们期望探索构建这样的 AI 系统：具备真实物理世界级别的全模态信息交互与处理能力、有高学习和成长属性、可以无人监管地高效执行并完成真实复杂长程任务；从而让 AI 真正成为人类的强大帮手，对工作、生活、科研等人类社会的各个方面都进一步带来更大、更深远的有益影响。\n1.探索小时或者天级别复杂长程任务下的 RL Scaling 等可靠后训练范式，实现有效的探索引导和 credit assignment，并保障训练的 robustness、efficiency & effectiveness；\n2.探索模型的自进化系统构建方案，在易于模型理解使用的前提下，训练模型以更高信息密度的形态构建、维护和利用 memory / skills，使模型能主动在重复性任务或封闭任务域中总结、提炼认知与经验，并进行有效复用，达到不断自进化的效果；\n3.探索多模态推理和多模态环境交互的范式，尤其关注真实物理世界级别的动态环境，并基于此训练模型在复杂全模态环境下的复杂长程任务完成能力；\n4.探索模型群体智能的演化可能性，可以自主进行合理的任务拆解、分工、协同探索与智能集成；\n【为什么是我们】\n1.获得在业内最前沿的大模型认知和技术积累，团队人才密度高且具备良好的研究、讨论氛围，鼓励大家研究最重要、最难、最开放的问题；\n2.研究成果丰硕，在 agent / multi-modal agent、posttrain、reinforcement learning、memory & evolving system 等方向进行了系统探索，仅过去半年就产出 ICLR 2篇，ACL 1篇，ICML 5篇，另有10篇以上 NeurIPS/EMNLP 工作在投，投稿工作顶会中稿率达 80%，代表工作包括 VitaBench / ScaleEnv / CoBA-RL / MemOCR / Skill0 / Skill1 / SDAR 等；\n3.有充足的数据和GPU资源用于实验探索，同时有良好的高校科研合作链接和丰富的学术资源，助力大家探索最重要、最难、最开放的问题；\n4.工作环境优越，团队扁平，结果导向，提供有竞争力的薪资福利和良好的个人成长、发展空间；",
+    "jobRequirement": "【必要项】\n1.2027届获得本科及以上学历，计算机、人工智能、自动化、数学、物理等相关专业； \n2.好奇心驱动，对追求纯粹的技术有强烈热情，擅于迭代自我认知，不被惯性束缚，工作积极主动；\n3.数理基础扎实，具备第一性思考的素养和出色的分析、解决问题的能力，能够自主探索可靠的解决方案； \n4.具有良好的沟通协作能力，能够与团队融洽合作，一起探索新技术并快速试验想法，推进技术进步；\n【加分项】\n1.在强化学习、大模型训练、Agent 等一个或多个领域有较深入的研究和实践经验，主导过大影响力的项目；\n2.或在 ICLR/ICML/NIPS/CVPR/ACL 等顶级会议上以一作身份发表过有影响力的学术论文；\n3.在 CMO/NOI/CPhO/ACM 等竞赛中取得过优异成绩；",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459822000,
+    "refreshTime": 1780459822000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】基础模型通用 agent 算法研究员\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们期望探索构建这样的 AI 系统：具备真实物理世界级别的全模态信息交互与处理能力、有高学习和成长属性、可以无人监管地高效执行并完成真实复杂长程任务；从而让 AI 真正成为人类的强大帮手，对工作、生活、科研等人类社会的各个方面都进一步带来更大、更深远的有益影响。\n1.探索小时或者天级别复杂长程任务下的 RL Scaling 等可靠后训练范式，实现有效的探索引导和 credit assignment，并保障训练的 robustness、efficiency & effectiveness；\n2.探索模型的自进化系统构建方案，在易于模型理解使用的前提下，训练模型以更高信息密度的形态构建、维护和利用 memory / skills，使模型能主动在重复性任务或封闭任务域中总结、提炼认知与经验，并进行有效复用，达到不断自进化的效果；\n3.探索多模态推理和多模态环境交互的范式，尤其关注真实物理世界级别的动态环境，并基于此训练模型在复杂全模态环境下的复杂长程任务完成能力；\n4.探索模型群体智能的演化可能性，可以自主进行合理的任务拆解、分工、协同探索与智能集成；\n【为什么是我们】\n1.获得在业内最前沿的大模型认知和技术积累，团队人才密度高且具备良好的研究、讨论氛围，鼓励大家研究最重要、最难、最开放的问题；\n2.研究成果丰硕，在 agent / multi-modal agent、posttrain、reinforcement learning、memory & evolving system 等方向进行了系统探索，仅过去半年就产出 ICLR 2篇，ACL 1篇，ICML 5篇，另有10篇以上 NeurIPS/EMNLP 工作在投，投稿工作顶会中稿率达 80%，代表工作包括 VitaBench / ScaleEnv / CoBA-RL / MemOCR / Skill0 / Skill1 / SDAR 等；\n3.有充足的数据和GPU资源用于实验探索，同时有良好的高校科研合作链接和丰富的学术资源，助力大家探索最重要、最难、最开放的问题；\n4.工作环境优越，团队扁平，结果导向，提供有竞争力的薪资福利和良好的个人成长、发展空间；\n任职要求\n【必要项】\n1.2027届获得本科及以上学历，计算机、人工智能、自动化、数学、物理等相关专业；\n2.好奇心驱动，对追求纯粹的技术有强烈热情，擅于迭代自我认知，不被惯性束缚，工作积极主动；\n3.数理基础扎实，具备第一性思考的素养和出色的分析、解决问题的能力，能够自主探索可靠的解决方案；\n4.具有良好的沟通协作能力，能够与团队融洽合作，一起探索新技术并快速试验想法，推进技术进步；\n【加分项】\n1.在强化学习、大模型训练、Agent 等一个或多个领域有较深入的研究和实践经验，主导过大影响力的项目；\n2.或在 ICLR/ICML/NIPS/CVPR/ACL 等顶级会议上以一作身份发表过有影响力的学术论文；\n3.在 CMO/NOI/CPhO/ACM 等竞赛中取得过优异成绩；\n工作城市\n北京市、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

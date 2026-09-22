@@ -1,0 +1,246 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697324893&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:59.265Z",
+  "data": {
+    "jobUnionId": "4697324893",
+    "name": "AI产品运营岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "运营类",
+    "jobFamilyGroup": "用户运营,内容运营,产品运营",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "008002001",
+        "name": "科威特城",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG011",
+        "name": "人力资源平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG010",
+        "name": "公司事务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG021",
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG032",
+        "name": "核心本地商业-服务零售事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG048",
+        "name": "核心本地商业-下沉市场发展部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG037",
+        "name": "核心本地商业-到家履约平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG047",
+        "name": "核心本地商业-酒店旅行",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG046",
+        "name": "核心本地商业-商业增值部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG008",
+        "name": "核心本地商业-点评事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG039",
+        "name": "核心本地商业-医药健康事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG038",
+        "name": "核心本地商业-闪购事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【岗位职责】\n在这里你有机会参与美团的各类运营岗位，可以全方位感受运营的魅力！如果你对以下任意一个方向感兴趣，欢迎网申这个岗位。\n1. 用户运营：以用户为中心，制定运营策略与运营目标，做好全过程的项目推进与执行落地，持续增加用户洞察、为用户创造更多价值。\n2. 商家及供给运营：以商家/骑手/司机/供应商为运营主体，运用科学合理的方式制定策略，实现业务渗透、规模增长、结构优化等。\n3. 内容运营：以内容/信息/数据的生产、消费、业务应用为核心，开展UGC、PGC、新媒体运营，搭建良性生产循环。\n4. 工具系统运营：围绕内部用户，通过数据分析、系统开发和使用、规则流程制定等方式推动各方效率提升。\n5. 体验运营：为体验问题定位、分析、解决、评估提供全流程支持，推动服务工具的效率和体验提升。\n\n其中部分境外岗位面向2025年6月至2027年10月毕业的全球毕业生，如遇系统投递问题，请前往Keeta Careers英文招聘官网投递。",
+    "jobRequirement": "【岗位要求】\n1. 本科及以上学历；\n2. 对用户侧信息有充分的敏感度；\n3. 喜欢O2O或B2C行业，善于思考富有创意；\n4. 强烈的目标导向和分解、落地的能力，强大的执行力；\n5. 良好的团队合作意识、能有效组织和协调跨职能、跨部门资源；\n6. 了解AI工具（如大模型对话助手、AI内容生成工具等）的基本使用，对AI赋能运营提效有好奇心和学习意愿。愿意探索AI工具在运营场景的应用，如利用大模型辅助内容生成、用户洞察分析、运营策略优化等，推动运营效率提升。\n有以下经验者优先：\n1. 熟练使用SQL、Python；\n2. 有使用AI工具进行运营工作的经验，如利用大模型辅助文案撰写、数据分析、智能客服等；\n3. 了解主流 Agent 开发框架（如 LangChain、Dify 等），有使用AI工具提升运营效率的实际案例。\n  【岗位亮点】\n1. 美团多元化的业务场景为运营提供丰富的实战土壤；\n2. AI工具与运营深度融合，可体验AI赋能下的新一代运营工作方式；\n3. 完善的培养体系与清晰的成长路径。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960981000,
+    "refreshTime": 1786960981000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI产品运营岗\n应届-校园招聘\n工作地点：北京市、科威特城、上海市、深圳...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【岗位职责】\n在这里你有机会参与美团的各类运营岗位，可以全方位感受运营的魅力！如果你对以下任意一个方向感兴趣，欢迎网申这个岗位。\n1. 用户运营：以用户为中心，制定运营策略与运营目标，做好全过程的项目推进与执行落地，持续增加用户洞察、为用户创造更多价值。\n2. 商家及供给运营：以商家/骑手/司机/供应商为运营主体，运用科学合理的方式制定策略，实现业务渗透、规模增长、结构优化等。\n3. 内容运营：以内容/信息/数据的生产、消费、业务应用为核心，开展UGC、PGC、新媒体运营，搭建良性生产循环。\n4. 工具系统运营：围绕内部用户，通过数据分析、系统开发和使用、规则流程制定等方式推动各方效率提升。\n5. 体验运营：为体验问题定位、分析、解决、评估提供全流程支持，推动服务工具的效率和体验提升。\n其中部分境外岗位面向2025年6月至2027年10月毕业的全球毕业生，如遇系统投递问题，请前往Keeta Careers英文招聘官网投递。\n任职要求\n【岗位要求】\n1. 本科及以上学历；\n2. 对用户侧信息有充分的敏感度；\n3. 喜欢O2O或B2C行业，善于思考富有创意；\n4. 强烈的目标导向和分解、落地的能力，强大的执行力；\n5. 良好的团队合作意识、能有效组织和协调跨职能、跨部门资源；\n6. 了解AI工具（如大模型对话助手、AI内容生成工具等）的基本使用，对AI赋能运营提效有好奇心和学习意愿。愿意探索AI工具在运营场景的应用，如利用大模型辅助内容生成、用户洞察分析、运营策略优化等，推动运营效率提升。\n有以下经验者优先：\n1. 熟练使用SQL、Python；\n2. 有使用AI工具进行运营工作的经验，如利用大模型辅助文案撰写、数据分析、智能客服等；\n3. 了解主流 Agent 开发框架（如 LangChain、Dify 等），有使用AI工具提升运营效率的实际案例。\n【岗位亮点】\n1. 美团多元化的业务场景为运营提供丰富的实战土壤；\n2. AI工具与运营深度融合，可体验AI赋能下的新一代运营工作方式；\n3. 完善的培养体系与清晰的成长路径。\n工作城市\n北京市、科威特城、上海市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

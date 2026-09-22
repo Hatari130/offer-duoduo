@@ -1,0 +1,74 @@
+{
+  "source_job_id": "b5fbf82dfbfa450aa562e167b7f188f3",
+  "verified_at": "2026-09-15T01:32:19.091Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=b5fbf82dfbfa450aa562e167b7f188f3",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=b5fbf82dfbfa450aa562e167b7f188f3&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "db3220e545e54870a46565a484c00304",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "商务专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "商务",
+        "techDire": "不限",
+        "postContent": "1、\t及时、准确完成合同制作、签订、归档等合同履行工作；\n2、\t负责订单管理，协调处理公司的紧急、疑难订单，提高交付率；\n3、\t协助销售完成其他需配合事项；\n4、\t参与公司商务管理制度与流程建设，优化订单交付、库存、借用、凭证等相关工作。",
+        "postRequire": "1、本科及以上学历；\n2、熟练使用office、ERP（SAP）等办公软件优先；\n3、具备良好的沟通、协调能力及抗压能力，具有良好的团队合作和服务意识；\n4、工作认真细心，有一定的信息收集和分析能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "乌鲁木齐市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "b5fbf82dfbfa450aa562e167b7f188f3",
+        "adNeedDept": "国内营销-新疆业务中心",
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:53",
+        "updateTime": "2026-08-20 17:09:51"
+      },
+      "departments": [
+        {
+          "id": "4cf1116995eb4e4dbb69258eeb78613f",
+          "name": "国内营销-新疆业务中心",
+          "description": "国内营销中心坚持“客户为先，持续创新”的精神，以市场为驱动，通过数字化营销、多渠道覆盖等形式，为全行业各领域的客用户提供优质的智能物联解决方案及技术服务，助力建设便捷、高效、安心的智能世界。国内营销中心在全国设有32家省级业务中心、300多个国内城市分公司及办事处，正式员工一万多人，构成了“以城市为中心”的本地化营销服务网络（截止2023年底）。\n海康威视国内营销中心为你提供涵盖全国322多个城市的销售工程师、解决方案行销工程师、技术支持工程师、商务运营等各类营销岗位。欢迎你加入国内营销中心，为所在地的公共服务和城市数字化转型、企业数字化转型提供产品、方案以及服务的全方位支持，助力人人享有美好未来。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "b3d80e14eb9a4ebca84a9c7db3741a88",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "商务专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "商务",
+        "techDire": "不限",
+        "postContent": "1、 及时、准确完成合同制作、签订、归档等合同履行工作；\n2、 负责订单管理，协调处理公司的紧急、疑难订单，提高交付率；\n3、 协助销售完成其他需配合事项；\n4、 参与公司商务管理制度与流程建设，优化订单交付、库存、借用、凭证等相关工作。",
+        "postRequire": "1、本科及以上学历；\n2、熟练使用office、ERP（SAP）等办公软件优先；\n3、具备良好的沟通、协调能力及抗压能力，具有良好的团队合作和服务意识；\n4、工作认真细心，有一定的信息收集和分析能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "b5fbf82dfbfa450aa562e167b7f188f3",
+        "adNeedDept": "海康微影",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:09:51"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

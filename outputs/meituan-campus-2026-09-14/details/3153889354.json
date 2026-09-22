@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153889354&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:13.397Z",
+  "data": {
+    "jobUnionId": "3153889354",
+    "name": "【大模型北斗实习】生活服务领域基座增强技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "本课题探索大模型垂直领域知识高效增强方法，包括数据策略、训练策略以及scaling law友好的训练方法，打造适配实际应用所需的基座能力。研究内容包括但不限于：\n1） 大模型基座知识能力增强，通过大规模continue pretrain打造生活服务领域基座，赋能美团各类大模型应用场景。\n2）探索预训练增强阶段的大规模高质量数据自动合成、Scaling Law、长链条复杂推理反思能力增强。\n3）建设生活服务chat模型与智能体，通过强化学习等方式增强模型推理反思、复杂指令遵循、高情商交互等能力，支撑大模型在生活服务领域的应用。",
+    "jobRequirement": "1）对NLP、大模型等相关领域一个或多个方向有深入的研究经历，且有相关实际项目经验。\n2）熟练使用深度学习框架（比如PyTorch），熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）在知名开源项目中有核心贡献者优先。\n2）有过预训练经验、深度推理、强化学习等方向的经验。\n3）发表过高水平论文。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309543000,
+    "refreshTime": 1747963941000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】生活服务领域基座增强技术研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n本课题探索大模型垂直领域知识高效增强方法，包括数据策略、训练策略以及scaling law友好的训练方法，打造适配实际应用所需的基座能力。研究内容包括但不限于：\n1） 大模型基座知识能力增强，通过大规模continue pretrain打造生活服务领域基座，赋能美团各类大模型应用场景。\n2）探索预训练增强阶段的大规模高质量数据自动合成、Scaling Law、长链条复杂推理反思能力增强。\n3）建设生活服务chat模型与智能体，通过强化学习等方式增强模型推理反思、复杂指令遵循、高情商交互等能力，支撑大模型在生活服务领域的应用。\n任职要求\n1）对NLP、大模型等相关领域一个或多个方向有深入的研究经历，且有相关实际项目经验。\n2）熟练使用深度学习框架（比如PyTorch），熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）在知名开源项目中有核心贡献者优先。\n2）有过预训练经验、深度推理、强化学习等方向的经验。\n3）发表过高水平论文。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

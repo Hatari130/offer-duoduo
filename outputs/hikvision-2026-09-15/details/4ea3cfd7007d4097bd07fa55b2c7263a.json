@@ -1,0 +1,41 @@
+{
+  "source_job_id": "4ea3cfd7007d4097bd07fa55b2c7263a",
+  "verified_at": "2026-09-15T01:32:04.503Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=4ea3cfd7007d4097bd07fa55b2c7263a",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=4ea3cfd7007d4097bd07fa55b2c7263a&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "4ea3cfd7007d4097bd07fa55b2c7263a",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "检测认证工程师",
+        "postAdSn": "测试/支撑类",
+        "postStdSubSn": "检测认证",
+        "techDire": "不限",
+        "postContent": "1、了解认证标准、评定及实施细则，进行行业分析，引导有竞争力的产品认证策略；\n2、根据市场和行业需求，进行认证导入可行性分析，根据产品标准和认证规则对设计和生产给出解决方案；\n3、根据产品需求，制定产品检测认证方案，执行产品认证，审核检测认证报告；\n4、对认证、测试、审核过程中发现的问题，提出改进建议和措施，并跟踪落实；\n5、建立文件化的程序，管理标签、变更和产品一致性。",
+        "postRequire": "1、本科及以上学历，理工科优先；\n2、具有较强的沟通协作能力、责任心和抗压能力，适应短期出差；\n3、具有较强的学习能力和独立解决问题的能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

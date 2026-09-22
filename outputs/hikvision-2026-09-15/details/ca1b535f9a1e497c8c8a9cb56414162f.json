@@ -1,0 +1,41 @@
+{
+  "source_job_id": "ca1b535f9a1e497c8c8a9cb56414162f",
+  "verified_at": "2026-09-15T01:32:05.763Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=ca1b535f9a1e497c8c8a9cb56414162f",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=ca1b535f9a1e497c8c8a9cb56414162f&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "ca1b535f9a1e497c8c8a9cb56414162f",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "具身智能导航规划算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "机器人感知/任务规划/多模态",
+        "postContent": "1、 围绕具身智能中的导航任务，构造多模态具身感知能力，设计多模态理解与规划方案； 2、 负责机器人导航规划的感知算法、任务规划算法开发，构建具备多模态理解能力的任务规划与导航方案 3、 构建算法与系统评估的仿真环境，设计算法与方案的仿真评估方案，并在实际机器人本体进行部署和测试。",
+        "postRequire": "1、硕士及以上学历，计算机、机器人学、人工智能等相关专业优先； 2、具备以下至少一项经验： (1) 有基于场景表示模型（NeRF/3DGS）可查询环境模型、2D/3D语义分割模型等领域经验，具备模型的数据收集、标注以及部署经验 (2) 有视觉语言导航(VLN)、导航智能体开发等领域经验，具备视觉语言模型应用经验、后训练经验 3、对主流的仿真评估环境有了解，并具备实物落地部署经验 4、扎实的前沿算法研发与工程实现能力，把握前沿技术发展趋势，具有解决相关挑战性问题的能力； 5、具有高质量技术成果落地，有项目开发经验者优先； 6、具有优秀的英文文献阅读能力，对探索前沿领域有着极大的热情，有国际顶级期刊、会议论文发表者或相关竞赛获奖者优先； 7、沟通能力好，工作认真有责任心者优先\"",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

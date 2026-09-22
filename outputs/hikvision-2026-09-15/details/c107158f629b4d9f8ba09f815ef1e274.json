@@ -1,0 +1,41 @@
+{
+  "source_job_id": "c107158f629b4d9f8ba09f815ef1e274",
+  "verified_at": "2026-09-15T01:31:58.410Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=c107158f629b4d9f8ba09f815ef1e274",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=c107158f629b4d9f8ba09f815ef1e274&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "c107158f629b4d9f8ba09f815ef1e274",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "海外财务专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "业务财务",
+        "techDire": "俄语",
+        "postContent": "1、作为连接财务部门与业务部门的纽带，既要懂财务，又要懂业务；协调拉通各部门为业务发展提供支持；\n2、关注外部宏观环境的变化，了解汇率、国家政策等因素对业务的影响，并积极快速结合业务需求，提供风险预警和相应的财务解决方案；\n3、积极了解境外子公司所属国的会计制度，收集整理海外子公司财税合规要求；\n4、结合业务情境，定期对业务部门的收入、费用、利润等方面进行经营数据分析（如同比、环比变动），关注数据走势变动是否健康合理，完成运营分析报告制作。",
+        "postRequire": "1、本科及以上学历，俄语X财会类或有财务相关经验优先，俄语听说读写流利，可作为工作语言； \n2、优秀的逻辑思维能力，较强的人际沟通和协调能力、计划与执行能力，善于总结和分析，能够快速学习，有一定抗压能力； \n3、接受外派或海外出差（年度累计3个月以上）。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:30",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "9131fc8d2e324addbe11e391a6968e5a",
+          "name": "职能部门",
+          "description": "海康威视的职能部门涵盖人力资源、财务、法律合规、综合行政、品牌公关、战略等多个领域，秉承海康威视核心价值观，搭建完善的流程、体系与制度，提供专业的支持和服务，为公司的业务发展与稳定运行提供全方位的支撑和保障。"
+        }
+      ]
+    }
+  ]
+}

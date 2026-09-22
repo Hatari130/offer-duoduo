@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531842029&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:43.890Z",
+  "data": {
+    "jobUnionId": "4531842029",
+    "name": "【LongCat大模型人才校招】大模型自进化与自动化研究智能体研究员",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "LongCat 正在探索下一代基础模型的自我改进范式：让模型不只完成单次问答，而是能够围绕真实模型研发任务，持续完成问题发现、假设生成、实验设计、代码实现、训练/评测执行、结果验证、经验沉淀和策略迭代。我们希望构建面向模型研发的自动化研究智能体系统，让 AI 参与并加速 AI 自身的训练、评测和能力进化。\n1. 构建自动化研究智能体系统：提升模型在复杂任务分解、长程推理、研究规划、工具使用、代码生成与执行、证据整合和研究报告生成中的闭环能力。 \n2. 构建可交互、可验证的研究环境：围绕 search、browser、retrieval、code execution、training/eval job、sandbox 等工具，设计可执行、可评分、可回滚的实验闭环。 \n3. 设计模型自进化机制：沉淀 research episode、memory、skill和失败轨迹，设计数据配方、环境反馈和 reward 信号，反哺模型训练和评测体系。 \n4. 面向 LongCat 模型研发任务落地应用：在 pre-/mid-/post-training、coding agent、agentic workflow、模型评测诊断等场景中验证系统效果，推动能力持续迭代。\n【为什么是我们】\n1.参与 LongCat 下一代模型自进化系统建设，直接接触真实基础模型训练、后训练、评测诊断、Agent harness 和自动化研究闭环。\n2. 团队具备大规模算力、数据、模型和真实复杂任务场景，适合希望在 AI Scientist、Agentic RL和模型自我改进方向做出原创突破的同学。3\n. 团队人才密度高，在ICLR、NeurIPS、ICML、ACL等顶会发表论文50余篇，团队成员先后荣获EMNLP outstanding paper、吴文俊人工智能奖科技进步奖、CCF科技成果奖、北京市科技进步奖、北京市科技新星、北京市海英人才等荣誉激励；",
+    "jobRequirement": "必备项：\n1. 具备扎实的算法基础和工程实现能力，熟练使用 Python/C++，能够独立完成复杂系统设计、实验实现和问题定位。 \n2. 熟悉大语言模型、Agent、强化学习、代码生成、检索增强、训练/评测系统中的至少一个方向，并有真实项目经验。 \n3. 具备强研究能力和问题拆解能力，能够从开放问题中提出可验证假设，设计实验并推动结果落地。 \n4. 具备良好的沟通协作能力，能在高不确定性前沿方向中持续推进。\n加分项：\n1. 有 Coding Agent、AI Scientist、Deep Research、Multi-Agent、长期记忆系统、自动实验系统经验。 \n2. 有模型研发全链路经验，包括数据构造、Pre-training、Post-training、Reward Model、评测诊断或训练基础设施。 \n3. 在顶级会议/期刊发表论文，主导高质量开源项目、Benchmark、Agent 系统，或在 ACM/ICPC、NOI/IOI、Kaggle 等比赛中取得优秀成绩。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459821000,
+    "refreshTime": 1780459821000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】大模型自进化与自动化研究智能体研究员\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\nLongCat 正在探索下一代基础模型的自我改进范式：让模型不只完成单次问答，而是能够围绕真实模型研发任务，持续完成问题发现、假设生成、实验设计、代码实现、训练/评测执行、结果验证、经验沉淀和策略迭代。我们希望构建面向模型研发的自动化研究智能体系统，让 AI 参与并加速 AI 自身的训练、评测和能力进化。\n1. 构建自动化研究智能体系统：提升模型在复杂任务分解、长程推理、研究规划、工具使用、代码生成与执行、证据整合和研究报告生成中的闭环能力。\n2. 构建可交互、可验证的研究环境：围绕 search、browser、retrieval、code execution、training/eval job、sandbox 等工具，设计可执行、可评分、可回滚的实验闭环。\n3. 设计模型自进化机制：沉淀 research episode、memory、skill和失败轨迹，设计数据配方、环境反馈和 reward 信号，反哺模型训练和评测体系。\n4. 面向 LongCat 模型研发任务落地应用：在 pre-/mid-/post-training、coding agent、agentic workflow、模型评测诊断等场景中验证系统效果，推动能力持续迭代。\n【为什么是我们】\n1.参与 LongCat 下一代模型自进化系统建设，直接接触真实基础模型训练、后训练、评测诊断、Agent harness 和自动化研究闭环。\n2. 团队具备大规模算力、数据、模型和真实复杂任务场景，适合希望在 AI Scientist、Agentic RL和模型自我改进方向做出原创突破的同学。3\n. 团队人才密度高，在ICLR、NeurIPS、ICML、ACL等顶会发表论文50余篇，团队成员先后荣获EMNLP outstanding paper、吴文俊人工智能奖科技进步奖、CCF科技成果奖、北京市科技进步奖、北京市科技新星、北京市海英人才等荣誉激励；\n任职要求\n必备项：\n1. 具备扎实的算法基础和工程实现能力，熟练使用 Python/C++，能够独立完成复杂系统设计、实验实现和问题定位。\n2. 熟悉大语言模型、Agent、强化学习、代码生成、检索增强、训练/评测系统中的至少一个方向，并有真实项目经验。\n3. 具备强研究能力和问题拆解能力，能够从开放问题中提出可验证假设，设计实验并推动结果落地。\n4. 具备良好的沟通协作能力，能在高不确定性前沿方向中持续推进。\n加分项：\n1. 有 Coding Agent、AI Scientist、Deep Research、Multi-Agent、长期记忆系统、自动实验系统经验。\n2. 有模型研发全链路经验，包括数据构造、Pre-training、Post-training、Reward Model、评测诊断或训练基础设施。\n3. 在顶级会议/期刊发表论文，主导高质量开源项目、Benchmark、Agent 系统，或在 ACM/ICPC、NOI/IOI、Kaggle 等比赛中取得优秀成绩。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

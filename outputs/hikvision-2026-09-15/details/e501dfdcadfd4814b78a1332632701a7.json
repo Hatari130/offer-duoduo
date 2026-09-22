@@ -1,0 +1,41 @@
+{
+  "source_job_id": "e501dfdcadfd4814b78a1332632701a7",
+  "verified_at": "2026-09-15T01:32:03.915Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=e501dfdcadfd4814b78a1332632701a7",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=e501dfdcadfd4814b78a1332632701a7&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "e501dfdcadfd4814b78a1332632701a7",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "物流解决方案工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "解决方案",
+        "techDire": "不限",
+        "postContent": "1、负责仓储/生产物流整厂布局规划及物流动线设计，主要包括包括存储区、交接区、暂存区、物料超市、产线配送、逆向物流等；\n2、负责物料存储及转运容器、载具及配套设施规划设计；\n3、基于客户需求，对仓储物流、生产内物流进行需求沟通、引导、流程梳理和再造；\n4、基于客户需求输出需求业务蓝图，将客户需求转化为软硬件产品开发需求。",
+        "postRequire": "1、工业工程、物流工程、机械工程、管理科学与工程等、供应链管理相关专业或研究方向硕士\n2、有较好的文字功底和较强的沟通、抗压能力；\n3、能适应高频出差（国内/海外）；\n4、有较强的学习能力和自我赋能意识；\n5、有仓储/生产物流自动化相关实习/科研项目经验优先；\n6、英语、日语等外语口语流利，可作为工作语言优先",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

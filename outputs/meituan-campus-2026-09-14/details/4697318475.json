@@ -1,0 +1,96 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697318475&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:49.789Z",
+  "data": {
+    "jobUnionId": "4697318475",
+    "name": "全栈工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG015",
+        "name": "财务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 全栈开发。在 AI Coding 工具的协助下能够完成前端、后端功能开发、测试。 \n2. 参与项目需求分析和技术方案设计，确保项目按时高质量交付。 \n3. 与产品经理、设计师等团队成员密切合作，及时关注用户问题，确保项目质量和用户体验。  \n4. 及时解决项目开发中遇到的问题和挑战，保证项目进度顺利推进。",
+    "jobRequirement": "工作要求： \n1. 大学本科及以上学历，计算机相关专业优先。 \n2. 善于使用 AI Coding工具提高个人编码效率，完成功能交付上线。 \n3. 熟悉常用编程语言和开发工具，具备良好的逻辑思维能力和沟通能力。  \n4. 对新技术有强烈的好奇心和学习能力，能够快速适应项目需求变化。 \n具备以下条件优先\n1. 对 AI Coding 工具的开发有经验者优先。  \n2. 对开放平台建设有经验者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961001000,
+    "refreshTime": 1786961001000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n全栈工程师\n应届-校园招聘\n工作地点：北京市、成都市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 全栈开发。在 AI Coding 工具的协助下能够完成前端、后端功能开发、测试。\n2. 参与项目需求分析和技术方案设计，确保项目按时高质量交付。\n3. 与产品经理、设计师等团队成员密切合作，及时关注用户问题，确保项目质量和用户体验。\n4. 及时解决项目开发中遇到的问题和挑战，保证项目进度顺利推进。\n任职要求\n工作要求：\n1. 大学本科及以上学历，计算机相关专业优先。\n2. 善于使用 AI Coding工具提高个人编码效率，完成功能交付上线。\n3. 熟悉常用编程语言和开发工具，具备良好的逻辑思维能力和沟通能力。\n4. 对新技术有强烈的好奇心和学习能力，能够快速适应项目需求变化。\n具备以下条件优先\n1. 对 AI Coding 工具的开发有经验者优先。\n2. 对开放平台建设有经验者优先。\n工作城市\n北京市、成都市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

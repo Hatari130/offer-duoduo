@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4695094295&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:53.776Z",
+  "data": {
+    "jobUnionId": "4695094295",
+    "name": "大模型推理引擎研发工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责LLM大语言模型的推理优化；\n2. 负责机器学习引擎的编译优化工作；\n3. 负责模型稀疏化和模型量化工作。",
+    "jobRequirement": "岗位要求：\n1. 熟练掌握CUDA编程、C++编程，数据结构和算法知识；\n2. 熟悉TVM或TensorRT或FastTransformer等推理优化框架；\n3. 熟悉LLM大模型相关背景知识，有相关方向的研究经验和产出。\n岗位亮点\n1. 紧跟人工智能行业进展，接触到前沿技术和行业趋势，磨练出对人工智能的独到见解；\n2. 参与AI大模型的数据、训练与评测的全流程，了解从理论到工程实践的全面技能；\n3. 有机会参与公司的创新项目，跨足不同领域，拓宽人工智能技术的应用范围。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960994000,
+    "refreshTime": 1786960994000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型推理引擎研发工程师\n应届-校园招聘\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责LLM大语言模型的推理优化；\n2. 负责机器学习引擎的编译优化工作；\n3. 负责模型稀疏化和模型量化工作。\n任职要求\n岗位要求：\n1. 熟练掌握CUDA编程、C++编程，数据结构和算法知识；\n2. 熟悉TVM或TensorRT或FastTransformer等推理优化框架；\n3. 熟悉LLM大模型相关背景知识，有相关方向的研究经验和产出。\n岗位亮点\n1. 紧跟人工智能行业进展，接触到前沿技术和行业趋势，磨练出对人工智能的独到见解；\n2. 参与AI大模型的数据、训练与评测的全流程，了解从理论到工程实践的全面技能；\n3. 有机会参与公司的创新项目，跨足不同领域，拓宽人工智能技术的应用范围。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

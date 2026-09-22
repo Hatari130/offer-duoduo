@@ -1,0 +1,276 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697286525&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:43.719Z",
+  "data": {
+    "jobUnionId": "4697286525",
+    "name": "商品品质管理岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "零售类",
+    "jobFamilyGroup": "供应链",
+    "cityList": [
+      {
+        "code": "001012001",
+        "name": "合肥市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001013001",
+        "name": "福州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001011001",
+        "name": "杭州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010001",
+        "name": "南京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010013",
+        "name": "苏州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001006001",
+        "name": "沈阳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001020001",
+        "name": "南宁市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001003001",
+        "name": "石家庄市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001027001",
+        "name": "西安市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001018001",
+        "name": "长沙市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001022",
+        "name": "重庆市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019010",
+        "name": "东莞市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001015001",
+        "name": "济南市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001014001",
+        "name": "南昌市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001015002",
+        "name": "青岛市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019001",
+        "name": "广州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001016001",
+        "name": "郑州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001017001",
+        "name": "武汉市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG038",
+        "name": "核心本地商业-闪购事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "岗位职责:    \n1. 负责建设和完善商品质量、食品安全管控标准，尤其是生鲜； \n2. 负责各关键管控节点的质量检测监控、标准落地，进行商家治理； \n3. 负责通过数据分析及稽核调查，追溯链路中的异常点和改善机会点，协同内外组织推动改善。",
+    "jobRequirement": "工作要求: \n1. 食品、水产、动物医学、生物等相关专业优先； \n2. 具有较强的数据分析能力和数据敏感度； \n3. 具有较强的沟通、推动、影响能力； \n4. 具有良好的学习能力，有韧劲； \n5. 具有主人翁精神，对模糊地带勇于承担。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786961007000,
+    "refreshTime": 1786961007000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n商品品质管理岗\n应届-校园招聘\n工作地点：合肥市、福州市、杭州市、南京市...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n岗位职责:\n1. 负责建设和完善商品质量、食品安全管控标准，尤其是生鲜；\n2. 负责各关键管控节点的质量检测监控、标准落地，进行商家治理；\n3. 负责通过数据分析及稽核调查，追溯链路中的异常点和改善机会点，协同内外组织推动改善。\n任职要求\n工作要求:\n1. 食品、水产、动物医学、生物等相关专业优先；\n2. 具有较强的数据分析能力和数据敏感度；\n3. 具有较强的沟通、推动、影响能力；\n4. 具有良好的学习能力，有韧劲；\n5. 具有主人翁精神，对模糊地带勇于承担。\n工作城市\n合肥市、福州市、杭州市、南京市、苏州市、北京市、沈阳市、南宁市、上海市、石家庄市、西安市、成都市、长沙市、重庆市、东莞市、济南市、南昌市、青岛市、广州市、深圳市、郑州市、武汉市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

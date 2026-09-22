@@ -1,0 +1,126 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697280304&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:53.715Z",
+  "data": {
+    "jobUnionId": "4697280304",
+    "name": "AI后端开发工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG050",
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责各类后台服务和业务系统的需求分析、系统设计、开发实现；\n2. 参与后端模块、数据平台、基础服务等的开发工作，探索大模型能力（如LLM API调用、RAG检索增强、AI Agent编排等）在业务系统中的集成与落地；\n3. 分析并优化业务流程，参与系统长期架构设计与规划，探索合理、可扩展的系统模型，通过自动化及AI辅助手段提升研发效率，提升需求迭代速度与系统能力；\n4. 保证系统稳定性，提升系统的容灾、降级及应急能力，协同QA保证高质量开发交付，优化系统性能、及时排查线上故障，保证系统稳定；\n5. 积极主动协调相关团队完成项目，促进团队合作，积极影响其它成员。",
+    "jobRequirement": "【岗位要求】\n1. 本科及以上学历；\n2. 掌握一种以上的开发语言，包括但不限于Java、C、C++、Python、Golang等，了解MySQL等基本使用，熟练使用SQL语句，会常用的shell命令；\n3. 具有扎实的数据结构、操作系统、数据库、算法、网络等计算机基础知识；\n4. 了解大语言模型（LLM）的基本原理与能力边界，有使用主流大模型API（如GPT、Claude、Llama等）或AI编程工具（如Cursor、Copilot等）进行开发的经验；\n5. 优秀的学习能力和自驱力，对新技术有强烈的求知精神，能深入代码研究，能通过英文论文等第一手资料了解业界新技术；\n6. 优秀的逻辑思维能力，善于从复杂系统表象中分析问题，具有较强的解决问题能力；\n7. 善于交流，有良好的团队合作精神和协调沟通能力。\n具备以下经验者优先：\n1. 有参与各级计算机竞赛并获奖经历；\n2. 有原创的技术博客或开源项目；\n3. 有大模型应用开发经验，如使用LangChain/LlamaIndex等框架构建RAG系统、开发AI Agent应用等；\n\n【岗位亮点】\n1. 美团业务场景复杂，流量超大，后台系统建设非常具有挑战性；\n2. 公司技术氛围浓厚，大牛众多，培训和交流机制完善；\n3. 大模型与业务深度融合，可参与AI原生应用的后端架构设计，在海量用户场景下验证大模型工程化落地的最佳实践。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960997000,
+    "refreshTime": 1786960997000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI后端开发工程师\n应届-校园招聘\n工作地点：北京市、上海市、成都市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责各类后台服务和业务系统的需求分析、系统设计、开发实现；\n2. 参与后端模块、数据平台、基础服务等的开发工作，探索大模型能力（如LLM API调用、RAG检索增强、AI Agent编排等）在业务系统中的集成与落地；\n3. 分析并优化业务流程，参与系统长期架构设计与规划，探索合理、可扩展的系统模型，通过自动化及AI辅助手段提升研发效率，提升需求迭代速度与系统能力；\n4. 保证系统稳定性，提升系统的容灾、降级及应急能力，协同QA保证高质量开发交付，优化系统性能、及时排查线上故障，保证系统稳定；\n5. 积极主动协调相关团队完成项目，促进团队合作，积极影响其它成员。\n任职要求\n【岗位要求】\n1. 本科及以上学历；\n2. 掌握一种以上的开发语言，包括但不限于Java、C、C++、Python、Golang等，了解MySQL等基本使用，熟练使用SQL语句，会常用的shell命令；\n3. 具有扎实的数据结构、操作系统、数据库、算法、网络等计算机基础知识；\n4. 了解大语言模型（LLM）的基本原理与能力边界，有使用主流大模型API（如GPT、Claude、Llama等）或AI编程工具（如Cursor、Copilot等）进行开发的经验；\n5. 优秀的学习能力和自驱力，对新技术有强烈的求知精神，能深入代码研究，能通过英文论文等第一手资料了解业界新技术；\n6. 优秀的逻辑思维能力，善于从复杂系统表象中分析问题，具有较强的解决问题能力；\n7. 善于交流，有良好的团队合作精神和协调沟通能力。\n具备以下经验者优先：\n1. 有参与各级计算机竞赛并获奖经历；\n2. 有原创的技术博客或开源项目；\n3. 有大模型应用开发经验，如使用LangChain/LlamaIndex等框架构建RAG系统、开发AI Agent应用等；\n【岗位亮点】\n1. 美团业务场景复杂，流量超大，后台系统建设非常具有挑战性；\n2. 公司技术氛围浓厚，大牛众多，培训和交流机制完善；\n3. 大模型与业务深度融合，可参与AI原生应用的后端架构设计，在海量用户场景下验证大模型工程化落地的最佳实践。\n工作城市\n北京市、上海市、成都市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

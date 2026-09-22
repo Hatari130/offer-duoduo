@@ -1,0 +1,64 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4241222974&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:01.596Z",
+  "data": {
+    "jobUnionId": "4241222974",
+    "name": "大模型应用实习生（服务智能）",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。",
+    "jobDuty": "团队介绍： LongCat Interaction 团队负责智能交互系统的研发与落地。团队依托 LLM 与多智能体架构，打造了WOWService 平台，为美团 App 数亿用户提供高效、个性化、7×24 小时的智能客服服务。在这个团队，我们专注于大模型训练与推理优化，让机器能够理解复杂用户意图、遵守业务规则、主动协作解决问题；我们建设自动化评测体系，用数据飞轮驱动模型持续进化；我们构建multi-agent协同框架，实现跨场景、跨部门的复杂任务处理。我们的使命：用大模型的能力，让每一位用户都能获得即时、准确、温暖的解决方案。\n\n工作内容\n\n1、数据挖掘与构建： 设计并维护高质量训练数据集，构建数据飞轮机制，利用大模型辅助数据生成与清洗，沉淀领域知识；\n2、大模型训练： 负责领域大模型post-training技术（不限于SFT、RL、GRM构建），提升模型在交互场景的表现；\n3、大模型评测： 构建自动化评测体系，设计skills评估方案，探索self-generated skills 与 human-designed skills 的差距，构建更完善的skills creator；设计基于模型与人工的评估方案，制定业务指标，驱动模型持续迭代优化；\n4、多智能体架构： 设计并开发多智能体协作框架，包括多轮交互 Agent、主动服务 Agent、意图理解 Agent 等，实现复杂任务的分治与协同；\n5、Co-work Agent： 熟练使用openclaw、claude code等提升工作效率、实现更多场景需求。",
+    "jobRequirement": "1、2026 届获得本科及以上学历，计算机相关专业；\n2、在大模型训练、智能体、提示词工程、大模型评测等领域有实际开发经验者优先；\n3、有复杂多智能体系统设计经验者优先；\n4、有好奇心，喜欢新事物，善于合作，有创新精神；\n5、至少熟悉一门计算机编程语言，包括但不限于 C/C++/Java/Go/Python；\n6、有高水平论文的优先，包括但不限于ICLR、NeurIPS、ICML、 ACL、EMNLP、SIGIR 等；实践动手能力强，ACM ICPC、NOI/IOI、TopCoder、Kaggle 比赛获奖者优先。",
+    "precedence": "",
+    "highLight": "1、资深算法专家的一对一指导；\n2、丰富的GPU资源及核心场景数据；\n3、真实应用场景的实践；\n4、支持探索、指导发表会议/期刊论文；",
+    "otherInfo": null,
+    "firstPostTime": 1775101159000,
+    "refreshTime": 1789282804000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": true
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型应用实习生（服务智能）\n实习-日常实习\n更新时间：2026/09/13\n工作地点：北京市、上海市\n部门：核心本地商业-基础研发平台\n工作经验：不限\n分享\n立即申请\n部门介绍\n基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。\n岗位职责\n团队介绍： LongCat Interaction 团队负责智能交互系统的研发与落地。团队依托 LLM 与多智能体架构，打造了WOWService 平台，为美团 App 数亿用户提供高效、个性化、7×24 小时的智能客服服务。在这个团队，我们专注于大模型训练与推理优化，让机器能够理解复杂用户意图、遵守业务规则、主动协作解决问题；我们建设自动化评测体系，用数据飞轮驱动模型持续进化；我们构建multi-agent协同框架，实现跨场景、跨部门的复杂任务处理。我们的使命：用大模型的能力，让每一位用户都能获得即时、准确、温暖的解决方案。\n工作内容\n1、数据挖掘与构建： 设计并维护高质量训练数据集，构建数据飞轮机制，利用大模型辅助数据生成与清洗，沉淀领域知识；\n2、大模型训练： 负责领域大模型post-training技术（不限于SFT、RL、GRM构建），提升模型在交互场景的表现；\n3、大模型评测： 构建自动化评测体系，设计skills评估方案，探索self-generated skills 与 human-designed skills 的差距，构建更完善的skills creator；设计基于模型与人工的评估方案，制定业务指标，驱动模型持续迭代优化；\n4、多智能体架构： 设计并开发多智能体协作框架，包括多轮交互 Agent、主动服务 Agent、意图理解 Agent 等，实现复杂任务的分治与协同；\n5、Co-work Agent： 熟练使用openclaw、claude code等提升工作效率、实现更多场景需求。\n岗位基本要求\n1、2026 届获得本科及以上学历，计算机相关专业；\n2、在大模型训练、智能体、提示词工程、大模型评测等领域有实际开发经验者优先；\n3、有复杂多智能体系统设计经验者优先；\n4、有好奇心，喜欢新事物，善于合作，有创新精神；\n5、至少熟悉一门计算机编程语言，包括但不限于 C/C++/Java/Go/Python；\n6、有高水平论文的优先，包括但不限于ICLR、NeurIPS、ICML、 ACL、EMNLP、SIGIR 等；实践动手能力强，ACM ICPC、NOI/IOI、TopCoder、Kaggle 比赛获奖者优先。\n岗位亮点\n1、资深算法专家的一对一指导；\n2、丰富的GPU资源及核心场景数据；\n3、真实应用场景的实践；\n4、支持探索、指导发表会议/期刊论文；\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

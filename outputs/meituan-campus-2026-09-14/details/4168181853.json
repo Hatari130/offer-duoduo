@@ -1,0 +1,54 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4168181853&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:00.304Z",
+  "data": {
+    "jobUnionId": "4168181853",
+    "name": "大模型应用开发实习生",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。",
+    "jobDuty": "1. 负责大数据领域（SQL/ETL方向）Agent的设计、开发与优化；\n2. 负责多 Agent流程的设计及落地；\n3. 使用Python或Java进行大模型应用开发，推动相关业务落地；\n4. 基于LangGraph、AutoGen、CrewAI等主流大模型开发框架进行项目开发与集成；\n5. 跟进大模型应用评测，持续优化模型效果与性能；",
+    "jobRequirement": "1. 具有至少1年以上linux后台系统相关研发经历，扎实的CS基础；\n2. 熟练掌握Python或Java，具备扎实的编程基础；\n3. 熟悉服务架构搭建、数据库使用与原理、以及中间件技术，如FastAPI/Django、MySQL、MQ等；\n4.具有较好的软件工程知识和编码规范意识，对代码和设计质量有严格要求。",
+    "precedence": "1 熟悉Spark、Flink、Doris等大数据工具，了解SQL解析原理及相关应用；\n2. 有大模型应用评测、调优经验者优先；\n3. 具备良好的沟通能力和团队协作精神，学习能力强。",
+    "highLight": "接触前沿大模型应用开发并落地、技术氛围浓厚",
+    "otherInfo": null,
+    "firstPostTime": 1770363878000,
+    "refreshTime": 1770966029000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型应用开发实习生\n实习-日常实习\n更新时间：2026/02/13\n工作地点：北京市\n部门：核心本地商业-基础研发平台\n工作经验：不限\n分享\n立即申请\n部门介绍\n基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。\n岗位职责\n1. 负责大数据领域（SQL/ETL方向）Agent的设计、开发与优化；\n2. 负责多 Agent流程的设计及落地；\n3. 使用Python或Java进行大模型应用开发，推动相关业务落地；\n4. 基于LangGraph、AutoGen、CrewAI等主流大模型开发框架进行项目开发与集成；\n5. 跟进大模型应用评测，持续优化模型效果与性能；\n岗位基本要求\n1. 具有至少1年以上linux后台系统相关研发经历，扎实的CS基础；\n2. 熟练掌握Python或Java，具备扎实的编程基础；\n3. 熟悉服务架构搭建、数据库使用与原理、以及中间件技术，如FastAPI/Django、MySQL、MQ等；\n4.具有较好的软件工程知识和编码规范意识，对代码和设计质量有严格要求。\n具备以下条件优先\n1 熟悉Spark、Flink、Doris等大数据工具，了解SQL解析原理及相关应用；\n2. 有大模型应用评测、调优经验者优先；\n3. 具备良好的沟通能力和团队协作精神，学习能力强。\n岗位亮点\n接触前沿大模型应用开发并落地、技术氛围浓厚\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

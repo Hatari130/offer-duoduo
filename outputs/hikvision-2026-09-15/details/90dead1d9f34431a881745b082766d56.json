@@ -1,0 +1,41 @@
+{
+  "source_job_id": "90dead1d9f34431a881745b082766d56",
+  "verified_at": "2026-09-15T01:32:07.542Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=90dead1d9f34431a881745b082766d56",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=90dead1d9f34431a881745b082766d56&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "90dead1d9f34431a881745b082766d56",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "涉外法务专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "法务",
+        "techDire": "国际业务",
+        "postContent": "1、负责国际业务单元的法律专业服务，为业务运营提供法律意见和法律解决方案；\n2、负责业务各类涉外合同及其他商业交易文件的起草与审核；\n3、为海外投资和海外分支机构的日常运营提供法律服务；\n4、参与全球合规项目建设，包括数据保护、反垄断、反贿赂、贸易合规等一个或多个领域；\n5、参与处理跨境贸易及其他常规涉外法律纠纷；\n6、参与制定、优化职责相关的管理流程、制度，准确识别并推动业务的风险管理；\n7、提供法律咨询，开展法律宣传与培训；\n8、处理其他法律、合规事务。",
+        "postRequire": "1、本科及以上学历，法学专业或具有法学专业学位，通过法律职业资格考试和英语六级考试；\n2、具有扎实的法学理论功底和实务应用能力，熟练掌握国际贸易、国际投资、争议解决等相关法律法规和国际规则；\n3、具有良好的职业素养、敬业精神；\n4、自我驱动，能快速学习和适应新领域，具有良好的法律分析能力和解决问题能力；\n5、具有良好的沟通协调能力、团队协作精神和执行力；\n6、具有良好的语言、文字表达能力；\n7、优秀的英语听、说、读、写能力，英语可作为工作语言；\n8、有海外学习或实习实践经验者，在同等条件下优先考虑。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

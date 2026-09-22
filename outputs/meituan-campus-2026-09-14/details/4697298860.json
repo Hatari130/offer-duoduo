@@ -1,0 +1,156 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697298860&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:51.394Z",
+  "data": {
+    "jobUnionId": "4697298860",
+    "name": "商业分析师（BA/DS）",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "商业分析类",
+    "jobFamilyGroup": "商业分析",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "008002001",
+        "name": "科威特城",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001032",
+        "name": "香港特别行政区",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "009001001",
+        "name": "利雅得",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "003002001",
+        "name": "迪拜",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG008",
+        "name": "核心本地商业-点评事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG011",
+        "name": "人力资源平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG021",
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 参与业务规划、策略制定、经营分析，为复杂的商业问题设计解决方案；  \n2. 使用最厉害的数据分析工具和技能，洞察商业规律、用户需求，为快速发展的业务出谋划策；   \n3. 参与建设业界一流水平的公司级实验中台，为重大实验决策提供科学方案支撑（数据科学方向）。\n其中部分境外岗位面向2025年6月至2027年10月毕业的全球毕业生，如遇系统投递问题，请前往Keeta Careers英文招聘官网投递。",
+    "jobRequirement": "1. 本科及以上学历，专业背景不限，数学、统计、计算机、工科、商科等相关专业背景更佳； \n2. 对应业务也开放物流规划、供应链管理、人力资源等相关专业； \n3. 聪明严谨、积极有韧性，乐于面对挑战、具备优秀的分析能力； \n4. 喜欢从数据中发现问题、分析规律；对商业运作模式和企业经营感兴趣；想踏入大数据的门槛；  \n5. 数据科学（DS方向）具备计算机背景或经济学和理工科双学位专业背景，算法理解能力，能无障碍阅读英语文献更佳。   \n岗位亮点 \n1. 距离决策者最近的岗位，你所发现的数据规律将有机会驱动业务进行各类核心决策；  \n2. 美团拥有多元化的业务场景，给你提供丰富的商业视角和实战的土壤；  \n3. 美团拥有体系化的人才培养机制，此岗位将提供丰富资源和机会支持，助力员工持续跟踪行业动态，拓展和积累行业资源，培养全局视野，探索行业发展规律。同时也会提供员工策略分析能力训练和实践场景，培养员工对业务的深度理解力和方向思考",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960998000,
+    "refreshTime": 1786960998000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n商业分析师（BA/DS）\n应届-校园招聘\n工作地点：北京市、科威特城、香港特别行政...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 参与业务规划、策略制定、经营分析，为复杂的商业问题设计解决方案；\n2. 使用最厉害的数据分析工具和技能，洞察商业规律、用户需求，为快速发展的业务出谋划策；\n3. 参与建设业界一流水平的公司级实验中台，为重大实验决策提供科学方案支撑（数据科学方向）。\n其中部分境外岗位面向2025年6月至2027年10月毕业的全球毕业生，如遇系统投递问题，请前往Keeta Careers英文招聘官网投递。\n任职要求\n1. 本科及以上学历，专业背景不限，数学、统计、计算机、工科、商科等相关专业背景更佳；\n2. 对应业务也开放物流规划、供应链管理、人力资源等相关专业；\n3. 聪明严谨、积极有韧性，乐于面对挑战、具备优秀的分析能力；\n4. 喜欢从数据中发现问题、分析规律；对商业运作模式和企业经营感兴趣；想踏入大数据的门槛；\n5. 数据科学（DS方向）具备计算机背景或经济学和理工科双学位专业背景，算法理解能力，能无障碍阅读英语文献更佳。\n岗位亮点\n1. 距离决策者最近的岗位，你所发现的数据规律将有机会驱动业务进行各类核心决策；\n2. 美团拥有多元化的业务场景，给你提供丰富的商业视角和实战的土壤；\n3. 美团拥有体系化的人才培养机制，此岗位将提供丰富资源和机会支持，助力员工持续跟踪行业动态，拓展和积累行业资源，培养全局视野，探索行业发展规律。同时也会提供员工策略分析能力训练和实践场景，培养员工对业务的深度理解力和方向思考\n工作城市\n北京市、科威特城、香港特别行政区、上海市、利雅得、迪拜\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

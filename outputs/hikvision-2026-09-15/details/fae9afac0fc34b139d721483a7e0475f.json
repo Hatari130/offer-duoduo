@@ -1,0 +1,41 @@
+{
+  "source_job_id": "fae9afac0fc34b139d721483a7e0475f",
+  "verified_at": "2026-09-15T01:32:08.008Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=fae9afac0fc34b139d721483a7e0475f",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=fae9afac0fc34b139d721483a7e0475f&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "fae9afac0fc34b139d721483a7e0475f",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器人多维感知算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "目标检测/位姿估计/BEV/OCC/语义分割/目标跟踪/多传感器融合",
+        "postContent": "1、负责机器人感知算法的设计、开发，包括但不限于目标识别/跟踪/ReID、道路标线检测、语义分割、6D位姿估计等技术方向；\n2、基于多传感器（RGB相机、深度相机、LiDAR等）提升机器人的环境感知能力或局部位姿估计精度；\n3、针对长尾问题（光照变化/视野遮挡等）设计鲁棒性增强方案，推动算法在机器人场景落地。",
+        "postRequire": "1、硕士及以上学历，博士优先；机器人、计算机、模式识别、自动化、数学等相关专业；\n2、熟练掌握C++/Python，熟悉至少一种深度学习框架（PyTorch/TensorFlow）；\n3、熟悉至少一类感知算法（目标检测/语义分割/6D位姿估计/多目标跟踪等）和相关的主流深度学习模型（YOLO系列/DETR系列/SAM/FoundationPose/DeepSORT等）；\n4、具有移动机器人、无人车、无人机方向实际项目经验，或相关竞赛（Waymo/KITTI挑战赛等）获奖经历者优先；\n5、在机器人方向顶级会议/期刊（TRO/IJRR/ICRA/IROS/CVPR/ICCV/ECCV等）发表论文者优先；\n6、具有扎实的数学功底、良好的英语文献阅读能力，能够高效完成新技术调研并快速实现；\n7、对机器人技术充满热情，具备团队协作精神和探索钻研精神，具备较强的创新能力和逻辑思维能力，能积极主动发现并解决问题。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

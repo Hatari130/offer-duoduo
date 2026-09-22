@@ -1,0 +1,46 @@
+{
+  "source_job_id": "81ac7f3d397e417d93bafe6bfd5ce1aa",
+  "verified_at": "2026-09-15T01:32:06.606Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=81ac7f3d397e417d93bafe6bfd5ce1aa",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=81ac7f3d397e417d93bafe6bfd5ce1aa&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "81ac7f3d397e417d93bafe6bfd5ce1aa",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "运筹优化算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "运筹",
+        "postContent": "1、参与供应链智能化场景的算法落地，从需求分析、方案设计到模型开发与应用上线，持续优化算法效果与业务价值；\n2、基于运筹优化、机器学习等技术，开展排程规划、库存优化、智能调拨、需求预测等场景的模型开发，推动算法在实际业务中的突破性应用；\n3、关注行业前沿与技术趋势，结合业务需求，探索更高效的求解策略与技术路径；\n4、与产品、数据、开发等跨部门团队协作，共同推进项目高质量交付。",
+        "postRequire": "1、硕士及以上学历，运筹学/人工智能/计算机/数学/工业工程等相关专业；\n2、掌握运筹优化基础理论，如线性规划、整数规划等，或熟悉机器学习中的预测、分类、聚类等常用算法；\n3、熟练使用Python/Java/C++中至少一门语言，具备良好编程能力，掌握常用SQL查询；\n4、有以下任一项目经验者优先：\n　- 运筹优化建模经验，熟悉CPLEX、Gurobi、or-tools等至少一种求解器；\n　- 启发式或元启发式算法设计与实现经验；\n　- 机器学习项目全流程经验，包括数据清洗、特征工程、模型训练与调优等；\n5、逻辑清晰，具备良好的学习能力、团队协作意识与执行力，有自驱力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-09-01 18:43:03"
+      },
+      "departments": [
+        {
+          "id": "3843250e32594d42afc6fcd76533ac71",
+          "name": "数字化部",
+          "description": "数字化部门统筹公司各领域数字化平台和智能化升级的建设，推动公司全业务链的数字化转型，助力企业高质量发展。数据智能团队聚焦智能算法研发与数据价值挖掘，驱动AI技术在业务场景中的深度应用，释放组织效能。加入我们，你将深度参与到研发设计、智能营销、内容创作、产品推荐、智能客服、生产排程等核心业务场景的智能化升级。你的每一份研究、每一行代码，都将成为企业发展的新动力；如何利用AI技术赋能制造型企业的智能化转型，期待与你一起探索与实践。"
+        },
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

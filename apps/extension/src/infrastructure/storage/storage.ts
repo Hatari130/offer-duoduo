@@ -1,4 +1,3 @@
-import { stableJson } from "@/shared/stableJson";
 import {
   inferRecruitmentType,
   resolveProfileExperienceKind,
@@ -8,7 +7,7 @@ import {
   type ResumeAsset
 } from "@/shared/types";
 import type { TailoredResumeBundle, TailoredResumeEntry } from "@/features/tailor/types";
-import { captureApplicationExpressions, captureApplicationFields, composeApplicationProfile, mergeApplicationFacts, toCloudResumeProfile, type LocalApplicationProfile, type ResumeTemplateSettings, type TailorJobContext } from "@offerflow/domain";
+import { captureApplicationFields, composeApplicationProfile, toCloudResumeProfile, type LocalApplicationProfile, type ResumeTemplateSettings, type TailorJobContext } from "@offerflow/domain";
 import type { ResumeTemplateRecord } from "@offerflow/contracts";
 import {
   cloudDataScope,
@@ -18,7 +17,6 @@ import {
 } from "@/infrastructure/sync/syncState";
 import {
   countResumeFields,
-  dehydrateResumeLibrary,
   migrateResumeLibrary,
   resolveActiveResumeId,
   stripResumeDiagnosticFields
@@ -27,14 +25,14 @@ import {
 export const JOBS_KEY = "offerflow.jobs";
 export const GUEST_JOBS_KEY = "offerflow.jobs.guest";
 export const SETTINGS_KEY = "offerflow.settings";
-export const PROFILE_KEY = "offerflow.profile";
+export const PROFILE_KEY = "offerflow.localApplicationProfile";
 export const APPLICATION_PROFILE_KEY = "offerflow.applicationProfile";
 export const RESUME_USAGE_KEY = "offerflow.resumeUsage";
 export const TAILORED_RESUMES_KEY = "offerflow.tailoredResumes";
 export const TAILORED_PDF_KEY = "offerflow.tailoredPdf";
 export const BASE_PROFILE_KEY = "offerflow.baseProfile";
-export const RESUMES_KEY = "offerflow.resumes";
-export const ACTIVE_RESUME_KEY = "offerflow.activeResumeId";
+export const RESUMES_KEY = "offerflow.localApplicationProfiles.v1";
+export const ACTIVE_RESUME_KEY = "offerflow.localApplicationActiveId";
 export const RESUME_LIBRARY_UI_KEY = "offerflow.resumeLibraryUi";
 export const PENDING_DELETED_RESUMES_KEY = "offerflow.pendingDeletedResumeIds";
 
@@ -71,6 +69,7 @@ export interface StoredResumeSourceMetadata {
 
 export interface StoredResume {
   id: string;
+  localRevision?: number;
   cloudRevision?: number;
   cloudBaseline?: string;
   syncConflict?: ResumeTemplateRecord;
@@ -326,6 +325,7 @@ export async function clearLocalProfileAndResumes(): Promise<void> {
     const all = await chrome.storage.local.get(null);
     const tailoredPdfKeys = Object.keys(all).filter((key) => key.startsWith(`${TAILORED_PDF_KEY}.`));
     await chrome.storage.local.remove([
+      "offerflow.resumes", "offerflow.profile", "offerflow.activeResumeId",
       BASE_PROFILE_KEY,
       RESUME_USAGE_KEY,
       TAILORED_RESUMES_KEY,
@@ -335,6 +335,7 @@ export async function clearLocalProfileAndResumes(): Promise<void> {
       ...tailoredPdfKeys
     ]);
   } else {
+    for (const key of ["offerflow.resumes", "offerflow.profile", "offerflow.activeResumeId"]) localStorage.removeItem(key);
     localStorage.removeItem(BASE_PROFILE_KEY);
     localStorage.removeItem(RESUME_USAGE_KEY);
     localStorage.removeItem(TAILORED_RESUMES_KEY);
@@ -498,71 +499,109 @@ function withProfileWrite<T>(work: () => Promise<T>): Promise<T> {
   return result;
 }
 
-/** Read old records before projecting them, so migration cannot discard private
- * values. Never rebuild this archive solely from a remote resume library. */
-export async function loadLocalApplicationProfile(): Promise<LocalApplicationProfile> {
-  let archive = await readLocalValue<LocalApplicationProfile>(APPLICATION_PROFILE_KEY);
-  const rawProfile = await readLocalValue<PersonalProfile>(PROFILE_KEY);
-  if (rawProfile) archive = captureApplicationFields(archive, rawProfile);
-  for (const resume of await readStoredResumeLibrary() || []) archive = captureApplicationFields(archive, resume.profile);
-  archive ||= { schemaVersion: 1, fields: {}, entries: {} };
-  return archive;
-}
-
-export async function loadProfile(): Promise<PersonalProfile> {
-  const archive = await loadLocalApplicationProfile();
-  const activeId = await readLocalValue<string>(ACTIVE_RESUME_KEY);
-  const storedLibrary = await readStoredResumeLibrary();
-  const current = storedLibrary?.find(resume => resume.id === activeId);
-  const raw = storedLibrary ? current?.profile || storedLibrary.find(resume => resume.kind !== "job")?.profile || { ...EMPTY_PROFILE } : await readLocalValue<PersonalProfile>(PROFILE_KEY);
-  const profile = stripResumeDiagnosticFields({ ...EMPTY_PROFILE, ...raw });
-  return composeApplicationProfile(isStarterProfile(profile) ? { ...EMPTY_PROFILE } : profile, archive, current?.id);
-}
-
-/** Materialized selection only. Explicit form edits go through
- * saveApplicationProfile, which also updates the corresponding master facts. */
-export async function saveProfile(profile: PersonalProfile, options: { selection?: boolean } = {}): Promise<void> {
+/** One-time copy into a separate local namespace. Old keys remain intact as a
+ * recovery backup; no cloud requests or deletion queues are involved. The new
+ * library itself is the commit marker (including an intentionally empty array). */
+async function ensureLocalProfiles(): Promise<void> {
+  if (await readLocalValue<StoredResume[]>(RESUMES_KEY) !== undefined) return;
   await withProfileWrite(async () => {
-    const previous = await loadLocalApplicationProfile();
-    const archive = options.selection ? previous : captureApplicationFields(previous, stripResumeDiagnosticFields(profile));
+    if (await readLocalValue<StoredResume[]>(RESUMES_KEY) !== undefined) return;
+    const legacy = await readLocalValue<StoredResume[]>("offerflow.resumes") || [];
+    const raw = await readLocalValue<PersonalProfile>("offerflow.profile");
+    const oldActive = hasChromeStorage()
+      ? await readLocalValue<string>("offerflow.activeResumeId")
+      : localStorage.getItem("offerflow.activeResumeId") || undefined;
+    let archive = await readLocalValue<LocalApplicationProfile>(APPLICATION_PROFILE_KEY);
+    if (raw) archive = captureApplicationFields(archive, raw);
+    for (const resume of legacy) archive = captureApplicationFields(archive, resume.profile);
+    const normalized = migrateResumeLibrary(legacy);
+    // Older lifecycle migrations folded master rows into bases. Preserve those
+    // rows too, since they may contain independently authored text.
+    const rows = [...normalized, ...legacy.filter(row => !normalized.some(item => item.id === row.id))];
+    const library: StoredResume[] = rows.map(row => independentLocalResume({
+      ...row, profile: composeApplicationProfile(row.profile, captureApplicationFields(archive, row.profile), row.id)
+    }));
+    for (const row of legacy) {
+      if (row.syncConflict && !row.syncConflict.deletedAt) {
+        const remote = row.syncConflict;
+        library.push(independentLocalResume({
+          ...row, id: `local_conflict_${row.id}`, name: `${row.name}（旧云端冲突副本）`,
+          profile: composeApplicationProfile(remote.profile as PersonalProfile, archive),
+          assets: remote.document?.assets || row.assets,
+          template: remote.document?.template || row.template
+        }));
+      }
+    }
+    if (!library.length && raw && Object.values(raw).some(value =>
+      typeof value === "string" ? Boolean(value) : Array.isArray(value) ? value.length > 0 : value && Object.keys(value).length > 0
+    )) {
+      const now = new Date().toISOString();
+      library.push({ id: `local_${globalThis.crypto.randomUUID()}`, name: "原有网申资料", kind: "base",
+        profile: composeApplicationProfile(raw, archive), createdAt: now, updatedAt: now });
+    }
+    const activeId = resolveActiveResumeId(library, oldActive);
     await writeLocalValues({
-      [APPLICATION_PROFILE_KEY]: archive,
-      [PROFILE_KEY]: { ...toCloudResumeProfile(profile), updatedAt: new Date().toISOString() }
+      [ACTIVE_RESUME_KEY]: activeId,
+      [PROFILE_KEY]: library.find(row => row.id === activeId)?.profile || structuredClone(EMPTY_PROFILE),
+      ...(archive ? { [APPLICATION_PROFILE_KEY]: archive } : {}),
+      [RESUMES_KEY]: library
     });
   });
 }
 
-export async function saveApplicationProfile(profile: PersonalProfile, activeId?: string, sourceFileName?: string): Promise<StoredResume[]> {
+function independentLocalResume(resume: StoredResume): StoredResume {
+  const { cloudRevision, cloudBaseline, syncConflict, cloudVersionId, cloudVersionRevision,
+    masterResumeId, parentResumeId, sourcePdfInherited, sourceAssetsInherited, ...local } = resume;
+  return { ...local, kind: "base", localRevision: resume.localRevision || 1, profile: structuredClone(resume.profile) };
+}
+
+/** Historical supplements are available for explicit recovery only. */
+export async function loadLocalApplicationProfile(): Promise<LocalApplicationProfile> {
+  await ensureLocalProfiles();
+  return await readLocalValue<LocalApplicationProfile>(APPLICATION_PROFILE_KEY) || { schemaVersion: 1, fields: {}, entries: {} };
+}
+
+export async function loadProfile(): Promise<PersonalProfile> {
+  await ensureLocalProfiles();
+  const library = await readStoredResumeLibrary() || [];
+  const activeId = await readLocalValue<string>(ACTIVE_RESUME_KEY);
+  const current = library.find(row => row.id === activeId) || library[0];
+  return structuredClone(current?.profile || EMPTY_PROFILE);
+}
+
+/** Selection cache only. Edits must target a specific local profile. */
+export async function saveProfile(profile: PersonalProfile, _options: { selection?: boolean } = {}): Promise<void> {
+  await ensureLocalProfiles();
+  await withProfileWrite(() => writeLocalValues({ [PROFILE_KEY]: structuredClone(profile) }));
+}
+
+export async function saveApplicationProfile(profile: PersonalProfile, activeId?: string, sourceFileName?: string, expectedRevision?: number): Promise<StoredResume[]> {
+  await ensureLocalProfiles();
   return withProfileWrite(async () => {
-    let archive = await loadLocalApplicationProfile();
-    const library = migrateResumeLibrary(await readStoredResumeLibrary() || []);
-    const selected = library.find(resume => resume.id === activeId);
-    const before = selected ? composeApplicationProfile(selected.profile, archive, selected.id) : { ...EMPTY_PROFILE };
-    archive = captureApplicationFields(archive, stripResumeDiagnosticFields(profile));
-    if (selected && selected.kind !== "job") archive = captureApplicationExpressions(archive, selected.id, before, profile);
+    const library = await readStoredResumeLibrary() || [];
+    const selected = library.find(row => row.id === activeId);
+    if (activeId && !selected) throw new Error("这份网申资料已被删除，请刷新后重试；当前编辑内容仍保留在页面中");
+    if (selected && expectedRevision !== undefined && (selected.localRevision || 1) !== expectedRevision) throw new Error("另一页面已更新这份资料，请复制当前修改后刷新，避免覆盖新内容");
     const now = new Date().toISOString();
-    const masterId = selected?.kind === "job" ? selected.parentResumeId : selected?.id;
-    let masters = library.filter(resume => resume.kind !== "job");
-    if (!masters.length) {
-      const created: StoredResume = { id: `resume_${globalThis.crypto.randomUUID()}`, name: "通用简历", kind: "base", profile, createdAt: now, updatedAt: now };
-      library.push(created);
-      masters = [created];
-    }
-    const targetMaster = masters.find(resume => resume.id === masterId) || masters[0];
-    const next = library.map(resume => {
-      if (resume.id === selected?.id) return { ...resume, profile: selected.kind === "job" ? profile : mergeApplicationFacts(resume.profile, before, profile, false), sourceFileName: sourceFileName || resume.sourceFileName, updatedAt: now };
-      if (resume.id !== targetMaster.id) return resume;
-      const shared = mergeApplicationFacts(resume.profile, before, profile, selected?.kind !== "job");
-      return { ...resume, profile: shared, updatedAt: now };
-    });
-    const id = selected?.id || targetMaster.id;
-    await writeLocalValues({
-      [APPLICATION_PROFILE_KEY]: archive,
-      [RESUMES_KEY]: dehydrateResumeLibrary(next).map(resume => ({ ...resume, profile: toCloudResumeProfile(resume.profile) })),
-      [PROFILE_KEY]: toCloudResumeProfile(profile),
-      [ACTIVE_RESUME_KEY]: id
-    });
-    return next.map(resume => ({ ...resume, profile: composeApplicationProfile(resume.profile, archive) }));
+    const saved: StoredResume = {
+      ...(selected || { id: `local_${globalThis.crypto.randomUUID()}`, name: "我的网申资料", kind: "base", createdAt: now }),
+      profile: structuredClone(profile), localRevision: (selected?.localRevision || 0) + 1, sourceFileName: sourceFileName || selected?.sourceFileName, updatedAt: now
+    };
+    const next = selected ? library.map(row => row.id === selected.id ? saved : row) : [...library, saved];
+    await writeLocalValues({ [RESUMES_KEY]: next, [PROFILE_KEY]: saved.profile, [ACTIVE_RESUME_KEY]: saved.id });
+    return next;
+  });
+}
+
+export async function createLocalApplicationProfile(name: string): Promise<StoredResume> {
+  await ensureLocalProfiles();
+  return withProfileWrite(async () => {
+    const now = new Date().toISOString();
+    const created: StoredResume = { id: `local_${globalThis.crypto.randomUUID()}`, name: name.trim() || "新的网申资料",
+      kind: "base", localRevision: 1, lifecycleStatus: "active", profile: structuredClone(EMPTY_PROFILE), createdAt: now, updatedAt: now };
+    await writeLocalValues({ [RESUMES_KEY]: [...await readStoredResumeLibrary() || [], created],
+      [ACTIVE_RESUME_KEY]: created.id, [PROFILE_KEY]: created.profile });
+    return created;
   });
 }
 
@@ -670,55 +709,9 @@ function entrySafeValue(value: string | undefined): string {
   return String(value || "").trim();
 }
 
-async function upsertJobResumeVersion(entry: TailoredResumeEntry): Promise<void> {
-  const sourceResumeId = entry.bundle.context.sourceResumeId;
-  if (!sourceResumeId) return;
-  const library = await loadResumeLibrary();
-  const sourceResume = library.find((resume) => resume.id === sourceResumeId);
-  if (!sourceResume) return;
-  const existing = library.find((resume) => resume.kind === "job" && resume.jobKey === entry.jobKey);
-  const baseResumeId = sourceResume.kind === "base" ? sourceResume.id : sourceResume.parentResumeId;
-  const now = entry.savedAt || new Date().toISOString();
-  const profile = tailoredResumeProfile(sourceResume.profile, entry.bundle);
-  const nextJob: StoredResume = {
-    id: existing?.id || `resume_job_${entry.jobKey.replace(/[^a-z0-9_-]/gi, "_")}`,
-    name: [entry.bundle.context.company, entry.bundle.context.position].filter(Boolean).join(" · ") || "岗位定制简历",
-    kind: "job",
-    parentResumeId: baseResumeId || sourceResume.id,
-    versionNumber: (existing?.versionNumber || 0) + 1,
-    jobKey: entry.jobKey,
-    lifecycleStatus: "active",
-    company: entry.bundle.context.company,
-    position: entry.bundle.context.position,
-    archiveNameSource: "manual",
-    sourceFileName: sourceResume.sourceFileName,
-    source: sourceResume.source
-      ? {
-          ...sourceResume.source,
-          storageStatus: baseResumeId ? "referenced" : sourceResume.source.storageStatus
-        }
-      : undefined,
-    parse: sourceResume.parse
-      ? {
-          ...sourceResume.parse,
-          extractedFieldCount: countResumeFields({ profile }),
-          warnings: [...sourceResume.parse.warnings]
-        }
-      : undefined,
-    profile,
-    createdAt: existing?.createdAt || now,
-    updatedAt: now,
-    lastUsedAt: existing?.lastUsedAt
-  };
-  await saveResumeLibrary([nextJob, ...library.filter((resume) => resume.id !== nextJob.id)]);
-}
-
 export async function saveTailoredResume(entry: TailoredResumeEntry): Promise<void> {
   const current = await loadTailoredResumes();
-  await Promise.all([
-    saveTailoredResumes({ ...current, [entry.jobKey]: entry }),
-    upsertJobResumeVersion(entry)
-  ]);
+  await saveTailoredResumes({ ...current, [entry.jobKey]: entry });
 }
 
 export async function getTailoredResume(jobKey: string): Promise<TailoredResumeBundle | undefined> {
@@ -876,50 +869,41 @@ async function readStoredResumeLibrary(): Promise<StoredResume[] | undefined> {
 }
 
 export async function loadResumeLibrary(): Promise<StoredResume[]> {
-  const stored = await readStoredResumeLibrary();
-  if (stored) {
-    if (stored.some(resume => stableJson(resume.profile) !== stableJson(toCloudResumeProfile(resume.profile)))) await saveResumeLibrary(stored);
-    const archive = await loadLocalApplicationProfile();
-    return migrateResumeLibrary(stored).map(resume => ({ ...resume, profile: composeApplicationProfile(resume.profile, archive) }));
-  }
-
-  const profile = await loadProfile();
-  const hasProfile = Boolean(
-    profile.fullName ||
-      profile.phone ||
-      profile.email ||
-      profile.education.length ||
-      profile.experiences.length ||
-      profile.projects.length
-  );
-  if (!hasProfile) return [];
-
-  const now = new Date().toISOString();
-  const migrated: StoredResume[] = [
-    {
-      id: `resume_${Date.now().toString(36)}`,
-      name: "我的简历",
-      kind: "base",
-      versionNumber: 1,
-      lifecycleStatus: "active",
-      sourceFileName: profile.extraFields?.resumeSourceName,
-      profile,
-      createdAt: now,
-      updatedAt: profile.updatedAt || now,
-      lastUsedAt: now
-    }
-  ];
-  await saveResumeLibrary(migrated);
-  await setActiveResumeId(migrated[0].id);
-  return migrated;
+  await ensureLocalProfiles();
+  return structuredClone(await readStoredResumeLibrary() || []);
 }
 
 export async function saveResumeLibrary(resumes: StoredResume[], options: { origin?: "local" | "cloud" } = {}): Promise<void> {
-  await withProfileWrite(async () => {
-    let archive = await loadLocalApplicationProfile();
-    if (options.origin !== "cloud") for (const resume of resumes) archive = captureApplicationFields(archive, resume.profile);
-    const persisted = dehydrateResumeLibrary(resumes).map(resume => ({ ...resume, profile: toCloudResumeProfile(resume.profile) }));
-    await writeLocalValues({ [APPLICATION_PROFILE_KEY]: archive, [RESUMES_KEY]: persisted });
+  if (options.origin === "cloud") throw new Error("网申资料仅保存在本地，不能由云端同步写入");
+  await ensureLocalProfiles();
+  await withProfileWrite(() => writeLocalValues({ [RESUMES_KEY]: resumes.map(independentLocalResume) }));
+}
+
+/** Single-record writes preserve additions/edits from other open plugin tabs. */
+export async function saveLocalApplicationRecord(resume: StoredResume, expectedRevision?: number): Promise<StoredResume[]> {
+  await ensureLocalProfiles();
+  return withProfileWrite(async () => {
+    const library = await readStoredResumeLibrary() || [];
+    const current = library.find(row => row.id === resume.id);
+    if (expectedRevision !== undefined && (!current || (current.localRevision || 1) !== expectedRevision)) {
+      throw new Error("这份资料已被其他页面修改或删除，请保留当前修改并刷新后重试");
+    }
+    const saved = independentLocalResume({ ...resume, localRevision: (current?.localRevision || 0) + 1 });
+    const next = current ? library.map(row => row.id === saved.id ? saved : row) : [...library, saved];
+    await writeLocalValues({ [RESUMES_KEY]: next });
+    return next;
+  });
+}
+
+export async function deleteLocalApplicationRecord(id: string): Promise<StoredResume[]> {
+  await ensureLocalProfiles();
+  return withProfileWrite(async () => {
+    const next = (await readStoredResumeLibrary() || []).filter(row => row.id !== id);
+    const active = await readLocalValue<string>(ACTIVE_RESUME_KEY);
+    const activeId = resolveActiveResumeId(next, active === id ? undefined : active);
+    await writeLocalValues({ [RESUMES_KEY]: next, [ACTIVE_RESUME_KEY]: activeId,
+      [PROFILE_KEY]: next.find(row => row.id === activeId)?.profile || structuredClone(EMPTY_PROFILE) });
+    return next;
   });
 }
 
@@ -997,26 +981,21 @@ export async function updateResumeSourceAssets(
 }
 
 export async function loadActiveResumeId(): Promise<string | undefined> {
-  let storedId: string | undefined;
-  if (!hasChromeStorage()) {
-    storedId = localStorage.getItem(ACTIVE_RESUME_KEY) || undefined;
-  } else {
-    const result = await chrome.storage.local.get(ACTIVE_RESUME_KEY);
-    storedId = typeof result[ACTIVE_RESUME_KEY] === "string" ? result[ACTIVE_RESUME_KEY] : undefined;
-  }
-  const storedLibrary = await readStoredResumeLibrary();
-  if (!storedLibrary?.length) return storedId || undefined;
-  const repairedId = resolveActiveResumeId(migrateResumeLibrary(storedLibrary), storedId);
+  await ensureLocalProfiles();
+  const storedId = await readLocalValue<string>(ACTIVE_RESUME_KEY);
+  const library = await readStoredResumeLibrary() || [];
+  const repairedId = resolveActiveResumeId(library, storedId);
   if (repairedId !== (storedId || "")) await setActiveResumeId(repairedId);
   return repairedId || undefined;
 }
 
 export async function setActiveResumeId(id: string): Promise<void> {
-  if (!hasChromeStorage()) {
-    localStorage.setItem(ACTIVE_RESUME_KEY, id);
-    return;
-  }
-  await chrome.storage.local.set({ [ACTIVE_RESUME_KEY]: id });
+  await ensureLocalProfiles();
+  await withProfileWrite(async () => {
+    const library = await readStoredResumeLibrary() || [];
+    if (id && !library.some(row => row.id === id)) throw new Error("这份网申资料已被删除，请刷新后重试");
+    await writeLocalValues({ [ACTIVE_RESUME_KEY]: id });
+  });
 }
 
 export function normalizeUrl(value: string): string {

@@ -1,0 +1,74 @@
+{
+  "source_job_id": "77b98ca5be4340fb9d944e920b93a5e8",
+  "verified_at": "2026-09-15T01:32:15.927Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=77b98ca5be4340fb9d944e920b93a5e8",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=77b98ca5be4340fb9d944e920b93a5e8&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "fb883ca927b74fd8b578073dce567776",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI Agent开发工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "不限",
+        "postContent": "1. 智能体系统研发：参与企业级智能体产品的全栈开发与架构设计，负责核心模块编码实现、性能优化及上线交付。\n2. 核心能力建设：参与智能体记忆系统、工具生态、评测体系等关键模块的研发，提升智能体的长程交互能力与任务执行可靠性。\n3. 效果调优与评测：负责Prompt方案设计与迭代，通过实验与评测持续提升智能体回答质量与执行准确率；参与构建覆盖核心能力的评测体系。\n4. 业务场景落地：基于业务需求完成智能体定制化开发，集成RAG知识库、API及多智能体协作等能力，推动方案高效落地。\n5. 前沿技术探索：跟踪大模型与Agent领域前沿动态，调研主流开源框架，完成新技术选型与落地验证。",
+        "postRequire": "1.本科及以上学历，计算机、软件工程、人工智能等相关专业。\n2.扎实的计算机基础（数据结构、算法、操作系统、网络等），有AI相关项目、实习或竞赛经历者优先。\n3.了解大模型基本原理，对Agent核心概念（记忆、工具调用、任务规划）有基础认知， 熟练掌握Python（熟悉Java更佳），编码规范，工程意识良好。\n4. 有Agent或RAG落地经验，熟悉全链路开发流程。\n5.熟悉LangChain、Dify、Coze等主流开发框架/平台，能独立完成智能体搭建。\n6.掌握Prompt Engineering、RAG检索增强、工具调用、CoT等核心技术。\n7. 了解向量数据库、知识库构建、模型微调等相关技术。\n8. 逻辑清晰，自驱力强，善于学习；具备良好的沟通协作与团队融入能力。\n加分项：\n1.有Prompt工程、LLM应用开发、智能体相关项目或竞赛经历。\n2. 熟悉LangChain、Dify、AutoGen等框架，有实际项目实践。\n3.有向量数据库、信息检索、NLP、知识图谱相关研究或项目经历。\n4. 有高并发、异步、分布式系统开发或优化经验。\n5.具备产品意识与客户思维，能理解业务场景并抽象技术方案。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "77b98ca5be4340fb9d944e920b93a5e8",
+        "adNeedDept": "软件产品",
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:03",
+        "updateTime": "2026-08-20 17:09:50"
+      },
+      "departments": [
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "d0783198a5cd41af946924f22e46cbe8",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI Agent开发工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "不限",
+        "postContent": "1. 智能体系统研发：参与企业级智能体产品的全栈开发与架构设计，负责核心模块编码实现、性能优化及上线交付。\n2. 核心能力建设：参与智能体记忆系统、工具生态、评测体系等关键模块的研发，提升智能体的长程交互能力与任务执行可靠性。\n3. 效果调优与评测：负责Prompt方案设计与迭代，通过实验与评测持续提升智能体回答质量与执行准确率；参与构建覆盖核心能力的评测体系。\n4. 业务场景落地：基于业务需求完成智能体定制化开发，集成RAG知识库、API及多智能体协作等能力，推动方案高效落地。\n5. 前沿技术探索：跟踪大模型与Agent领域前沿动态，调研主流开源框架，完成新技术选型与落地验证。",
+        "postRequire": "1.本科及以上学历，计算机、软件工程、人工智能等相关专业。\n2.扎实的计算机基础（数据结构、算法、操作系统、网络等），有AI相关项目、实习或竞赛经历者优先。\n3.了解大模型基本原理，对Agent核心概念（记忆、工具调用、任务规划）有基础认知， 熟练掌握Python（熟悉Java更佳），编码规范，工程意识良好。\n4. 有Agent或RAG落地经验，熟悉全链路开发流程。\n5.熟悉LangChain、Dify、Coze等主流开发框架/平台，能独立完成智能体搭建。\n6.掌握Prompt Engineering、RAG检索增强、工具调用、CoT等核心技术。\n7. 了解向量数据库、知识库构建、模型微调等相关技术。\n8. 逻辑清晰，自驱力强，善于学习；具备良好的沟通协作与团队融入能力。\n加分项：\n1.有Prompt工程、LLM应用开发、智能体相关项目或竞赛经历。\n2. 熟悉LangChain、Dify、AutoGen等框架，有实际项目实践。\n3.有向量数据库、信息检索、NLP、知识图谱相关研究或项目经历。\n4. 有高并发、异步、分布式系统开发或优化经验。\n5.具备产品意识与客户思维，能理解业务场景并抽象技术方案。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "武汉市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "77b98ca5be4340fb9d944e920b93a5e8",
+        "adNeedDept": "软件产品",
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-20 17:09:50"
+      },
+      "departments": [
+        {
+          "id": "2db7beeb27014f65a253bbedf2f52f3b",
+          "name": "软件产品",
+          "description": "软件产品基于统一软件技术体系，依托物联感知、人工智能、大数据领域的技术创新，提供云边融合、物信融合、数智融合的智能物联系列化软件产品和服务。产品类别从软件平台到智能算法、数据模型和业务服务。服务领域从综合安防到数字企业、智慧行业和智慧城市。"
+        }
+      ]
+    }
+  ]
+}

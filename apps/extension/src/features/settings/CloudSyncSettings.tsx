@@ -101,7 +101,7 @@ export default function CloudSyncSettings({
     try {
       const next = await runCloudSync();
       setOverview(next);
-      setMessage("本地与 Web 工作台已同步。");
+      setMessage("投递记录已与网页同步。");
     } catch (cause) {
       setError(cloudErrorMessage(cause, "同步失败，请稍后重试"));
     } finally {
@@ -112,7 +112,7 @@ export default function CloudSyncSettings({
   const resyncAll = async () => {
     if (
       !window.confirm(
-        "重新上传本地全部投递，并同步通用简历的允许字段？网申专用字段和原文件仍留在本地。"
+        "重新上传本地全部投递记录？网申资料和原文件仅在本地保存。"
       )
     ) {
       return;
@@ -164,15 +164,14 @@ export default function CloudSyncSettings({
   };
 
   const resetCloudAndLocalResumes = async () => {
-    const userLabel = connection?.user.displayName || "当前账号";
-    if (!window.confirm(`清空 ${userLabel} 的本地简历、原文件和网申档案，并删除云端通用简历内容？\n\n投递与云端岗位定制版本不会删除。云端仅保留不含内容的同步删除标记；备份按保留期限清理。\n此操作不能撤销。`)) return;
+    if (!window.confirm("清空本机全部网申资料、原文件与填写历史？云端简历模板及投递记录保留。此操作不能撤销。")) return;
     setBusy(true);
     setError("");
     setMessage("");
     try {
       await resetLocalAndCloudResumes();
       await refresh();
-      setMessage("已清空本地简历与网申档案，并删除云端通用简历内容；投递与岗位定制版本已保留。");
+      setMessage("已清空本地网申资料与原文件；云端简历模板和投递记录已保留。");
     } catch (cause) {
       setError(cause instanceof Error ? cause.message : "重置失败");
     } finally {
@@ -288,7 +287,7 @@ export default function CloudSyncSettings({
         <span className="cloud-account-icon"><Cloud size={18} aria-hidden="true" /></span>
         <span className="cloud-account-copy">
           <strong>{connection ? connection.user.displayName || connection.user.email : "登录 JobKoI"}</strong>
-          <small>{connection ? overview?.requiresUploadConsent ? "请确认投递与简历的同步范围" : `网站数据已连接 · ${lastSyncedAt}` : "连接后确认投递与简历的同步范围"}</small>
+          <small>{connection ? overview?.requiresUploadConsent ? "请确认投递记录的同步范围" : `网站数据已连接 · ${lastSyncedAt}` : "连接后确认投递记录的同步范围"}</small>
           {(error || overview?.state.lastError) && (
             <em role="alert">{error || overview?.state.lastError}</em>
           )}
@@ -393,7 +392,7 @@ export default function CloudSyncSettings({
               </button>
               <button className="button button--secondary" type="button" onClick={() => void resetCloudAndLocalResumes()} disabled={busy} style={{ color: "#d97706" }}>
                 <Trash2 size={14} />
-                重置简历与网申档案
+                清空本地网申资料
               </button>
               <button className="cloud-disconnect-button" type="button" onClick={() => void deleteLocalData()} disabled={busy}>
                 <Trash2 size={14} />清空本地资料

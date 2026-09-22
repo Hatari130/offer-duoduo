@@ -1,0 +1,41 @@
+{
+  "source_job_id": "3379ce4f884a4f4d9d4d57f931ec1756",
+  "verified_at": "2026-09-15T01:32:10.860Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=3379ce4f884a4f4d9d4d57f931ec1756",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=3379ce4f884a4f4d9d4d57f931ec1756&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "3379ce4f884a4f4d9d4d57f931ec1756",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI算法全栈工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "大模型应用/Agent",
+        "postContent": "智能体系统研发：协助生产流程自动化智能体的开发，构建稳定、可扩展的Agent系统。\n大模型应用集成：基于大语言模型（LLM）进行Prompt工程、工具调用（Tool Use）、RAG、多Agent协作等能力的开发与优化。\n工程落地与服务化：将算法与模型能力封装为生产服务，完成从研发到部署的全链路交付。\n流程自动化设计：深入理解业务生产流程，抽象自动化场景，设计并实现端到端的智能化解决方案。",
+        "postRequire": "计算机科学、人工智能或相关专业硕士研究生及以上学历。\n具备扎实的全栈开发能力，熟悉至少一种主流后端语言（Python/Go/Java等）。\n熟悉主流大模型（如GPT、Claude、开源LLM等）的应用开发，了解Agent框架（如LangChain、LlamaIndex、AutoGen等）。\n具备良好的系统设计与抽象能力，能够将复杂业务流程拆解为可自动化的智能体任务。\n加分项\n有智能体系统开发经验、计算机视觉、多模态大模型等算法研发应用经验，参与过多Agent协作、任务编排等项目。\n有大模型微调、RAG系统搭建或Prompt工程优化经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

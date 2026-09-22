@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4177333170&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:02.275Z",
+  "data": {
+    "jobUnionId": "4177333170",
+    "name": "【北斗实习】大模型应用算法研究员-Agent构建",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】\n以大语言模型（LLM）的 Workflow 、 Agent、对话能力为核心，研究方向包括上下文管理、生成式推荐、Agent Skills、Post-Training、LLM+Decision、LLM +Causal 等。主要业务场景为探索 AI 在骑手运营场景下的落地实践，实现“技术驱动业务范式”的升级转变。\n【建议研究方向】\n1. Agent 工作流与规划：设计具有复杂规划（Planning）与工具调用能力的 Agent，实现任务的自动化拆解与执行。\n2. 生成式用户理解：基于 LLM 进行语义挖掘，构建动态用户画像（Persona），实现生成式的用户*运营策略的个性化推荐。\n3. 上下文与记忆管理：攻克长窗口（Long Context）难题，设计高效的记忆（Memory）与 RAG 机制，保障长周期交互的逻辑连贯。\n4. 行业大模型后训练：通过自动化样本生成、通用评估方案建设、reward设计与探索，大幅提升应用依赖的行业大模型质量。\n5. 决策科学融合：将Decision、Causal等传统决策技术与 LLM 推理结合，提升传统的决策智能表现。\n我们将提供海量的真实业务场景、充足的 GPU 计算资源和极高的探索自由度，目标是产出既有技术深度又能直接创造业务价值的未来 AI 应用范式。",
+    "jobRequirement": "海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1.超级学霸：专业成绩排名前1%。\n2.学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3.竞赛大神：在顶级大赛上获奖。\n4.工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1770363344000,
+    "refreshTime": 1770363344000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型应用算法研究员-Agent构建\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n以大语言模型（LLM）的 Workflow 、 Agent、对话能力为核心，研究方向包括上下文管理、生成式推荐、Agent Skills、Post-Training、LLM+Decision、LLM +Causal 等。主要业务场景为探索 AI 在骑手运营场景下的落地实践，实现“技术驱动业务范式”的升级转变。\n【建议研究方向】\n1. Agent 工作流与规划：设计具有复杂规划（Planning）与工具调用能力的 Agent，实现任务的自动化拆解与执行。\n2. 生成式用户理解：基于 LLM 进行语义挖掘，构建动态用户画像（Persona），实现生成式的用户*运营策略的个性化推荐。\n3. 上下文与记忆管理：攻克长窗口（Long Context）难题，设计高效的记忆（Memory）与 RAG 机制，保障长周期交互的逻辑连贯。\n4. 行业大模型后训练：通过自动化样本生成、通用评估方案建设、reward设计与探索，大幅提升应用依赖的行业大模型质量。\n5. 决策科学融合：将Decision、Causal等传统决策技术与 LLM 推理结合，提升传统的决策智能表现。\n我们将提供海量的真实业务场景、充足的 GPU 计算资源和极高的探索自由度，目标是产出既有技术深度又能直接创造业务价值的未来 AI 应用范式。\n任职要求\n海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1.超级学霸：专业成绩排名前1%。\n2.学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3.竞赛大神：在顶级大赛上获奖。\n4.工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

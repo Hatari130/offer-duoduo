@@ -59,7 +59,7 @@ export const CHANGELOG_RELEASES: ChangelogRelease[] = [
         tag: "new",
         title: "智能岗位定制简历工作台",
         desc: "根据目标企业招聘岗位 JD，由 AI 针对性润色经历与项目亮点，大幅提升简历初筛通过率。",
-        actionLabel: "前往简历中心",
+        actionLabel: "前往简历模板",
         actionHref: "/app/resumes",
         requiresAuth: true
       },

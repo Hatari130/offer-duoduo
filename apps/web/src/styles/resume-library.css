@@ -30,3 +30,13 @@
   .resume-library-welcome__create { width: 100%; }
   .resume-starter-preview { max-width: 19rem; }
 }
+
+.resume-library-card__open,
+.resume-version-card__open {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}

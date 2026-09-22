@@ -1,0 +1,54 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4268845648&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:34.958Z",
+  "data": {
+    "jobUnionId": "4268845648",
+    "name": "Strategy&Data Analysis Intern",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "运营类",
+    "jobFamilyGroup": "产品运营",
+    "cityList": [
+      {
+        "code": "026001001",
+        "name": "圣保罗",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "Keeta是全球领先外卖平台美团旗下的独立品牌，肩负着“帮大家吃得更好，生活更好”的使命。依托美团深耕中国市场15年的技术与运营积淀，我们正引领全球餐饮与商品即时配送服务的创新与发展。\n\n自2023年成立以来，Keeta始终扎根社区并创造价值。我们为用户提供可靠的外卖体验，以智慧技术助餐厅提升经营效率，在为骑手拓宽收入来源的同时，也充分提供安全保障措施。基于这份多方共赢、共同成长的理念，我们的业务已从中国香港稳步拓展至中东及巴西，并持续向世界迈进。",
+    "jobDuty": "中文：\n协助策略团队完成日常数据收集、整理与清洗工作，确保数据的准确性和完整性；\n使用SQL进行数据查询、提取与分析，生成基础数据分析报表，支撑业务决策；\n协助完成数据可视化工作，将分析结果以清晰、易懂的形式呈现；\n配合团队完成其他与数据分析相关的辅助工作，参与简单的数据分析项目。\nEnglish：\nAssist the Strategy team in daily data collection, collation and cleaning to ensure the accuracy and completeness of data;\nUse SQL for data query, extraction and analysis, generate basic data analysis reports to support business decisions;\nAssist in data visualization work and present analysis results in a clear and understandable form;\nCooperate with the team to complete other auxiliary work related to data analysis and participate in simple data analysis projects.",
+    "jobRequirement": "中文：\n学历要求：本科及以上在读，统计学、数学、计算机、信息管理、经济学等相关专业优先；\n技能要求：熟练使用SQL，能够自主编写复杂查询语句，完成数据提取与分析；掌握基本数据分析方法，具备基础的数据敏感度；\n语言要求：英语熟练，能够流畅阅读英文技术文档，具备基本的英文沟通能力；\n实习时间：每周可实习5天，实习周期不少于3个月，能长期稳定实习者优先；\n个人素养：工作认真负责、细心严谨，具备良好的逻辑思维能力和团队协作精神，积极主动，乐于学习新技能。\n\nEnglish：\nEducation Requirement: Undergraduate or above, major in Statistics, Mathematics, Computer Science, Information Management, Economics or related fields is preferred;\nSkill Requirement: Proficient in SQL, able to independently write complex query statements to complete data extraction and analysis; Master basic data analysis methods and have basic data sensitivity;\nLanguage Requirement: Proficient in English, able to read English technical documents fluently and have basic English communication skills;\nInternship Time: Able to intern 5 days a week, internship period of no less than 3 months, priority given to those who can intern stably for a long time;\nPersonal Qualities: Serious and responsible at work, careful and rigorous, with good logical thinking ability and team spirit, proactive and willing to learn new skills.",
+    "precedence": "",
+    "highLight": "中文：\n接触真实业务场景，积累专业数据分析经验，提升SQL及数据分析实战能力；\n有专业导师指导，帮助快速成长，了解行业前沿动态；\n提供合理实习补贴，舒适的办公环境，融洽的团队氛围；\n表现优秀者可获得实习证明，有机会获得转正优先考虑资格。",
+    "otherInfo": null,
+    "firstPostTime": 1781527216000,
+    "refreshTime": 1781527216000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": true
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nStrategy&Data Analysis Intern\n实习-日常实习\n更新时间：2026/06/15\n工作地点：圣保罗\n部门：Keeta\n工作经验：不限\n分享\n立即申请\n部门介绍\nKeeta是全球领先外卖平台美团旗下的独立品牌，肩负着“帮大家吃得更好，生活更好”的使命。依托美团深耕中国市场15年的技术与运营积淀，我们正引领全球餐饮与商品即时配送服务的创新与发展。\n自2023年成立以来，Keeta始终扎根社区并创造价值。我们为用户提供可靠的外卖体验，以智慧技术助餐厅提升经营效率，在为骑手拓宽收入来源的同时，也充分提供安全保障措施。基于这份多方共赢、共同成长的理念，我们的业务已从中国香港稳步拓展至中东及巴西，并持续向世界迈进。\n岗位职责\n中文：\n协助策略团队完成日常数据收集、整理与清洗工作，确保数据的准确性和完整性；\n使用SQL进行数据查询、提取与分析，生成基础数据分析报表，支撑业务决策；\n协助完成数据可视化工作，将分析结果以清晰、易懂的形式呈现；\n配合团队完成其他与数据分析相关的辅助工作，参与简单的数据分析项目。\nEnglish：\nAssist the Strategy team in daily data collection, collation and cleaning to ensure the accuracy and completeness of data;\nUse SQL for data query, extraction and analysis, generate basic data analysis reports to support business decisions;\nAssist in data visualization work and present analysis results in a clear and understandable form;\nCooperate with the team to complete other auxiliary work related to data analysis and participate in simple data analysis projects.\n岗位基本要求\n中文：\n学历要求：本科及以上在读，统计学、数学、计算机、信息管理、经济学等相关专业优先；\n技能要求：熟练使用SQL，能够自主编写复杂查询语句，完成数据提取与分析；掌握基本数据分析方法，具备基础的数据敏感度；\n语言要求：英语熟练，能够流畅阅读英文技术文档，具备基本的英文沟通能力；\n实习时间：每周可实习5天，实习周期不少于3个月，能长期稳定实习者优先；\n个人素养：工作认真负责、细心严谨，具备良好的逻辑思维能力和团队协作精神，积极主动，乐于学习新技能。\nEnglish：\nEducation Requirement: Undergraduate or above, major in Statistics, Mathematics, Computer Science, Information Management, Economics or related fields is preferred;\nSkill Requirement: Proficient in SQL, able to independently write complex query statements to complete data extraction and analysis; Master basic data analysis methods and have basic data sensitivity;\nLanguage Requirement: Proficient in English, able to read English technical documents fluently and have basic English communication skills;\nInternship Time: Able to intern 5 days a week, internship period of no less than 3 months, priority given to those who can intern stably for a long time;\nPersonal Qualities: Serious and responsible at work, careful and rigorous, with good logical thinking ability and team spirit, proactive and willing to learn new skills.\n岗位亮点\n中文：\n接触真实业务场景，积累专业数据分析经验，提升SQL及数据分析实战能力；\n有专业导师指导，帮助快速成长，了解行业前沿动态；\n提供合理实习补贴，舒适的办公环境，融洽的团队氛围；\n表现优秀者可获得实习证明，有机会获得转正优先考虑资格。\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

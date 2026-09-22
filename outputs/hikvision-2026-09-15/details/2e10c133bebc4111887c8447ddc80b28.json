@@ -1,0 +1,140 @@
+{
+  "source_job_id": "2e10c133bebc4111887c8447ddc80b28",
+  "verified_at": "2026-09-15T01:32:19.426Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=2e10c133bebc4111887c8447ddc80b28",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=2e10c133bebc4111887c8447ddc80b28&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "c1ab2d19ce8d49cab1667524a9ab6d7a",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器视觉算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "机器人视觉与标定/点云处理与识别/3DAI/3D传感器",
+        "postContent": "1、负责3D视觉应用领域的深度学习、强化学习的研究与优化，包括但不限于3D/2D图像生成，深度估计，图像分割，目标检测、位姿估计，轨迹规划等；\n2、负责3D点云/深度图/RGBD数据处理、算子优化，包括但不限于滤波、匹配、拼接、分割和识别等；\n3、负责视觉和标定算法开发，应用于高精度测量、抓取、定位引导、物流等工业场景。",
+        "postRequire": "1、硕士及以上学历；计算机、模式识别、应用数学、自动控制、电子、光学、仪器等相关专业；\n2、有扎实的编程基础和数学基础，熟练掌握C/C++；\n3、熟悉OpenCV、OpenGL、PCL、CGAL等一种或多种常用开源库；有3D知识的系统思维，对立体视觉、机器视觉、机器人系统有深入的理解与认识；能系统并深入分析问题解决问题；\n4、具备机器人系统的知识技能，包括机械臂运动、系统标定、视觉应用，有相关应用开发经验者优先。\n5、具备3D视觉相关深度学习知识技能，熟练掌握Python，熟练使用PyTorch或其它开源训练框架，有深度学习在机器视觉领域应用开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "2e10c133bebc4111887c8447ddc80b28",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-28 09:59:35"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "319a9d1c01924e0bb5688c44b1f2d74f",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器视觉算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "AI",
+        "postContent": "1、机器视觉AI方向关键算法研发，包括分类、目标检测、分割、无监督学习等核心算法研发；\n2、深度学习相关模型网络设计、优化及相关部署；\n3、应用于缺陷检测、定位引导、OCR等相关场景。",
+        "postRequire": "1、硕士及以上学历；计算机、模式识别、应用数学、自动控制等相关专业；\n2、有扎实的编程基础，熟练掌握C/C++；\n3、对图像处理、机器视觉和深度学习有较深入的理解与认识；\n4、具有扎实的数学功底和良好的英语阅读能力；\n5、熟悉各种典型CNN网络的适用场景以及使用方法，熟悉TensorFlow、Caffe、PyTorch等一种或多种主流深度学习框架中;\n6、具有机器视觉AI算法开发或项目应用经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "2e10c133bebc4111887c8447ddc80b28",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-27 17:57:43"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "b1ec29169f47464092412cb07bf56e76",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器视觉算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "AI",
+        "postContent": "1、机器视觉AI方向关键算法研发，包括分类、目标检测、分割、无监督学习等核心算法研发；\n2、深度学习相关模型网络设计、优化及相关部署；\n3、应用于缺陷检测、定位引导、OCR等相关场景。",
+        "postRequire": "1、硕士及以上学历；计算机、模式识别、应用数学、自动控制等相关专业；\n2、有扎实的编程基础，熟练掌握C/C++；\n3、对图像处理、机器视觉和深度学习有较深入的理解与认识；\n4、具有扎实的数学功底和良好的英语阅读能力；\n5、熟悉各种典型CNN网络的适用场景以及使用方法，熟悉TensorFlow、Caffe、PyTorch等一种或多种主流深度学习框架中;\n6、具有机器视觉AI算法开发或项目应用经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "西安市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "2e10c133bebc4111887c8447ddc80b28",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-27 17:57:44"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "ad6fe8a9cc504bb3a7882fb839a43d15",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器视觉算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "机器人视觉与标定/点云处理与识别/3DAI/3D传感器",
+        "postContent": "1、负责3D视觉应用领域的深度学习、强化学习的研究与优化，包括但不限于3D/2D图像生成，深度估计，图像分割，目标检测、位姿估计，轨迹规划等；\n2、负责3D点云/深度图/RGBD数据处理、算子优化，包括但不限于滤波、匹配、拼接、分割和识别等；\n3、负责视觉和标定算法开发，应用于高精度测量、抓取、定位引导、物流等工业场景。",
+        "postRequire": "1、硕士及以上学历；计算机、模式识别、应用数学、自动控制、电子、光学、仪器等相关专业；\n2、有扎实的编程基础和数学基础，熟练掌握C/C++；\n3、熟悉OpenCV、OpenGL、PCL、CGAL等一种或多种常用开源库；有3D知识的系统思维，对立体视觉、机器视觉、机器人系统有深入的理解与认识；能系统并深入分析问题解决问题；\n4、具备机器人系统的知识技能，包括机械臂运动、系统标定、视觉应用，有相关应用开发经验者优先。\n5、具备3D视觉相关深度学习知识技能，熟练掌握Python，熟练使用PyTorch或其它开源训练框架，有深度学习在机器视觉领域应用开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "西安市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "2e10c133bebc4111887c8447ddc80b28",
+        "adNeedDept": "海康机器人",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-28 09:59:39"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

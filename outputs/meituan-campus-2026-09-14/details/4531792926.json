@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531792926&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:44.406Z",
+  "data": {
+    "jobUnionId": "4531792926",
+    "name": "【LongCat大模型人才校招】基座大模型工程架构专家",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1.面向多种算力硬件和高性能网络设计分布式训练架构，包括样本IO优化、计算图编译与执行、多维度并行策略、多模型交互流程等，支持万亿参数模型在几万张GPU集群高效稳定训练，实现多种模态的基座和推理模型的高效稳定训练。\n2.面向多种算力、网络环境和应用场景，设计并实现高性能的模型推理架构，应用量化、剪枝等模型压缩方法，持续降低推理成本。\n3.通过手工优化方法,对特化模型子结构和硬件设备上实现SOTA性能，持续迭代基于编译的优化方案，提升通用优化的适用性、优化效果以及对新硬件的覆盖能力。\n4.管理及优化全公司算法团队硬件资源，通过算法预估与启发式策略，对全公司万级别节点的大规模GPU/CPU集群构建精细化调度服务能力，持续提升资源使用效率。\n【为什么是我们】\n1.业界前列的算力规模，海量数据和丰富的应用场景，挑战与机遇并存。\n2.协同算法团队深度参与大模型项目，Codesign设计并训练行业领先的大模型。\n3.从数据规模、集群体量、算法和业务复杂度多个维度提供了技术挑战和锻炼发展的机会，个人成长速度快。\n4.追求卓越和鼓励创新的团队氛围。",
+    "jobRequirement": "1.具备良好的计算机基础素养和分析解决问题的能力，熟练掌握C++或Python。\n2.学习能力强，对机器学习系统优化有技术热情，富有极客精神。\n3.熟悉PyTorch框架和TVM/MLIR等编译优化技术的优先。\n4.熟悉GPU、NPU硬件架构，熟练使用CUDA，NCCL，RDMA编程的优先。\n5.熟悉机器学习、深度学习算法，希望从事工程架构方向的优先。\n6.有分布式系统、高性能计算实际项目经验的优先。\n7.有开源项目贡献代码者优先。\n8.有在OSDI、MLSys、NIPS、KDD、ICML等会议或期刊中有论文发表者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780398347000,
+    "refreshTime": 1780459820000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】基座大模型工程架构专家\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1.面向多种算力硬件和高性能网络设计分布式训练架构，包括样本IO优化、计算图编译与执行、多维度并行策略、多模型交互流程等，支持万亿参数模型在几万张GPU集群高效稳定训练，实现多种模态的基座和推理模型的高效稳定训练。\n2.面向多种算力、网络环境和应用场景，设计并实现高性能的模型推理架构，应用量化、剪枝等模型压缩方法，持续降低推理成本。\n3.通过手工优化方法,对特化模型子结构和硬件设备上实现SOTA性能，持续迭代基于编译的优化方案，提升通用优化的适用性、优化效果以及对新硬件的覆盖能力。\n4.管理及优化全公司算法团队硬件资源，通过算法预估与启发式策略，对全公司万级别节点的大规模GPU/CPU集群构建精细化调度服务能力，持续提升资源使用效率。\n【为什么是我们】\n1.业界前列的算力规模，海量数据和丰富的应用场景，挑战与机遇并存。\n2.协同算法团队深度参与大模型项目，Codesign设计并训练行业领先的大模型。\n3.从数据规模、集群体量、算法和业务复杂度多个维度提供了技术挑战和锻炼发展的机会，个人成长速度快。\n4.追求卓越和鼓励创新的团队氛围。\n任职要求\n1.具备良好的计算机基础素养和分析解决问题的能力，熟练掌握C++或Python。\n2.学习能力强，对机器学习系统优化有技术热情，富有极客精神。\n3.熟悉PyTorch框架和TVM/MLIR等编译优化技术的优先。\n4.熟悉GPU、NPU硬件架构，熟练使用CUDA，NCCL，RDMA编程的优先。\n5.熟悉机器学习、深度学习算法，希望从事工程架构方向的优先。\n6.有分布式系统、高性能计算实际项目经验的优先。\n7.有开源项目贡献代码者优先。\n8.有在OSDI、MLSys、NIPS、KDD、ICML等会议或期刊中有论文发表者优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

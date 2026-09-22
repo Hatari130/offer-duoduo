@@ -66,3 +66,44 @@ test("review accepts only selected changes and rejects stale edits", () => {
   assert.equal(source.selfIntroduction, "原总结");
   assert.throws(() => applyReviewedResumeChanges({ ...source, selfIntroduction: "手工修改" }, proposal, ["summary"]), /已修改/);
 });
+
+
+test("cloud templates retain old content while device clients cannot sync or delete them", async t => {
+  const store = new MemoryStore({ persistence: false });
+  const config = { ...loadApiConfig({}), host: "127.0.0.1", port: 0, opportunitySourceUrl: undefined, opportunitySeedPath: undefined };
+  const app = createOfferFlowServer({ config, store });
+  app.server.listen(0, config.host);
+  await once(app.server, "listening");
+  t.after(() => new Promise(resolve => app.server.close(resolve)));
+  const user = store.createUser("local-separation@example.invalid", "test", "test-password");
+  const expiry = new Date(Date.now() + 3600000).toISOString();
+  const web = store.createSession(user.id, "web", expiry).accessToken;
+  const device = store.createSession(user.id, "device", expiry, "old-plugin", "Old plugin").accessToken;
+  const other = store.createUser("other-separation@example.invalid", "other", "test-password");
+  const otherToken = store.createSession(other.id, "web", expiry).accessToken;
+  const request = async (token, path, method = "GET", body) => {
+    const response = await fetch(`http://${config.host}:${app.server.address().port}${path}`, {
+      method, headers: { authorization: `Bearer ${token}`, "content-type": "application/json" },
+      ...(body ? { body: JSON.stringify(body) } : {})
+    });
+    return { status: response.status, body: await response.json() };
+  };
+  const profile = { ...createEmptyPersonalProfile(), fullName: "Existing User", phone: "13800000000" };
+  await store.syncResumeTemplates(user.id, [{ id: "old-template", revision: 0, name: "原有简历", profile, origin: "extension", createdAt: expiry, updatedAt: expiry }]);
+  for (const [path, method, body] of [
+    ["/v1/resume-templates/sync", "POST", { templates: [] }],
+    ["/v1/resume-templates/old-template", "DELETE"],
+    ["/v1/resume-templates", "GET"],
+    ["/v1/resume-versions", "GET"],
+    ["/v1/tailor-tasks", "POST", {}]
+  ]) assert.equal((await request(device, path, method, body)).status, 403);
+  const listed = await request(web, "/v1/resume-templates");
+  assert.equal(listed.body.data.templates[0].profile.fullName, "Existing User");
+  assert.equal(listed.body.data.templates[0].name, "原有简历");
+  const old = listed.body.data.templates[0];
+  const changed = await request(web, "/v1/resume-templates/old-template", "PATCH", { name: "保留后继续编辑", document: createResumeDocument({ id: "old-template", title: "保留后继续编辑", profile }), expectedRevision: old.revision });
+  assert.equal(changed.status, 200);
+  assert.equal((await request(otherToken, "/v1/resume-templates")).body.data.templates.length, 0);
+  assert.equal((await request(otherToken, "/v1/resume-templates/old-template", "DELETE")).status, 404);
+  assert.equal((await request(web, "/v1/resume-templates")).body.data.templates.length, 1);
+});

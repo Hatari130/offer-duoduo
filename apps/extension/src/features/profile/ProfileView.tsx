@@ -1,5 +1,4 @@
-import { toCloudResumeProfile, type CloudResumeProfile, composeApplicationProfile, detachedApplicationEntries, type LocalApplicationProfile } from "@offerflow/domain";
-import { mergeRemoteResumeTemplates, resumeSyncFingerprint } from "@/infrastructure/sync/resumeTemplateSync";
+import { toCloudResumeProfile, type CloudResumeProfile, detachedApplicationEntries, type LocalApplicationProfile } from "@offerflow/domain";
 import { useEffect, useMemo, useState, useRef, type ReactNode } from "react";
 import {
   Check,
@@ -18,10 +17,10 @@ import { normalizeRepeatableFormFields } from "@/features/profile/repeatableForm
 import { prepareAutofillPersistence, profileStorageWarning } from "@/features/profile/autofillPersistence";
 import {
   ACTIVE_RESUME_KEY,
-  applyResumeFixedProfile,
-  extractResumeFixedProfile,
   loadActiveResumeId,
   loadResumeLibrary,
+  createLocalApplicationProfile,
+  deleteLocalApplicationRecord,
   PROFILE_KEY,
   APPLICATION_PROFILE_KEY,
   loadProfile,
@@ -31,15 +30,10 @@ import {
   loadResumeUsage,
   type ResumeUsageSnapshot,
   RESUMES_KEY,
-  saveBaseProfile,
-  saveResumeLibrary,
   setActiveResumeId,
   EMPTY_PROFILE,
-  isStarterProfile,
   type StoredResume
 } from "@/infrastructure/storage/storage";
-import { deleteCloudResumeTemplate } from "@/infrastructure/sync/cloudSync";
-import { loadCloudConnection } from "@/infrastructure/sync/syncState";
 import { resolveProfileExperienceKind } from "@/shared/types";
 import type {
   ProfileExperienceKind,
@@ -674,22 +668,6 @@ export default function ProfileView({
   useEffect(() => { if (!draftDirtyRef.current) setDraft(profile); }, [profile]);
 
   useEffect(() => {
-    if (isStarterProfile(draft)) {
-      void (async () => {
-        const conn = await loadCloudConnection();
-        const cleanProfile: PersonalProfile = {
-          ...EMPTY_PROFILE,
-          fullName: conn?.user?.displayName || "",
-          email: conn?.user?.email || ""
-        };
-        setDraft(cleanProfile);
-        setResumeFileName("");
-        await onSave(cleanProfile);
-      })();
-    }
-  }, [draft, onSave]);
-
-  useEffect(() => {
     let cancelled = false;
     void (async () => {
       const [library, activeId] = await Promise.all([loadResumeLibrary(), loadActiveResumeId()]);
@@ -790,7 +768,7 @@ export default function ProfileView({
   const values = useMemo(() => profileValues(draft), [draft]);
   const currentResume = resumeLibrary.find((resume) => resume.id === activeResumeId);
   const hasPendingChanges = useMemo(() => {
-    const baseline = currentResume ? composeApplicationProfile(currentResume.profile, localArchive, currentResume.id) : profile;
+    const baseline = currentResume ? currentResume.profile : profile;
     const sourceChanged = Boolean(
       currentResume && resumeFileName !== (currentResume.sourceFileName || "")
     );
@@ -801,20 +779,22 @@ export default function ProfileView({
     setDraft((current) => ({ ...current, [key]: value }));
 
   const selectResume = async (id: string) => {
+    if (hasPendingChanges && !window.confirm("当前资料有未保存修改，放弃修改并切换？")) return;
     const selected = resumeLibrary.find((resume) => resume.id === id);
     if (!selected) return;
+    draftDirtyRef.current = false;
     setActiveResumeIdState(id);
     await setActiveResumeId(id);
     const selectedProfile = await loadProfile();
     setDraft(selectedProfile);
     setResumeFileName(selected.sourceFileName || "");
     await onSave(selectedProfile);
-    setStatus(`已切换当前网申简历：${selected.name} · 插件资料已同步`);
+    setStatus(`已切换当前网申资料：${selected.name} · 仅用于本机填写`);
   };
 
   const persistDraft = async () => {
     const syncedProfile = { ...draft, updatedAt: new Date().toISOString() };
-    const nextLibrary = await saveApplicationProfile(syncedProfile, activeResumeId, resumeFileName || undefined);
+    const nextLibrary = await saveApplicationProfile(syncedProfile, activeResumeId, resumeFileName || undefined, currentResume?.localRevision || (currentResume ? 1 : undefined));
     const nextActiveId = await loadActiveResumeId() || nextLibrary[0]?.id || "";
     await onSave(syncedProfile);
     setActiveResumeIdState(nextActiveId);
@@ -829,7 +809,7 @@ export default function ProfileView({
       await persistDraft();
       setStorageWarning(undefined);
       setOpenSections(COLLAPSED_SECTIONS);
-      setStatus("已保存到本地，公共资料已更新通用简历；连接云端后同步");
+      setStatus("已保存这份本地网申资料");
     } catch (error) {
       const warning = profileStorageWarning(error);
       if (warning) {
@@ -1077,19 +1057,14 @@ export default function ProfileView({
 
   const deleteCurrentResume = async () => {
     if (!currentResume) return;
-    if (!window.confirm(`确定删除《${currentResume.name}》吗？\n删除后将从本地与云端彻底移除，不可恢复。`)) return;
+    if (!window.confirm(`确定删除《${currentResume.name}》吗？\n只删除本机这份资料，云端简历模板不受影响。`)) return;
     setBusy(true);
     try {
       const targetId = currentResume.id;
-      const nextLibrary = resumeLibrary.filter((item) => item.id !== targetId);
-      const nextActiveId = nextLibrary[0]?.id || "";
-      const nextActiveResume = nextLibrary.find((item) => item.id === nextActiveId);
-
-      await Promise.all([
-        deleteCloudResumeTemplate(targetId),
-        saveResumeLibrary(nextLibrary),
-        setActiveResumeId(nextActiveId)
-      ]);
+      const nextLibrary = await deleteLocalApplicationRecord(targetId);
+      const nextActiveId = await loadActiveResumeId() || "";
+      const nextActiveResume = nextLibrary.find(item => item.id === nextActiveId);
+      draftDirtyRef.current = false;
 
       setResumeLibrary(nextLibrary);
       setActiveResumeIdState(nextActiveId);
@@ -1100,11 +1075,10 @@ export default function ProfileView({
         await onSave(nextActiveResume.profile);
         setStatus(`已删除《${currentResume.name}》，当前切换为《${nextActiveResume.name}》`);
       } else {
-        const conn = await loadCloudConnection();
         const cleanProfile: PersonalProfile = {
           ...EMPTY_PROFILE,
-          fullName: conn?.user?.displayName || "",
-          email: conn?.user?.email || ""
+          fullName: "",
+          email: ""
         };
         setDraft(cleanProfile);
         setResumeFileName("");
@@ -1119,25 +1093,21 @@ export default function ProfileView({
   };
 
 
-  const resolveResumeConflict = async (resume: StoredResume, keepBoth: boolean) => {
-    if (!resume.syncConflict) return;
+  const addLocalProfile = async () => {
+    if (hasPendingChanges && !window.confirm("当前资料有未保存修改，放弃修改并添加新资料？")) return;
+    const name = window.prompt("为新的本地网申资料命名", `网申资料 ${resumeLibrary.length + 1}`);
+    if (name === null) return;
     setBusy(true);
     try {
-      const library = await loadResumeLibrary();
-      const current = library.find(item => item.id === resume.id);
-      if (!current?.syncConflict) return;
-      const remote = current.syncConflict;
-      const prepared = library.map(item => item.id === current.id ? { ...item, cloudBaseline: resumeSyncFingerprint(item), syncConflict: undefined } : item);
-      const next = mergeRemoteResumeTemplates(prepared, [remote]);
-      if (keepBoth) next.push({ ...current, id: newId("resume"), name: `${current.name}（本地副本）`, cloudBaseline: undefined, cloudRevision: undefined, syncConflict: undefined });
-      await saveResumeLibrary(next, { origin: "cloud" });
-      const selected = next.find(item => item.id === activeResumeId) || next[0];
-      await setActiveResumeId(selected?.id || "");
+      const created = await createLocalApplicationProfile(name);
+      draftDirtyRef.current = false;
       setResumeLibrary(await loadResumeLibrary());
-      setActiveResumeIdState(selected?.id || "");
-      setDraft(await loadProfile());
-      setStatus(keepBoth ? "已保留本地副本，原母版使用云端内容" : "已采用云端内容，本地网申补充资料仍保留");
-    } catch (cause) { setStatus(cause instanceof Error ? cause.message : "处理冲突失败，请重试"); }
+      setActiveResumeIdState(created.id);
+      setDraft(created.profile);
+      setResumeFileName("");
+      await onSave(created.profile);
+      setStatus("已添加空白网申资料，各份资料独立保存在本机");
+    } catch (error) { setStatus(error instanceof Error ? error.message : "添加失败，请重试"); }
     finally { setBusy(false); }
   };
 
@@ -1146,22 +1116,14 @@ export default function ProfileView({
 
   return (
     <section className="profile-view">
-      {resumeLibrary.filter(resume => resume.syncConflict).map(resume => <section key={resume.id} className="profile-review-panel" role="alert">
-        <div><strong>《{resume.name}》存在同步冲突</strong><p>本地和云端内容都已保留。选择保留双方，或采用云端版本。</p>
-          <details><summary>比较两边的内容</summary><strong>本地内容</strong><ResumeFactsPreview profile={toCloudResumeProfile(resume.profile)} /><strong>云端内容</strong>{resume.syncConflict?.deletedAt ? <p>云端已删除这份母版</p> : <ResumeFactsPreview profile={resume.syncConflict!.profile} />}</details>
-          <button type="button" disabled={busy || hasPendingChanges} onClick={() => void resolveResumeConflict(resume, true)}>保留双方</button>
-          <button type="button" disabled={busy || hasPendingChanges} onClick={() => void resolveResumeConflict(resume, false)}>采用云端版本</button>
-        </div>
-      </section>)}
       {detachedApplicationEntries(draft, localArchive).length > 0 && <details className="profile-review-panel">
-        <summary>查看未在当前简历展示的本地网申资料</summary>
+        <summary>恢复升级前保留的历史补充资料</summary>
         <div>{detachedApplicationEntries(draft, localArchive).map(({ collection, id, entry }) => <div key={`${collection}:${id}`}>
           <strong>{String(entry.organization || entry.school || entry.name || entry.type || "历史记录")}</strong>
           <p>该记录的网申补充信息保留在本机，可恢复到当前资料后编辑。</p>
           <button type="button" onClick={() => setDraft(current => ({ ...current, [collection]: [...(current[collection] || []), entry] }) as PersonalProfile)}>恢复这条记录</button>
         </div>)}</div>
       </details>}
-      {currentResume?.kind === "job" && <aside className="profile-review-panel"><p>当前使用：{currentResume.company} · {currentResume.position}。公共事实修改会更新母版，岗位表达保留在这份简历中。</p></aside>}
       {usageSnapshots.length > 0 && <details className="profile-review-panel"><summary>查看简历填写记录（仅本机）</summary>
         <div>{[...usageSnapshots].reverse().map(snapshot => <details key={snapshot.id}>
           <summary>{snapshot.name} · {new Date(snapshot.filledAt).toLocaleString()} · {snapshot.filledCount} 个字段</summary>
@@ -1173,30 +1135,33 @@ export default function ProfileView({
       {onTailor && (
         <div className="profile-autofill-card profile-tailor-card">
           <span><Sparkles size={20} /></span>
-          <div><strong>为当前岗位定制简历</strong><small>点击后自动读取 JD、匹配经历并生成预览</small></div>
+          <div><strong>为当前岗位定制简历</strong><small>前往网页使用云端简历模板制作简历</small></div>
           <button onClick={onTailor}>
             <Wand2 size={14} />
-            开始定制
+            打开简历模板
           </button>
         </div>
       )}
 
+      <div className="profile-review-panel"><p>每份网申资料独立保存在当前浏览器，不与网页简历模板同步。</p>
+        <button type="button" onClick={() => void addLocalProfile()} disabled={busy}><Plus size={14} />手动添加资料</button>
+      </div>
       {resumeLibrary.length > 0 && (
         <div className="profile-resume-switcher">
           <div className="profile-resume-switcher-copy">
             <span><FileCheck2 size={16} /></span>
             <div>
-              <strong>当前网申简历</strong>
+              <strong>当前网申资料</strong>
               <small>{storageWarning ? "资料未完整保存" : hasPendingChanges ? "有修改待保存" : "已保存到本地"}</small>
             </div>
           </div>
-          <select aria-label="选择当前网申简历" value={activeResumeId} onChange={(event) => void selectResume(event.target.value)} disabled={busy}>
+          <select aria-label="选择当前网申资料" value={activeResumeId} onChange={(event) => void selectResume(event.target.value)} disabled={busy}>
             {resumeLibrary.map((resume) => <option key={resume.id} value={resume.id}>{resume.name}</option>)}
           </select>
           <button
             type="button"
             className="profile-resume-delete-btn"
-            title="删除此简历（同步从云端删除）"
+            title="仅删除这份本地网申资料"
             onClick={() => void deleteCurrentResume()}
             disabled={busy || !currentResume}
             style={{
@@ -1483,7 +1448,7 @@ export default function ProfileView({
       </ProfileSection>
 
       <div className="profile-save-bar">
-        <span><ShieldCheck size={15} />不会发送给 AI · 保存后同步简历中心</span>
+        <span><ShieldCheck size={15} />仅保存在当前浏览器 · 每份资料独立保存</span>
         <button onClick={save} disabled={busy}><Check size={15} />保存个人资料</button>
       </div>
     </section>

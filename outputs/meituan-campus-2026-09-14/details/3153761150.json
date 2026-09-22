@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153761150&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:15.173Z",
+  "data": {
+    "jobUnionId": "3153761150",
+    "name": "【大模型北斗实习】预训练架构优化",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "本课题专注于大规模预训练场景下，分布式系统架构优化前沿技术探索。通过软硬件协同设计和算法工程联合优化，降低大规模预训练的成本和迭代周期。\n研究内容包括但不限于：1）多维并行架构的优化，如流水线并行（PP）、张量并行（TP）、数据并行（DP）等并行架构在特定硬件、模型架构下的联合优化。\n2）MoE 模型结构和训练工程架构的联合优化探索，如大量小专家场景的训练结构优化。\n3）联合算法工程师深入合作，进行Attention机制的训练策略和架构优化探索，如线性注意力、稀疏注意力等，提升超长序列建模效果和训练效率。\n4）优化多芯片架构、异地多机房环境下的异构训练系统，解锁大规模训练上推的单地域机房容量和电力限制。\n5）FP8、FP4 等低精度浮点数下的训练策略和训练性能优化探索。",
+    "jobRequirement": "海内外高校在校学生，且以下条件至少满足一项：\n1）超级学霸：专业成绩排名前5%。\n2）学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3）竞赛大神：在顶级大赛上获奖。\n4）工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309542000,
+    "refreshTime": 1747963940000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】预训练架构优化\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n本课题专注于大规模预训练场景下，分布式系统架构优化前沿技术探索。通过软硬件协同设计和算法工程联合优化，降低大规模预训练的成本和迭代周期。\n研究内容包括但不限于：1）多维并行架构的优化，如流水线并行（PP）、张量并行（TP）、数据并行（DP）等并行架构在特定硬件、模型架构下的联合优化。\n2）MoE 模型结构和训练工程架构的联合优化探索，如大量小专家场景的训练结构优化。\n3）联合算法工程师深入合作，进行Attention机制的训练策略和架构优化探索，如线性注意力、稀疏注意力等，提升超长序列建模效果和训练效率。\n4）优化多芯片架构、异地多机房环境下的异构训练系统，解锁大规模训练上推的单地域机房容量和电力限制。\n5）FP8、FP4 等低精度浮点数下的训练策略和训练性能优化探索。\n任职要求\n海内外高校在校学生，且以下条件至少满足一项：\n1）超级学霸：专业成绩排名前5%。\n2）学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3）竞赛大神：在顶级大赛上获奖。\n4）工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

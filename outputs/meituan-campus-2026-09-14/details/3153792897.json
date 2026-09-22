@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153792897&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:14.800Z",
+  "data": {
+    "jobUnionId": "3153792897",
+    "name": "【大模型北斗实习】大模型模型压缩技术探索",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "本课题专注于大模型前沿压缩技术探索，通过压缩技术降低大模型的推理部署成本。课题研究内容包括但不限于:\n1) 探索多种模态（文本、语音、视觉）的模型压缩技术，不限剪枝、蒸馏、稀疏、量化、低秩化。\n2) 探索新轻量化结构，不限 MoE、Mamba、Sparse-Attention、MTP，实现训练和推理的协同优化。\n3) 探索低精度量化算法，以及新型量化格式，不限预训练和后训练过程，实现大模型的极致压缩。\n4) 高性能算子设计和开发，实现极致的压缩推理性能。",
+    "jobRequirement": "1）熟悉常用的模型压缩技术：剪枝、量化、蒸馏、稀疏化。\n2）熟悉 vLLM、SGLang 等开源推理框架。\n3）熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）有影响力的开源项目中做出过核心贡献。\n2）发表过高水平论文优先（如ICLR,ICML,ACL,EMNLP等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309542000,
+    "refreshTime": 1747963940000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】大模型模型压缩技术探索\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n本课题专注于大模型前沿压缩技术探索，通过压缩技术降低大模型的推理部署成本。课题研究内容包括但不限于:\n1) 探索多种模态（文本、语音、视觉）的模型压缩技术，不限剪枝、蒸馏、稀疏、量化、低秩化。\n2) 探索新轻量化结构，不限 MoE、Mamba、Sparse-Attention、MTP，实现训练和推理的协同优化。\n3) 探索低精度量化算法，以及新型量化格式，不限预训练和后训练过程，实现大模型的极致压缩。\n4) 高性能算子设计和开发，实现极致的压缩推理性能。\n任职要求\n1）熟悉常用的模型压缩技术：剪枝、量化、蒸馏、稀疏化。\n2）熟悉 vLLM、SGLang 等开源推理框架。\n3）熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）有影响力的开源项目中做出过核心贡献。\n2）发表过高水平论文优先（如ICLR,ICML,ACL,EMNLP等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

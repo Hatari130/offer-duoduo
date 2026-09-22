@@ -1,0 +1,41 @@
+{
+  "source_job_id": "dd4675555c3a4c528df1f229013e70dd",
+  "verified_at": "2026-09-15T01:32:05.858Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=dd4675555c3a4c528df1f229013e70dd",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=dd4675555c3a4c528df1f229013e70dd&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "dd4675555c3a4c528df1f229013e70dd",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "光电传感器开发工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件设计",
+        "techDire": "不限",
+        "postContent": "1、从事可见光，短波，中波，长波红外传感器的研发工作；\n2、新型光电传感器研发。",
+        "postRequire": "1、硕士及以上学历，博士优先；\n2、满足以下条件之一：\n1）研究方向为短波红外（InGaAs，量子点)红外探测器；\n2）研究方向为异质（INGaAS，制冷等）红外焦平面阵列倒装焊接工艺，熟悉整个封装工艺流程，有实际工程经验优先；\n3）研究方向为二类超晶格器件，材料；\n4）研究方向为可见光PD器件；\n5）研究方向为Xray成像探测器；\n6）有太赫兹成像传感器研发经验或者经历。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

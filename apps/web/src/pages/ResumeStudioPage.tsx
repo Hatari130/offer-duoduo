@@ -885,10 +885,10 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
     } catch (cause) { setError(cause instanceof Error ? cause.message : "副本保存失败，请重试"); }
   };
 
-  const publishToExtension = async () => {
+  const confirmVersion = async () => {
     if (!document) return false;
     const saved = await saveDocumentSnapshot(structuredClone(document), "reviewed");
-    if (saved) setPublishNotice("已确认此版本。插件同步后，可在网申信息中心选择这份岗位简历。");
+    if (saved) setPublishNotice("已确认并保存到云端，可继续导出简历。");
     return saved;
   };
 
@@ -1011,7 +1011,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
         <h1>无法打开简历工作台</h1>
         <p>{error}</p>
         <button className="primary-button" onClick={() => navigate(taskId ? "/app/applications" : "/app/resumes")}>
-          {taskId ? "返回投递管理" : "返回简历中心"}
+          {taskId ? "返回投递管理" : "返回简历模板"}
         </button>
       </main>
     );
@@ -1020,7 +1020,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
   if (!document) {
     return (
       <main className="resume-studio-state resume-studio-state--loading" role="status">
-        <span className="sr-only">正在准备简历工作台，正在同步母版简历...</span>
+        <span className="sr-only">正在准备简历工作台，正在读取云端简历...</span>
         <div className="studio-skeleton" aria-hidden="true">
           <div className="studio-skeleton__topbar">
             <span className="skel studio-skeleton__back" />
@@ -1077,14 +1077,14 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
         <div className="resume-topbar-left">
           <button
             className="resume-back"
-            aria-label={taskId ? "返回投递管理" : "返回简历中心"}
+            aria-label={taskId ? "返回投递管理" : "返回简历模板"}
             onClick={() => navigate(taskId ? "/app/applications" : "/app/resumes")}
           >
             <ArrowLeft size={17} aria-hidden="true" />
-            <span>{taskId ? "投递管理" : "简历中心"}</span>
+            <span>{taskId ? "投递管理" : "简历模板"}</span>
           </button>
           <div className="resume-studio-title">
-            <span className="resume-title-badge">{taskId ? "岗位定制" : "通用母版"}</span>
+            <span className="resume-title-badge">{taskId ? "岗位定制" : "通用简历"}</span>
             <strong title={taskTitle}>{taskTitle}</strong>
           </div>
         </div>
@@ -1129,7 +1129,7 @@ export function ResumeStudioPage({ taskId, templateId }: { taskId?: string; temp
             </button>
           )}
 
-          {taskId && <button type="button" className="secondary-button" disabled={tailoring} onClick={() => void publishToExtension()}>确认并同步到插件</button>}
+          {taskId && <button type="button" className="secondary-button" disabled={tailoring} onClick={() => void confirmVersion()}>确认此版本</button>}
           <button className="secondary-button resume-export-button" onClick={handleExportPdf} title="快捷打印或另存为 PDF">
             <Download size={15} aria-hidden="true" />
             <span>导出 PDF</span>

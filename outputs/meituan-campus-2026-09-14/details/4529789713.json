@@ -1,0 +1,76 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4529789713&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:45.854Z",
+  "data": {
+    "jobUnionId": "4529789713",
+    "name": "【北斗】广告大模型应用算法工程师-OneModel广告算法研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【愿景】\n广告系统目前正站在从多级漏斗到端到端大模型的范式跃迁起点，传统的多级漏斗架构（召回→粗排→精排→混排）因各阶段目标割裂、信息截断，存在系统性效率损耗。随着 LLM 表征能力与 Scaling 特性日趋成熟，以端到端生成式模型统一广告全链路决策已成为行业的核心探索方向。本岗位面向美团广告 OneModel 方向，核心任务是研究并落地端到端广告大模型，以统一大模型完成从用户行为信号到最终展示序列的全链路决策，最大化用户体验和平台收益。\n\n【你将参与】\n1.端到端广告大模型架构设计。基于 Causal Transformer、MLA、MoE 等架构技术，设计突破多级漏斗限制的端到端广告决策框架，支持融合用户行为序列与实时上下文、直接输出具备位置价值感知的展示序列；探索 Semantic ID、动态候选索引等广告生成式检索关键技术。\n2.广告场景多阶段训练范。结合广告数据稀疏特性，设计\"海量用户交互 pre-training + 多目标商业价值 post-training\"的分阶段训练体系；研究适配广告约束的 RLHF/价值对齐方法，在用户体验与平台收益之间建立可持续的优化路径。\n3.广告场景 Scaling Law 研究。探索广告场景下\"参数量/数据规模/训练算力 → 业务效果\"的转化规律；研究 inference-time scaling、process reward model 等推理阶段增效方向，推动团队迭代范式从人工特征设计向算力驱动跃迁。",
+    "jobRequirement": "【任职资格】\n1.在搜广推、大语言模型、序列建模、强化学习等一个或多个方向具有系统性研究积累，并有工业级落地经验。\n2.在 KDD、SIGIR、WWW、NeurIPS、ICML、ICLR、ACL、EMNLP 等国际顶级会议有论文发表，或主导过具有行业影响力的工业级算法系统研发。\n3.熟悉 Python 或 C++，具备大规模分布式训练与在线推理系统的独立研发能力；有千亿参数级模型训练经验者优先。\n4.具备将前沿研究成果推进到线上生产环境的完整经验，能够在严格延迟约束与业务指标要求下完成系统交付。\n【为什么是我们】\n1.核心业务场景：美团广告是公司核心商业化引擎，算法研究成果直接影响公司盈利，技术贡献可量化衡量。\n2.顶级数据规模：亿级用户的本地生活广告场景，涵盖 toC 与 toB 多模态数据，真实工业约束（强稀疏信号、严格时延、多目标优化）构成国内最具挑战性的广告算法研究环境之一。\n3.学术合作资源：团队与头部高校保持持续的联合研究合作，提供会议投稿支持与学术产出通道。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459809000,
+    "refreshTime": 1780459809000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】广告大模型应用算法工程师-OneModel广告算法研究员\n应届-北斗计划\n工作地点：北京市、上海市、成都市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【愿景】\n广告系统目前正站在从多级漏斗到端到端大模型的范式跃迁起点，传统的多级漏斗架构（召回→粗排→精排→混排）因各阶段目标割裂、信息截断，存在系统性效率损耗。随着 LLM 表征能力与 Scaling 特性日趋成熟，以端到端生成式模型统一广告全链路决策已成为行业的核心探索方向。本岗位面向美团广告 OneModel 方向，核心任务是研究并落地端到端广告大模型，以统一大模型完成从用户行为信号到最终展示序列的全链路决策，最大化用户体验和平台收益。\n【你将参与】\n1.端到端广告大模型架构设计。基于 Causal Transformer、MLA、MoE 等架构技术，设计突破多级漏斗限制的端到端广告决策框架，支持融合用户行为序列与实时上下文、直接输出具备位置价值感知的展示序列；探索 Semantic ID、动态候选索引等广告生成式检索关键技术。\n2.广告场景多阶段训练范。结合广告数据稀疏特性，设计\"海量用户交互 pre-training + 多目标商业价值 post-training\"的分阶段训练体系；研究适配广告约束的 RLHF/价值对齐方法，在用户体验与平台收益之间建立可持续的优化路径。\n3.广告场景 Scaling Law 研究。探索广告场景下\"参数量/数据规模/训练算力 → 业务效果\"的转化规律；研究 inference-time scaling、process reward model 等推理阶段增效方向，推动团队迭代范式从人工特征设计向算力驱动跃迁。\n任职要求\n【任职资格】\n1.在搜广推、大语言模型、序列建模、强化学习等一个或多个方向具有系统性研究积累，并有工业级落地经验。\n2.在 KDD、SIGIR、WWW、NeurIPS、ICML、ICLR、ACL、EMNLP 等国际顶级会议有论文发表，或主导过具有行业影响力的工业级算法系统研发。\n3.熟悉 Python 或 C++，具备大规模分布式训练与在线推理系统的独立研发能力；有千亿参数级模型训练经验者优先。\n4.具备将前沿研究成果推进到线上生产环境的完整经验，能够在严格延迟约束与业务指标要求下完成系统交付。\n【为什么是我们】\n1.核心业务场景：美团广告是公司核心商业化引擎，算法研究成果直接影响公司盈利，技术贡献可量化衡量。\n2.顶级数据规模：亿级用户的本地生活广告场景，涵盖 toC 与 toB 多模态数据，真实工业约束（强稀疏信号、严格时延、多目标优化）构成国内最具挑战性的广告算法研究环境之一。\n3.学术合作资源：团队与头部高校保持持续的联合研究合作，提供会议投稿支持与学术产出通道。\n工作城市\n北京市、上海市、成都市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

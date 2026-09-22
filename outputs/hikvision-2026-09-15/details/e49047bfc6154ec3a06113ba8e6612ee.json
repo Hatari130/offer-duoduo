@@ -1,0 +1,41 @@
+{
+  "source_job_id": "e49047bfc6154ec3a06113ba8e6612ee",
+  "verified_at": "2026-09-15T01:32:08.341Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=e49047bfc6154ec3a06113ba8e6612ee",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=e49047bfc6154ec3a06113ba8e6612ee&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "e49047bfc6154ec3a06113ba8e6612ee",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "核算会计",
+        "postAdSn": "综合类",
+        "postStdSubSn": "核算",
+        "techDire": "不限",
+        "postContent": "1、负责公司结算系统的日常操作与管理；负责业务事项的会计核算，包括日常往来款核对、编制会计凭证，准确核算各项收入、成本、期间费用等信息； \n2、负责核算相关流程的制定及改善工作，发现并解决核算问题，推动细化流程的标准化，提高核算工作的效率、准确性和满意度； \n3、负责编制核算相关情况报告，按月进行报表分析，发现问题并推动问题解决； \n4、妥善保管会计凭证，会计账薄，会计报表和其他会计资料； \n5、配合完成各项内外部审计工作。",
+        "postRequire": "1、本科及以上学历，财务管理、会计等专业，英语CET-6及以上；\n2、熟悉国家财税法律规范，财务核算、管理、分析、预测等财务制度和业务； \n3、能熟练使用Office办公软件，熟练应用EXCEL；\n4、具有良好的沟通及书面表达能力、团队协作能力和职业操守；\n5、工作严谨细致，执行力强，可以适应快节奏工作环境 。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

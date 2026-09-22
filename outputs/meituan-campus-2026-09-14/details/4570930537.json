@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4570930537&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:30.081Z",
+  "data": {
+    "jobUnionId": "4570930537",
+    "name": "【LongCat实习】基座评测与认知分析-具身与开放物理世界探索",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "2",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "从多模态大模型基座延伸到具身智能，我们的目标是做到具身智能的“GPT时刻”，具备test-time zero-shot/few-shot的跨本体、跨任务泛化。在这个过程中，我们进行具身智能在泛化能力评测分析和关键迭代路径的探索，包括但不限于\n1.探索激发多模态大模型Training-Free泛化能力的Data-Scaling方案（包括VLA和VA），迁移人类数据到具身本体，包括latent action和unified model等方向；\n2.探索通过世界模型作为物理仿真引擎的进阶，兼顾仿真和真机的优点，实现泛化评测、强化学习和多样性数据合成；\n3.探索通过环境交互的在线强化学习，涉及仿真环境的搭建、数据合成和真机实验，研究通过自我进化的下一代智能提升的关键途径；\n【为什么是我们】\n一起建立行业评测标杆，推动行业认知进展，代表工作包括：\n1.LARYBench 行业首个具身动作表征评测基准，揭示了动作表征的data-scaling潜力和迭代路径。\n2.WBench 行业首个统一多轮交互世界模型评测基准，将广义世界模型拉到同一参考空间进行维度全面的度量。\n3.UniHetero 行业首个验证生成能促进理解的unified model，以简洁的结构在大规模数据上得到更好的data-scaling趋势。",
+    "jobRequirement": "1. 硕士及以上学历，计算机、数学、统计学或相关专业。\n2. 熟悉Java/Python/C++等编程语言，良好的编码习惯和一定的工程能力 。\n3. 具有深度学习和大模型原理的基础知识，具有多模态大模型、具身智能之一的研究经验。\n4. 良好的沟通能力、团队合作精神以及较强的问题解决能力。 \n5. 对每一行代码负责，对业务方负责，具备工匠精神。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1782832486000,
+    "refreshTime": 1782832486000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat实习】基座评测与认知分析-具身与开放物理世界探索\n实习-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n从多模态大模型基座延伸到具身智能，我们的目标是做到具身智能的“GPT时刻”，具备test-time zero-shot/few-shot的跨本体、跨任务泛化。在这个过程中，我们进行具身智能在泛化能力评测分析和关键迭代路径的探索，包括但不限于\n1.探索激发多模态大模型Training-Free泛化能力的Data-Scaling方案（包括VLA和VA），迁移人类数据到具身本体，包括latent action和unified model等方向；\n2.探索通过世界模型作为物理仿真引擎的进阶，兼顾仿真和真机的优点，实现泛化评测、强化学习和多样性数据合成；\n3.探索通过环境交互的在线强化学习，涉及仿真环境的搭建、数据合成和真机实验，研究通过自我进化的下一代智能提升的关键途径；\n【为什么是我们】\n一起建立行业评测标杆，推动行业认知进展，代表工作包括：\n1.LARYBench 行业首个具身动作表征评测基准，揭示了动作表征的data-scaling潜力和迭代路径。\n2.WBench 行业首个统一多轮交互世界模型评测基准，将广义世界模型拉到同一参考空间进行维度全面的度量。\n3.UniHetero 行业首个验证生成能促进理解的unified model，以简洁的结构在大规模数据上得到更好的data-scaling趋势。\n任职要求\n1. 硕士及以上学历，计算机、数学、统计学或相关专业。\n2. 熟悉Java/Python/C++等编程语言，良好的编码习惯和一定的工程能力 。\n3. 具有深度学习和大模型原理的基础知识，具有多模态大模型、具身智能之一的研究经验。\n4. 良好的沟通能力、团队合作精神以及较强的问题解决能力。\n5. 对每一行代码负责，对业务方负责，具备工匠精神。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

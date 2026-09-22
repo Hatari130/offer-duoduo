@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4347512368&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:52.621Z",
+  "data": {
+    "jobUnionId": "4347512368",
+    "name": "【基座大模型北斗实习】Agent 学习范式与长时程记忆研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：围绕下一代智能体系统的三类核心能力展开布局——持续学习能力、原生规划与建模能力、跨时程记忆能力。\n1、探索 Agent 的学习范式：online learning/自博弈/自进化：围绕任务自动生成—轨迹采集—反馈建模—经验提炼—策略更新的闭环展开探索，重点尝试失败驱动的课程生成、自我反思与回溯、多智能体自博弈、基于验证器或多数投票的弱监督反馈，以及将经验写入外部记忆或压缩回模型参数的近在线更新机制。核心目标是让 Agent 在开放环境中逐步具备持续学习、持续适应和持续提升的能力。\n2、Agentic-native model 范式：扩散模型/世界模型/生成式规划：探索三类互补路径：其一，学习可供 Agent 调用的世界模型，用于预测状态转移、环境反馈与长期结果；其二，用扩散式或潜变量式生成机制，对动作序列、子目标或未来轨迹进行并行采样与迭代修正，提升长程规划能力；其三，把生成式规划与搜索/验证结合，通过 imagined rollouts、候选轨迹打分、反事实比较和分层计划，把先想后做的能力落实到系统。\n3、超长上下文与记忆：围绕记什么、记成什么形式、何时写、如何压缩、何时召回、何时遗忘这几个核心问题开展研究，重点探索分层记忆结构、事实/经验/工作记忆协同、主动写入与更新、基于任务反馈的记忆读写策略学习，以及长上下文与显式记忆协同的系统设计，以支撑长时程规划、多轮任务连续性与个体化经验积累.",
+    "jobRequirement": "1、计算机、人工智能、数学、统计学、电子信息或相关专业本科高年级、硕士或博士在读；\n2、具备扎实的机器学习基础，对以下至少一个方向有较深入理解： - 大语言模型与后训练 - 强化学习 / Online learning / Bandit / Sequence decision making - Agent / Tool use / Planning / Reasoning - 记忆增强模型 / RAG / 长上下文建模 - Reward modeling / Preference learning / PRM / ORM \n3、熟悉 Python，具备较强的工程实现能力，能够独立完成实验、调参与结果分析，并具有一定的大模型训练或推理实践经验；\n4、具备较强的论文阅读、问题抽象与实验设计能力，能够围绕一个研究问题提出清晰假设、设计验证方案并推进落地；\n5、具备良好的沟通协作能力与研究主动性，能够在不确定性较高的前沿问题中快速学习、持续推进。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223033000,
+    "refreshTime": 1775223033000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】Agent 学习范式与长时程记忆研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：围绕下一代智能体系统的三类核心能力展开布局——持续学习能力、原生规划与建模能力、跨时程记忆能力。\n1、探索 Agent 的学习范式：online learning/自博弈/自进化：围绕任务自动生成—轨迹采集—反馈建模—经验提炼—策略更新的闭环展开探索，重点尝试失败驱动的课程生成、自我反思与回溯、多智能体自博弈、基于验证器或多数投票的弱监督反馈，以及将经验写入外部记忆或压缩回模型参数的近在线更新机制。核心目标是让 Agent 在开放环境中逐步具备持续学习、持续适应和持续提升的能力。\n2、Agentic-native model 范式：扩散模型/世界模型/生成式规划：探索三类互补路径：其一，学习可供 Agent 调用的世界模型，用于预测状态转移、环境反馈与长期结果；其二，用扩散式或潜变量式生成机制，对动作序列、子目标或未来轨迹进行并行采样与迭代修正，提升长程规划能力；其三，把生成式规划与搜索/验证结合，通过 imagined rollouts、候选轨迹打分、反事实比较和分层计划，把先想后做的能力落实到系统。\n3、超长上下文与记忆：围绕记什么、记成什么形式、何时写、如何压缩、何时召回、何时遗忘这几个核心问题开展研究，重点探索分层记忆结构、事实/经验/工作记忆协同、主动写入与更新、基于任务反馈的记忆读写策略学习，以及长上下文与显式记忆协同的系统设计，以支撑长时程规划、多轮任务连续性与个体化经验积累.\n任职要求\n1、计算机、人工智能、数学、统计学、电子信息或相关专业本科高年级、硕士或博士在读；\n2、具备扎实的机器学习基础，对以下至少一个方向有较深入理解： - 大语言模型与后训练 - 强化学习 / Online learning / Bandit / Sequence decision making - Agent / Tool use / Planning / Reasoning - 记忆增强模型 / RAG / 长上下文建模 - Reward modeling / Preference learning / PRM / ORM\n3、熟悉 Python，具备较强的工程实现能力，能够独立完成实验、调参与结果分析，并具有一定的大模型训练或推理实践经验；\n4、具备较强的论文阅读、问题抽象与实验设计能力，能够围绕一个研究问题提出清晰假设、设计验证方案并推进落地；\n5、具备良好的沟通协作能力与研究主动性，能够在不确定性较高的前沿问题中快速学习、持续推进。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

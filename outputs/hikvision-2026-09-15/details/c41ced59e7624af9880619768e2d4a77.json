@@ -1,0 +1,74 @@
+{
+  "source_job_id": "c41ced59e7624af9880619768e2d4a77",
+  "verified_at": "2026-09-15T01:32:16.007Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=c41ced59e7624af9880619768e2d4a77",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=c41ced59e7624af9880619768e2d4a77&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "6e309833b72f416abfd91948e6362656",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "自动驾驶算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "计算机视觉/机器学习/激光/毫米波雷达/多传感器融合感知/BEV/Occupancy/多任务/数据挖掘/自动标注/行为预测",
+        "postContent": "【上海团队工作方向】\n负责视觉2D/3D障碍物感知（BEV和Occupancy等）、车道线检测、激光/毫米波雷达/多传感器融合感知、数据挖掘和自动标注、多任务学习、行为预测等方向的预研与产品化。",
+        "postRequire": "1、硕士及以上学历；计算机、人工智能与自动化、电子信息工程、应用数学、控制、机械电子、车辆工程类等相关专业； \n2、具有较好的数学功底，对模式识别、机器学习等有较深入的理解与认识，熟悉各种图像处理和模式识别算法；\n3、具备扎实的编程基础和开发经验，至少熟悉一种深度学习框架；\n4、较强的文献检索、英文阅读和技术领域调研能力；\n5、有实际项目开发或参加竞赛经验者优先； \n6、在国际顶级会议或期刊上发表过文章者优先。 \n7、踏实好学，具备良好的沟通与协作能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "上海市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "c41ced59e7624af9880619768e2d4a77",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:47",
+        "updateTime": "2026-08-31 15:06:23"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "cbcb2e02e152448ea5c69f525a158fbc",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "自动驾驶算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "自动驾驶/规划控制/建图定位",
+        "postContent": "1、自动驾驶与自动泊车算法开发；\n2、参与汽车主机厂量产项目算法优化及交付；\n3、负责融合感知、建图定位、行为决策、运动控制，其中某项技术点的开发。",
+        "postRequire": "1、硕士及以上学历，计算机、车辆工程、数学、电子等相关专业；\n2、有如下某一种技术的开发经验：CV算法、雷达算法、定位算法、路径规划、车辆控制、算法优化移植；\n3、熟练掌握C/C++，有良好编程基础，有嵌入式软件开发经验者，优先考虑;\n4、无人车或移动机器人研发或者参赛经验，整车厂或者汽车零部件供应商工作经验优先考虑。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "c41ced59e7624af9880619768e2d4a77",
+        "adNeedDept": "海康汽车电子",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-31 15:06:23"
+      },
+      "departments": [
+        {
+          "id": "b276e4ba30ae4cd2afe86d0ba755e25f",
+          "name": "海康汽车电子",
+          "description": "海康汽车电子聚焦于智能驾驶领域，以视频为核心，融合雷达等传感器，深入研究人工智能、感知数据分析与处理等技术，致力于成为行业领先的以视频技术为核心的车辆安全和智能化产品供应商。"
+        }
+      ]
+    }
+  ]
+}

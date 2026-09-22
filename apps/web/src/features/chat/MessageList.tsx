@@ -263,7 +263,7 @@ export function MessageList({
                   {workspaceKinds.length > 0 && (
                     <div className="answer-workspace-actions">
                       {workspaceKinds.includes("resume") && (
-                        <button type="button" onClick={() => onOpenWorkspace("resume")}>打开简历中心 <ArrowUpRight aria-hidden="true" size={13} /></button>
+                        <button type="button" onClick={() => onOpenWorkspace("resume")}>打开简历模板 <ArrowUpRight aria-hidden="true" size={13} /></button>
                       )}
                       {workspaceKinds.some((kind) => kind === "application" || kind === "interview") && (
                         <button type="button" onClick={() => onOpenWorkspace("application")}>打开投递管理 <ArrowUpRight aria-hidden="true" size={13} /></button>

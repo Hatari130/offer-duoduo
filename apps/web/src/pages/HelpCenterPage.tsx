@@ -53,11 +53,11 @@ const featureGuides = [
   },
   {
     icon: FileText,
-    title: "简历中心",
+    title: "简历模板",
     description: "直接制作字段化通用简历，并集中管理为不同岗位生成的定制版本。",
     tip: "网页和插件共享姓名、教育、经历与项目字段；定岗修改后请核对事实、时间和成果表述。",
     href: "/app/resumes",
-    action: "打开简历中心"
+    action: "打开简历模板"
   },
   {
     icon: BriefcaseBusiness,
@@ -179,8 +179,8 @@ export function HelpCenterPage() {
                 <p>JobKoI 聚合公开招聘信息，更新可能晚于企业官网。请以企业官方招聘页面为准，并通过“共建反馈”告诉我们需要修正的公司和岗位。</p>
               </details>
               <details>
-                <summary>为什么简历中心里没有我的普通简历？</summary>
-                <p>现在可以在简历中心直接点击“制作新简历”，从空白字段开始录入；已连接的浏览器插件下次同步后也会出现这份通用简历。</p>
+                <summary>为什么简历模板里没有我的普通简历？</summary>
+                <p>在简历模板使用示例创建并填写资料，保存后可在同一账号继续编辑和导出。插件网申资料独立保存在本机，需要在插件手动添加；升级前已保存到云端的简历仍会保留。</p>
               </details>
               <details>
                 <summary>插件识别或辅助填写不准确怎么办？</summary>

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "00a4357568094a5792b14e73d99620c0",
+  "verified_at": "2026-09-15T01:32:09.674Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=00a4357568094a5792b14e73d99620c0",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=00a4357568094a5792b14e73d99620c0&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "00a4357568094a5792b14e73d99620c0",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "X-Ray算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、依据市场需求及产品、技术的规划，设计开发X-ray图像处理模块；\n2、负责图像性能的优化，保证视频输出图像质量，提升产品的市场竞争力。",
+        "postRequire": "1、硕士及以上学历，博士优先；计算机、电子信息、信号处理、图像处理、光电类专业；\n2、有较好的数学/物理基础，较强的图像处理算法设计与开发能力； \n3、掌握C/C++等编程语言，能编程实现相关算法，具有双能或多能谱成像经验者优先；\n4、熟悉目前x-ray的主流射线源、X-ray探测传感器，有一定的项目经验者优先；\n5、较强的论文检索，英文专业文献阅读能力；\n6、较强的沟通与协作能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 09:16:50",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

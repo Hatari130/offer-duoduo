@@ -1,0 +1,41 @@
+{
+  "source_job_id": "7f7b192aa53d4c6fb7966e424b9650c5",
+  "verified_at": "2026-09-15T01:32:05.502Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=7f7b192aa53d4c6fb7966e424b9650c5",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=7f7b192aa53d4c6fb7966e424b9650c5&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "7f7b192aa53d4c6fb7966e424b9650c5",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "产品数据工程师",
+        "postAdSn": "测试/支撑类",
+        "postStdSubSn": "产品数据",
+        "techDire": "不限",
+        "postContent": "1、负责产品数据的开发与维护，保证产品数据的准确性、及时性及齐套性；\n2、负责产品数据业务分析、解决方案设计，业务规划与推行；\n3、负责产品数据相关系统及流程的优化、产品数据创新技术的研究与应用；\n4、负责产品相关统计分析、数据应用支撑。",
+        "postRequire": "1、本科及以上学历，信息管理类、电子类相关专业优先；\n2、熟悉安防设备或消费电子等行业产品数据管理基本业务；\n3、产品信息系统的基本架构及应用，熟悉PLM、SAP系统优先；\n4、熟练使用Office办公软件，可输出高质量文档能力；\n5、具良好的责任心、沟通能力，严谨细致、逻辑思维清晰。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

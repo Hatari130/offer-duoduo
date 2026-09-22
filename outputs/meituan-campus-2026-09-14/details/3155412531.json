@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155412531&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:13.253Z",
+  "data": {
+    "jobUnionId": "3155412531",
+    "name": "【大模型北斗实习】语音基座大模型前沿探索",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "语音基座大模型是下一代语音算法的基础，也是多模态大模型研究的重要组成部分。本课题研究方向包括不限于：\n1）预训练方法研究：设计预训练任务，使训练可大规模扩展，且能够学习到丰富的知识，使得模型同时具备强大的理解和生成能力，进一步实现能力的涌现。\n2）tokenizer 优化：探索同时适用于理解和生成任务、兼顾学习效率和效果的tokenizer。\n3）泛音频理解：对语音理解之外，探索更广泛的音频（如音乐、环境声）理解能力，以及基于 reasoning 的理解能力。\n4) token2wav：与基座大模型配合，实现高效、高质量的语音/音频生成。\n5) post-training：探索基于 SFT 和 RL 的后训练策略，激活基座模型的理解和生成能力，实现通用的音频能力，并具备强表现力、多风格、多语种、多音色的能力。",
+    "jobRequirement": "1）对语音、NLP、CV等相关领域一个或多个方向有深入的研究经历，且有相关实际项目经验。\n2）熟练使用深度学习框架（比如PyTorch），熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）在知名开源项目中有核心贡献者优先。\n2）对大模型有深入研究且有实际训练经验者优先。\n3）发表过高水平论文。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309544000,
+    "refreshTime": 1747963942000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】语音基座大模型前沿探索\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n语音基座大模型是下一代语音算法的基础，也是多模态大模型研究的重要组成部分。本课题研究方向包括不限于：\n1）预训练方法研究：设计预训练任务，使训练可大规模扩展，且能够学习到丰富的知识，使得模型同时具备强大的理解和生成能力，进一步实现能力的涌现。\n2）tokenizer 优化：探索同时适用于理解和生成任务、兼顾学习效率和效果的tokenizer。\n3）泛音频理解：对语音理解之外，探索更广泛的音频（如音乐、环境声）理解能力，以及基于 reasoning 的理解能力。\n4) token2wav：与基座大模型配合，实现高效、高质量的语音/音频生成。\n5) post-training：探索基于 SFT 和 RL 的后训练策略，激活基座模型的理解和生成能力，实现通用的音频能力，并具备强表现力、多风格、多语种、多音色的能力。\n任职要求\n1）对语音、NLP、CV等相关领域一个或多个方向有深入的研究经历，且有相关实际项目经验。\n2）熟练使用深度学习框架（比如PyTorch），熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）在知名开源项目中有核心贡献者优先。\n2）对大模型有深入研究且有实际训练经验者优先。\n3）发表过高水平论文。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

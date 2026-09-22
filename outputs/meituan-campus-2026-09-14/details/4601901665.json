@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4601901665&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:29.366Z",
+  "data": {
+    "jobUnionId": "4601901665",
+    "name": "【LongCat实习】大模型训练AI工程师",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "2",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "本岗位覆盖以下主要技术方向：\n1.方向一：文本/多模态预训练\n• 设计和优化千亿级参数大模型的分布式训练系统，支持文本基座预训练和原生多模态训练的正确性、性能和稳定性\n• 负责训练框架核心模块（通信、调度、容错、Checkpoint、数据加载）的架构设计和性能优化，在同等硬件条件下持续提升训练吞吐\n• 协同算法迭代和硬件演进，针对新模型架构（MoE、超长序列、多模态融合）快速完成训练适配和性能验证\n• 作为工程Pipeline的上游起点，持续推进训练Infra的架构迭代方向\n2.方向二：强化学习框架\n• 构建并提升在线RL训练系统的性能和Scale能力，打通策略更新、环境交互、奖励建模的端到端训练流程\n• 支持Chat/Thinking/Agentic以及未来多种RL范式（PPO/GRPO/DPO等），和算法Codesign推进RL架构迭代\n• 设计高效的Actor-Critic架构、经验回放机制和分布式采样系统\n• 负责RL训练的性能瓶颈分析和优化，包括GPU利用率提升、通信开销降低、训练稳定性保障\n3.方向三：异构算力适配\n• 建设迭代多种异构算力（GPU/NPU等）的验证和适配方案，包括稳定性保障、精度验证和高性能runtime\n• 开发调优GPU和NPU架构的通信算子，推进超节点架构的最佳实践\n• 面向RL采样场景，深入优化NPU架构的推理性能\n• 跟踪硬件生态发展，评估新硬件的技术价值，输出选型建议和规模化落地方案\n4.方向四：高性能内核\n• 定制开发高性能计算内核，深入发掘GPU/NPU等不同硬件架构的优化空间\n• 推进算子开发范式的迭代，探索自动化算子生成（如LLM辅助生成高性能kernel）",
+    "jobRequirement": "1.计算机、电子工程、数学等相关专业硕士及以上学历\n2.有一定大模型训练/推理/分布式系统相关开发经验\n3.熟悉PyTorch/Megatron-LM/DeepSpeed等主流框架中至少一个的内部实现\n4.熟悉至少一种分布式并行策略（DP/TP/PP/SP/EP）的原理和实现细节，或有高性能算子开发经验\n5.扎实的C++/Python/CUDA编程能力，有性能优化经验\n6.有实际参与过10B+参数规模模型训练的项目经验优先",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1782907918000,
+    "refreshTime": 1782907918000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat实习】大模型训练AI工程师\n实习-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n本岗位覆盖以下主要技术方向：\n1.方向一：文本/多模态预训练\n• 设计和优化千亿级参数大模型的分布式训练系统，支持文本基座预训练和原生多模态训练的正确性、性能和稳定性\n• 负责训练框架核心模块（通信、调度、容错、Checkpoint、数据加载）的架构设计和性能优化，在同等硬件条件下持续提升训练吞吐\n• 协同算法迭代和硬件演进，针对新模型架构（MoE、超长序列、多模态融合）快速完成训练适配和性能验证\n• 作为工程Pipeline的上游起点，持续推进训练Infra的架构迭代方向\n2.方向二：强化学习框架\n• 构建并提升在线RL训练系统的性能和Scale能力，打通策略更新、环境交互、奖励建模的端到端训练流程\n• 支持Chat/Thinking/Agentic以及未来多种RL范式（PPO/GRPO/DPO等），和算法Codesign推进RL架构迭代\n• 设计高效的Actor-Critic架构、经验回放机制和分布式采样系统\n• 负责RL训练的性能瓶颈分析和优化，包括GPU利用率提升、通信开销降低、训练稳定性保障\n3.方向三：异构算力适配\n• 建设迭代多种异构算力（GPU/NPU等）的验证和适配方案，包括稳定性保障、精度验证和高性能runtime\n• 开发调优GPU和NPU架构的通信算子，推进超节点架构的最佳实践\n• 面向RL采样场景，深入优化NPU架构的推理性能\n• 跟踪硬件生态发展，评估新硬件的技术价值，输出选型建议和规模化落地方案\n4.方向四：高性能内核\n• 定制开发高性能计算内核，深入发掘GPU/NPU等不同硬件架构的优化空间\n• 推进算子开发范式的迭代，探索自动化算子生成（如LLM辅助生成高性能kernel）\n任职要求\n1.计算机、电子工程、数学等相关专业硕士及以上学历\n2.有一定大模型训练/推理/分布式系统相关开发经验\n3.熟悉PyTorch/Megatron-LM/DeepSpeed等主流框架中至少一个的内部实现\n4.熟悉至少一种分布式并行策略（DP/TP/PP/SP/EP）的原理和实现细节，或有高性能算子开发经验\n5.扎实的C++/Python/CUDA编程能力，有性能优化经验\n6.有实际参与过10B+参数规模模型训练的项目经验优先\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

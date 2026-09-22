@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4534253240&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:38.314Z",
+  "data": {
+    "jobUnionId": "4534253240",
+    "name": "【北斗】无人机感知算法工程师",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "为了更好地提升城市即时配送的效率与体验，2017年，美团启动了无人机配送服务的探索，通过科技创新推动履约工具变革，加快建设空地协同的本地即时配送网络。目前，美团已初步完成了自主飞行无人机、智能化调度系统及高效率运营体系的研发建设工作，由此打造了一个服务于多场景、多天候的城市低空物流解决方案。\n\n我们正在推动无人机感知系统从模块化架构向端到端智能架构的代际跃迁——让无人机从\"按规则飞\"进化为\"像人一样看懂世界、自主决策\"。你将参与的核心工作：\n1.设计下一代无人机感知系统架构，推进端到端感知-规划一体化技术路线的落地验证\n2.研发多传感器（双目视觉/毫米波雷达/激光雷达/IMU）深度融合算法，解决低空复杂场景下的全天候环境感知问题\n3.开发基于BEV/Occupancy Network的3D场景理解算法，实现城市低空环境中的精准避障与动态物体预测\n4.探索将VLA（Vision-Language-Action）/ 世界模型等前沿范式应用于无人机自主飞行决策\n5.针对边缘算力平台进行模型轻量化与实时推理优化，确保算法在真机上以>30FPS稳定运行\n6.参与感知数据闭环体系建设：自动标注、长尾场景挖掘、仿真-实飞域自适应",
+    "jobRequirement": "【岗位要求】\n1.硕士及以上学历，计算机视觉、机器人学、自动化、电子工程等相关专业\n2.扎实的深度学习基础，熟悉Transformer/CNN架构及视觉感知模型\n3.熟练掌握PyTorch，具备独立实现、训练和调优模型的能力\n4.在以下方向至少有一项深入的研究或项目经验：3D目标检测/Occupancy Prediction、视觉SLAM/VIO/多传感器融合、端到端自主导航/模仿学习/强化学习、深度估计/光流/运动预测\n5.C++/Python编程能力扎实\n6.熟练使用 AI Coding 工具\n\n加分项：\n1.顶会论文（CVPR/ICCV/NeurIPS/ICRA/IROS/RAL等）\n2.无人机/机器人系统实际开发经验（ROS/PX4等）\n3.模型部署经验（TensorRT/ONNX/NPU适配）\n4.了解VLA/世界模型/端到端自动驾驶等前沿方向\n\n【岗位吸引力】\n1 .你的算法每天都在真实城市上空飞行——100万+架次验证，不是仿真实验室的paper work\n2. 在无人机上落地前沿的端到端/BEV/VLA技术，做\"空中自动驾驶\"的定义者\n3. 低空经济万亿赛道的早期参与者，北斗计划提供顶级导师、充足算力\n4. 鼓励发表论文，技术探索氛围开放，你的想法可以直接推动产品迭代",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780482518000,
+    "refreshTime": 1780482518000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】无人机感知算法工程师\n应届-北斗计划\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n为了更好地提升城市即时配送的效率与体验，2017年，美团启动了无人机配送服务的探索，通过科技创新推动履约工具变革，加快建设空地协同的本地即时配送网络。目前，美团已初步完成了自主飞行无人机、智能化调度系统及高效率运营体系的研发建设工作，由此打造了一个服务于多场景、多天候的城市低空物流解决方案。\n我们正在推动无人机感知系统从模块化架构向端到端智能架构的代际跃迁——让无人机从\"按规则飞\"进化为\"像人一样看懂世界、自主决策\"。你将参与的核心工作：\n1.设计下一代无人机感知系统架构，推进端到端感知-规划一体化技术路线的落地验证\n2.研发多传感器（双目视觉/毫米波雷达/激光雷达/IMU）深度融合算法，解决低空复杂场景下的全天候环境感知问题\n3.开发基于BEV/Occupancy Network的3D场景理解算法，实现城市低空环境中的精准避障与动态物体预测\n4.探索将VLA（Vision-Language-Action）/ 世界模型等前沿范式应用于无人机自主飞行决策\n5.针对边缘算力平台进行模型轻量化与实时推理优化，确保算法在真机上以>30FPS稳定运行\n6.参与感知数据闭环体系建设：自动标注、长尾场景挖掘、仿真-实飞域自适应\n任职要求\n【岗位要求】\n1.硕士及以上学历，计算机视觉、机器人学、自动化、电子工程等相关专业\n2.扎实的深度学习基础，熟悉Transformer/CNN架构及视觉感知模型\n3.熟练掌握PyTorch，具备独立实现、训练和调优模型的能力\n4.在以下方向至少有一项深入的研究或项目经验：3D目标检测/Occupancy Prediction、视觉SLAM/VIO/多传感器融合、端到端自主导航/模仿学习/强化学习、深度估计/光流/运动预测\n5.C++/Python编程能力扎实\n6.熟练使用 AI Coding 工具\n加分项：\n1.顶会论文（CVPR/ICCV/NeurIPS/ICRA/IROS/RAL等）\n2.无人机/机器人系统实际开发经验（ROS/PX4等）\n3.模型部署经验（TensorRT/ONNX/NPU适配）\n4.了解VLA/世界模型/端到端自动驾驶等前沿方向\n【岗位吸引力】\n1 .你的算法每天都在真实城市上空飞行——100万+架次验证，不是仿真实验室的paper work\n2. 在无人机上落地前沿的端到端/BEV/VLA技术，做\"空中自动驾驶\"的定义者\n3. 低空经济万亿赛道的早期参与者，北斗计划提供顶级导师、充足算力\n4. 鼓励发表论文，技术探索氛围开放，你的想法可以直接推动产品迭代\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

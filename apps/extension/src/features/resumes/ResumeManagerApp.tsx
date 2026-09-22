@@ -25,42 +25,30 @@ import {
 } from "lucide-react";
 import {
   extractResumePdfAssets,
-  normalizeEducationEntries,
   parseResumeFile
 } from "@/features/profile/resumeParser";
 import { arrayBufferToBase64 } from "@/shared/binary";
 import ResumeEditor from "@/features/resumes/ResumeEditor";
 import {
   ACTIVE_RESUME_KEY,
-  BASE_PROFILE_KEY,
   EMPTY_PROFILE,
   RESUMES_KEY,
   loadActiveResumeId,
-  loadBaseProfile,
-  loadProfile,
   loadResumeLibrary,
-  extractResumeBasics,
-  applyResumeFixedProfile,
-  extractResumeFixedProfile,
-  hasResumeBasics,
-  saveBaseProfile,
+  createLocalApplicationProfile,
+  saveLocalApplicationRecord,
+  deleteLocalApplicationRecord,
   saveProfile,
-  saveResumeLibrary,
   loadResumeLibraryUi,
   saveResumeLibraryUi,
   setActiveResumeId,
-  dropTailoredResumesForSourceResumeIds,
-  pruneOrphanedTailoredResumes,
-  type ResumeFixedProfile,
   type StoredResume,
   type StoredResumeKind,
   type StoredResumeParseMetadata,
   type StoredResumeSourceMetadata
 } from "@/infrastructure/storage/storage";
-import { deleteCloudResumeTemplate } from "@/infrastructure/sync/cloudSync";
 import {
   calculateResumeCoverage,
-  collectResumeRemovalIds,
   countResumeFields,
   resolveActiveResumeId
 } from "@/features/resumes/resumeLifecycle";
@@ -74,7 +62,7 @@ function extensionUrl(file: string) {
 }
 
 function openPlugin() {
-  const url = extensionUrl("resume.html");
+  const url = extensionUrl("dashboard.html");
   if (typeof chrome !== "undefined" && chrome.tabs?.create) {
     void chrome.tabs.create({ url });
     return;
@@ -114,18 +102,6 @@ function inferArchiveMetadata(name: string, profile: StoredResume["profile"]): {
   return { company: first, position: second };
 }
 
-function migrateLegacyResumeName(resume: StoredResume): StoredResume {
-  if (resume.archiveNameSource) return resume;
-  const archiveName = [resume.company?.trim(), resume.position?.trim()].filter(Boolean).join(" · ");
-  const originalName = fileStem(resume.sourceFileName);
-  // Older imports used the first parsed work experience as the archive name.
-  // Restore the uploaded filename so the user can decide the archive name.
-  if (archiveName && originalName && resume.name === archiveName && originalName !== archiveName) {
-    return { ...resume, name: originalName, company: "", position: "", archiveNameSource: "filename" };
-  }
-  return resume;
-}
-
 function fieldCount(resume: StoredResume) {
   return countResumeFields(resume);
 }
@@ -135,8 +111,7 @@ const RESUME_GROUPS: Array<{
   label: string;
   description: string;
 }> = [
-  { key: "base", label: "通用版本", description: "上传、维护和网申复用" },
-  { key: "job", label: "岗位定制", description: "按公司与岗位归档" }
+  { key: "base", label: "本地网申资料", description: "每份独立保存，手动添加" }
 ];
 
 function meaningfulParseWarnings(warnings: string[]): string[] {
@@ -229,12 +204,13 @@ export default function ResumeManagerApp() {
   const [selectedId, setSelectedId] = useState("");
   const [activeId, setActiveId] = useState("");
   const [loading, setLoading] = useState(true);
+  const editorDirtyRef = useRef(false);
+  const allowSwitch = () => !editorDirtyRef.current || window.confirm("当前资料有未保存修改，放弃修改并切换？");
   const [uploadPhase, setUploadPhase] = useState("");
   const [notice, setNotice] = useState("");
   const [noticeClosing, setNoticeClosing] = useState(false);
   const noticeTimerRef = useRef<number | undefined>(undefined);
   const noticeExitRef = useRef<number | undefined>(undefined);
-  const [resumeFixedProfile, setResumeFixedProfile] = useState<ResumeFixedProfile>();
   const [dragging, setDragging] = useState(false);
   const [collapsedFolders, setCollapsedFolders] = useState<Set<string>>(new Set());
   const [libraryCollapsed, setLibraryCollapsed] = useState(false);
@@ -250,43 +226,14 @@ export default function ResumeManagerApp() {
     let cancelled = false;
     void (async () => {
       try {
-        const [loadedLibrary, active, storedFixedProfile, globalProfile, libraryUi] = await Promise.all([
-          loadResumeLibrary(),
-          loadActiveResumeId(),
-          loadBaseProfile(),
-          loadProfile(),
-          loadResumeLibraryUi()
+        const [library, active, libraryUi] = await Promise.all([
+          loadResumeLibrary(), loadActiveResumeId(), loadResumeLibraryUi()
         ]);
-        const seedProfile = hasResumeBasics(extractResumeBasics(globalProfile))
-          ? globalProfile
-          : loadedLibrary[0]?.profile || globalProfile;
-        const fixedProfile = storedFixedProfile?.fixedSectionsVersion === 1
-          ? storedFixedProfile
-          : extractResumeFixedProfile(seedProfile);
-        const library = loadedLibrary
-          .map(migrateLegacyResumeName)
-          .map((resume) => {
-            const inferred = inferArchiveMetadata(fileStem(resume.sourceFileName), resume.profile);
-            const normalizedProfile = {
-              ...resume.profile,
-              education: normalizeEducationEntries(resume.profile.education)
-            };
-            return {
-              ...resume,
-              company: resume.archiveNameSource === "manual" ? resume.company : resume.company || inferred.company,
-              position: resume.archiveNameSource === "manual" ? resume.position : resume.position || inferred.position,
-              archiveNameSource: resume.archiveNameSource || "filename",
-              profile: applyResumeFixedProfile(normalizedProfile, fixedProfile)
-            };
-          });
-        const libraryChanged = JSON.stringify(library) !== JSON.stringify(loadedLibrary);
         const currentId = resolveActiveResumeId(library, active);
-        const currentResume = library.find((resume) => resume.id === currentId);
         if (cancelled) return;
 
         // Render first. Storage repair is best-effort and must never trap the
         // user on the loading screen when the browser profile is temporarily full.
-        setResumeFixedProfile(fixedProfile);
         setLibraryCollapsed(libraryUi.collapsed);
         setLibraryPinned(libraryUi.pinned);
         setResumes(current => stableJson(current) === stableJson(library) ? current : library);
@@ -295,13 +242,7 @@ export default function ResumeManagerApp() {
         setLoading(false);
 
         try {
-          await Promise.all([
-            storedFixedProfile?.fixedSectionsVersion !== 1 ? saveBaseProfile(fixedProfile) : Promise.resolve(),
-            libraryChanged ? saveResumeLibrary(library) : Promise.resolve(),
-            currentId && active !== currentId ? setActiveResumeId(currentId) : Promise.resolve(),
-            currentResume && (libraryChanged || active !== currentId) ? saveProfile(currentResume.profile) : Promise.resolve(),
-            pruneOrphanedTailoredResumes(library.map((resume) => resume.id))
-          ]);
+          if (currentId && active !== currentId) await setActiveResumeId(currentId);
         } catch {
           if (!cancelled) notify("简历已打开，但浏览器本地空间不足，暂未保存自动整理结果。");
         }
@@ -323,18 +264,13 @@ export default function ResumeManagerApp() {
       areaName: string
     ) => {
       if (areaName !== "local") return;
-      if (!changes[RESUMES_KEY] && !changes[ACTIVE_RESUME_KEY] && !changes[BASE_PROFILE_KEY]) return;
+      if (!changes[RESUMES_KEY] && !changes[ACTIVE_RESUME_KEY]) return;
       void (async () => {
-        const [library, storedActiveId, fixedProfile] = await Promise.all([
-          loadResumeLibrary(),
-          loadActiveResumeId(),
-          loadBaseProfile()
-        ]);
+        const [library, storedActiveId] = await Promise.all([loadResumeLibrary(), loadActiveResumeId()]);
         const currentId = resolveActiveResumeId(library, storedActiveId);
         setResumes(current => stableJson(current) === stableJson(library) ? current : library);
         setActiveId(currentId);
         setSelectedId((current) => library.some((resume) => resume.id === current) ? current : currentId);
-        if (fixedProfile) setResumeFixedProfile(fixedProfile);
         if (currentId && currentId !== storedActiveId) await setActiveResumeId(currentId);
       })();
     };
@@ -398,26 +334,18 @@ export default function ResumeManagerApp() {
   };
 
   const selectLibraryResume = (id: string) => {
+    if (id !== selectedId && !allowSwitch()) return;
     setSelectedId(id);
     if (!libraryPinned && !libraryCollapsed) void saveLibraryUi({ collapsed: true });
   };
 
-  const activate = async (resume: StoredResume, library = resumes) => {
-    const now = new Date().toISOString();
-    const next = library.map((item) =>
-      item.id === resume.id ? { ...item, lastUsedAt: now } : item
-    );
-    const selectedResume = next.find((item) => item.id === resume.id) || resume;
-    setResumes(next);
-    setSelectedId(resume.id);
+  const activate = async (resume: StoredResume, _library = resumes) => {
+    const latest = await loadResumeLibrary();
+    if (!latest.some(row => row.id === resume.id)) throw new Error("这份资料已删除，请刷新后重试");
+    await setActiveResumeId(resume.id);
     setActiveId(resume.id);
-    if (!libraryPinned && !libraryCollapsed) void saveLibraryUi({ collapsed: true });
-    await Promise.all([
-      saveResumeLibrary(next),
-      setActiveResumeId(resume.id)
-    ]);
-    await reconcileActiveProfile(next, resume.id);
-    notify(`已切换为当前网申简历：${resumeName(selectedResume)}，插件已同步`);
+    await reconcileActiveProfile(latest, resume.id);
+    notify(`已切换当前网申资料：${resumeName(resume)}`);
   };
 
   const importResume = async (file: File) => {
@@ -472,13 +400,7 @@ export default function ResumeManagerApp() {
         storageStatus: isPdf ? "stored" : "missing",
         layoutStatus: isPdf ? "pending" : "unknown"
       };
-      let fixedProfile = resumeFixedProfile;
-      if (!fixedProfile || fixedProfile.fixedSectionsVersion !== 1) {
-        fixedProfile = extractResumeFixedProfile(result.profile);
-        setResumeFixedProfile(fixedProfile);
-        await saveBaseProfile(fixedProfile);
-      }
-      const parsedProfile = applyResumeFixedProfile(result.profile, fixedProfile);
+      const parsedProfile = result.profile;
       const sourcePdf = isPdf
         ? {
             fileName: file.name,
@@ -509,7 +431,9 @@ export default function ResumeManagerApp() {
         createdAt: now,
         updatedAt: now
       };
-      const next = [created, ...resumes];
+      const next = await saveLocalApplicationRecord(created);
+      setResumes(next);
+      setSelectedId(created.id);
       setUploadPhase("正在保存并启用…");
       await activate(created, next);
       notify(
@@ -529,6 +453,7 @@ export default function ResumeManagerApp() {
   };
 
   const acceptResumeFile = (file: File) => {
+    if (!allowSwitch()) return;
     if (uploadPhase) {
       notify("正在导入上一份简历，请稍候");
       return;
@@ -549,44 +474,28 @@ export default function ResumeManagerApp() {
   };
 
   const removeResume = async (resume: StoredResume) => {
-    const removalIds = collectResumeRemovalIds(resumes, resume.id);
-    const linkedCount = Math.max(0, removalIds.size - 1);
-    const relationshipWarning = linkedCount
-      ? `\n同时会删除 ${linkedCount} 个关联版本及其岗位定制记录，避免版本串档。`
-      : "";
-    if (!window.confirm(`确定删除《${resumeName(resume)}》吗？${relationshipWarning}\n删除后不能恢复。`)) return;
-    const next = resumes.filter((item) => !removalIds.has(item.id));
-    const nextActiveId = resolveActiveResumeId(next, removalIds.has(activeId) ? undefined : activeId);
-    const nextActiveResume = next.find((item) => item.id === nextActiveId);
-    setResumes(next);
-    setActiveId(nextActiveId);
-    setSelectedId(nextActiveId || next[0]?.id || "");
-    const [, removedTailoredCount] = await Promise.all([
-      saveResumeLibrary(next),
-      dropTailoredResumesForSourceResumeIds(removalIds),
-      setActiveResumeId(nextActiveId),
-      nextActiveResume ? saveProfile(nextActiveResume.profile) : saveProfile({ ...EMPTY_PROFILE }),
-      Promise.all(Array.from(removalIds).map((id) => deleteCloudResumeTemplate(id)))
-    ]);
-    notify(
-      linkedCount || removedTailoredCount
-        ? `已删除 ${removalIds.size} 个关联版本，并清理 ${removedTailoredCount} 份岗位定制`
-        : "简历已删除"
-    );
+    if (!window.confirm(`确定删除《${resumeName(resume)}》这份本地网申资料？云端简历模板不受影响。`)) return;
+    try {
+      const next = await deleteLocalApplicationRecord(resume.id);
+      const nextActiveId = await loadActiveResumeId() || "";
+      setResumes(next);
+      setActiveId(nextActiveId);
+      setSelectedId(current => current === resume.id ? nextActiveId : current);
+      notify("已删除这份本地网申资料");
+    } catch (error) { notify(error instanceof Error ? error.message : "删除失败，请重试"); }
   };
 
   const saveEditedResume = async (
     resume: StoredResume,
     profile: StoredResume["profile"],
-    metadata: { company: string; position: string; manual: boolean }
+    metadata: { company: string; position: string; manual: boolean },
+    expectedRevision: number
   ) => {
     const now = new Date().toISOString();
-    const nextFixedProfile = extractResumeFixedProfile(profile);
-    const selectedProfile = applyResumeFixedProfile(profile, nextFixedProfile);
+    const selectedProfile = structuredClone(profile);
     const hasManualArchive = metadata.manual && Boolean(metadata.company || metadata.position);
     const archiveNameSource: StoredResume["archiveNameSource"] = hasManualArchive ? "manual" : "filename";
-    const next = resumes.map((item) => {
-      const syncedProfile = applyResumeFixedProfile(item.profile, nextFixedProfile);
+    const next = (await loadResumeLibrary()).map((item) => {
       return item.id === resume.id
         ? {
             ...item,
@@ -599,21 +508,33 @@ export default function ResumeManagerApp() {
               : item.archiveNameSource === "manual" ? fileStem(item.sourceFileName) || item.name : item.name,
             updatedAt: now
           }
-        : { ...item, profile: syncedProfile, updatedAt: item.updatedAt };
+        : item;
     });
-    setResumeFixedProfile(nextFixedProfile);
-    setResumes(next);
-    await Promise.all([saveResumeLibrary(next), saveBaseProfile(nextFixedProfile)]);
+    const updatedLibrary = await saveLocalApplicationRecord(next.find(item => item.id === resume.id) || resume, expectedRevision);
+    setResumes(updatedLibrary);
     await reconcileActiveProfile(next, activeId);
     const updated = next.find((item) => item.id === resume.id) || resume;
-    notify(`《${resumeName(updated)}》已保存，插件已同步`);
+    notify(`《${resumeName(updated)}》已保存到本机`);
+  };
+
+  const addProfile = async () => {
+    if (!allowSwitch()) return;
+    const name = window.prompt("为新的本地网申资料命名", `网申资料 ${resumes.length + 1}`);
+    if (name === null) return;
+    try {
+      const created = await createLocalApplicationProfile(name);
+      setResumes(await loadResumeLibrary());
+      setSelectedId(created.id);
+      setActiveId(created.id);
+      notify("已添加空白网申资料，仅保存在本机");
+    } catch (error) { notify(error instanceof Error ? error.message : "添加失败，请重试"); }
   };
 
   if (loading) {
     return (
       <div className="resume-manager-loading">
         <RefreshCw className="spin" size={22} />
-        <span>正在打开简历中心…</span>
+        <span>正在打开本地网申资料…</span>
       </div>
     );
   }
@@ -671,7 +592,7 @@ export default function ResumeManagerApp() {
             </button>
           </div>
           <div className="resume-library-heading">
-            <div><span className="resume-eyebrow">简历档案</span><h1>我的简历</h1></div>
+            <div><span className="resume-eyebrow">本地资料</span><h1>网申资料</h1></div>
             <div className="resume-library-tools">
               {uploadPhase ? (
                 <span className="resume-upload-status" role="status">
@@ -693,6 +614,10 @@ export default function ResumeManagerApp() {
                 {libraryPinned ? <Pin size={15} /> : <PinOff size={15} />}
               </button>
             </div>
+          </div>
+          <div className="resume-library-create-actions">
+            <button type="button" onClick={() => void addProfile()} disabled={Boolean(uploadPhase)}><Plus size={15} />手动添加资料</button>
+            <button type="button" onClick={() => inputRef.current?.click()} disabled={Boolean(uploadPhase)}><FileText size={15} />从文件导入</button>
           </div>
           <div className="resume-list">
             {libraryGroups.map((group) => {
@@ -731,8 +656,8 @@ export default function ResumeManagerApp() {
                     {!group.resumes.length && (
                       <div className="resume-group-empty">
                         {group.key === "base"
-                          ? "上传简历后自动建立通用版本"
-                          : "针对岗位生成的版本会归档在这里"}
+                          ? "手动添加一份资料，或从文件导入"
+                          : "每份资料独立编辑"}
                       </div>
                     )}
                   </div>}
@@ -742,7 +667,7 @@ export default function ResumeManagerApp() {
             {!resumes.length && (
               <div className="resume-list-empty">
                 <FileText size={20} />
-                <strong>还没有简历</strong>
+                <strong>还没有网申资料</strong>
                 <span>上传后会自动保存到这里</span>
               </div>
             )}
@@ -753,12 +678,14 @@ export default function ResumeManagerApp() {
         <section className="resume-detail">
           {selected ? (
             <ResumeEditor
+              key={selected.id}
               resume={selected}
+              onDirtyChange={dirty => { editorDirtyRef.current = dirty; }}
               active={selected.id === activeId}
-              onBack={() => setSelectedId(resolveActiveResumeId(resumes, activeId) || resumes[0]?.id || "")}
+              onBack={() => setLibraryVisibility(false)}
               onActivate={() => void activate(selected)}
               onDelete={() => void removeResume(selected)}
-              onSave={(profile, metadata) => saveEditedResume(selected, profile, metadata)}
+              onSave={(profile, metadata, expectedRevision) => saveEditedResume(selected, profile, metadata, expectedRevision)}
               onOpenPlugin={openPlugin}
             />
           ) : (
@@ -802,7 +729,7 @@ function ResumeListItem({
     >
       <span className="resume-list-file"><FileText size={17} /></span>
       <span className="resume-list-copy">
-        <span className="resume-list-title"><strong>{resumeName(resume)}</strong><i>{resumeKindLabel(resume.kind)} v{resume.versionNumber || 1}</i></span>
+        <span className="resume-list-title"><strong>{resumeName(resume)}</strong><i>本地</i></span>
         <small>{fieldCount(resume)} 个字段</small>
       </span>
       <span className="resume-list-actions">
@@ -925,7 +852,7 @@ function EmptyResumeState({ onUpload }: { onUpload: () => void }) {
   return (
     <div className="resume-empty-state">
       <div className="resume-empty-icon"><CloudUpload size={38} /></div>
-      <span className="resume-eyebrow">简历档案</span>
+      <span className="resume-eyebrow">本地资料</span>
       <h2>上传你的通用简历</h2>
       <p>支持 PDF、DOCX、TXT，上传后自动解析并进入编辑。</p>
       <button className="resume-upload-button" onClick={onUpload}><Plus size={18} />选择简历文件</button>

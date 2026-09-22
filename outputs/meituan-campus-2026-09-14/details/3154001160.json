@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3154001160&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:12.903Z",
+  "data": {
+    "jobUnionId": "3154001160",
+    "name": "【大模型北斗实习】多模态融合及多模态实时交互算法研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "大语言模型（LLM）最近取得的突破极大地加速了多模态大语言模型（MLLM）的发展。全模态多模态大语言模型（Omni-MLLM）通过融入如视频、音频等额外的非语言模态，拓展了多模态大语言模型的能力，从而有助于更全面、多维度地理解各种模态，提供更强的智能以及更智能的交互模式。研究方向包括不限于：\n1) 多模态表征高效对齐研究：研究如何在统一模型架构下提取并共享视觉、语音、语言等模态的特征；探索基于对比学习、自监督学习的方法，优化多模态对齐过程；针对视频、音频等数据，研究时间序列信息的对齐技巧。\n2) 多模态知识迁移与涌现能力研究：研究知识在不同模态间的迁移规律，激发模型在跨模态任务中的涌现能力，实现对未见任务的泛化。\n3) 多模态融合：探索统一的全模态大模型框架，研究高效全模态预训练技术，探索跨模态数据上的scaling law和智能涌现能力。使之能够高效处理文本、音频、图像和视频输入的任意组合，并生成涵盖文本、音频和图像等多种模态的输出。\n4） 实时多模态交互：探索高效的多模态智能交互技术，增强系统在多模场景下的智能，提升人机实时音视频交互体验。",
+    "jobRequirement": "1）对CV、NLP、语音等多模态相关领域有深入的理解，在其中一个或多个方向有深入的研究经历，且有相关实际项目经验。\n2）熟练使用深度学习框架（比如PyTorch），熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）在知名开源项目中有核心贡献者优先。\n2）对多模态大模型有深入研究且有实际训练经验者优先。\n3）发表过高水平论文，如 ICLR、NeurIPS、ICML、CVPR 等。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309544000,
+    "refreshTime": 1747963942000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】多模态融合及多模态实时交互算法研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n大语言模型（LLM）最近取得的突破极大地加速了多模态大语言模型（MLLM）的发展。全模态多模态大语言模型（Omni-MLLM）通过融入如视频、音频等额外的非语言模态，拓展了多模态大语言模型的能力，从而有助于更全面、多维度地理解各种模态，提供更强的智能以及更智能的交互模式。研究方向包括不限于：\n1) 多模态表征高效对齐研究：研究如何在统一模型架构下提取并共享视觉、语音、语言等模态的特征；探索基于对比学习、自监督学习的方法，优化多模态对齐过程；针对视频、音频等数据，研究时间序列信息的对齐技巧。\n2) 多模态知识迁移与涌现能力研究：研究知识在不同模态间的迁移规律，激发模型在跨模态任务中的涌现能力，实现对未见任务的泛化。\n3) 多模态融合：探索统一的全模态大模型框架，研究高效全模态预训练技术，探索跨模态数据上的scaling law和智能涌现能力。使之能够高效处理文本、音频、图像和视频输入的任意组合，并生成涵盖文本、音频和图像等多种模态的输出。\n4） 实时多模态交互：探索高效的多模态智能交互技术，增强系统在多模场景下的智能，提升人机实时音视频交互体验。\n任职要求\n1）对CV、NLP、语音等多模态相关领域有深入的理解，在其中一个或多个方向有深入的研究经历，且有相关实际项目经验。\n2）熟练使用深度学习框架（比如PyTorch），熟悉 Megatron、DeepSpeed 等开源训练框架。\n加分项：\n1）在知名开源项目中有核心贡献者优先。\n2）对多模态大模型有深入研究且有实际训练经验者优先。\n3）发表过高水平论文，如 ICLR、NeurIPS、ICML、CVPR 等。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

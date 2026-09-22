@@ -1,0 +1,41 @@
+{
+  "source_job_id": "2db6ac6d5f7746c989119c6ec66ded5d",
+  "verified_at": "2026-09-15T01:32:00.486Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=2db6ac6d5f7746c989119c6ec66ded5d",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=2db6ac6d5f7746c989119c6ec66ded5d&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "2db6ac6d5f7746c989119c6ec66ded5d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "物料控制专员",
+        "postAdSn": "供应链类",
+        "postStdSubSn": "物料计划",
+        "techDire": "不限",
+        "postContent": "1、根据生产计划，制定相应的物料需求计划，进行物料请购及到货控制，对缺料进行跟催，确保物料满足生产及销售需求，对来料货生产过程中出现的物料异常，进行协调处理；\n2、进行存量控制，降低物料库存，提升库存周转率，盘活库存，实施呆料预防和处理措施；\n3、协助安排新品、替代试制及下单追踪；\n4、对物料按用量进行变动趋势分析、对物料的库存金额、库龄进行评估和分析。",
+        "postRequire": "1、本科及以上学历，管理类或理工类专业优先；\n2、掌握物料计划编制、库存及周转率管控、呆滞物料分析处理等方面的知识；\n3、具备一定的数据统计和分析能力，熟练掌握办公软件和ERP系统；\n4、具备优秀的沟通表达、沟通协调能力。\n注：【供应链】岗位的工作地点为杭州（含桐庐）、武汉、重庆",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:29",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "ae21c9cb970d4fad9f5fa578f719a13c",
+          "name": "供应链",
+          "description": "供应链中心在国内设立了杭州桐庐、杭州滨江、重庆、武汉4大制造基地，在海外设立了印度、巴西、英国3大制造基地，与11大海外区域物流中心。 杭州桐庐制造基地作为国内最大的制造基地，向国内外其他基地输出先进的制造工艺、完善可靠的制造标准，快速交付客户的订单，为全球客户提供优质专业服务。杭州桐庐制造基地入选首批国家级智能制造示范工厂揭榜单位、首批浙江省未来工厂-引领型“头雁工厂”、首批杭州市未来工厂-链主工厂。\n供应链中心具备业内领先的自动化生产能力，自主研发的核心设备及制造系统，拥有从原料来料存储、生产装配、测试、包装到成品分拣运输的端到端自动化能力。生产车间配置了集生产排程、物料管控、品质管理于一体的制造执行系统MES，实现生产状态的全方位监控及实时管理。AGV机器人的投入和仓储管理系统WMS的上线，以及与MES系统的对接，实现了物料配送自动化及仓储管理信息化。"
+        }
+      ]
+    }
+  ]
+}

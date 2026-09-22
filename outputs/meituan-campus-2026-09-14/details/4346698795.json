@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4346698795&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.750Z",
+  "data": {
+    "jobUnionId": "4346698795",
+    "name": "【基座大模型北斗实习】大模型多模态训练研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：多模态训练pretrain和posttrain的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n\n1、超长序列的高效pretrain训练方案。\n2、基于投机采样的方式加速多模态RL的训练效率。\n3、针对compute use场景的大规模agentic RL 高效训练方案探索。",
+    "jobRequirement": "1、精通 C++/Python，熟悉 CUDA 编程、NCCL 通信库或 RDMA 网络优化；\n2、具有很强的学习能力、复杂问题归纳梳理能力、沟通和团队协作能力，具备能够深度钻研技术的耐心；\n3、至少深入研读过 Megatron-LM, vLLM, Sglang, VERL 其中之一的源码，并有过定制化修改或性能调优经历。 \n\n加分项目：\n1、有很强的学术研究能力和优秀的学术成果(AI领域顶会/顶刊论文)； \n2、熟悉RL的基础算法，包括PPO、GRPO等经典RL算法。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223031000,
+    "refreshTime": 1775223031000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大模型多模态训练研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：多模态训练pretrain和posttrain的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、超长序列的高效pretrain训练方案。\n2、基于投机采样的方式加速多模态RL的训练效率。\n3、针对compute use场景的大规模agentic RL 高效训练方案探索。\n任职要求\n1、精通 C++/Python，熟悉 CUDA 编程、NCCL 通信库或 RDMA 网络优化；\n2、具有很强的学习能力、复杂问题归纳梳理能力、沟通和团队协作能力，具备能够深度钻研技术的耐心；\n3、至少深入研读过 Megatron-LM, vLLM, Sglang, VERL 其中之一的源码，并有过定制化修改或性能调优经历。\n加分项目：\n1、有很强的学术研究能力和优秀的学术成果(AI领域顶会/顶刊论文)；\n2、熟悉RL的基础算法，包括PPO、GRPO等经典RL算法。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

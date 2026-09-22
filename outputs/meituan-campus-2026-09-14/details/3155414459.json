@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155414459&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:12.506Z",
+  "data": {
+    "jobUnionId": "3155414459",
+    "name": "【大模型北斗实习】Operator 智能体方向算法研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "随着大模型与生成式 AI 技术的快速发展，在多模态和复杂场景下让 Agent 具备更强大的决策和执行能力成为未来的重要趋势。OpenAI Operator 通过结合强化学习的多步决策机制与大模型的理解、推理优势，可在多种任务场景（如 Computer Use、网页浏览等）中实现高效且灵活的自动化决策和任务执行。本课题将聚焦多样化业务场景和复杂环境下的自适应策略设计、规划与推理，进一步提升 Agent 在真实应用中的表现。\n主要研究内容包括但不限于：\n1) 多模态与多步决策：设计并构建包含多模态信息、计算机交互、网络搜索、函数调用等多维度的复杂环境，研究如何利用端到端强化学习来进行多步决策，从而完成更具挑战的任务。\n2) 策略学习与优化：在多种强化学习算法（如 PPO、GRPO 等）的框架下，探索高效的策略优化方法，为 Operator Agent 提供强大的决策和执行能力。\n3) 规划与推理：借助大模型的知识与推理能力，设计可解释的多步规划算法；研究如何与外部工具或知识库交互，以扩展 Agent 的能力边界并提升其在真实环境中的自动化决策表现。",
+    "jobRequirement": "1）熟悉强化学习领域常用算法及理论基础（如 DQN、Policy Gradient、PPO、GRPO 等。\n2）熟练掌握至少一门编程语言（如 Python、Java），熟悉 Linux 环境。\n3）具备深度学习框架（如 PyTorch、TensorFlow）实际项目经验；了解大模型或分布式训练框架（Megatron、DeepSpeed 等）者优先。\n4）对大模型在 Agent 规划、推理中的作用有浓厚兴趣，对 LLM + RL 的前沿研究有基本认识。\n5）具备良好的问题分析和解决能力，对新技术保持学习和探索的热情。\n加分项：\n1）在 NeurIPS、ICLR、ICML、ACL、EMNLP 等相关领域高水平期刊/会议发表论文或在有影响力的开源项目中做出核心贡献。\n2）在多 Agent、层级强化学习或多模态融合等领域有深入研究或项目经验者优先。\n3）具备 General Agent 使用经验（如 OpenAI Operator、Manus AI 等）者优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309544000,
+    "refreshTime": 1747963942000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】Operator 智能体方向算法研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n随着大模型与生成式 AI 技术的快速发展，在多模态和复杂场景下让 Agent 具备更强大的决策和执行能力成为未来的重要趋势。OpenAI Operator 通过结合强化学习的多步决策机制与大模型的理解、推理优势，可在多种任务场景（如 Computer Use、网页浏览等）中实现高效且灵活的自动化决策和任务执行。本课题将聚焦多样化业务场景和复杂环境下的自适应策略设计、规划与推理，进一步提升 Agent 在真实应用中的表现。\n主要研究内容包括但不限于：\n1) 多模态与多步决策：设计并构建包含多模态信息、计算机交互、网络搜索、函数调用等多维度的复杂环境，研究如何利用端到端强化学习来进行多步决策，从而完成更具挑战的任务。\n2) 策略学习与优化：在多种强化学习算法（如 PPO、GRPO 等）的框架下，探索高效的策略优化方法，为 Operator Agent 提供强大的决策和执行能力。\n3) 规划与推理：借助大模型的知识与推理能力，设计可解释的多步规划算法；研究如何与外部工具或知识库交互，以扩展 Agent 的能力边界并提升其在真实环境中的自动化决策表现。\n任职要求\n1）熟悉强化学习领域常用算法及理论基础（如 DQN、Policy Gradient、PPO、GRPO 等。\n2）熟练掌握至少一门编程语言（如 Python、Java），熟悉 Linux 环境。\n3）具备深度学习框架（如 PyTorch、TensorFlow）实际项目经验；了解大模型或分布式训练框架（Megatron、DeepSpeed 等）者优先。\n4）对大模型在 Agent 规划、推理中的作用有浓厚兴趣，对 LLM + RL 的前沿研究有基本认识。\n5）具备良好的问题分析和解决能力，对新技术保持学习和探索的热情。\n加分项：\n1）在 NeurIPS、ICLR、ICML、ACL、EMNLP 等相关领域高水平期刊/会议发表论文或在有影响力的开源项目中做出核心贡献。\n2）在多 Agent、层级强化学习或多模态融合等领域有深入研究或项目经验者优先。\n3）具备 General Agent 使用经验（如 OpenAI Operator、Manus AI 等）者优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

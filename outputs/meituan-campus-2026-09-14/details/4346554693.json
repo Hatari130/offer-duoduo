@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4346554693&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:54.614Z",
+  "data": {
+    "jobUnionId": "4346554693",
+    "name": "【基座大模型北斗实习】大模型后训练研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：负责大规模强化学习系统设计、分布式调优、调度优化、算法 co-design等，包括不限于 RLHF、RLVR、Agentic RL等范式。和算法共同提升模型各类专项能力，应用生产力等等\n\n你可能从事以下方向：\n1、RL训练系统架构\n①设计和实现支持 PPO及各类变种算法的高效训练框架。\n②Data/Env Scaling，优化并发调度效率 。\n2、在线采样 & Rollout 优化\n①优化RL场景（longcot、长尾分布、多轮交互）推理引擎效率，包括不限于量化、MTP、并行切分等等。\n②训推混部署、全流程异步训练，提升 GPU 利用率。\n3、 训推一致性\n①训推引擎天然为了各自最大化效率存在精度差异，研究如何不断降低两者diff，包括不限于 Routing Replay、确定性计算等等。\n4、训练稳定性\n①攻克RL训练特有的奖励Hacking、训练不稳定、KL爆炸等系统层面问题。\n②设计细粒度的训练过程监控：reward曲线、KL散度、entropy变化实时可观测。\n③优化 PPO clip、advantage normalization 等关键超参的自动调节机制。\n5.、长程任务训练优化\n①长程任务奖励稀疏、过程难精确控制，研究如何系统性的优化其中工程和算法挑战。",
+    "jobRequirement": "1、了解 PPO / GRPO / DPO 算法原理，最好动手实现过；\n2、用过 veRL / OpenRLHF / TRL 等RL训练框架；\n3、有 vLLM / SGLang / TensorRT-LLM 推理加速经验（rollout优化必备）；\n4、做过多机多卡训练，理解显存管理和通信开销；\n5、RL系统相关顶会论文（NeurIPS/ICML/ICLR/MLSys）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223031000,
+    "refreshTime": 1775223031000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】大模型后训练研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：负责大规模强化学习系统设计、分布式调优、调度优化、算法 co-design等，包括不限于 RLHF、RLVR、Agentic RL等范式。和算法共同提升模型各类专项能力，应用生产力等等\n你可能从事以下方向：\n1、RL训练系统架构\n①设计和实现支持 PPO及各类变种算法的高效训练框架。\n②Data/Env Scaling，优化并发调度效率 。\n2、在线采样 & Rollout 优化\n①优化RL场景（longcot、长尾分布、多轮交互）推理引擎效率，包括不限于量化、MTP、并行切分等等。\n②训推混部署、全流程异步训练，提升 GPU 利用率。\n3、 训推一致性\n①训推引擎天然为了各自最大化效率存在精度差异，研究如何不断降低两者diff，包括不限于 Routing Replay、确定性计算等等。\n4、训练稳定性\n①攻克RL训练特有的奖励Hacking、训练不稳定、KL爆炸等系统层面问题。\n②设计细粒度的训练过程监控：reward曲线、KL散度、entropy变化实时可观测。\n③优化 PPO clip、advantage normalization 等关键超参的自动调节机制。\n5.、长程任务训练优化\n①长程任务奖励稀疏、过程难精确控制，研究如何系统性的优化其中工程和算法挑战。\n任职要求\n1、了解 PPO / GRPO / DPO 算法原理，最好动手实现过；\n2、用过 veRL / OpenRLHF / TRL 等RL训练框架；\n3、有 vLLM / SGLang / TensorRT-LLM 推理加速经验（rollout优化必备）；\n4、做过多机多卡训练，理解显存管理和通信开销；\n5、RL系统相关顶会论文（NeurIPS/ICML/ICLR/MLSys）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

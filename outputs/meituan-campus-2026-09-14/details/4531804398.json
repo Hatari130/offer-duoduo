@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531804398&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:44.452Z",
+  "data": {
+    "jobUnionId": "4531804398",
+    "name": "【LongCat大模型人才校招】具身智能算法研究员",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "LongCat 是美团基础研发自主研发的大模型，覆盖语言、视觉、语音、具身全栈。LongCat 相继推出 LongCat-Flash、LongCat-Flash-Thinking、LongCat-Flash-Omni 等系列模型，正在构建具备世界模型能力的通用智能系统加入团队你将参与如下工作\n1. VLA 基座模型演进，探索下一代视觉-语言-动作（VLA）底座，攻克跨本体与跨任务泛化的瓶颈。\n2. 世界动作模型（World Action Model, WAM）构建，探索全新的 WAM 核心架构设计，利用视频生成，扩散底座进行时空推演与物理规律自学习，转化为低阶动作序列的最优闭环决策。\n3. 具身强化学习， 研发面向复杂长程任务的大规模强化学习框架，提升模型在物理世界中的动态容错与自主策略修正能力。\n【为什么是我们】\n1.全栈顶配算力支持，依托美团大规模算力集群，提供千卡至万卡级算力支持，具备成熟的分布式训练与低延迟推理优化栈，保障 世界动作模型与 VLA 大规模训练。\n2.与优秀人才同行，你将与行业顶尖的大模型研究员及机器人领域专家并肩作战，共同攻克具身智能的技术难点。",
+    "jobRequirement": "1.计算机、机器人、人工智能等相关专业硕士/博士学位，具备扎实的 CV、Robotics 或 RL 理论功底；\n2.在 CVPR / NeurIPS / ICLR 等顶级会议发表过高水平论文者优先；\n3.深入理解 World Model / VLA / Diffusion Policy / 强化学习等至少一项前沿技术； \n4.精通 PyTorch，具备大规模分布式训练或复杂多模态数据管线构建经验；",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459821000,
+    "refreshTime": 1780459821000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】具身智能算法研究员\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\nLongCat 是美团基础研发自主研发的大模型，覆盖语言、视觉、语音、具身全栈。LongCat 相继推出 LongCat-Flash、LongCat-Flash-Thinking、LongCat-Flash-Omni 等系列模型，正在构建具备世界模型能力的通用智能系统加入团队你将参与如下工作\n1. VLA 基座模型演进，探索下一代视觉-语言-动作（VLA）底座，攻克跨本体与跨任务泛化的瓶颈。\n2. 世界动作模型（World Action Model, WAM）构建，探索全新的 WAM 核心架构设计，利用视频生成，扩散底座进行时空推演与物理规律自学习，转化为低阶动作序列的最优闭环决策。\n3. 具身强化学习， 研发面向复杂长程任务的大规模强化学习框架，提升模型在物理世界中的动态容错与自主策略修正能力。\n【为什么是我们】\n1.全栈顶配算力支持，依托美团大规模算力集群，提供千卡至万卡级算力支持，具备成熟的分布式训练与低延迟推理优化栈，保障 世界动作模型与 VLA 大规模训练。\n2.与优秀人才同行，你将与行业顶尖的大模型研究员及机器人领域专家并肩作战，共同攻克具身智能的技术难点。\n任职要求\n1.计算机、机器人、人工智能等相关专业硕士/博士学位，具备扎实的 CV、Robotics 或 RL 理论功底；\n2.在 CVPR / NeurIPS / ICLR 等顶级会议发表过高水平论文者优先；\n3.深入理解 World Model / VLA / Diffusion Policy / 强化学习等至少一项前沿技术；\n4.精通 PyTorch，具备大规模分布式训练或复杂多模态数据管线构建经验；\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

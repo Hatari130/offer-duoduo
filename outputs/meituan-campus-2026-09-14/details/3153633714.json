@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3153633714&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:14.967Z",
+  "data": {
+    "jobUnionId": "3153633714",
+    "name": "【大模型北斗实习】语音多模态及深度推理大模型应用技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "该课题聚焦于利用语音多模态大模型以及深度推理大模型构建对话Agent，通过实时全双工交互，精准理解和感知用户情绪，凭借高情商为用户提供极具价值的回复，旨在为用户打造温暖、贴心且高度智能的对话Agent。研究内容：​\n1）参与语音多模态大模型在客服、销售、C端助理等场景应用技术研究，通过文本-语音的对齐机制等措施，提升模型对语音中包含的语义以及声学信息的实时理解与处理能力，通过加入业务知识，增强对业务场景知识遵循能力。\n2）结合客服、销售、C端助理等业务问题，研究大模型反思、规划、决策等深度推理能力，提升模型回复的拟人度及回复准确性。",
+    "jobRequirement": "1）熟悉LLM、Speech Codec、NLP Dialog、语音（ASR / TTS）、情感分析等相关领域，对至少一个方向有深入研究，并有实际项目经验，能够将理论知识应用于实践。​\n2）有扎实的大模型实践和研究能力，尤其是在推理和决策优化领域具有深刻的理解。\n3）熟练掌握 Python 等编程语言，具备良好的编程习惯与代码能力，熟悉 Linux 开发环境。​\n4）熟悉 Megatron、DeepSpeed 等开源训练框架。​",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309541000,
+    "refreshTime": 1747963940000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】语音多模态及深度推理大模型应用技术研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n该课题聚焦于利用语音多模态大模型以及深度推理大模型构建对话Agent，通过实时全双工交互，精准理解和感知用户情绪，凭借高情商为用户提供极具价值的回复，旨在为用户打造温暖、贴心且高度智能的对话Agent。研究内容：​\n1）参与语音多模态大模型在客服、销售、C端助理等场景应用技术研究，通过文本-语音的对齐机制等措施，提升模型对语音中包含的语义以及声学信息的实时理解与处理能力，通过加入业务知识，增强对业务场景知识遵循能力。\n2）结合客服、销售、C端助理等业务问题，研究大模型反思、规划、决策等深度推理能力，提升模型回复的拟人度及回复准确性。\n任职要求\n1）熟悉LLM、Speech Codec、NLP Dialog、语音（ASR / TTS）、情感分析等相关领域，对至少一个方向有深入研究，并有实际项目经验，能够将理论知识应用于实践。​\n2）有扎实的大模型实践和研究能力，尤其是在推理和决策优化领域具有深刻的理解。\n3）熟练掌握 Python 等编程语言，具备良好的编程习惯与代码能力，熟悉 Linux 开发环境。​\n4）熟悉 Megatron、DeepSpeed 等开源训练框架。​\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

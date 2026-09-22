@@ -1,0 +1,41 @@
+{
+  "source_job_id": "fcaeff309e1d4367b96832bc2d0fc1b8",
+  "verified_at": "2026-09-15T01:32:08.348Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=fcaeff309e1d4367b96832bc2d0fc1b8",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=fcaeff309e1d4367b96832bc2d0fc1b8&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "fcaeff309e1d4367b96832bc2d0fc1b8",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "光学结构设计工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "光学",
+        "techDire": "光机/镜头结构设计",
+        "postContent": "1、负责镜头/光机类产品的结构设计；\n2、负责镜头/光机类产品的有限元仿真和杂散光仿真；\n3、负责光学结构物料的图纸绘制和供应商沟通；\n4、对产品试制过程中的结构问题进行改善解决；",
+        "postRequire": "1、硕士及以上学历，机械工程类或相近专业者优先；\n2、熟练掌握常见的结构设计软件，如Creo，CAD等；\n3、熟练掌握至少一种有限远仿真软件，如ANSYS等；\n4、有较好的结构设计基础，熟悉常见结构材料的工艺和加工特性；\n5、具有较强的逻辑分析和独立解决问题的能力；\n6、具有较强的责任心、沟通协作能力和团队合作精神；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "fabb91e8fd8945fea4ea55a8b16142f0",
+          "name": "智能硬件-光学图像实验室",
+          "description": "光学图像实验室，是隶属于硬件产品研发中心，面向全公司的公共光学技术平台。光学图像实验室致力于全领域的光学和图像技术开发，承担多样广泛的系统方案以及基础的底层技术研究，是公司实现智能物联战略的关键技术之一。\n业务方向广泛，涵盖安防、工业、传感、医疗、仪器等领域。"
+        }
+      ]
+    }
+  ]
+}

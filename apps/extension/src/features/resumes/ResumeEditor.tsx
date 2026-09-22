@@ -45,8 +45,9 @@ type ResumeEditorProps = {
   onBack: () => void;
   onActivate: () => void;
   onDelete: () => void;
-  onSave: (profile: PersonalProfile, metadata: { company: string; position: string; manual: boolean }) => Promise<void>;
+  onSave: (profile: PersonalProfile, metadata: { company: string; position: string; manual: boolean }, expectedRevision: number) => Promise<void>;
   onOpenPlugin: () => void;
+  onDirtyChange?: (dirty: boolean) => void;
 };
 
 type ExtraRow = { id: string; key: string; value: string };
@@ -204,7 +205,8 @@ export default function ResumeEditor({
   onActivate,
   onDelete,
   onSave,
-  onOpenPlugin
+  onOpenPlugin,
+  onDirtyChange
 }: ResumeEditorProps) {
   const [draft, setDraft] = useState(resume.profile);
   const [company, setCompany] = useState(resume.company || "");
@@ -216,6 +218,7 @@ export default function ResumeEditor({
   );
   const [expandedEntries, setExpandedEntries] = useState<Set<string>>(() => new Set());
   const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
   const [saved, setSaved] = useState(false);
   const [autoSaved, setAutoSaved] = useState(false);
   const [activeSection, setActiveSection] = useState<EditorSectionKey>("basic");
@@ -230,7 +233,7 @@ export default function ResumeEditor({
   const undoTimerRef = useRef<number | undefined>(undefined);
   const isDirtyRef = useRef(false);
   const editRevisionRef = useRef(0);
-  const loadedResumeRef = useRef({ id: resume.id, content: "" });
+  const loadedResumeRef = useRef({ id: resume.id, content: "", revision: resume.localRevision || 1 });
   const autoSaveTimerRef = useRef<number | undefined>(undefined);
   const contentRef = useRef<HTMLDivElement | null>(null);
 
@@ -238,7 +241,7 @@ export default function ResumeEditor({
     const content = stableJson([resume.profile, resume.company, resume.position]);
     const sameResume = loadedResumeRef.current.id === resume.id;
     if (sameResume && (isDirtyRef.current || loadedResumeRef.current.content === content)) return;
-    loadedResumeRef.current = { id: resume.id, content };
+    loadedResumeRef.current = { id: resume.id, content, revision: resume.localRevision || 1 };
     setDraft(resume.profile);
     setCompany(resume.company || "");
     setPosition(resume.position || "");
@@ -247,6 +250,7 @@ export default function ResumeEditor({
     setSaved(false);
     setAutoSaved(false);
     isDirtyRef.current = false;
+    onDirtyChange?.(false);
   }, [resume.id, resume.profile]);
 
   const completion = useMemo(() => {
@@ -257,6 +261,8 @@ export default function ResumeEditor({
   const markDirty = () => {
     editRevisionRef.current += 1;
     isDirtyRef.current = true;
+    onDirtyChange?.(true);
+    setSaveError("");
     setSaved(false);
     setAutoSaved(false);
   };
@@ -365,8 +371,10 @@ export default function ResumeEditor({
           manual: resume.archiveNameSource === "manual" ||
             company.trim() !== (resume.company || "").trim() ||
             position.trim() !== (resume.position || "").trim()
-        }
+        },
+        loadedResumeRef.current.revision
       );
+      loadedResumeRef.current.revision += 1;
       if (loadedResumeRef.current.id !== savedResumeId || editRevisionRef.current !== savedRevision) return;
       setSaved(true);
       if (isAuto) {
@@ -374,6 +382,9 @@ export default function ResumeEditor({
         setTimeout(() => setAutoSaved(false), 2800);
       }
       isDirtyRef.current = false;
+      onDirtyChange?.(false);
+    } catch (error) {
+      setSaveError(error instanceof Error ? error.message : "保存失败，修改仍保留在页面中");
     } finally {
       setSaving(false);
     }
@@ -393,7 +404,7 @@ export default function ResumeEditor({
 
   // Debounced auto-save (2000ms idle)
   useEffect(() => {
-    if (!isDirtyRef.current || saving) return;
+    if (!isDirtyRef.current || saving || saveError) return;
     window.clearTimeout(autoSaveTimerRef.current);
     autoSaveTimerRef.current = window.setTimeout(() => {
       if (isDirtyRef.current && !saving) {
@@ -401,7 +412,7 @@ export default function ResumeEditor({
       }
     }, 2000);
     return () => window.clearTimeout(autoSaveTimerRef.current);
-  }, [draft, company, position, phoneCountryCode, extraRows, saving]);
+  }, [draft, company, position, phoneCountryCode, extraRows, saving, saveError]);
 
   // Undo removal helper
   const triggerRemovalWithUndo = (title: string, removeFn: () => void, restoreFn: () => void) => {
@@ -677,7 +688,7 @@ export default function ResumeEditor({
               </div>
             </div>
             <div className="resume-editor-actions">
-              {active ? <span className="resume-current-badge"><Check size={13} />当前网申简历</span> : <button className="resume-editor-activate" onClick={onActivate}><Star size={14} />设为当前</button>}
+              {active ? <span className="resume-current-badge"><Check size={13} />当前网申资料</span> : <button className="resume-editor-activate" onClick={onActivate}><Star size={14} />设为当前</button>}
               <button className="resume-more" onClick={onDelete} aria-label="删除简历"><Trash2 size={16} /></button>
             </div>
           </header>
@@ -1410,6 +1421,7 @@ export default function ResumeEditor({
             </EditorSection>
           </div>
 
+          {saveError && <p className="profile-status" role="alert">{saveError}</p>}
           <footer className="resume-editor-footer">
             <span className="resume-editor-save-status">
               {saving ? (
@@ -1426,7 +1438,7 @@ export default function ResumeEditor({
             </span>
             <div>
               <button className="resume-editor-secondary" onClick={onOpenPlugin}><ArrowRight size={14} />去一键网申</button>
-              <button className="resume-editor-save" onClick={() => void save(false)} disabled={saving}>{saving ? "保存中…" : <><Save size={15} />保存这份简历</>}</button>
+              <button className="resume-editor-save" onClick={() => void save(false)} disabled={saving}>{saving ? "保存中…" : <><Save size={15} />保存这份资料</>}</button>
             </div>
           </footer>
         </div>

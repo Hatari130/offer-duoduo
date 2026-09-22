@@ -1,0 +1,41 @@
+{
+  "source_job_id": "534e466c68974ec0bf8887df86a5f35c",
+  "verified_at": "2026-09-15T01:32:09.903Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=534e466c68974ec0bf8887df86a5f35c",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=534e466c68974ec0bf8887df86a5f35c&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "534e466c68974ec0bf8887df86a5f35c",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "高压电源工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "电路设计",
+        "techDire": "高压电源",
+        "postContent": "1、根据项目需求，完成高压电源方案可行性分析，并完成主板原理图设计、高压器件选型、制定布线规范，指导并检查PCB布线和硬件调试工作；\n2、与供应商接洽，完成新器件导入验证，测试等相关工作；\n3、解决产品从设计到测试及量产过程中所发生的技术问题。",
+        "postRequire": "1、本科及以上学历，电力电子相关专业；\n2、熟悉大功率AC-DC、DC-AC设计经验，有高压电源、X射线源设计经验者优先；\n3、熟练掌握电路设计和仿真软件Candence等。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 09:16:50",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

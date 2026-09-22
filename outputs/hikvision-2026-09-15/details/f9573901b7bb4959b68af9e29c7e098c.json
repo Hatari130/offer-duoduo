@@ -1,0 +1,41 @@
+{
+  "source_job_id": "f9573901b7bb4959b68af9e29c7e098c",
+  "verified_at": "2026-09-15T01:32:09.784Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=f9573901b7bb4959b68af9e29c7e098c",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=f9573901b7bb4959b68af9e29c7e098c&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "f9573901b7bb4959b68af9e29c7e098c",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "X-Ray探测器开发工程师",
+        "postAdSn": "软件/嵌入式类",
+        "postStdSubSn": "嵌入式软件开发",
+        "techDire": "不限",
+        "postContent": "1、负责X射线探测器的设计、应用开发和关键器件选型 ；\n2、负责探测器实验方案、平台搭建和实验数据分析，主导核心器件选型和X射线闪烁体性能评估 ；\n3、解决产品从设计到测试及量产过程中所发生的技术问题。",
+        "postRequire": "1、硕士及以上学历，光电材料，电子信息，核物理等相关专业；\n2、具有各类X射线成像用闪烁体材料应用经验或光电传感器应用设计经验优先，在信号噪声处理、图像优化、电子电路或光电器件等领域有相关经验优先；\n3、较好的逻辑思维，具备分析解决问题能力和韧劲，实验动手能力强；\n4、主动性强，有耐心，具有良好的沟通协作能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 09:16:50",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c24a3b14ac3f448898fe59ea3ec083fe",
+          "name": "海康睿影",
+          "description": "海康睿影深耕于非可见光探测领域，以智能化为牵引，X光成像技术为驱动核心，推动多维感知技术、人工智能和设备物联应用融合交互，在智慧安检，工业“智”造等领域进行技术赋能及价值创造，为用户提供X-ray探测业务为核心的整体解决方案。"
+        }
+      ]
+    }
+  ]
+}

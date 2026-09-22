@@ -1,0 +1,41 @@
+{
+  "source_job_id": "a3cda12e3b1c467daacc25658418cd4c",
+  "verified_at": "2026-09-15T01:32:10.995Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=a3cda12e3b1c467daacc25658418cd4c",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=a3cda12e3b1c467daacc25658418cd4c&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "a3cda12e3b1c467daacc25658418cd4c",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "产品管理工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "产品经理",
+        "techDire": "不限",
+        "postContent": "1、负责海康威视及新业务软硬件产品的需求收集、竞品调研，根据公司发展方向规划定义产品，管理产品软硬件生命周期；\n2、负责撰写产品策划文档并细化输出完整的产品软硬件定义，发起评审，根据评审绘制初步交互草稿原型，与各部门沟通推动产品设计实现跟踪落地效果，对研发输出的质量及市场销售结果负责；\n3、跟踪产品上市及其运营情况，与市场及各部门沟通保证产品的卖点已传达到用户端无误；\n4、制定数据埋点，挖掘产品数据，并进行分析及持续优化迭代，保证产品用户体验及口碑的提升；\n5、公司交代的其它内外产品管理工作等。",
+        "postRequire": "1、本科及以上学历，机械自动化、计算机软件、通信、电子工程等相关专业背景优先；  \n2、具备基础的软硬件知识，对行业技术趋势敏感，对新技术，新方案具备快速学习能力； \n3、熟练掌握各种工具(Axure,visio,word,ppt)来绘制业务 原型、业务需求及解决方案，具备较强的文本写作能力与沟通协调能力；\n4、较强的自驱能力和组织协调能力，能独立思考，乐于接受挑战及高频次出差，具备团队协作精神。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

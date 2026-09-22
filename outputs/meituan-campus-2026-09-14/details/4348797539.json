@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348797539&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:52.075Z",
+  "data": {
+    "jobUnionId": "4348797539",
+    "name": "【基座大模型北斗实习】具身智能系统与开放物理世界探索能力研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：从多模态大模型基座延伸到具身智能，我们的目标是做到具身智能的“GPT时刻”，具备test-time zero-shot/few-shot的跨本体、跨任务泛化。在这个过程中，我们进行具身智能在泛化能力评测分析和关键迭代路径的探索，包括但不限于：\n1、探索激发多模态大模型Training-Free泛化能力的Data-Scaling方案（包括VLA和VA），迁移人类数据到具身本体，包括latent action和unified model等方向。\n2、探索通过世界模型作为物理仿真引擎的进阶，兼顾仿真和真机的优点，实现泛化评测、强化学习和多样性数据合成。\n3、探索通过环境交互的在线强化学习，涉及仿真环境的搭建、数据合成和真机实验，研究通过自我进化的下一代智能提升的关键途径。",
+    "jobRequirement": "1、硕士及以上学历，计算机或相关专业，博士优先；\n2、在 ML / NLP / RL / CV / Speech 等相关方向有扎实的研究基础，在 ACL / EMNLP / NAACL / NeurIPS / ICML / ICLR / CVPR / ICCV / ICASSP 等顶级会议发表论文者优先；\n3、优秀的代码和算法功底，具备工匠精神，ACM/ICPC、NOI/IOI、Top Coder、Kaggle等比赛获奖者优先；\n4、在大模型领域或强化学习领域，主导过大影响力的项目或论文者优先；\n5、出色的问题分析和解决能力，有自主探索、深耕一个领域的决心和定力。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223033000,
+    "refreshTime": 1775223033000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】具身智能系统与开放物理世界探索能力研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：从多模态大模型基座延伸到具身智能，我们的目标是做到具身智能的“GPT时刻”，具备test-time zero-shot/few-shot的跨本体、跨任务泛化。在这个过程中，我们进行具身智能在泛化能力评测分析和关键迭代路径的探索，包括但不限于：\n1、探索激发多模态大模型Training-Free泛化能力的Data-Scaling方案（包括VLA和VA），迁移人类数据到具身本体，包括latent action和unified model等方向。\n2、探索通过世界模型作为物理仿真引擎的进阶，兼顾仿真和真机的优点，实现泛化评测、强化学习和多样性数据合成。\n3、探索通过环境交互的在线强化学习，涉及仿真环境的搭建、数据合成和真机实验，研究通过自我进化的下一代智能提升的关键途径。\n任职要求\n1、硕士及以上学历，计算机或相关专业，博士优先；\n2、在 ML / NLP / RL / CV / Speech 等相关方向有扎实的研究基础，在 ACL / EMNLP / NAACL / NeurIPS / ICML / ICLR / CVPR / ICCV / ICASSP 等顶级会议发表论文者优先；\n3、优秀的代码和算法功底，具备工匠精神，ACM/ICPC、NOI/IOI、Top Coder、Kaggle等比赛获奖者优先；\n4、在大模型领域或强化学习领域，主导过大影响力的项目或论文者优先；\n5、出色的问题分析和解决能力，有自主探索、深耕一个领域的决心和定力。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

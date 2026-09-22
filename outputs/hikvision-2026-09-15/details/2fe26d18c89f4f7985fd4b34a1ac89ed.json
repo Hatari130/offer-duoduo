@@ -1,0 +1,41 @@
+{
+  "source_job_id": "2fe26d18c89f4f7985fd4b34a1ac89ed",
+  "verified_at": "2026-09-15T01:32:05.006Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=2fe26d18c89f4f7985fd4b34a1ac89ed",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=2fe26d18c89f4f7985fd4b34a1ac89ed&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "2fe26d18c89f4f7985fd4b34a1ac89ed",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "控制算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "电机算法控制",
+        "postContent": "1、负责运动控制器及控制算法的设计和实现；\n2、参与控制系统的搭建，总体结构方案设计，关键元器件选型等；\n3、解决产品在测试、使用中反馈的各种问题，进行总结和算法改进和优化。",
+        "postRequire": "1、本科及以上学历，计算机、电子等相关专业优先； \n2、熟悉ARM开发调试，具有运动控制/机器人相关研发经历或者运动控制算法设计、机器人控制等方面研发经验优先； \n3、具有扎实的编程基础，熟练掌握C/C++；\n4、熟悉FOC控制算法、多轴运动控制；熟悉机器人力，速度，位置，电流环闭环控制策略，轨迹规划，插补、PID等运动控制算法。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "cbd238ee68984a4485e9452a6104bd27",
+          "name": "智能硬件-交通与停车",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

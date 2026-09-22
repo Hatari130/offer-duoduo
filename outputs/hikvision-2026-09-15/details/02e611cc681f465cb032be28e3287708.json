@@ -1,0 +1,41 @@
+{
+  "source_job_id": "02e611cc681f465cb032be28e3287708",
+  "verified_at": "2026-09-15T01:32:03.776Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=02e611cc681f465cb032be28e3287708",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=02e611cc681f465cb032be28e3287708&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "02e611cc681f465cb032be28e3287708",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "行政专员",
+        "postAdSn": "综合类",
+        "postStdSubSn": "行政事务",
+        "techDire": "不限",
+        "postContent": "1、负责日常行政管理制度的制定和完善，提高工作的规范化和效率；\n2、负责园区管理，做好员工服务工作，协调资源，维护办公环境。\n3、负责公司活动的组织，文化氛围的建设；\n4、负责各类行政对接工作，包括资产管理和行政采购等。",
+        "postRequire": "1、本科及以上学历，行政管理等相关专业；\n2、具备良好的沟通能力，较好的学习能力、独立分析与解决问题的能力；\n3、具有较好的亲和力，认真负责、严谨细致；\n4、具备良好的沟通与协调能力，具备突发事件应对处置能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

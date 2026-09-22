@@ -1,0 +1,51 @@
+{
+  "source_job_id": "e26209640eca4b4e99257bfa76f7db11",
+  "verified_at": "2026-09-15T01:32:03.314Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=e26209640eca4b4e99257bfa76f7db11",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=e26209640eca4b4e99257bfa76f7db11&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "e26209640eca4b4e99257bfa76f7db11",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "EMC工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "EMC/安规",
+        "techDire": "不限",
+        "postContent": "1、参与公司产品EMC需求分解和产品EMC架构设计，根据总体方案，完成EMC详细设计和相关评审，推进EMC设计方案执行；\n2、执行EMC调试整改并发起方案评审，跟进方案导入；参与产品EMC相关问题分析和解决，推动产品持续改进；\n3、参与EMC技术攻关和技术规范制定，为其他部门提供EMC技术支持；\n4、参与部门交流培训和公共知识区建设工作。",
+        "postRequire": "1、本科及以上学历，电气、电子类相关专业优先；\n2、具备良好的模电、数电及电磁场专业知识；\n3、具备电磁场仿真能力或有电磁兼容项目实践经验将优先考虑；\n4、高度责任感和主观能动性，抗压能力强，良好的团队意识和沟通协作能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        },
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        },
+        {
+          "id": "c85e437f543c4494bf31fe6524368e6d",
+          "name": "智能硬件-硬件技术",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

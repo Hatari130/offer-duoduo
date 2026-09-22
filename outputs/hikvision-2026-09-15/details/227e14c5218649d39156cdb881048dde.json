@@ -1,0 +1,41 @@
+{
+  "source_job_id": "227e14c5218649d39156cdb881048dde",
+  "verified_at": "2026-09-15T01:32:02.197Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=227e14c5218649d39156cdb881048dde",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=227e14c5218649d39156cdb881048dde&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "227e14c5218649d39156cdb881048dde",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "AI算法工程师-自主无人系统",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "多传感器融合/机器学习/建图定位/决策规划控制",
+        "postContent": "针对车辆智能驾驶系统、移动机器人系统：\n1、负责激光雷达、毫米波雷达、摄像机多传感器数据融合，实现多目标检测、分类、跟踪、行为和运动轨迹预测算法设计和开发；\n2、利用激光/毫米波雷达、摄像机、GNSS、IMU进行高精度建图和定位算法设计和开发；\n3、负责行为决策、路径规划、运动控制算法开发，仿真模型搭建。",
+        "postRequire": "1、硕士及以上学历，博士优先；计算机、机器人、自动化、电子、车辆工程、数学等相关专业；\n2、熟练掌握C\\C++、Python，有较好的编程基础；\n3、满足以下一项或多项要求：\n1) 能够使用至少一种深度学习框架，熟悉3D点云数据处理、融合图像实现多目标检测、分类、跟踪、行为和运动轨迹预测算法；\n2) 熟悉至少一种SLAM算法，了解多传感器融合进行高精度地图生成及组合定位相关算法；\n3) 熟悉智能驾驶系统行为决策和路径规划算法，了解基于机器学习的驾驶行为决策算法；\n4、满足如下条件优先考虑：\n1）丰富的机器学习算法应用经验；\n2）移动机器人或无人车系统研发或者参赛经验，在CVPR、ICRA、IROS等国际会议或期刊上发表过文章；\n3）具备利用仿真软件，进行车辆驾驶行为决策、路径规划算法仿真验证经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "石家庄市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "b276e4ba30ae4cd2afe86d0ba755e25f",
+          "name": "海康汽车电子",
+          "description": "海康汽车电子聚焦于智能驾驶领域，以视频为核心，融合雷达等传感器，深入研究人工智能、感知数据分析与处理等技术，致力于成为行业领先的以视频技术为核心的车辆安全和智能化产品供应商。"
+        }
+      ]
+    }
+  ]
+}

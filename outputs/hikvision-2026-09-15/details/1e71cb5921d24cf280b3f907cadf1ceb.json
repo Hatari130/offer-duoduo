@@ -1,0 +1,41 @@
+{
+  "source_job_id": "1e71cb5921d24cf280b3f907cadf1ceb",
+  "verified_at": "2026-09-15T01:32:01.211Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=1e71cb5921d24cf280b3f907cadf1ceb",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=1e71cb5921d24cf280b3f907cadf1ceb&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "1e71cb5921d24cf280b3f907cadf1ceb",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "具身智能操作算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "具身智能/3D视觉/机器人环境感知/目标检测",
+        "postContent": "1、 围绕具身智能中的操作模型开发工作，完成多模态数据收集、端到端模型训练以及性能测试工作；\n2、 对机器人操作模型进行硬件部署，完成机器人真机强化学习的方案研发以及数据采集系统的构建，在实际操作场景中优化模型性能",
+        "postRequire": "1、硕士及以上学历，计算机、机器人学、人工智能等相关专业优先；\n以下技能至少具备其中一项：\n(1) 对Pi0/GR00T等主力端到端模型具有实践与微调经验，对HIL-Serl、RLinf等操作技能强化学习方案或框架有调试经验，对主流的深度学习框架具备调试经验\n(2) 对生成式世界模型(WAM)、操作模型多模态对齐训练有了解，具备基座模型的训练数据采集、数据治理以及框架设计相关经验\n2、了解机器人运动学、动力学建模，并对视觉、触觉、力觉传感器的使用有了解\n3、扎实的前沿算法研发与工程实现能力，有扎实的编程基础，熟练掌握C/C++/python编程预研；；\n4、具有高质量技术成果落地，有项目开发经验者优先；\n5、具有优秀的英文文献阅读能力，对探索前沿领域有着极大的热情，有国际顶级期刊、会议论文发表者或相关竞赛获奖者优先；\n6、沟通能力好，工作认真有责任心者优先",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

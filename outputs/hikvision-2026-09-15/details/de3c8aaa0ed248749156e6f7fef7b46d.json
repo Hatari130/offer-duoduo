@@ -1,0 +1,74 @@
+{
+  "source_job_id": "de3c8aaa0ed248749156e6f7fef7b46d",
+  "verified_at": "2026-09-15T01:32:21.267Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=de3c8aaa0ed248749156e6f7fef7b46d",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=de3c8aaa0ed248749156e6f7fef7b46d&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "78810db38e6a437e88c518eaaf41e950",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "高性能计算工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "深度学习训练与推理",
+        "postContent": "1、SoC及GPU上深度学习推理引擎的研发和性能调优，确保领域内引擎技术的先进性；\n2、AI开放平台高性能训练、推理组件/服务的架构设计及开发实现；\n3、深度学习训练及推理框架的研发和性能调优，保持相关AI计算技术能力和性能指标业内领先；\n4、协助AI能力落地，将其应用到各种实际业务中。",
+        "postRequire": "1、硕士及以上学历，电子、自动化、计算机等相关专业；\n2、掌握C、C++、Python语言一种或几种，有多线程、多进程开发经验；\n3、熟悉Caffe、Tensorflow、Pytorch等至少一种主流深度学习框架；\n4、优秀的分析问题，解决问题能力，乐于解决具有挑战性的问题；\n5、具备以下能力者之一优先：\n1）有异构编程（CUDA、OpenCL、NEON……）经验者优先；\n2）具备独立封装、开发并完成算法推理SDK能力者优先；\n3）对深度学习算法（机器视觉、NLP、语音识别）有了解者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "de3c8aaa0ed248749156e6f7fef7b46d",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:26",
+        "updateTime": "2026-08-20 17:09:53"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "1aaeac1a10bc435f9c028c83f0422973",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "高性能计算工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "应用软件开发",
+        "techDire": "深度学习训练与推理",
+        "postContent": "1、SoC及GPU上深度学习推理引擎的研发和性能调优，确保领域内引擎技术的先进性；\n2、AI开放平台高性能训练、推理组件/服务的架构设计及开发实现；\n3、深度学习训练及推理框架的研发和性能调优，保持相关AI计算技术能力和性能指标业内领先；\n4、协助AI能力落地，将其应用到各种实际业务中。",
+        "postRequire": "1、硕士及以上学历，电子、自动化、计算机等相关专业；\n2、掌握C、C++、Python语言一种或几种，有多线程、多进程开发经验；\n3、熟悉Caffe、Tensorflow、Pytorch等至少一种主流深度学习框架；\n4、优秀的分析问题，解决问题能力，乐于解决具有挑战性的问题；\n5、具备以下能力者之一优先：\n1）有异构编程（CUDA、OpenCL、NEON……）经验者优先；\n2）具备独立封装、开发并完成算法推理SDK能力者优先；\n3）对深度学习算法（机器视觉、NLP、语音识别）有了解者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "成都市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "de3c8aaa0ed248749156e6f7fef7b46d",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:09:53"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

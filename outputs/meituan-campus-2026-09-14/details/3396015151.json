@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3396015151&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:10.205Z",
+  "data": {
+    "jobUnionId": "3396015151",
+    "name": "【北斗实习】大模型应用算法工程师-【行业大模型】",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】\n大模型研发正从“人类数据时代”跨入“经验时代”，评估已然是大模型研发的重点和难点。具体而言，评估驱动的行业大模型研发下半场范式主要包括两方面内容：①行业核心问题定义和评估归因；②Post-Training多阶段协同的效果提升。本课题基于美团的本地生活业务，精选销售、履约、医药和客服四个代表性行业，旨在探索评估驱动的行业大模型研发的下半场范式。\n【建议研究方向】\n1.行业大模型通用评估方案探索。\n2.行业模型reward设计与探索。\n3.面向行业推理能力建设的通用自动化样本构建方法和评估归因方法。\n4.面向行业推理能力增强的通用强化训练方案。\n5.销售、履约、医药和客服行业大模型训练。",
+    "jobRequirement": "海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1）超级学霸：专业成绩排名前1%。\n2）学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3）竞赛大神：在顶级大赛上获奖。\n4）工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1748312802000,
+    "refreshTime": 1748312802000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型应用算法工程师-【行业大模型】\n实习-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n大模型研发正从“人类数据时代”跨入“经验时代”，评估已然是大模型研发的重点和难点。具体而言，评估驱动的行业大模型研发下半场范式主要包括两方面内容：①行业核心问题定义和评估归因；②Post-Training多阶段协同的效果提升。本课题基于美团的本地生活业务，精选销售、履约、医药和客服四个代表性行业，旨在探索评估驱动的行业大模型研发的下半场范式。\n【建议研究方向】\n1.行业大模型通用评估方案探索。\n2.行业模型reward设计与探索。\n3.面向行业推理能力建设的通用自动化样本构建方法和评估归因方法。\n4.面向行业推理能力增强的通用强化训练方案。\n5.销售、履约、医药和客服行业大模型训练。\n任职要求\n海内外高校在校本科生（大三及以上）、硕士生及博士生，且以下条件至少满足一项：\n1）超级学霸：专业成绩排名前1%。\n2）学术达人：在顶级期刊或学术会议上以第一作者身份发表论文（或导师一作，自己为二作）。\n3）竞赛大神：在顶级大赛上获奖。\n4）工程高手：有大厂实验室的实习经验，或有贡献突出的开源项目。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

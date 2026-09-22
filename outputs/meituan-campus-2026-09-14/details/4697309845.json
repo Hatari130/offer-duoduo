@@ -1,0 +1,276 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697309845&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:58.133Z",
+  "data": {
+    "jobUnionId": "4697309845",
+    "name": "AI产品经理岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "产品类",
+    "jobFamilyGroup": "产品",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG011",
+        "name": "人力资源平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG044",
+        "name": "核心本地商业-平台及职能部门",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG021",
+        "name": "Keeta",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG032",
+        "name": "核心本地商业-服务零售事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG015",
+        "name": "财务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG037",
+        "name": "核心本地商业-到家履约平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG003",
+        "name": "金融服务平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG047",
+        "name": "核心本地商业-酒店旅行",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG046",
+        "name": "核心本地商业-商业增值部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG019",
+        "name": "软硬件服务-充电宝业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG008",
+        "name": "核心本地商业-点评事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG018",
+        "name": "软硬件服务-餐饮SaaS事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG039",
+        "name": "核心本地商业-医药健康事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG049",
+        "name": "软硬件服务-酒店SaaS业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG038",
+        "name": "核心本地商业-闪购事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 迎接多样化的产品研发和运营实战的挑战，产品岗位类型包含功能产品、策略产品、数据产品、工具产品、硬件产品等，覆盖AI驱动产品创新、大模型应用落地等前沿方向；\n2. 从复杂的业务场景/数据中挖掘用户痛点和本质需求，探索AI技术在产品中的应用机会，以结果为导向，推动产品的优化和发展；\n3. 与AI算法团队紧密协作，理解大模型能力边界，将AI技术转化为可落地的产品功能，推动产品智能化升级。",
+    "jobRequirement": "1. 本科及以上学历；\n2. 有强烈的好奇心和进取心，突出的学习能力；\n3. 熟悉互联网产品和技术的主流发展动态，有产品经验或能证明这方面的潜力；\n4. 对AI感兴趣、有热情，了解大语言模型（如GPT、Claude等）的基本原理与能力边界，了解主流AI产品形态（对话式产品、Copilot模式、Agent产品、多模态交互），有使用大模型产品或AI工具进行产品设计的经验者优先；\n5. 具备AI产品思维，能够识别哪些场景适合AI赋能，理解AI产品的评估指标（如准确率、用户满意度、幻觉率等）者优先。\n【岗位亮点】\n1. 可以全面深入地了解美团业务发展，用产品创新推动业务增长；\n2. 丰富的知识沉淀和优质的专业课程，成长为优秀的产品经理；\n3. AI与产品深度融合，可参与大模型在生活服务场景的产品创新，体验AI原生产品的设计全流程。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960985000,
+    "refreshTime": 1786960985000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI产品经理岗\n应届-校园招聘\n工作地点：北京市、上海市、成都市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 迎接多样化的产品研发和运营实战的挑战，产品岗位类型包含功能产品、策略产品、数据产品、工具产品、硬件产品等，覆盖AI驱动产品创新、大模型应用落地等前沿方向；\n2. 从复杂的业务场景/数据中挖掘用户痛点和本质需求，探索AI技术在产品中的应用机会，以结果为导向，推动产品的优化和发展；\n3. 与AI算法团队紧密协作，理解大模型能力边界，将AI技术转化为可落地的产品功能，推动产品智能化升级。\n任职要求\n1. 本科及以上学历；\n2. 有强烈的好奇心和进取心，突出的学习能力；\n3. 熟悉互联网产品和技术的主流发展动态，有产品经验或能证明这方面的潜力；\n4. 对AI感兴趣、有热情，了解大语言模型（如GPT、Claude等）的基本原理与能力边界，了解主流AI产品形态（对话式产品、Copilot模式、Agent产品、多模态交互），有使用大模型产品或AI工具进行产品设计的经验者优先；\n5. 具备AI产品思维，能够识别哪些场景适合AI赋能，理解AI产品的评估指标（如准确率、用户满意度、幻觉率等）者优先。\n【岗位亮点】\n1. 可以全面深入地了解美团业务发展，用产品创新推动业务增长；\n2. 丰富的知识沉淀和优质的专业课程，成长为优秀的产品经理；\n3. AI与产品深度融合，可参与大模型在生活服务场景的产品创新，体验AI原生产品的设计全流程。\n工作城市\n北京市、上海市、成都市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

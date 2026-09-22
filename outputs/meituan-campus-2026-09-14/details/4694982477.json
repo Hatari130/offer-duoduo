@@ -1,0 +1,86 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694982477&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:57.153Z",
+  "data": {
+    "jobUnionId": "4694982477",
+    "name": "运筹优化算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG050",
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. AI+运筹的智能调度系统：将大模型（LLM）与强化学习（RL）深度融合到实时调度决策中，构建新一代AI驱动的订单分配与路径规划系统，实现千万级订单-百万级骑手的分布式实时全局优化，探索从传统运筹求解到AI端到端决策的范式跃迁。\n2. AI赋能的供需决策与动态定价：利用深度学习进行高精度供需预测，结合因果推断与大规模运筹优化进行运力调控与最优定价的序贯决策，探索用大模型自动生成定价策略、用RL在线优化调价方案，最大化运力供给与用户体验。\n3. 大模型驱动的时空预估：研究LLM与时空数据的深度融合，构建新一代时空基础模型（Foundation Model for Spatio-Temporal），用生成式AI突破传统判别式模型上限，提升配送时间预估（ETA）、路径规划等场景的泛化精度与零样本推理能力。\n4. AI自动化的算法研发范式：探索用大模型实现自动问题建模（Auto-Formulation）、自动算法设计（Algorithm of Thoughts）、端到端学习型优化器（Learning to Optimize），推动运筹优化从人工建模走向AI自主求解的新范式。\n5. AI工具驱动的研发提效：利用大模型（如Copilot、ChatGPT等）辅助算法研发全流程，包括问题建模、方案设计、代码开发与调试、数据分析，推动AI工具深度融入日常工作。",
+    "jobRequirement": "基础能力要求：\n1. 开发能力好，熟悉Java/C++/Python 等至少一门语言，熟悉常用数据结构和算法，能写出高质量代码；\n2. 对运筹优化中的常用数学模型、求解算法有基本理解，具备数学建模能力；\n3. 熟悉机器学习领域的常用模型和算法；\n4. 具备AI工具使用能力（必须）：能够熟练使用大模型工具（如ChatGPT、Copilot、Cursor等）辅助日常研发，包括代码编写、问题分析、方案调研、论文检索等，将AI作为提升研发效率的核心手段；\n5. 对数据敏感，能够从数据中发现问题并追踪原因；\n6. 具有较强的学习能力、自我驱动能力和团队协作能力。\n具备以下经验者优先：\n1. 有将AI/大模型技术应用于组合优化、调度决策等问题的研究或实践经历；\n2. 熟悉LLM与决策科学融合的前沿方向（LLM4Decision/LLM4OR/Learning to Optimize）；\n3. 有即时配送、物流调度、动态定价等相关业务场景的研究或实习经历。\n【岗位亮点】\n1. 真实场景：千万级日订单、百万级骑手，全球最大规模即时配送决策系统，AI+运筹优化技术落地的理想平台。\n2. AI原生工作方式：团队全面拥抱AI工具，提供充足GPU集群与大模型Token资源，鼓励用AI重构研发流程，让你的每一个idea都能快速验证。\n3. 成果导向：鼓励顶会发论文，团队已获Franz Edelman奖，内部有完善的学术合作通道。\n4. 成长空间：从问题定义到算法设计再到线上验证，全链路参与，快速积累工业级运筹优化实战经验，与顶尖高校保持长期联合研究。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960989000,
+    "refreshTime": 1786960989000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n运筹优化算法工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. AI+运筹的智能调度系统：将大模型（LLM）与强化学习（RL）深度融合到实时调度决策中，构建新一代AI驱动的订单分配与路径规划系统，实现千万级订单-百万级骑手的分布式实时全局优化，探索从传统运筹求解到AI端到端决策的范式跃迁。\n2. AI赋能的供需决策与动态定价：利用深度学习进行高精度供需预测，结合因果推断与大规模运筹优化进行运力调控与最优定价的序贯决策，探索用大模型自动生成定价策略、用RL在线优化调价方案，最大化运力供给与用户体验。\n3. 大模型驱动的时空预估：研究LLM与时空数据的深度融合，构建新一代时空基础模型（Foundation Model for Spatio-Temporal），用生成式AI突破传统判别式模型上限，提升配送时间预估（ETA）、路径规划等场景的泛化精度与零样本推理能力。\n4. AI自动化的算法研发范式：探索用大模型实现自动问题建模（Auto-Formulation）、自动算法设计（Algorithm of Thoughts）、端到端学习型优化器（Learning to Optimize），推动运筹优化从人工建模走向AI自主求解的新范式。\n5. AI工具驱动的研发提效：利用大模型（如Copilot、ChatGPT等）辅助算法研发全流程，包括问题建模、方案设计、代码开发与调试、数据分析，推动AI工具深度融入日常工作。\n任职要求\n基础能力要求：\n1. 开发能力好，熟悉Java/C++/Python 等至少一门语言，熟悉常用数据结构和算法，能写出高质量代码；\n2. 对运筹优化中的常用数学模型、求解算法有基本理解，具备数学建模能力；\n3. 熟悉机器学习领域的常用模型和算法；\n4. 具备AI工具使用能力（必须）：能够熟练使用大模型工具（如ChatGPT、Copilot、Cursor等）辅助日常研发，包括代码编写、问题分析、方案调研、论文检索等，将AI作为提升研发效率的核心手段；\n5. 对数据敏感，能够从数据中发现问题并追踪原因；\n6. 具有较强的学习能力、自我驱动能力和团队协作能力。\n具备以下经验者优先：\n1. 有将AI/大模型技术应用于组合优化、调度决策等问题的研究或实践经历；\n2. 熟悉LLM与决策科学融合的前沿方向（LLM4Decision/LLM4OR/Learning to Optimize）；\n3. 有即时配送、物流调度、动态定价等相关业务场景的研究或实习经历。\n【岗位亮点】\n1. 真实场景：千万级日订单、百万级骑手，全球最大规模即时配送决策系统，AI+运筹优化技术落地的理想平台。\n2. AI原生工作方式：团队全面拥抱AI工具，提供充足GPU集群与大模型Token资源，鼓励用AI重构研发流程，让你的每一个idea都能快速验证。\n3. 成果导向：鼓励顶会发论文，团队已获Franz Edelman奖，内部有完善的学术合作通道。\n4. 成长空间：从问题定义到算法设计再到线上验证，全链路参与，快速积累工业级运筹优化实战经验，与顶尖高校保持长期联合研究。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4601969028&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:28.249Z",
+  "data": {
+    "jobUnionId": "4601969028",
+    "name": "【LongCat实习】具身算法工程前沿研究",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "2",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "在 LongCat 基座大模型团队，参与探索具身智能基础模型的架构和范式，从系统架构、数据策略、模型结构、训练策略等角度切入，参与算法研究、系统工程和数据工程，打造具有更强能力和更高潜力的基座模型。包括：\n1. 多源数据的合成和处理，包括：egocentric video 数据、仿真数据、UMI 采集数据、真机遥操作数据等\n2. 具身智能系统的架构设计，Agent 系统、大小脑和 Monitor 等多层次结构\n3. 模型泛化性探索：无需额外训练实现跨本体多任务；基于少量演示数据作为上下文，增强模型能力；基于自动探索，在线学习新技能。\n4. 模型全流程，预训练、mid train、SFT、强化学习、部署和评测等\n同时参与具身智能方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1. 具身智能模型、数据、训练方法和系统等相关的设计\n2. 仿真环境内的轨迹自动化生成方法（数据引擎/合成数据）\n3. egocentric video 数据的有效使用\n4. 基于多模态大模型的泛化具身智能 Agent 系统研究\n5. 模型泛化性研究和主动探索研究\n6. 其他你坚信路线正确的具身智能前沿方向",
+    "jobRequirement": "1. 在计算机科学或相关领域获得学士、硕士或博士学位\n2. 具备扎实的编程能力、出色的自驱力、快速学习能力和解决问题的能力\n3. 对人工智能、计算机图形学、机器人等领域有相关经验\n4. 对具身智能和仿真技术抱有浓厚兴趣和热情，在相关领域有深入研究\n5. 在人工智能、计算机图形学、机器人等领域的顶级会议或期刊上有论文发表者优先",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1782907918000,
+    "refreshTime": 1782907918000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat实习】具身算法工程前沿研究\n实习-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n在 LongCat 基座大模型团队，参与探索具身智能基础模型的架构和范式，从系统架构、数据策略、模型结构、训练策略等角度切入，参与算法研究、系统工程和数据工程，打造具有更强能力和更高潜力的基座模型。包括：\n1. 多源数据的合成和处理，包括：egocentric video 数据、仿真数据、UMI 采集数据、真机遥操作数据等\n2. 具身智能系统的架构设计，Agent 系统、大小脑和 Monitor 等多层次结构\n3. 模型泛化性探索：无需额外训练实现跨本体多任务；基于少量演示数据作为上下文，增强模型能力；基于自动探索，在线学习新技能。\n4. 模型全流程，预训练、mid train、SFT、强化学习、部署和评测等\n同时参与具身智能方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1. 具身智能模型、数据、训练方法和系统等相关的设计\n2. 仿真环境内的轨迹自动化生成方法（数据引擎/合成数据）\n3. egocentric video 数据的有效使用\n4. 基于多模态大模型的泛化具身智能 Agent 系统研究\n5. 模型泛化性研究和主动探索研究\n6. 其他你坚信路线正确的具身智能前沿方向\n任职要求\n1. 在计算机科学或相关领域获得学士、硕士或博士学位\n2. 具备扎实的编程能力、出色的自驱力、快速学习能力和解决问题的能力\n3. 对人工智能、计算机图形学、机器人等领域有相关经验\n4. 对具身智能和仿真技术抱有浓厚兴趣和热情，在相关领域有深入研究\n5. 在人工智能、计算机图形学、机器人等领域的顶级会议或期刊上有论文发表者优先\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

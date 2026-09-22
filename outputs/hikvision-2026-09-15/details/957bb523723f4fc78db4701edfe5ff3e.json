@@ -1,0 +1,41 @@
+{
+  "source_job_id": "957bb523723f4fc78db4701edfe5ff3e",
+  "verified_at": "2026-09-15T01:32:06.809Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=957bb523723f4fc78db4701edfe5ff3e",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=957bb523723f4fc78db4701edfe5ff3e&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "957bb523723f4fc78db4701edfe5ff3e",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "用户研究工程师",
+        "postAdSn": "体验设计类",
+        "postStdSubSn": "用户研究",
+        "techDire": "不限",
+        "postContent": "1、采用合理的调研方式，了解用户对产品、服务的需求和期望，独立开展用户研究工作，以便挖掘用户场景、需求，帮助业务方找到市场机会点；\r\n2、负责对不同产品阶段的产出物进行用户体验层面的测试及评估，包括但不限于视觉设计稿、硬件手板、+I16产品等，并进行竞品分析；\r\n3、了解用户的使用场景及行为，调研各类产品、服务的满意度及NPS，发现影响用户体验的问题，并跟进落实；\r\n4、沟通研究成果，并推动落地应用。",
+        "postRequire": "1、本科及以上学历，专业要求：人文社科学类专业（社会学、人类学、传播学、心理学）、工科类专业（计算机、软件工程、电子信息工程、通信工程、自动化等）或数学类（应用数学、统计学等）优先；\r\n2、知识技能：了解常用的用户研究方法，了解互联网、智能家居类行业状况，最好有相关实践经验；\r\n3、能力素质：有较强的执行力、沟通能力、逻辑分析能力、用户体验意识等，能进行基本的数据分析、行业分析和设计表达\r。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "960ded8f450948c98b78c960e0179f04",
+          "name": "智能硬件-工艺材料",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

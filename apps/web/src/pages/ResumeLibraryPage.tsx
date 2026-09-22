@@ -129,16 +129,16 @@ export function ResumeLibraryPage() {
       <div>
         <nav className="application-breadcrumb" aria-label="页面位置">
           <a href="/app/chat" onClick={(event) => { if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return; event.preventDefault(); navigate("/app/chat"); }}><House aria-hidden="true" size={13} />主页</a>
-          <ChevronRight aria-hidden="true" size={13} /><span aria-current="page">简历中心</span>
+          <ChevronRight aria-hidden="true" size={13} /><span aria-current="page">简历模板</span>
         </nav>
-        <h1 tabIndex={-1}>简历中心</h1>
-        <p>先整理好一份基础简历，再针对不同岗位调整。</p>
+        <h1 tabIndex={-1}>简历模板</h1>
+        <p>选择模板、填写经历并导出简历。内容保存在你的云端账号，与插件本地网申资料独立。</p>
       </div>
       {!loading && (templates.length > 0 || versions.length > 0) && <div className="resume-library-actions"><div className="resume-library-metrics"><span><strong>{templates.length}</strong> 份通用版本</span><span><strong>{versions.length}</strong> 个岗位版本</span></div><button className="primary-button resume-create-button" type="button" onClick={() => void createTemplate()} disabled={creating}>{creating ? <LoaderCircle className="spin" size={16} aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}{creating ? "正在创建" : "使用示例新建"}</button></div>}
     </header>
 
     {error && <div className="data-error" role="alert">{error}</div>}
-    {loading ? <div className="resume-library-skeleton" role="status"><span className="sr-only">正在同步简历版本…</span>{[0, 1].map((groupIndex) => <section className="resume-library-skeleton__group" key={groupIndex} aria-hidden="true"><header className="resume-library-skeleton__header"><span className="skel resume-library-skeleton__badge" /><div className="resume-library-skeleton__heading"><span className="skel resume-library-skeleton__title" /><span className="skel resume-library-skeleton__subtitle" /></div></header><div className="resume-library-skeleton__grid">{[0, 1, 2].map((cardIndex) => <div className="resume-library-skeleton__card" key={cardIndex}><span className="skel resume-library-skeleton__pill" /><span className="skel resume-library-skeleton__line" /><span className="skel resume-library-skeleton__line resume-library-skeleton__line--short" /></div>)}</div></section>)}</div>
+    {loading ? <div className="resume-library-skeleton" role="status"><span className="sr-only">正在读取云端简历…</span>{[0, 1].map((groupIndex) => <section className="resume-library-skeleton__group" key={groupIndex} aria-hidden="true"><header className="resume-library-skeleton__header"><span className="skel resume-library-skeleton__badge" /><div className="resume-library-skeleton__heading"><span className="skel resume-library-skeleton__title" /><span className="skel resume-library-skeleton__subtitle" /></div></header><div className="resume-library-skeleton__grid">{[0, 1, 2].map((cardIndex) => <div className="resume-library-skeleton__card" key={cardIndex}><span className="skel resume-library-skeleton__pill" /><span className="skel resume-library-skeleton__line" /><span className="skel resume-library-skeleton__line resume-library-skeleton__line--short" /></div>)}</div></section>)}</div>
     : !versions.length && !templates.length ? <div className="resume-library-welcome">
       <div className="resume-library-welcome__copy">
         <span className="resume-library-welcome__eyebrow">从第一份简历开始</span>
@@ -149,13 +149,13 @@ export function ResumeLibraryPage() {
           {creating ? "正在创建…" : "使用示例创建"}
         </button>
         <small>包含示例资料与占位头像，请替换为你的信息。</small>
-        <div className="resume-library-welcome__steps" aria-label="简历使用流程"><span>完善经历</span><ChevronRight size={13} aria-hidden="true" /><span>按岗位调整</span><ChevronRight size={13} aria-hidden="true" /><span>用于网申填写</span></div>
+        <div className="resume-library-welcome__steps" aria-label="简历使用流程"><span>完善经历</span><ChevronRight size={13} aria-hidden="true" /><span>按岗位调整</span><ChevronRight size={13} aria-hidden="true" /><span>导出简历</span></div>
       </div>
       <ResumeStarterPreview />
     </div>
     : <div className="resume-library-sections">
       <section className="resume-template-section">
-        <header className="resume-section-heading"><span><FileText size={18} /></span><div><strong>通用版本</strong><small>用于创建岗位定制简历的基础版本；只同步简历内容，不需要上传 PDF 原件。</small></div></header>
+        <header className="resume-section-heading"><span><FileText size={18} /></span><div><strong>通用版本</strong><small>简历内容、图片与排版保存在云端，可继续编辑或制作岗位版本。</small></div></header>
         {templates.length ? <div className="resume-template-grid">{templates.map((template) => <article className="resume-library-card" key={template.id}>
           <button className="resume-library-card__open" type="button" onClick={() => navigate(`/app/resumes/edit/${encodeURIComponent(template.id)}`)}>
             <ResumeMiniSheet />
@@ -166,16 +166,16 @@ export function ResumeLibraryPage() {
                 <span>{template.profile.targetRole || "点击继续完善简历"}</span>
               </div>
               <div className="resume-library-card__footer">
-                <small><Clock3 size={13} />{new Date(template.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} · {template.origin === "web" ? "网页创建" : "插件同步"}</small>
+                <small><Clock3 size={13} />{new Date(template.updatedAt).toLocaleString("zh-CN", { month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit" })} · {template.origin === "web" ? "网页创建" : "历史导入"}</small>
                 <em><PencilLine size={13} aria-hidden="true" />继续编辑</em>
               </div>
             </div>
           </button>
           <button className="resume-library-card__delete" type="button" onClick={() => void removeTemplate(template)} aria-label={`删除 ${template.name}`} title="删除通用简历"><Trash2 aria-hidden="true" size={14} /></button>
-        </article>)}</div> : <p className="resume-section-empty">还没有通用版本。你可以直接在网页制作，或从插件同步已有简历。</p>}
+        </article>)}</div> : <p className="resume-section-empty">还没有简历。使用示例创建，填写你的经历后保存到云端。</p>}
       </section>
       <section className="resume-tailored-section">
-        <header className="resume-section-heading"><span><FileCheck2 size={18} /></span><div><strong>岗位定制简历</strong><small>每份定制简历独立对应一个岗位，删除不会影响插件中的通用模板。</small></div></header>
+        <header className="resume-section-heading"><span><FileCheck2 size={18} /></span><div><strong>岗位定制简历</strong><small>每份定制简历独立保存，已有版本可继续编辑和导出。</small></div></header>
         {!versions.length ? <p className="resume-section-empty">还没有岗位定制版本。可以从投递管理中为具体岗位创建。</p> : <div className="resume-source-groups">{groups.map(([sourceName, items]) => <section className="resume-source-group" key={sourceName}><header><span><FileCheck2 size={18} /></span><div><strong>{sourceName}</strong><small>{items.length} 个岗位定制版本</small></div></header><div className="resume-version-grid">{items.map((item) => { const { version } = item; return <article className="resume-version-card" key={version.id}>
           <button className="resume-version-card__open" type="button" onClick={() => navigate(`/app/resumes/tailor/${encodeURIComponent(version.tailorTaskId)}`)}>
             <ResumeMiniSheet tailored />

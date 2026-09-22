@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4534896910&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:40.927Z",
+  "data": {
+    "jobUnionId": "4534896910",
+    "name": "【北斗】CodeAgent后训练方向研究员（数据分析与ToSQL方向）",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们致力于用科技创新为用户和生态伙伴创造超预期的交互体验和效率提升，依托生活服务领域多样化且复杂的业务场景，聚焦基座技术与公司战略级应用方向的深度融合，持续推动前沿技术的落地，同时积极探索和挑战技术的无人区，不断定义并刷新行业的最先进技术标准。\n\n1、异构数据理解与数值推理：突破大模型在Table+文本混合形态下的信息丢失与幻觉瓶颈\n2、Agentic RL与数据环境交互：构建基于代码执行沙盒与真实数据计算结果反馈的强化学习闭环\n3、复杂推理与过程奖励（PRM）：构建细粒度过程奖励模型，研究Test-Time Compute策略与MCTS搜索",
+    "jobRequirement": "【岗位要求】\n1、在Agentic RL、PRM或复杂代码推理等方向有深入研究\n2、顶会论文发表（ACL/EMNLP/NeurIPS/ICLR/KDD等）者优先\n3、GitHub高Star AI原生项目或向OpenClaw/OpenCode提交过核心PR者优先\n\n【岗位吸引力】\n1、行业稀缺数据资产：美团海量真实业务数据+数值推理数据，稀缺性极高，不局限于公开数据集\n2、聚焦全链路前沿研究：代码执行沙盒作为强化学习反馈源，从场景构建→Agentic RL训练→沙盒验证→线上部署端到端完整研究，而非孤立模块\n3、充足的资源：提供充足的GPU集群与Token，加速你的研究\n4、AI-Native研发文化：团队全面拥抱AI工具，用AI加速你自己的研究——本身就是研究对象的一部分，不设条条框框",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780474833000,
+    "refreshTime": 1780474833000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】CodeAgent后训练方向研究员（数据分析与ToSQL方向）\n应届-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们致力于用科技创新为用户和生态伙伴创造超预期的交互体验和效率提升，依托生活服务领域多样化且复杂的业务场景，聚焦基座技术与公司战略级应用方向的深度融合，持续推动前沿技术的落地，同时积极探索和挑战技术的无人区，不断定义并刷新行业的最先进技术标准。\n1、异构数据理解与数值推理：突破大模型在Table+文本混合形态下的信息丢失与幻觉瓶颈\n2、Agentic RL与数据环境交互：构建基于代码执行沙盒与真实数据计算结果反馈的强化学习闭环\n3、复杂推理与过程奖励（PRM）：构建细粒度过程奖励模型，研究Test-Time Compute策略与MCTS搜索\n任职要求\n【岗位要求】\n1、在Agentic RL、PRM或复杂代码推理等方向有深入研究\n2、顶会论文发表（ACL/EMNLP/NeurIPS/ICLR/KDD等）者优先\n3、GitHub高Star AI原生项目或向OpenClaw/OpenCode提交过核心PR者优先\n【岗位吸引力】\n1、行业稀缺数据资产：美团海量真实业务数据+数值推理数据，稀缺性极高，不局限于公开数据集\n2、聚焦全链路前沿研究：代码执行沙盒作为强化学习反馈源，从场景构建→Agentic RL训练→沙盒验证→线上部署端到端完整研究，而非孤立模块\n3、充足的资源：提供充足的GPU集群与Token，加速你的研究\n4、AI-Native研发文化：团队全面拥抱AI工具，用AI加速你自己的研究——本身就是研究对象的一部分，不设条条框框\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

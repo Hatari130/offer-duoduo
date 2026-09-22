@@ -1,0 +1,54 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4693048454&highlightType=campus",
+  "verified_at": "2026-09-14T01:36:00.246Z",
+  "data": {
+    "jobUnionId": "4693048454",
+    "name": "AI前端工程师实习生",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "软硬件服务-软件研发部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "美团的使命是“帮大家吃得更好，生活更好”，公司聚焦“零售 + 科技”战略，和广大商户与各类合作伙伴一起，努力为消费者提供品质生活，推动商品零售和服务零售在需求侧和供给侧的数字化转型。\n2018年9月20日，美团正式在港交所挂牌上市。美团将始终坚持以客户为中心，不断加大在科技研发方面的投入，更好承担社会责任，更多创造社会价值，与广大合作伙伴一起发展共赢。",
+    "jobDuty": "1. 负责Agent相关Web/桌面端产品前端研发；\n\n2. 参与AI Agent交互体验、工作流界面、多模态内容展示等核心模块建设；\n\n3. 与产品、设计、服务端、算法团队协作，推动复杂AI能力产品化；\n\n4. 持续优化前端性能、工程架构和研发效率。",
+    "jobRequirement": "1. 熟悉前端技术栈，拥有扎实的前端基础；\n\n2. 具备良好的工程能力，注重代码质量、组件设计、性能和用户体验；\n\n3. 学习能力强，能够快速理解业务技术方案，主动推进落地。",
+    "precedence": "AI Agent、AI工具、AI应用感兴趣，有独立开发、开源项目、创业项目或AI工具实践者优先",
+    "highLight": "AI 方向，Agent、coding、workflow、rag 多智能体等都会涉及",
+    "otherInfo": null,
+    "firstPostTime": 1786933027000,
+    "refreshTime": 1786933027000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": true
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI前端工程师实习生\n实习-日常实习\n更新时间：2026/08/17\n工作地点：北京市\n部门：软硬件服务-软件研发部\n工作经验：不限\n分享\n立即申请\n部门介绍\n美团的使命是“帮大家吃得更好，生活更好”，公司聚焦“零售 + 科技”战略，和广大商户与各类合作伙伴一起，努力为消费者提供品质生活，推动商品零售和服务零售在需求侧和供给侧的数字化转型。\n2018年9月20日，美团正式在港交所挂牌上市。美团将始终坚持以客户为中心，不断加大在科技研发方面的投入，更好承担社会责任，更多创造社会价值，与广大合作伙伴一起发展共赢。\n岗位职责\n1. 负责Agent相关Web/桌面端产品前端研发；\n2. 参与AI Agent交互体验、工作流界面、多模态内容展示等核心模块建设；\n3. 与产品、设计、服务端、算法团队协作，推动复杂AI能力产品化；\n4. 持续优化前端性能、工程架构和研发效率。\n岗位基本要求\n1. 熟悉前端技术栈，拥有扎实的前端基础；\n2. 具备良好的工程能力，注重代码质量、组件设计、性能和用户体验；\n3. 学习能力强，能够快速理解业务技术方案，主动推进落地。\n具备以下条件优先\nAI Agent、AI工具、AI应用感兴趣，有独立开发、开源项目、创业项目或AI工具实践者优先\n岗位亮点\nAI 方向，Agent、coding、workflow、rag 多智能体等都会涉及\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

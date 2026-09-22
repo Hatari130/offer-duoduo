@@ -1,0 +1,107 @@
+{
+  "source_job_id": "0dace9cf35c54ca4bcd4967442ad20b5",
+  "verified_at": "2026-09-15T01:32:16.470Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=0dace9cf35c54ca4bcd4967442ad20b5",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=0dace9cf35c54ca4bcd4967442ad20b5&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "71a0226c06a54334a8fb6c5a8caf6078",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "图像算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "图像处理/计算成像/视频编解码",
+        "postContent": "1、负责图像处理、计算成像或视频编解码算法的研究、设计与实现；\r\n2、了解领域内最新技术动态，定期跟进相关技术进展并尝试复现。",
+        "postRequire": "1、硕士及以上学历，博士优先；计算机、通信、自控、光电、生仪等相关专业； \n2、有较好数学基础，较强的图像算法研发能力； \n3、掌握C/C++、python等编程语言，能编程实现相关算法；\n4、较强的论文检索，英文专业文献阅读能力；\n5、良好的沟通与协作能力；\n6、具备以下经验之一者优先：\n1）了解深度学习，在图像处理或视频编解码领域进行过深度学习相关研究与实现；\n2）具备较丰富的图像处理、计算成像、视频编解码研究经历； \n3）在视频图像的增强、复原、拼接、融合等领域具有较丰富经验；\n4）理解图像采集原理，进行过ISP算法研究和实现，比如夜间增强、去雾、2D/4D降噪、Local Tone-mapping等。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0dace9cf35c54ca4bcd4967442ad20b5",
+        "adNeedDept": "研究院",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "e5b16315d6ea4a5d8dcdf30becbd00bd",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "图像算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、负责图像处理类算法的研究、设计与实现；\n2、摄像机ISP方案的性能评估及图像效果提升；\n3、跟进领域内的技术发展，并尝试复现相关技术。",
+        "postRequire": "1、硕士及以上学历，图像处理、应用数学、光电信息、电子工程、计算机等相关专业优先；\r\n2、具有较好的数学功底，对图像处理、isp流程有较深入的理解与认识；\r\n3、掌握C/C++、python、matlab等编程语言，能够快速编程实现图像处理类算法；\n4、熟练掌握论文、专利检索方法，具备英文专业文献阅读能力；\r\n5、具备以下开发经验者优先：\r\n1）理解摄像机信号采集处理流程，进行过isp整体方案的开发和效果优化工作，进行过isp算法，如3A算法、色彩校正、去雾、localtonemapping，2D/3D降噪等技术的研究与实现；\r\n2）理解图像处理技术，进行过图像融合、图像配准、图像拼接、图像后处理等算法的研究与实现；\r\n3）进行过上述图像处理算法在GPU、DSP、ARMneon等硬件平台上的开发和优化；\n4）了解深度学习基础，具有利用深度学习实现图像处理类任务的相关经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0dace9cf35c54ca4bcd4967442ad20b5",
+        "adNeedDept": "智能硬件-光学图像实验室",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:47",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "fabb91e8fd8945fea4ea55a8b16142f0",
+          "name": "智能硬件-光学图像实验室",
+          "description": "光学图像实验室，是隶属于硬件产品研发中心，面向全公司的公共光学技术平台。光学图像实验室致力于全领域的光学和图像技术开发，承担多样广泛的系统方案以及基础的底层技术研究，是公司实现智能物联战略的关键技术之一。\n业务方向广泛，涵盖安防、工业、传感、医疗、仪器等领域。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "34aa9a6cc95e4edbb993c08e208204e4",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "图像算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "图像行为/图像检测",
+        "postContent": "1、负责图像处理等相关模块，利用传统图像处理技术和深度学习技术，提升图像的主客观指标；\n2、收集当前相关的最新技术，并定期跟踪和尝试复现最新技术结果。",
+        "postRequire": "1、硕士及以上学历，计算机、信号处理、图像处理及信息类专业；\n2、有较好数学基础，较强的图像处理技术基础；\n3、掌握C/C++语言，能编程实现图像处理类算法；\n4、较强的论文检索，英文专业文献阅读能力；\n5、较强的沟通与协作能力；\n6、有嵌入式或者图像处理，特别是指纹静脉类图像处理学习开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "0dace9cf35c54ca4bcd4967442ad20b5",
+        "adNeedDept": "萤石网络",
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-21 09:19:37"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

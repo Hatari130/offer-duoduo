@@ -1,0 +1,64 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4599741798&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:35.095Z",
+  "data": {
+    "jobUnionId": "4599741798",
+    "name": "AI开发者社区运营实习生（Longcat大模型）",
+    "projectId": null,
+    "projectName": null,
+    "jobType": "2",
+    "jobSpecialCode": "6",
+    "jobSource": "1",
+    "jobStatus": "000",
+    "jobFamily": "运营类",
+    "jobFamilyGroup": "产品运营",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "不限",
+    "department": [
+      {
+        "code": null,
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": "基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。",
+    "jobDuty": "1. 海外开发者社区运营\n   * 参与搭建并日常运营 Slack / Discord 社区\n   * 维护开发者活跃度（讨论、答疑、活动组织）\n   * 管理频道结构、内容节奏与社区氛围\n2. 内容与增长运营\n   * 在 X（Twitter）、Hacker News、Reddit 等平台发布产品内容\n   * 输出开发者导向内容（demo、tutorial、use case）\n   * 协助策划产品发布、模型更新传播节奏\n3. 开发者关系（DevRel）\n   * 收集开发者反馈、痛点与需求\n   * 跟踪重点开发者的使用情况与反馈路径\n   * 整理高质量 use case（Agent / coding / workflow）\n4. 活动与增长实验\n   * 组织线上 Hackathon / AMA / Demo Session\n   * 协助设计增长实验（邀请制社区 / waitlist / referral）\n   * 跟踪关键增长指标并输出复盘",
+    "jobRequirement": "1. 对 AI / 大模型 / 开发者生态有强兴趣\n2. 英语六级\n3. 熟悉或愿意学习 X/ Slack / Discord / GitHub 社区运营逻辑\n4. 自驱力强，愿意从 0 到 1 搭建事情，愿意踏踏实实做有一定重复性的事情",
+    "precedence": "1. 有运营过 Discord / Slack 社区经验，有运营过黑客松经验\n2. 有 Hacker News / Reddit / X（Twitter）运营经验\n3. 有开发经验（Python / JS / API / LLM 应用）\n4. 做过 AI 产品 / DevTool / 开源项目",
+    "highLight": "1. 参与一个面向全球开发者的大模型产品早期建设\n2. 深度接触 AI 模型团队（产品 + 研究 + 工程）\n3. 从 0 到 1 建立海外开发者社区的方法论\n4. 有机会参与核心产品发布与战略合作",
+    "otherInfo": null,
+    "firstPostTime": 1782821342000,
+    "refreshTime": 1787194875000,
+    "tag": null,
+    "expiredTime": null,
+    "socialRecommendJob": true
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI开发者社区运营实习生（Longcat大模型）\n实习-日常实习\n更新时间：2026/08/20\n工作地点：北京市、上海市\n部门：核心本地商业-基础研发平台\n工作经验：不限\n分享\n立即申请\n部门介绍\n基础研发平台是美团的核心技术平台，立足于“零售+科技”的战略定位，通过打造人工智能、大数据、云计算、安全等核心技术能力，以及研发效能平台、企业应用平台等公共服务，为业务提供稳定安全、扩展易用、技术领先的平台技术和产品服务。\n在这里，我们会参与到最前沿的技术研发和探索；能够接触超规模集群、海量数据，挑战高复杂业务场景，有机会与业界一流的工程师一起并肩前行。\n在这里，我们有超强的技术氛围，持续向社区贡献业界实践，加速行业技术发展；我们有完善的互联网学习生态圈，重视底层逻辑和方法论，助力职业生涯的非线性成长。\n真诚地邀请你，和我们一起驱动技术发展，创造行业价值。\n岗位职责\n1. 海外开发者社区运营\n* 参与搭建并日常运营 Slack / Discord 社区\n* 维护开发者活跃度（讨论、答疑、活动组织）\n* 管理频道结构、内容节奏与社区氛围\n2. 内容与增长运营\n* 在 X（Twitter）、Hacker News、Reddit 等平台发布产品内容\n* 输出开发者导向内容（demo、tutorial、use case）\n* 协助策划产品发布、模型更新传播节奏\n3. 开发者关系（DevRel）\n* 收集开发者反馈、痛点与需求\n* 跟踪重点开发者的使用情况与反馈路径\n* 整理高质量 use case（Agent / coding / workflow）\n4. 活动与增长实验\n* 组织线上 Hackathon / AMA / Demo Session\n* 协助设计增长实验（邀请制社区 / waitlist / referral）\n* 跟踪关键增长指标并输出复盘\n岗位基本要求\n1. 对 AI / 大模型 / 开发者生态有强兴趣\n2. 英语六级\n3. 熟悉或愿意学习 X/ Slack / Discord / GitHub 社区运营逻辑\n4. 自驱力强，愿意从 0 到 1 搭建事情，愿意踏踏实实做有一定重复性的事情\n具备以下条件优先\n1. 有运营过 Discord / Slack 社区经验，有运营过黑客松经验\n2. 有 Hacker News / Reddit / X（Twitter）运营经验\n3. 有开发经验（Python / JS / API / LLM 应用）\n4. 做过 AI 产品 / DevTool / 开源项目\n岗位亮点\n1. 参与一个面向全球开发者的大模型产品早期建设\n2. 深度接触 AI 模型团队（产品 + 研究 + 工程）\n3. 从 0 到 1 建立海外开发者社区的方法论\n4. 有机会参与核心产品发布与战略合作\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

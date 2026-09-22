@@ -1,0 +1,41 @@
+{
+  "source_job_id": "cb995dca33db433eaec89de1d4316362",
+  "verified_at": "2026-09-15T01:32:00.712Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=cb995dca33db433eaec89de1d4316362",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=cb995dca33db433eaec89de1d4316362&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "cb995dca33db433eaec89de1d4316362",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "港澳技术支持工程师",
+        "postAdSn": "国际营销/国际技术支持类",
+        "postStdSubSn": "技术支持",
+        "techDire": "粤语&英语工科",
+        "postContent": "1、负责境外重大项目的支持和管理，包括但不限于项目需求分析、方案设计、系统部署、项目过程管理等；\n2、负责境外市场的产品支持工作，包括疑难问题处理、技术咨询等工作；\n3、负责境外分公司和客户的技术能力赋能培训以及技术文档输出；\n4、负责归纳和分析行业产品和方案的问题和需求，推进产品质量和方案竞争力提升、以及用户体验的持续改进。",
+        "postRequire": "1、本科及以上学历，理工科相关专业背景；\n2、熟悉计算机、网络、软件工程、数据库及视频监控等基础理论；\n3、具备较强的沟通表达能力及协调能力，能够承接工作压力；\n4、良好的英语听说读写能力且能适应境外出差。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "香港特别行政区",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:29",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "b36ef1ffd8d849b3a094a66044f591ea",
+          "name": "国际业务中心",
+          "description": "国际业务中心致力于开拓和发展国际业务，通过提供有竞争力的产品和解决方案，不断完善全球营销与技术支持网络，快速响应客户需求，努力提升服务品质。公司已在国际及港澳台地区设立 72 个分支机构和3个海外研发中心，为全球150多个国家和地区提供产品和服务（截止2023年底）。我们以扎实的研发技术和完备的营销能力双轨驱动，为国际用户提供适配于不同场景的产品和解决方案，引领智能物联新未来。 \n海康威视国际业务中心为你提供全球化的舞台。如果你是营销精英，你能接触多样化的客户、渠道和机遇；如果你是技术达人，你能学习国际化的研发技术、研发项目。欢迎加入国际业务中心，在海康威视的海外战略布局中，与志同道合的伙伴们并肩探索全球市场的无限可能！"
+        }
+      ]
+    }
+  ]
+}

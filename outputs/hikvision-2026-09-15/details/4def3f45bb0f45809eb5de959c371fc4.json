@@ -1,0 +1,41 @@
+{
+  "source_job_id": "4def3f45bb0f45809eb5de959c371fc4",
+  "verified_at": "2026-09-15T01:32:10.736Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=4def3f45bb0f45809eb5de959c371fc4",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=4def3f45bb0f45809eb5de959c371fc4&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "4def3f45bb0f45809eb5de959c371fc4",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "多维感知算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "商用机器人/多传感器融合/机器学习",
+        "postContent": "1、负责机器人激光、视觉等感知算法的设计、开发，包括但不限于目标识别、检测、跟踪等；\n2、负责多传感器融合、标定等算法的设计、开发。",
+        "postRequire": "1、硕士及以上学历，机器人、计算机、电子、自动化等相关专业；\n2、有扎实的编程基础，熟练掌握C/C++；\n3、对图像处理、模式识别、计算机视觉、深度学习等领域有深入的理解；\n4、熟悉一种或多种传感器（激光、相机、3D相机等）的基本原理，拥有相关传感器的调试经验；\n5、具有扎实的数学基础，和较强的论文检索和英文专业文献阅读能力；\n6、具有良好的沟通表达、问题解决和学习能力，具备较强的团队合作意识；\n7、具有移动机器人、无人车、无人机等实际项目开发经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

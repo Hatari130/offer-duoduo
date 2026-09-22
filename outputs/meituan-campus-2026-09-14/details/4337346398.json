@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4337346398&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:56.865Z",
+  "data": {
+    "jobUnionId": "4337346398",
+    "name": "【北斗实习】大模型应用算法工程师-智能交互",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【课题说明】 \n本岗位聚焦点评C端AI产品的算法研发与能力建设，负责基于大语言模型的智能交互产品的搭建及在点评场景的应用落地，包括AI Search、评价总结、Overview生成等全链路AI产品功能，覆盖点评所有偏 C 端的 AI 算法场景。当前重点方向是 AI 搜，致力于打造业内领先的 C 端 AI 体验。\n【建议研究方向】\n1. 任务拆解与规划能力建设：研究复杂用户需求下的任务分解、工具调用与自动化评估能力，构建任务拆解规划工具，提升系统对多步骤、多场景任务的适应能力、执行效率和评估闭环能力。\n2. Memory与个性化交互技术：探索AI系统的记忆机制，使工具能够记住用户历史对话和偏好，打造更智能、更懂用户的个性化交互体验。\n3. 数据构建与模型训练优化：构造高质量训练数据，开展模型训练与自动评估体系建设，推动大模型在业务场景的高效应用和持续迭代。\n4. 本地生活场景质量保障：针对点评流量特点（结合现实世界的客观服务），研究质量保障相关技术，解决搜索和推荐结果的可信度与准确性问题。",
+    "jobRequirement": "1. 硕士及以上学历，计算机科学、人工智能、自然语言处理或相关专业；\n2. 熟练掌握至少一种深度学习框架，如PyTorch、TensorFlow等，熟悉Python/Java编程语言，良好的编码习惯和工程能力；\n3. 具有生成式模型训练及开发经验，如大模型数据处理、模型微调、预训练、强化学习、AI Agent等。\n4. 有良好的沟通协作能力，能够在团队中积极主动地分享知识和经验；\n5. 善于分析和发现问题，具备较强的自驱力，有强烈的学习意愿和创新精神，对大模型技术有浓厚的兴趣和热情。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775012993000,
+    "refreshTime": 1775012993000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗实习】大模型应用算法工程师-智能交互\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【课题说明】\n本岗位聚焦点评C端AI产品的算法研发与能力建设，负责基于大语言模型的智能交互产品的搭建及在点评场景的应用落地，包括AI Search、评价总结、Overview生成等全链路AI产品功能，覆盖点评所有偏 C 端的 AI 算法场景。当前重点方向是 AI 搜，致力于打造业内领先的 C 端 AI 体验。\n【建议研究方向】\n1. 任务拆解与规划能力建设：研究复杂用户需求下的任务分解、工具调用与自动化评估能力，构建任务拆解规划工具，提升系统对多步骤、多场景任务的适应能力、执行效率和评估闭环能力。\n2. Memory与个性化交互技术：探索AI系统的记忆机制，使工具能够记住用户历史对话和偏好，打造更智能、更懂用户的个性化交互体验。\n3. 数据构建与模型训练优化：构造高质量训练数据，开展模型训练与自动评估体系建设，推动大模型在业务场景的高效应用和持续迭代。\n4. 本地生活场景质量保障：针对点评流量特点（结合现实世界的客观服务），研究质量保障相关技术，解决搜索和推荐结果的可信度与准确性问题。\n任职要求\n1. 硕士及以上学历，计算机科学、人工智能、自然语言处理或相关专业；\n2. 熟练掌握至少一种深度学习框架，如PyTorch、TensorFlow等，熟悉Python/Java编程语言，良好的编码习惯和工程能力；\n3. 具有生成式模型训练及开发经验，如大模型数据处理、模型微调、预训练、强化学习、AI Agent等。\n4. 有良好的沟通协作能力，能够在团队中积极主动地分享知识和经验；\n5. 善于分析和发现问题，具备较强的自驱力，有强烈的学习意愿和创新精神，对大模型技术有浓厚的兴趣和热情。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4501188515&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:47.826Z",
+  "data": {
+    "jobUnionId": "4501188515",
+    "name": "【无人车北斗实习】3D高斯模型实习生",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【工作内容】\n1. 探索基于3D Gaussian Splatting的重建模型在高精地图（HD Map）建图场景中的应用与优化\n2. 针对大规模场景重建的效率与精度瓶颈开展算法改进，推动模型在实际驾驶数据上的迭代\n3. 与工程团队协作，将3D高斯重建能力集成至自动驾驶感知与建图系统\n【岗位吸引点】\n1. 真实建图场景落地：3DGS 研究直接对接美团 RoboVan 的 HD Map 建图需求，有机会将前沿重建技术应用于规模化量产场景\n2. 多城市真实数据支撑：物流配送场景覆盖复杂城市道路，数据多样性高，为大规模3D高斯重建提供极具挑战性的真实验证环境",
+    "jobRequirement": "1. 具有大规模3D高斯重建的实际经验（实习或科研均可），熟悉3DGS及其衍生方法\n2. 了解自动驾驶建图场景需求，具备处理真实驾驶场景数据的能力\n3. 有相关领域 CCF-A 类论文发表者优先考虑",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1779432404000,
+    "refreshTime": 1779432404000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【无人车北斗实习】3D高斯模型实习生\n实习-北斗计划\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【工作内容】\n1. 探索基于3D Gaussian Splatting的重建模型在高精地图（HD Map）建图场景中的应用与优化\n2. 针对大规模场景重建的效率与精度瓶颈开展算法改进，推动模型在实际驾驶数据上的迭代\n3. 与工程团队协作，将3D高斯重建能力集成至自动驾驶感知与建图系统\n【岗位吸引点】\n1. 真实建图场景落地：3DGS 研究直接对接美团 RoboVan 的 HD Map 建图需求，有机会将前沿重建技术应用于规模化量产场景\n2. 多城市真实数据支撑：物流配送场景覆盖复杂城市道路，数据多样性高，为大规模3D高斯重建提供极具挑战性的真实验证环境\n任职要求\n1. 具有大规模3D高斯重建的实际经验（实习或科研均可），熟悉3DGS及其衍生方法\n2. 了解自动驾驶建图场景需求，具备处理真实驾驶场景数据的能力\n3. 有相关领域 CCF-A 类论文发表者优先考虑\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

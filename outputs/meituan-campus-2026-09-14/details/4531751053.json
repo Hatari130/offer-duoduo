@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531751053&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:46.778Z",
+  "data": {
+    "jobUnionId": "4531751053",
+    "name": "【北斗】数字人直播-Agent算法研究员",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【愿景】\n美团数字人直播是本地生活领域最大的数字人直播平台，日播规模已达万级场次、GTV达百亿级规模。智能运营Agent已覆盖百级直播间，累计GTV达亿级规模。团队处于AI与本地生活融合的前沿阵地，致力于通过Agent技术重新定义直播体验。\n\n【你将参与】\n1. Agent系统架构设计与搭建：面向数字人直播场景，设计并搭建端到端的Agent智能体系统架构，涵盖智能选品、动态讲解、场景装修、实时互动等核心能力模块，实现多Agent间的协同调度与决策联动；\n2. Agent核心算法研发与优化：负责Agent在直播场景中的意图理解、任务规划、工具调用、记忆管理等核心算法研发，持续优化Agent的自主决策能力、交互自然度及业务转化率；\n3. LLM后训练与Agent微调：聚焦大模型的指令微调（SFT）、人类反馈强化学习（RLHF/RLVR）等后训练技术，结合Agent场景定制偏好对齐策略，基于Agentic RL提升模型在复杂多轮对话与多步推理任务中的表现；\n4. Agent效果评估与规模化落地：构建面向Agent系统的自动化评测体系，与工程、产品团队紧密协作，将Agent研究成果快速转化为线上直播场景的产品能力，驱动数字人直播从\"被动展示\"到\"主动智能运营\"的规模化升级。",
+    "jobRequirement": "【任职资格】\n基本要求：\n1. 2027届硕士及以上毕业生，计算机科学、人工智能、机器学习、NLP等相关专业；\n2. 扎实的深度学习理论基础，精通PyTorch/TensorFlow，有大规模模型训练经验；\n3. 具备Agent系统设计经验，熟悉Multi-Agent协同架构、工具调用、任务规划等核心技术；\n4. 具备良好的编程能力（C++/Python），ACM/ICPC/NOI等竞赛获奖者优先。\n加分项：\n1. 在NeurIPS、ICML、ICLR、ACL、EMNLP等顶会发表过论文；\n2. 有Agent系统或对话系统的实际项目经验，熟悉LangChain/LangGraph等Agent框架；\n3. 熟悉大模型微调技术（SFT/RLHF/RLVR）及Agentic RL，有相关实践或论文发表者优先；\n4. 对RAG、检索增强生成、对话系统有深入理解。\n【为什么是我们】\n参与本地生活领域最大的数字人直播平台，深度参与Agent智能体系统的设计与落地。拥有海量业务数据和多场景验证机会，可合作发表顶会论文，配备充足的GPU计算资源，资深工程师一对一带教。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459807000,
+    "refreshTime": 1780459807000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】数字人直播-Agent算法研究员\n应届-北斗计划\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【愿景】\n美团数字人直播是本地生活领域最大的数字人直播平台，日播规模已达万级场次、GTV达百亿级规模。智能运营Agent已覆盖百级直播间，累计GTV达亿级规模。团队处于AI与本地生活融合的前沿阵地，致力于通过Agent技术重新定义直播体验。\n【你将参与】\n1. Agent系统架构设计与搭建：面向数字人直播场景，设计并搭建端到端的Agent智能体系统架构，涵盖智能选品、动态讲解、场景装修、实时互动等核心能力模块，实现多Agent间的协同调度与决策联动；\n2. Agent核心算法研发与优化：负责Agent在直播场景中的意图理解、任务规划、工具调用、记忆管理等核心算法研发，持续优化Agent的自主决策能力、交互自然度及业务转化率；\n3. LLM后训练与Agent微调：聚焦大模型的指令微调（SFT）、人类反馈强化学习（RLHF/RLVR）等后训练技术，结合Agent场景定制偏好对齐策略，基于Agentic RL提升模型在复杂多轮对话与多步推理任务中的表现；\n4. Agent效果评估与规模化落地：构建面向Agent系统的自动化评测体系，与工程、产品团队紧密协作，将Agent研究成果快速转化为线上直播场景的产品能力，驱动数字人直播从\"被动展示\"到\"主动智能运营\"的规模化升级。\n任职要求\n【任职资格】\n基本要求：\n1. 2027届硕士及以上毕业生，计算机科学、人工智能、机器学习、NLP等相关专业；\n2. 扎实的深度学习理论基础，精通PyTorch/TensorFlow，有大规模模型训练经验；\n3. 具备Agent系统设计经验，熟悉Multi-Agent协同架构、工具调用、任务规划等核心技术；\n4. 具备良好的编程能力（C++/Python），ACM/ICPC/NOI等竞赛获奖者优先。\n加分项：\n1. 在NeurIPS、ICML、ICLR、ACL、EMNLP等顶会发表过论文；\n2. 有Agent系统或对话系统的实际项目经验，熟悉LangChain/LangGraph等Agent框架；\n3. 熟悉大模型微调技术（SFT/RLHF/RLVR）及Agentic RL，有相关实践或论文发表者优先；\n4. 对RAG、检索增强生成、对话系统有深入理解。\n【为什么是我们】\n参与本地生活领域最大的数字人直播平台，深度参与Agent智能体系统的设计与落地。拥有海量业务数据和多场景验证机会，可合作发表顶会论文，配备充足的GPU计算资源，资深工程师一对一带教。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

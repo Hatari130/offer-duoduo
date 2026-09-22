@@ -1,0 +1,41 @@
+{
+  "source_job_id": "a4f7144227474cb9b20f427bdaf7ce46",
+  "verified_at": "2026-09-15T01:32:00.962Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=a4f7144227474cb9b20f427bdaf7ce46",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=a4f7144227474cb9b20f427bdaf7ce46&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "a4f7144227474cb9b20f427bdaf7ce46",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器人集群规划算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "多智能体路径规划（MAPF）/路径搜索/图论与网络流/冲突检测与解锁/运筹学",
+        "postContent": "1、负责大规模多机器人集群系统（千级车数）的路径规划算法研发与优化，包括多机器人协同路径规划、冲突检测与解锁、拥堵预测与缓解等关键任务；\n2、针对复杂仓储环境，设计高效的多智能体路径规划算法，确保机器人集群能够安全、高效地协同工作，最大化系统吞吐量；\n3、利用业内最全场景数据集，持续优化路径规划算法，提升工业生产和物流仓储系统的整体运行效率；",
+        "postRequire": "1、硕士及以上学历;\n2、熟练掌握C/C++、Python;\n3、熟悉图论、运筹学、路径搜索等基础理论与方法；\n4、满足以下至少一项：\n- 掌握常见多智能体路径规划（MAPF）方法，如A*、WHCA*、CBS、PBS等；\n- 掌握分支定界、动态规划等整数规划精确求解方法；\n- 掌握常见的邻域搜索类和种群进化类启发式算法；\n5、具备较好的数据敏感度和问题挖掘能力；\n6、参与过机器人路径规划相关竞赛或重要项目者、或在相关顶会期刊发表论文者优先；\n7、对机器学习、深度/强化学习有较深入的理解与认识，在路径规划相关技术方向上有所应用者优先；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

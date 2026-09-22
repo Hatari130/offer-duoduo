@@ -1,0 +1,46 @@
+{
+  "source_job_id": "3a64f141fad44596a6c12d68dd1eb4fc",
+  "verified_at": "2026-09-15T01:32:07.237Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=3a64f141fad44596a6c12d68dd1eb4fc",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=3a64f141fad44596a6c12d68dd1eb4fc&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "3a64f141fad44596a6c12d68dd1eb4fc",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "音频工程师",
+        "postAdSn": "硬件/结构类",
+        "postStdSubSn": "射频/天线/音频",
+        "techDire": "不限",
+        "postContent": "1、跟进项目音频模块，并确保目标达成；\r\n2、分析解决项目中相关的音频问题；\r\n3、对电声、结构进行评审；\r\n4、电声器件选型、评估及测试；\r\n5、对音频部分电路原理图和走线进行评审改进。",
+        "postRequire": "1、本科及以上学历，声学/电子相关专业优先；\r\n2、熟悉音频项目开发流程；\r\n3、熟悉相关电声测试仪器，具有音频主观效果的判断能力；\r\n4、熟练使用proe、pcb设计相关软件优先；\n5、具有良好的综合素质和团队意识，热爱学习，责任感强。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:20",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c85e437f543c4494bf31fe6524368e6d",
+          "name": "智能硬件-硬件技术",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        },
+        {
+          "id": "87003e22a3214bf0b2783b3b2ba1e109",
+          "name": "智能硬件-音频与传感",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "8dd16ec30c934e819a4e1fa9a3c1b6c9",
+  "verified_at": "2026-09-15T01:32:10.180Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=8dd16ec30c934e819a4e1fa9a3c1b6c9",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=8dd16ec30c934e819a4e1fa9a3c1b6c9&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "8dd16ec30c934e819a4e1fa9a3c1b6c9",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "仿真计算工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、器件仿真建模：负责传感器（如光电/SPAD/MEMS/温压气等）的建模与仿真算法开发；\n2、器件多物理场分析：开展如电、热、光、载流子输运等单场或多物理场耦合仿真分析；\n3、软件工具应用：使用TCAD (Sentaurus/Silvaco)、COMSOL等仿真软件进行传感器件结构设计与工艺参数优化；\n4、性能评估与校准：分析传感器关键性能指标，并结合实测数据修正模型，提升仿真准确性；\n5、文档与支持：输出仿真与数据分析报告，为器件及工艺设计提供指导。",
+        "postRequire": "1、硕士及以上学历，微电子、电子科学与技术、物理学、光学工程、材料科学、流体力学、热学、应用数学等相关理工科专业；\n2、具备器件物理基础，熟悉载流子输运、PN结、复合机制、噪声机制等基本原理；\n3、了解多物理场仿真技术，熟练使用TCAD、COMSOL等至少一种仿真或计算软件；\n4、具备良好的英文文献阅读能力、问题分析及报告撰写能力；\n5、（优先）有光电探测器、SPAD、CMOS图像传感器或MEMS等相关项目经验；\n6、（优先）熟悉器件工艺流程，或具备传感器性能建模经验；\n7、（优先）有机器学习、优化算法辅助器件设计等相关经验；\n8、（优先）掌握Python/C++/MATLAB编程，具备数据处理或仿真自动化经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 10:12:08",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

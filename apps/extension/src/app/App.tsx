@@ -71,8 +71,6 @@ import {
 } from "@/shared/types";
 import OpportunityView from "@/features/opportunities/OpportunityView";
 import CloudSyncSettings from "@/features/settings/CloudSyncSettings";
-import { normalizeTailorContext, type TailorContext } from "@/features/tailor/types";
-import { openWebTailorWorkspace } from "@/features/tailor/openWebTailor";
 import { openWebWorkspace } from "@/features/workspace/openWebWorkspace";
 
 import {
@@ -552,68 +550,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
   };
 
   const handleTailor = async () => {
-    setBusy(true);
-    setNotice("");
-    try {
-      if (typeof chrome === "undefined" || !chrome.tabs) {
-        setNotice("请在 Chrome 浏览器中使用定制功能");
-        return;
-      }
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab.id || !tab.url?.startsWith("http")) {
-        throw new Error("请在招聘网页中使用 JobKoI");
-      }
-      const requestExtraction = () =>
-        chrome.tabs.sendMessage(tab.id!, {
-          type: "OFFERFLOW_EXTRACT_PAGE"
-        }) as Promise<{ ok: boolean; data?: ExtractedJob; error?: string }>;
-
-      let response = await requestExtraction();
-      if (!response.ok) {
-        await chrome.scripting.executeScript({
-          target: { tabId: tab.id },
-          files: ["adapter-registry.js", "extraction-rules.js", "form-adapters.js", "content.js"]
-        });
-        response = await requestExtraction();
-      }
-      if (!response.ok || !response.data) {
-        throw new Error(response.error || "页面解析失败");
-      }
-      const job = response.data;
-      const [resumeLibrary, activeResumeId] = await Promise.all([
-        loadResumeLibrary(),
-        loadActiveResumeId()
-      ]);
-      const activeResume = resumeLibrary.find((resume) => resume.id === activeResumeId);
-      const sourceResume = resumeLibrary.find((resume) => resume.kind !== "job" && resume.id === (activeResume?.parentResumeId || activeResume?.id)) || resumeLibrary.find((resume) => resume.kind !== "job");
-      if (!sourceResume) throw new Error("请先在简历中心选择一份通用简历");
-      const context: TailorContext = normalizeTailorContext({
-        jobKey: "",
-        sourceResumeId: sourceResume.id,
-        company: job.company,
-        position: job.position,
-        city: job.city,
-        sourceUrl: job.sourceUrl,
-        summary: job.summary,
-        responsibilities: job.responsibilities || [],
-        requirements: job.requirements || [],
-        rawExcerpt: job.rawExcerpt || undefined
-      });
-      const linkedApplication = findDuplicate(jobs, {
-        company: job.company,
-        position: job.position,
-        jobId: job.jobId,
-        city: job.city,
-        sourceUrl: job.sourceUrl
-      });
-      await openWebTailorWorkspace(context, sourceResume, linkedApplication?.id);
-    } catch (error) {
-      setNotice(
-        error instanceof Error ? error.message : "定制功能暂时不可用，请先识别当前页面的岗位信息"
-      );
-    } finally {
-      setBusy(false);
-    }
+    openWebWorkspace("/app/resumes");
   };
 
   const updateStage = async (job: JobApplication, stage: ApplicationStage) => {
@@ -855,10 +792,10 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
           <button
             className="workspace-button"
             onClick={openResumeManager}
-            title="打开简历中心"
+            title="打开本地网申资料"
           >
             <FileText size={16} />
-            <span>简历中心</span>
+            <span>网申资料</span>
           </button>
           <button
             className="capture-button"
@@ -943,7 +880,7 @@ export default function App({ overlay = false }: { overlay?: boolean }) {
               <div>
                 <span className="eyebrow">数据与服务</span>
                 <h1>管理本地数据与服务</h1>
-                <p>岗位和简历优先保存在本机，可按需启用云端同步与页面理解。</p>
+                <p>网申资料仅保存在本机；投递记录可连接账号同步。</p>
               </div>
             </div>
 

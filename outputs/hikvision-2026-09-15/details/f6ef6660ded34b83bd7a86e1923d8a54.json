@@ -1,0 +1,41 @@
+{
+  "source_job_id": "f6ef6660ded34b83bd7a86e1923d8a54",
+  "verified_at": "2026-09-15T01:32:09.453Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=f6ef6660ded34b83bd7a86e1923d8a54",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=f6ef6660ded34b83bd7a86e1923d8a54&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "f6ef6660ded34b83bd7a86e1923d8a54",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "存储算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "不限",
+        "postContent": "1、负责存储系统建模；\n2、负责垃圾回收算法、均衡算法等存储算法开发； \n3、负责存储介质建模以及分析；\n4、负责纠错算法研究。",
+        "postRequire": "1、自动化控制、计算机、电子信息、电子工程等相关专业，硕士及以上学历；\n2、具有扎实的编程基础，熟练掌握C/C++/Python；\n3、熟悉熟悉建模方法；\n4、具有较强的论文检索和阅读能力，有良好的文档整理能力；\n5、对解决具有挑战性的问题充满激情，有良好的沟通协作和抗压能力；\n6、具备以下经验者优先：\n1）有基于固态存储系统的开发经验；\n2）有NAND颗粒介质分析经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "武汉市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:19",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "f0aee2597bac459c9fbb091cfacf15b7",
+          "name": "海康存储",
+          "description": "海康存储致力于为全球用户提供专业的存储整体解决方案，业务聚焦工业控制、数据中心、视频监控、终端消费等应用场景。海康存储具备完整的设计、开发与制造能力，业务涵盖固态硬盘、前置存储、嵌入式存储和闪存应用四大产品线。智慧存储始终秉承“存储留住美好，智慧改变生活”的初心，以“成就客户，价值为本”为企业理念，持续为企业和消费者提供安全可靠的存储设备、系统和存储解决方案。"
+        }
+      ]
+    }
+  ]
+}

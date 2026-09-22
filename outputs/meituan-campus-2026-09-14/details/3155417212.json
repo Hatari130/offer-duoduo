@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=3155417212&highlightType=campus",
+  "verified_at": "2026-09-14T13:41:12.711Z",
+  "data": {
+    "jobUnionId": "3155417212",
+    "name": "【大模型北斗实习】Post-training 前沿算法研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法,硬件,软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "Post-training是联结大模型通用知识和人类偏好的桥梁，在规范知识输出、提升推理能力、对齐人类偏好等方面起到了关键作用。本课题专注于大模型Post-training相关前沿算法研究，包括但不限于：\n1）训练机制设计和优化：包括数据建设、指令微调，人类偏好和安全对齐，奖励模型、强化学习及效果评估等方向，优化模型文本创作、逻辑推理、指令遵循、代码生成、工具调用等能力，提升模型可控性和安全性。\n2）Post-training前沿研究：面向下一代推理基座的架构设计，test-time compute训练范式，思维链学习，多智能体和自博弈强化学习，提升模型的复杂任务处理能力和智能水平。",
+    "jobRequirement": "1）熟悉NLP、LLM、RL等领域，在一个或多个相关领域有深入研究经历并有实际论文产出或项目经验。\n2）熟悉大模型算法研究所需的相关编程语言、工具、算法等，如Python、C++等编程语言、Megatron等训练框架、DPO、PPO等相关算法。\n3）具备独立开展科学研究和实验的能力，对大模型相关技术有浓厚兴趣，具备强烈的进取心、求知欲，热衷于追求行业顶尖的技术创新。\n加分项：\n1）有大模型一线研究和实践经验，在大模型领域发表过高影响力论文或主导/参与过知名开源项目者优先。\n2）发表过高影响力论文优先（如ICLR,ICML,ACL,EMNLP等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1742309544000,
+    "refreshTime": 1747963942000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【大模型北斗实习】Post-training 前沿算法研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\nPost-training是联结大模型通用知识和人类偏好的桥梁，在规范知识输出、提升推理能力、对齐人类偏好等方面起到了关键作用。本课题专注于大模型Post-training相关前沿算法研究，包括但不限于：\n1）训练机制设计和优化：包括数据建设、指令微调，人类偏好和安全对齐，奖励模型、强化学习及效果评估等方向，优化模型文本创作、逻辑推理、指令遵循、代码生成、工具调用等能力，提升模型可控性和安全性。\n2）Post-training前沿研究：面向下一代推理基座的架构设计，test-time compute训练范式，思维链学习，多智能体和自博弈强化学习，提升模型的复杂任务处理能力和智能水平。\n任职要求\n1）熟悉NLP、LLM、RL等领域，在一个或多个相关领域有深入研究经历并有实际论文产出或项目经验。\n2）熟悉大模型算法研究所需的相关编程语言、工具、算法等，如Python、C++等编程语言、Megatron等训练框架、DPO、PPO等相关算法。\n3）具备独立开展科学研究和实验的能力，对大模型相关技术有浓厚兴趣，具备强烈的进取心、求知欲，热衷于追求行业顶尖的技术创新。\n加分项：\n1）有大模型一线研究和实践经验，在大模型领域发表过高影响力论文或主导/参与过知名开源项目者优先。\n2）发表过高影响力论文优先（如ICLR,ICML,ACL,EMNLP等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

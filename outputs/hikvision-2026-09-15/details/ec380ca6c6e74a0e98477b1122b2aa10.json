@@ -1,0 +1,41 @@
+{
+  "source_job_id": "ec380ca6c6e74a0e98477b1122b2aa10",
+  "verified_at": "2026-09-15T01:32:00.505Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=ec380ca6c6e74a0e98477b1122b2aa10",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=ec380ca6c6e74a0e98477b1122b2aa10&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "ec380ca6c6e74a0e98477b1122b2aa10",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "工程项目工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "工程项目管理",
+        "techDire": "不限",
+        "postContent": "1、负责项目交付风险评估、输出项目整体进度计划、配合销售完成投标报价；\n2、负责服务分包商现场管理，保障项目的安全、质量、进度、成本等重要指标；\n3、负责项目相关方沟通与协调，推动项目问题解决，促成项目验收；\n4、负责项目过程资料管理、变更管理，并配合完成项目审计及售后移交工作。",
+        "postRequire": "1、本科及以上学历，工业自动化、非标自动化、智能化、项目管理等相关专业；\n2、具有良好的沟通、协调、现场管理与解决问题能力，及良好的责任心、团队合作意识与职业素养；\n3、熟悉系统集成知识，有较强文档编写能力，熟练使用CAD绘图软件；\n4、适应长时间在外出差，能承受较大的压力；\n5、了解仓储自动化、AGV产品者优先；\n6、有机电类建造师证书、PMP证书、信息系统项目管理师、系统集成项目管理工程师证书优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:29",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "e8c1a8ce327c42ba984f396ba2b73844",
+          "name": "公共服务事业群",
+          "description": "纵向持续深耕大安全、大交通、大生态、大治理、大服务五类行业业务；横向拉通产品和技术的能力，服务于市域、县域、镇街、村社等各级政府的数智治理业务；围绕“AI全域赋能、数据价值深化”，全面拓展公共安全、交通管理、交通出行、生态环保、城市治理、民生服务等领域的智慧业务，赋能政府数字化转型。"
+        }
+      ]
+    }
+  ]
+}

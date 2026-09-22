@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4727162964&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:31.785Z",
+  "data": {
+    "jobUnionId": "4727162964",
+    "name": "大模型数据算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1.参与页面分析挖掘算法的研究与实现，通过算法策略优化页面分类模型、文本分类模型； \n2.利用文本挖掘、图像理解等业界先进技术，对多模态内容进行挖掘与理解； \n3.工作范围涵盖网页筛选与理解、网页与站点分类和去重、多类型非网页类多模态数据的处理和理解。",
+    "jobRequirement": "1.计算机相关专业本科及以上相关学历，具备优秀的理解力、沟通能力和团队协作能力； \n2.熟练掌握 c++/python/Java等编程语言，并且在机器学习，自然语言处理领域有扎实的理论功底和动手能力。具备优秀的逻辑思维能力和数据科学能力，在相关领域比赛中获奖优先； \n3.在信息检索、自然语言处理/图像与视频理解等方面有非常扎实的理论功底，以及丰富的解决实际问题的项目经验。有信息检索相关领域工作经验优先； \n4.善于学习领域前沿技术并能快速应用到实际工作当中，在自然语言处理，信息检索、计算机视觉等领域有相关学术论著优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1787826965000,
+    "refreshTime": 1787826965000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n大模型数据算法工程师\n应届-校园招聘\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1.参与页面分析挖掘算法的研究与实现，通过算法策略优化页面分类模型、文本分类模型；\n2.利用文本挖掘、图像理解等业界先进技术，对多模态内容进行挖掘与理解；\n3.工作范围涵盖网页筛选与理解、网页与站点分类和去重、多类型非网页类多模态数据的处理和理解。\n任职要求\n1.计算机相关专业本科及以上相关学历，具备优秀的理解力、沟通能力和团队协作能力；\n2.熟练掌握 c++/python/Java等编程语言，并且在机器学习，自然语言处理领域有扎实的理论功底和动手能力。具备优秀的逻辑思维能力和数据科学能力，在相关领域比赛中获奖优先；\n3.在信息检索、自然语言处理/图像与视频理解等方面有非常扎实的理论功底，以及丰富的解决实际问题的项目经验。有信息检索相关领域工作经验优先；\n4.善于学习领域前沿技术并能快速应用到实际工作当中，在自然语言处理，信息检索、计算机视觉等领域有相关学术论著优先。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

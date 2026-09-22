@@ -1,0 +1,74 @@
+{
+  "source_job_id": "087d33a267f34db1af7b792c9e047cd3",
+  "verified_at": "2026-09-15T01:32:15.567Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findIdMerge?id=087d33a267f34db1af7b792c9e047cd3",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=087d33a267f34db1af7b792c9e047cd3&type=2&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "6f23abd1f1314a599fc217dcb6c1a432",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "MEMS设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件设计",
+        "techDire": "不限",
+        "postContent": "1、提供MEMS调研（市场、技术）；\n2、进行MEMS预研，参与相关技术规划，主导新技术、新方案、新工艺的落地；\n3、MEMS开发过程中理论计算、结构设计、性能仿真；\n4、完成MEMS性能测试，完成各模块的开发、验证及优化工作；\n5、负责开发、生产过程、客户端的MEMS问题分析解决；\n6、协助其他工程师开展研发相关工作。",
+        "postRequire": "1、硕士及以上学历，博士优先；MEMS、机械、力学、材料学等相关专业优先；\n2、具备良好MEMS专业知识，熟悉MEMS结构设计，了解各类MEMS工艺及设备，熟悉MEMS工艺知识；\n3、熟练使用MEMS设计软件或其他有限元分析软件；熟练使用LEDIT、优选等版图制作软件；\n4、了解MEMS传感器的工作原理、主要性能指标及相关测试评估方法；\n5、具备良好的英语阅读能力、较好的沟通力和执行力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "桐庐县",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "087d33a267f34db1af7b792c9e047cd3",
+        "adNeedDept": "海康微影",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-20 17:09:47"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    },
+    {
+      "data": {
+        "id": "0f99129f5a654fd6b5c4cdd4e9d6527d",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "MEMS设计工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "器件设计",
+        "techDire": "不限",
+        "postContent": "1、提供MEMS调研（市场、技术）；\n2、进行MEMS预研，参与相关技术规划，主导新技术、新方案、新工艺的落地；\n3、MEMS开发过程中理论计算、结构设计、性能仿真；\n4、完成MEMS性能测试，完成各模块的开发、验证及优化工作；\n5、负责开发、生产过程、客户端的MEMS问题分析解决；\n6、协助其他工程师开展研发相关工作。",
+        "postRequire": "1、硕士及以上学历，博士优先；MEMS、机械、力学、材料学等相关专业优先；\n2、具备良好MEMS专业知识，熟悉MEMS结构设计，了解各类MEMS工艺及设备，熟悉MEMS工艺知识；\n3、熟练使用MEMS设计软件或其他有限元分析软件；熟练使用LEDIT、优选等版图制作软件；\n4、了解MEMS传感器的工作原理、主要性能指标及相关测试评估方法；\n5、具备良好的英语阅读能力、较好的沟通力和执行力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 1,
+        "mergeRootId": "087d33a267f34db1af7b792c9e047cd3",
+        "adNeedDept": "智能硬件-工艺材料(已关闭)#海康微影",
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:48",
+        "updateTime": "2026-09-02 17:43:48"
+      },
+      "departments": [
+        {
+          "id": "bf53d518cf9e46f3ac4683dd1668b3c4",
+          "name": "海康微影",
+          "description": "海康微影以热成像技术为基础，深耕高附加值mems、光电器件和传感器技术，构建温度、压力、流量、物位等多维感知能力，布局智能物联、工业、户外和被集成等市场。\n公司产品及方案广泛应用于安防监控、工业控制、医疗检疫、灾难预防、消费电子、辅助驾驶等多个领域。\n海康微影致力于推动核心元器件成本的实质性下降和应用场景的扩展与丰富,拓展人类感知边界。"
+        }
+      ]
+    }
+  ]
+}

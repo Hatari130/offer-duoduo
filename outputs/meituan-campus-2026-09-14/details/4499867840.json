@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4499867840&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:47.715Z",
+  "data": {
+    "jobUnionId": "4499867840",
+    "name": "【无人车北斗实习】强化学习实习生",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG009",
+        "name": "软硬件服务-无人车业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "【工作内容】\n1. 深度参与强化学习算法的前沿探索，推动其在自动驾驶决策与规划场景中的落地应用\n2. 设计并实现强化学习相关实验方案，完成算法验证、性能评估与迭代优化\n3. 与团队紧密协作，将研究成果转化为可工程化落地的系统方案\n【岗位吸引点】\n1. 实量产场景验证：算法直接应用于美团 RoboVan 车队的决策规划模块，在复杂城市物流场景中完成真实闭环验证，研究成果不止于论文\n2. 顶级技术环境：与强化学习方向资深研究员深度协作，接触国内少有的、将 RL 应用于规模化商业落地的完整技术栈\n3. 全链路视角：在感知-决策-执行全链路自研的环境中工作，能从系统层面理解 RL 在自动驾驶中的真实挑战与价值",
+    "jobRequirement": "1. 硕士期间发表至少1篇、博士期间发表至少3篇 CCF-A 类强化学习方向论文\n2. 具有头部自动驾驶公司强化学习相关方向实习经历，熟悉主流 RL 框架与训练流程\n3. 工程能力突出，能够独立完成大规模模型训练、调试与部署",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1779432404000,
+    "refreshTime": 1779432404000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【无人车北斗实习】强化学习实习生\n实习-北斗计划\n工作地点：北京市、深圳市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n【工作内容】\n1. 深度参与强化学习算法的前沿探索，推动其在自动驾驶决策与规划场景中的落地应用\n2. 设计并实现强化学习相关实验方案，完成算法验证、性能评估与迭代优化\n3. 与团队紧密协作，将研究成果转化为可工程化落地的系统方案\n【岗位吸引点】\n1. 实量产场景验证：算法直接应用于美团 RoboVan 车队的决策规划模块，在复杂城市物流场景中完成真实闭环验证，研究成果不止于论文\n2. 顶级技术环境：与强化学习方向资深研究员深度协作，接触国内少有的、将 RL 应用于规模化商业落地的完整技术栈\n3. 全链路视角：在感知-决策-执行全链路自研的环境中工作，能从系统层面理解 RL 在自动驾驶中的真实挑战与价值\n任职要求\n1. 硕士期间发表至少1篇、博士期间发表至少3篇 CCF-A 类强化学习方向论文\n2. 具有头部自动驾驶公司强化学习相关方向实习经历，熟悉主流 RL 框架与训练流程\n3. 工程能力突出，能够独立完成大规模模型训练、调试与部署\n工作城市\n北京市、深圳市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "567f00dae30d4480a7893baf6a83c519",
+  "verified_at": "2026-09-15T01:32:09.181Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=567f00dae30d4480a7893baf6a83c519",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=567f00dae30d4480a7893baf6a83c519&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "567f00dae30d4480a7893baf6a83c519",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "色谱研究工程师",
+        "postAdSn": "器件电路类",
+        "postStdSubSn": "测试开发",
+        "techDire": "气相色谱研究/液相色谱研究/离子色谱研究",
+        "postContent": "1、识别气相/液相/离子色谱等业务领域内的关键技术，掌握技术发展趋势，引导研发团队提前布局，为产品的技术先进性负责；\n2、产品生命周期内，技术问题端到端拉通，确保产品的顺利开发与市场竞争力。",
+        "postRequire": "1、本科以上学历，分析仪器相关专业背景，熟悉色谱类仪器类产品原理、技术架构；有相关的硬件及应用背景；\n2、有较强的主动性能、沟通能力、分析能力和解决问题能力。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:47",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "3a0952830253425b8742ef3ff1c606f3",
+          "name": "智能硬件-科学仪器",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}

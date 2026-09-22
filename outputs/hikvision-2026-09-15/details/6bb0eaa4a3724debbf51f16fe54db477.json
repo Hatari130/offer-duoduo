@@ -1,0 +1,41 @@
+{
+  "source_job_id": "6bb0eaa4a3724debbf51f16fe54db477",
+  "verified_at": "2026-09-15T01:32:03.090Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=6bb0eaa4a3724debbf51f16fe54db477",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=6bb0eaa4a3724debbf51f16fe54db477&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "6bb0eaa4a3724debbf51f16fe54db477",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "3D传感算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "线激光/结构光/TOF/散斑双目",
+        "postContent": "1、负责轮廓仪（线激光）、结构光（随机散斑、DLP、编码结构光等）、tof等3D传感器的标定和三维重建算法的预研、开发和测试；\n2、使用深度学习等前沿算法对成像进行研究和优化；\n3、参与3D传感器的系统设计、应用优化以及产品化；",
+        "postRequire": "1、硕士及以上学历；计算机、模式识别、应用数学、自动控制、电子、光学、仪器等相关专业；\n2、有扎实的编程基础和数学基础，熟练掌握C/C++；\n3、精通多视图几何相关理论，包括但不限于相机模型、对极几何、系统标定、SfM、非线性优化等；对立体视觉、图像处理、机器视觉有深入的理解与认识；能系统并深入分析问题解决问题；\n4、具备光学、传感器件系统设计开发经验，具备深度感知（线激光/结构光/TOF/散斑双目）、三维重建等系统设计或开发经验者优先。\n5、具备深度学习知识，熟练掌握Python，熟练使用PyTorch或其它开源训练框架，做过图像生成、深度估计，用AI优化过成像经验者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:07",
+        "updateTime": "2026-08-27 17:57:30"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

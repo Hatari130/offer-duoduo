@@ -1,0 +1,41 @@
+{
+  "source_job_id": "d4a81c40ab234adf8615abd922623850",
+  "verified_at": "2026-09-15T01:32:10.935Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=d4a81c40ab234adf8615abd922623850",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=d4a81c40ab234adf8615abd922623850&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "d4a81c40ab234adf8615abd922623850",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "LLM算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "智能对话/大模型训练/Agent",
+        "postContent": "1.\t参与智能语音助手系统核心模块的开发与优化，包括对话管理、意图识别、多轮会话、实体抽取、文本分类及问答生成等场景的算法设计与工程实现，协助优化基于大语言模型（LLM）的交互体验；\n2.\t通过业务数据分析挖掘潜在需求，运用机器学习／深度学习技术优化现有模型效果；熟悉NLP工具链（如HuggingFace、Rasa），能够完成模型训练、调优及轻量化部署；\n3.\t跟进NLP领域前沿技术（如预训练模型、知识图谱应用），探索其在智能对话中的可行性，推动算法在低延迟、高并发环境下的工程化落地。",
+        "postRequire": "1.\t相关背景：\n1）\t计算机科学、人工智能、数学、自动化等相关专业本科及以上学历，硕士优先；\n2）\t接触过智能座舱、智能音响、手机助手、智能家居、对话系统等AI相关项目或课程实践，有大模型应用经验者优先；\n2.\t技术能力：\n1）\t了解对话系统的基本原理，包括对话管理、意图识别、多轮对话等核心模块；\n2）\t有过大模型调用（如GPT、Claude、通义、文心等API）或微调经验；\n3）\t扎实的NLP基础知识，熟悉文本分类、序列标注、语义理解等常见任务，熟练使用PyTorch或TensorFlow等深度学习框架；\n4）\t了解Transformer（如BERT、GPT）基本原理，有NLP相关课程项目或比赛经验；\n3.\t综合素养：\n1）\t具备较强的逻辑分析能力与学习能力，能独立完成技术调研与模块开发；\n2）\t主动学习新技术，适应业务快速迭代，具备跨团队协作沟通能力；\n3）\t在ACL/EMNLP/NAACL等顶会发表论文、NLP相关竞赛（如CCKS、SemEval）获奖或开源项目贡献者优先。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-20 17:01:02",
+        "updateTime": "2026-08-27 11:19:37"
+      },
+      "departments": [
+        {
+          "id": "b9bf119d419e47fa9bef72d80b1662e6",
+          "name": "萤石网络",
+          "description": "萤石，安全智能生活主流品牌，利用智能硬件、互联网云服务、人工智能（AI）和机器人等技术，努力为用户打造一个智能化的工作、生活和学习环境，让人们在智能技术营造的安全、便捷和绿色的居住环境里，享受科技带来的轻松、舒适和愉悦的生活。\n萤石构建“2+5+N”产品生态体系，聚焦智能视频及视觉技术，以萤石云+AI双核驱动，搭载包括智能家居摄像机、智能入户、智能控制、智能服务机器人、智能穿戴在内的五大自研硬件，开放接入环境控制、智能影音等子系统生态，实现家居及周边场景的全屋智能化。同时利用互联互通的物联网云平台，与开发者客户共创，助力千行百业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

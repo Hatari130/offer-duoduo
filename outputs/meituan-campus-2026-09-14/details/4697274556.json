@@ -1,0 +1,56 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697274556&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:56.941Z",
+  "data": {
+    "jobUnionId": "4697274556",
+    "name": "自然语言处理算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG036",
+        "name": "核心本地商业-外卖事业部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 深入研究自然语言处理领域的前沿技术，利用大模型（LLM）与微调技术（LoRA/RLHF）优化语义理解能力，让系统更懂用户意图；\n2. 基于深度语义计算与大模型语义表示（如BERT/GPT系列等预训练模型），精准匹配用户需求，提升搜索与推荐效果；\n3. 利用智能对话技术与大模型（LLM），构建基于RAG（检索增强生成）的知识问答系统，为客户实时解决各类问题；\n4. 探索多模态大模型与Prompt Engineering在语义分析、篇章理解、对话管理等场景的应用，持续迭代NLP核心能力；\n5. 负责知识图谱与大模型融合的技术研发，利用LLM增强知识抽取、推理与问答效果。",
+    "jobRequirement": "1. 本科及以上学历，熟练掌握自然语言处理领域的基础理论和方法，并有丰富的相关方向研究经验；\n2. 在一个或多个领域有深入研究，包括分词、文本分类、语义分析、语义表示、语义匹配、组块分析、主题模型、篇章分析、对话管理、知识图谱等，并能利用大模型（如GPT/BERT/GLM等）提升上述任务效果；\n3. 熟练掌握C/C++/Java/Python/Perl/Shell等编程语言及数据结构基础算法，熟悉至少一种大模型训练框架（如PyTorch/TensorFlow）和HuggingFace生态；\n4. 具备大模型微调经验（LoRA/RLHF/指令微调）或Prompt Engineering能力，能利用LangChain/LlamaIndex等框架构建RAG/AI Agent应用；\n5. 优秀的分析问题和解决问题的能力，能利用AI辅助工具（如Copilot、自然语言问数等）提升数据分析与问题诊断效率；\n6. 对解决具有挑战性问题充满激情。\n具备以下经验者优先：\n1. 有对话、问答相关研究经验，有LLM在对话系统或问答系统落地经验者优先；\n2. 有知识图谱相关研究经验，有知识图谱与大模型融合（KG+LLM）实践经验者优先；\n3. 在国际一流会议或期刊（如ACL/EMNLP/NAACL/NeurIPS/ICML等）发表过NLP或AI相关论文者优先；\n4. 有开源大模型（如LLaMA、Qwen、ChatGLM等）微调或应用落地经验者优先。\n岗位亮点：\n1. 技术前沿：团队深耕NLP与大模型技术，参与公司核心AI能力建设，有机会接触业界最前沿的LLM研究与落地；\n2. 场景丰富：NLP技术广泛应用于搜索、推荐、对话、知识问答等核心业务场景，技术影响力直接作用于亿级用户；\n3. AI赋能：团队已全面引入AI辅助研发工具，提供充足的GPU算力与大模型实验环境，支持前沿技术快速迭代；\n4. 成长空间：完善的新人培养与融入机制，技术大牛一对一指导，鼓励发表顶会论文与参与开源社区贡献。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960989000,
+    "refreshTime": 1786960989000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n自然语言处理算法工程师\n应届-校园招聘\n工作地点：成都市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 深入研究自然语言处理领域的前沿技术，利用大模型（LLM）与微调技术（LoRA/RLHF）优化语义理解能力，让系统更懂用户意图；\n2. 基于深度语义计算与大模型语义表示（如BERT/GPT系列等预训练模型），精准匹配用户需求，提升搜索与推荐效果；\n3. 利用智能对话技术与大模型（LLM），构建基于RAG（检索增强生成）的知识问答系统，为客户实时解决各类问题；\n4. 探索多模态大模型与Prompt Engineering在语义分析、篇章理解、对话管理等场景的应用，持续迭代NLP核心能力；\n5. 负责知识图谱与大模型融合的技术研发，利用LLM增强知识抽取、推理与问答效果。\n任职要求\n1. 本科及以上学历，熟练掌握自然语言处理领域的基础理论和方法，并有丰富的相关方向研究经验；\n2. 在一个或多个领域有深入研究，包括分词、文本分类、语义分析、语义表示、语义匹配、组块分析、主题模型、篇章分析、对话管理、知识图谱等，并能利用大模型（如GPT/BERT/GLM等）提升上述任务效果；\n3. 熟练掌握C/C++/Java/Python/Perl/Shell等编程语言及数据结构基础算法，熟悉至少一种大模型训练框架（如PyTorch/TensorFlow）和HuggingFace生态；\n4. 具备大模型微调经验（LoRA/RLHF/指令微调）或Prompt Engineering能力，能利用LangChain/LlamaIndex等框架构建RAG/AI Agent应用；\n5. 优秀的分析问题和解决问题的能力，能利用AI辅助工具（如Copilot、自然语言问数等）提升数据分析与问题诊断效率；\n6. 对解决具有挑战性问题充满激情。\n具备以下经验者优先：\n1. 有对话、问答相关研究经验，有LLM在对话系统或问答系统落地经验者优先；\n2. 有知识图谱相关研究经验，有知识图谱与大模型融合（KG+LLM）实践经验者优先；\n3. 在国际一流会议或期刊（如ACL/EMNLP/NAACL/NeurIPS/ICML等）发表过NLP或AI相关论文者优先；\n4. 有开源大模型（如LLaMA、Qwen、ChatGLM等）微调或应用落地经验者优先。\n岗位亮点：\n1. 技术前沿：团队深耕NLP与大模型技术，参与公司核心AI能力建设，有机会接触业界最前沿的LLM研究与落地；\n2. 场景丰富：NLP技术广泛应用于搜索、推荐、对话、知识问答等核心业务场景，技术影响力直接作用于亿级用户；\n3. AI赋能：团队已全面引入AI辅助研发工具，提供充足的GPU算力与大模型实验环境，支持前沿技术快速迭代；\n4. 成长空间：完善的新人培养与融入机制，技术大牛一对一指导，鼓励发表顶会论文与参与开源社区贡献。\n工作城市\n成都市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

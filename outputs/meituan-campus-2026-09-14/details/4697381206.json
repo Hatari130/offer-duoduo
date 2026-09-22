@@ -1,0 +1,186 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4697381206&highlightType=campus",
+  "verified_at": "2026-09-14T01:36:00.064Z",
+  "data": {
+    "jobUnionId": "4697381206",
+    "name": "物流管理储备岗",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "零售类",
+    "jobFamilyGroup": "物流",
+    "cityList": [
+      {
+        "code": "001011001",
+        "name": "杭州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010001",
+        "name": "南京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001010013",
+        "name": "苏州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001002",
+        "name": "天津市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001027001",
+        "name": "西安市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001023001",
+        "name": "成都市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001018001",
+        "name": "长沙市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019010",
+        "name": "东莞市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019001",
+        "name": "广州市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001017001",
+        "name": "武汉市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019002",
+        "name": "深圳市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001019013",
+        "name": "佛山市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1.从一线业务场景切入，全方位学习并掌握仓储/运输业务运作模式、流程及标准；轮岗制培养，从一线岗位做起，择优培养发展为储备经理；\n2.专注区域业务运营，通过现场管理、指标监控、数据分析等方式持续优化与创新，推动区域业务目标达成；\n3.深度参与服务站、仓储、运输相关业务模块项目，提升个人能力并推动业务运营效率及质量提升；\n4.负责商品管理，对商品的效期管理、品质管理、损耗管理全面负责；负责门店的水产养殖和销售整体管理，确保商品品质与供应安全；\n5.负责进销存管理，统筹收货、上架、库存、库位管理工作，优化库内动线与库位布局，对商品周转率和资产、设备安全准确负责；\n6.负责履约管理，保障在时效内保质保量完成客户订单履约，持续追求降本提效；配合总部各项营销策略落地，负责线上各品类商品的日常促销活动实施；\n7.负责现场的人员管理，涵盖招聘、培训及效率管理；开展日常经营管理工作，对各项运营指标进行监控与分析，确保目标达成；",
+    "jobRequirement": "【岗位要求】\n1.专业不限，本科及以上学历优先；\n2.对电商零售兴趣浓厚，有意向深耕物流/前置仓运营领域，成为优秀的零售物流人才；\n3.拥有出色的沟通协调能力与合作意识，善于解决问题，以目标为导向；\n4.对AI/数字化工具在物流行业的应用有一定了解或兴趣，具备学习意愿；\n5.具备数据驱动思维，能通过数据分析发现问题并推动业务优化者优先。\n【岗位亮点】\n1.从一线业务切入，全方位接触前置仓/仓储/运输核心业务模块，在真实的零售物流业务场景中快速积累经验，打下坚实的业务根基；\n2.轮岗制培养 + 储备经理发展通道，表现优异者可获得快速晋升机会，职业发展有章可循；\n3.拥抱AI时代，岗位融入AI工具应用与数据驱动运营实践，助力个人成长为具备数字化思维的新一代管理者；\n4.深入前置仓\"仓-配-销\"一体化运营，全面锻炼商品管理、库存管控、订单履约、人员管理等核心能力，培养复合型的零售物流人才。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960980000,
+    "refreshTime": 1786960980000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n物流管理储备岗\n应届-校园招聘\n工作地点：杭州市、南京市、北京市、苏州市...\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1.从一线业务场景切入，全方位学习并掌握仓储/运输业务运作模式、流程及标准；轮岗制培养，从一线岗位做起，择优培养发展为储备经理；\n2.专注区域业务运营，通过现场管理、指标监控、数据分析等方式持续优化与创新，推动区域业务目标达成；\n3.深度参与服务站、仓储、运输相关业务模块项目，提升个人能力并推动业务运营效率及质量提升；\n4.负责商品管理，对商品的效期管理、品质管理、损耗管理全面负责；负责门店的水产养殖和销售整体管理，确保商品品质与供应安全；\n5.负责进销存管理，统筹收货、上架、库存、库位管理工作，优化库内动线与库位布局，对商品周转率和资产、设备安全准确负责；\n6.负责履约管理，保障在时效内保质保量完成客户订单履约，持续追求降本提效；配合总部各项营销策略落地，负责线上各品类商品的日常促销活动实施；\n7.负责现场的人员管理，涵盖招聘、培训及效率管理；开展日常经营管理工作，对各项运营指标进行监控与分析，确保目标达成；\n任职要求\n【岗位要求】\n1.专业不限，本科及以上学历优先；\n2.对电商零售兴趣浓厚，有意向深耕物流/前置仓运营领域，成为优秀的零售物流人才；\n3.拥有出色的沟通协调能力与合作意识，善于解决问题，以目标为导向；\n4.对AI/数字化工具在物流行业的应用有一定了解或兴趣，具备学习意愿；\n5.具备数据驱动思维，能通过数据分析发现问题并推动业务优化者优先。\n【岗位亮点】\n1.从一线业务切入，全方位接触前置仓/仓储/运输核心业务模块，在真实的零售物流业务场景中快速积累经验，打下坚实的业务根基；\n2.轮岗制培养 + 储备经理发展通道，表现优异者可获得快速晋升机会，职业发展有章可循；\n3.拥抱AI时代，岗位融入AI工具应用与数据驱动运营实践，助力个人成长为具备数字化思维的新一代管理者；\n4.深入前置仓\"仓-配-销\"一体化运营，全面锻炼商品管理、库存管控、订单履约、人员管理等核心能力，培养复合型的零售物流人才。\n工作城市\n杭州市、南京市、北京市、苏州市、天津市、上海市、西安市、成都市、长沙市、东莞市、广州市、武汉市、深圳市、佛山市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

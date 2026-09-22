@@ -1,0 +1,16 @@
+{
+  "source": "https://campus.didiglobal.com/campus_apply/didiglobal/96064#/jobs",
+  "fetched_at": "2026-09-15T00:00:00+08:00",
+  "expected_count": 148,
+  "actual_count": 148,
+  "unique_source_job_ids": 148,
+  "pages": 5,
+  "page_sizes": [
+    30,
+    30,
+    30,
+    30,
+    28
+  ],
+  "validation": "python validate_jobs.py --expected 148 passed"
+}

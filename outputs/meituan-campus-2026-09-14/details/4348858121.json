@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4348858121&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:55.677Z",
+  "data": {
+    "jobUnionId": "4348858121",
+    "name": "【基座大模型北斗实习】下一代Agent前沿技术研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：参与下一代 Agent 方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、更聪明：模型训练与推理，通过 Agentic RL、自适应推理等技术，让 Agent 真正具备复杂任务的长程规划、动态工具调用与自我纠错能力——不只是执行，而是思考。\n2、好复用：Skill 体系建设，探索 Skill 的表示、组织与调度机制，让能力像积木一样可组合、可进化，面对新任务不从零开始。\n3、低成本：Agent 框架优化，攻克推理成本控制、上下文治理与长期记忆等核心难题，让Agent 也能低成本规模化落地。\n4、能应用：C 端 Agent 产品，用 Agent 重新定义人与信息的连接方式，从 0 到 1 探索 C 端 Agent 社区等产品。",
+    "jobRequirement": "1、有好奇心，敢想敢做，学习能力强，能在复杂问题的深度思考与拆解能力；\n2、顶会论文（ACL/EMNLP/NeurIPS/ICLR/KDD 等）、开源贡献或算法竞赛成果突出者优先；\n3、有OpenClaw、Claude Code深度使用经验与产出优先；\n4、熟悉Agentic RL者优先。\n（base北京或上海）",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223030000,
+    "refreshTime": 1775223030000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】下一代Agent前沿技术研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：参与下一代 Agent 方向的前沿研究，可根据个人背景和研究兴趣选择以下方向之一深入推进：\n1、更聪明：模型训练与推理，通过 Agentic RL、自适应推理等技术，让 Agent 真正具备复杂任务的长程规划、动态工具调用与自我纠错能力——不只是执行，而是思考。\n2、好复用：Skill 体系建设，探索 Skill 的表示、组织与调度机制，让能力像积木一样可组合、可进化，面对新任务不从零开始。\n3、低成本：Agent 框架优化，攻克推理成本控制、上下文治理与长期记忆等核心难题，让Agent 也能低成本规模化落地。\n4、能应用：C 端 Agent 产品，用 Agent 重新定义人与信息的连接方式，从 0 到 1 探索 C 端 Agent 社区等产品。\n任职要求\n1、有好奇心，敢想敢做，学习能力强，能在复杂问题的深度思考与拆解能力；\n2、顶会论文（ACL/EMNLP/NeurIPS/ICLR/KDD 等）、开源贡献或算法竞赛成果突出者优先；\n3、有OpenClaw、Claude Code深度使用经验与产出优先；\n4、熟悉Agentic RL者优先。\n（base北京或上海）\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

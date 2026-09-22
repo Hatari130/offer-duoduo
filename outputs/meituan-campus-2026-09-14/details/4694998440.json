@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694998440&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:52.265Z",
+  "data": {
+    "jobUnionId": "4694998440",
+    "name": "AI大模型后台开发",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 负责大模型平台的系统架构设计和研发，包括模型训练、数据集管理、模型管理、模型评测、模型部署；\n2. 针对数据处理、存储、数据同步、模型训练等方面的问题，进行技术方案的制定及技术难题的攻关；\n3. 对模型进行优化和部署，提高模型的效率和性能；\n4. 充分了解业内先进技术和前沿技术发展动态，驱动团队技术提升；\n5. 与团队成员共同攻克技术难题，持续迭代项目能力输出，提高服务质量。",
+    "jobRequirement": "工作要求 :\n1. 本科及以上学历，计算机相关专业；\n2. 有扎实的编程基础，良好的数据结构和算法功底，熟悉C++/Java/Python至少一种编程语言；\n3. 有较强的系统架构设计和性能优化能力，优秀的分析和解决问题的能力；\n4. 熟悉至少一种主流的机器学习框架（TensorFlow / PyTorch），熟悉开源社区、善于挖掘和整合开源能力者优先。\n具备以下者优先：\n1. 有实际大模型训练平台开发经验（标注平台、数据管理平台、模型管理系统、模型评测系统、模型自动化部署）；\n2. 具有实际模型训练加速经验，熟悉训练框架、分布式训练方案（Pytorch、Megatron、Deep-Speed）；\n3. 熟悉模型部署框架（Triton、FasterTransformer等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960996000,
+    "refreshTime": 1786960996000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\nAI大模型后台开发\n应届-校园招聘\n工作地点：北京市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 负责大模型平台的系统架构设计和研发，包括模型训练、数据集管理、模型管理、模型评测、模型部署；\n2. 针对数据处理、存储、数据同步、模型训练等方面的问题，进行技术方案的制定及技术难题的攻关；\n3. 对模型进行优化和部署，提高模型的效率和性能；\n4. 充分了解业内先进技术和前沿技术发展动态，驱动团队技术提升；\n5. 与团队成员共同攻克技术难题，持续迭代项目能力输出，提高服务质量。\n任职要求\n工作要求 :\n1. 本科及以上学历，计算机相关专业；\n2. 有扎实的编程基础，良好的数据结构和算法功底，熟悉C++/Java/Python至少一种编程语言；\n3. 有较强的系统架构设计和性能优化能力，优秀的分析和解决问题的能力；\n4. 熟悉至少一种主流的机器学习框架（TensorFlow / PyTorch），熟悉开源社区、善于挖掘和整合开源能力者优先。\n具备以下者优先：\n1. 有实际大模型训练平台开发经验（标注平台、数据管理平台、模型管理系统、模型评测系统、模型自动化部署）；\n2. 具有实际模型训练加速经验，熟悉训练框架、分布式训练方案（Pytorch、Megatron、Deep-Speed）；\n3. 熟悉模型部署框架（Triton、FasterTransformer等）。\n工作城市\n北京市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

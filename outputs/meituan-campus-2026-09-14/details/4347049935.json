@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4347049935&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:55.873Z",
+  "data": {
+    "jobUnionId": "4347049935",
+    "name": "【基座大模型北斗实习】CodeAgent 后训练方向",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：不再是单纯的代码生成，你将直面当前大模型最薄弱的环节——对复杂表格（Table）与混合文本的深度理解，以及海量数值的精准逻辑推理。本方向聚焦于基座模型的 Post-training，致力于突破数值处理天花板，赋予机器像顶尖数据科学家一样的洞察力。\n\n【核心探索】\n1、异构数据理解与数值推理： 突破大模型在 Table + 文本混合形态下的信息丢失与幻觉瓶颈。探索基于真实商业数据（如百万级复杂 CSV/Excel 结构）的表征优化与微调，大幅提升模型对数值规律的敏感度与跨表关联推理能力。\n2、Agentic RL 与数据环境交互： 摒弃传统 RLHF，构建基于“代码执行沙盒”与“真实数据计算结果反馈”的强化学习闭环。让模型在与海量数据的反复试错中，实现代码编写与数据清洗能力的自我进化。\n3、复杂推理与过程奖励（PRM）： 针对多步业务分析任务，构建细粒度的过程奖励模型。研究 Test-Time Compute 策略，引导智能体在面对极度复杂的数值统计命题时进行 MCTS 搜索与自我纠错，拉升逻辑推理天花板。",
+    "jobRequirement": "1、有好奇心，敢想敢做，学习能力强，能在复杂问题的深度思考与拆解能力；\n2、在 Agentic RL、过程奖励（PRM）或复杂代码推理等方向有深入研究及顶会论文发表（ACL/EMNLP/NeurIPS/ICLR/KDD 等）；\n3、有OpenClaw、Claude code深度使用经验与产出优先。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223029000,
+    "refreshTime": 1775223029000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】CodeAgent 后训练方向\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：不再是单纯的代码生成，你将直面当前大模型最薄弱的环节——对复杂表格（Table）与混合文本的深度理解，以及海量数值的精准逻辑推理。本方向聚焦于基座模型的 Post-training，致力于突破数值处理天花板，赋予机器像顶尖数据科学家一样的洞察力。\n【核心探索】\n1、异构数据理解与数值推理： 突破大模型在 Table + 文本混合形态下的信息丢失与幻觉瓶颈。探索基于真实商业数据（如百万级复杂 CSV/Excel 结构）的表征优化与微调，大幅提升模型对数值规律的敏感度与跨表关联推理能力。\n2、Agentic RL 与数据环境交互： 摒弃传统 RLHF，构建基于“代码执行沙盒”与“真实数据计算结果反馈”的强化学习闭环。让模型在与海量数据的反复试错中，实现代码编写与数据清洗能力的自我进化。\n3、复杂推理与过程奖励（PRM）： 针对多步业务分析任务，构建细粒度的过程奖励模型。研究 Test-Time Compute 策略，引导智能体在面对极度复杂的数值统计命题时进行 MCTS 搜索与自我纠错，拉升逻辑推理天花板。\n任职要求\n1、有好奇心，敢想敢做，学习能力强，能在复杂问题的深度思考与拆解能力；\n2、在 Agentic RL、过程奖励（PRM）或复杂代码推理等方向有深入研究及顶会论文发表（ACL/EMNLP/NeurIPS/ICLR/KDD 等）；\n3、有OpenClaw、Claude code深度使用经验与产出优先。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

@@ -1,0 +1,41 @@
+{
+  "source_job_id": "9a08f13b8b534b1caa3927ce00820bd1",
+  "verified_at": "2026-09-15T01:32:07.278Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=9a08f13b8b534b1caa3927ce00820bd1",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=9a08f13b8b534b1caa3927ce00820bd1&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "9a08f13b8b534b1caa3927ce00820bd1",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "机器人集群调度算法工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "任务分配与资源调度/整数规划/数据挖掘/时序预测/运筹学",
+        "postContent": "1、负责大规模多机器人集群系统（千级车数，数万任务）的智能调度算法研发与优化，包括任务预测、电量管理、任务分配等关键任务；\n2、针对复杂业务场景，设计高效的调度算法，优化任务分配策略，提升系统整体运行效率和资源利用率；\n3、利用业内最全场景数据集，持续优化调度算法，提高工业生产和物流仓储系统的整体；",
+        "postRequire": "1、硕士及以上学历;\n2、熟练掌握C/C++、Python；\n3、掌握CPLEX、Gurobi等至少一种优化工具；\n4、熟悉运筹学、数据挖掘、时序预测等基础理论与方法；\n5、满足以下至少一项：\n- 掌握分支定界、动态规划等整数规划精确求解方法，熟悉Knapsack、VRP、SCP等问题建模与求解；\n- 掌握聚类、分类、关联分析、时序预测等数据挖掘方法；\n- 掌握常见的邻域搜索类和种群进化类启发式算法；\n6、具备较好的数据敏感度和问题挖掘能力；\n7、参与过调度优化相关竞赛或重要项目者、或在相关顶会期刊发表论文者优先；\n8、对机器学习、深度/强化学习有较深入的理解与认识，在调度优化相关技术方向上有所应用者优先；",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:06",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "541fb18c584a418582acecca8e97ddae",
+          "name": "海康机器人",
+          "description": "海康机器人是面向全球的机器视觉和移动机器人产品及解决方案提供商。业务聚焦于工业物联网、智慧物流和智能制造，构建开放合作生态，为工业和物流领域用户提供服务，以创新技术持续推动智能化，引领智能制造进程。"
+        }
+      ]
+    }
+  ]
+}

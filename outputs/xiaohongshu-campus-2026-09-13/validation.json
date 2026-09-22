@@ -1157,11 +1157,5 @@
         "ok": true
       }
     ]
-  },
-  "dokobot_title_present_normalized": 149,
-  "dokobot_title_normalization_note": "22074 原标题含连续两个空格，dokobot显示时合并为空格；不是岗位缺失。",
-  "manual_dokobot_retries_completed": [
-    "22074",
-    "22411"
-  ]
+  }
 }

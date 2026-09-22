@@ -1,0 +1,106 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4694926747&highlightType=campus",
+  "verified_at": "2026-09-14T01:35:56.468Z",
+  "data": {
+    "jobUnionId": "4694926747",
+    "name": "机器学习/数据挖掘算法工程师",
+    "projectId": "115",
+    "projectName": "2026年（2027届）秋季校招",
+    "jobType": "1",
+    "jobSpecialCode": "1",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG022",
+        "name": "食杂零售",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG043",
+        "name": "核心本地商业-业务研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG020",
+        "name": "无人机业务部",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "BG013",
+        "name": "核心本地商业-美团平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "1. 在这里，你将通过机器学习、数据挖掘、深度/增强学习前沿技术对海量O2O数据进行洞察和预测，提高线下服务效率，优化线上用户体验，人和服务的高效连接潜力无限，帮助亿万用户吃得更好、生活更好；\n2. 在这里，你将从海量浏览和交易数据中不断抽象模式建立模型，一手保障商户在线营销可靠安全，另一手为消费者呈现有效评价提供优质服务，用技术提升消费质量；\n3. 在这里，你可以发挥你的算法天赋，在海量数据的平台上实践各种机器学习和挖掘算法，搜索、推荐、广告、调度、自动车配送、风控、金融、骑行、ERP和智能化交互，为你提供最广阔的施展天地。",
+    "jobRequirement": "1. 本科及以上学历；\n2. 良好的数据结构和算法基础，具有较强的程序开发和分布式系统实现能力；\n3. 熟练掌握数据库设计原理，对NoSQL和分布式计算有理解和实践；\n4. 对概率论、机器学习和自然语言处理有一定的理论基础，在深度学习、增强学习、最优化等方向有理解或实践；\n5. 对数据敏感，思维逻辑清晰，对业务问题充满好奇，相信大数据背后的力量。\n具备以下经验者优先\n1. 具备相关行业互联网公司核心项目实习经验；\n2. 发表过相关技术方向国际顶会或核心期刊一作论文；\n3. 对大型开源软件项目有核心开发贡献；\n4. 熟悉大数据技术（Hadoop、Spark、Flink等）。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1786960990000,
+    "refreshTime": 1786960990000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n机器学习/数据挖掘算法工程师\n应届-校园招聘\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n1. 在这里，你将通过机器学习、数据挖掘、深度/增强学习前沿技术对海量O2O数据进行洞察和预测，提高线下服务效率，优化线上用户体验，人和服务的高效连接潜力无限，帮助亿万用户吃得更好、生活更好；\n2. 在这里，你将从海量浏览和交易数据中不断抽象模式建立模型，一手保障商户在线营销可靠安全，另一手为消费者呈现有效评价提供优质服务，用技术提升消费质量；\n3. 在这里，你可以发挥你的算法天赋，在海量数据的平台上实践各种机器学习和挖掘算法，搜索、推荐、广告、调度、自动车配送、风控、金融、骑行、ERP和智能化交互，为你提供最广阔的施展天地。\n任职要求\n1. 本科及以上学历；\n2. 良好的数据结构和算法基础，具有较强的程序开发和分布式系统实现能力；\n3. 熟练掌握数据库设计原理，对NoSQL和分布式计算有理解和实践；\n4. 对概率论、机器学习和自然语言处理有一定的理论基础，在深度学习、增强学习、最优化等方向有理解或实践；\n5. 对数据敏感，思维逻辑清晰，对业务问题充满好奇，相信大数据背后的力量。\n具备以下经验者优先\n1. 具备相关行业互联网公司核心项目实习经验；\n2. 发表过相关技术方向国际顶会或核心期刊一作论文；\n3. 对大型开源软件项目有核心开发贡献；\n4. 熟悉大数据技术（Hadoop、Spark、Flink等）。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

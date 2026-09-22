@@ -1,0 +1,41 @@
+{
+  "source_job_id": "02db4c43f1854bf9b2cd89f2d7cd6d62",
+  "verified_at": "2026-09-15T01:31:57.425Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=02db4c43f1854bf9b2cd89f2d7cd6d62",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=02db4c43f1854bf9b2cd89f2d7cd6d62&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "02db4c43f1854bf9b2cd89f2d7cd6d62",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "海外解决方案工程师",
+        "postAdSn": "综合类",
+        "postStdSubSn": "解决方案",
+        "techDire": "英语工科",
+        "postContent": "1、根据海外用户及市场业务需求，提供满足需求的系统解决方案，包括需求分析、系统架构设计、系统解决方案开发、解决方案文档编制、宣传材料编写等设计和开发工作；\n2、负责海外项目方案全生命周期管理，深入挖掘行业用户需求，负责需求引导及业务交流汇报，为用户提供定制化解决方案；\n3、对国际行业市场环境、业务竞争情况及生态圈进行分析，把握业务发展趋势、技术发展趋势，确保方案竞争力；\n4、负责面向国际业务中心及分公司的解决方案价值传递及赋能",
+        "postRequire": "1、本科及以上学历，计算机、自动化及通信类专业优先；\n2、英语听说读写熟练，可作为工作语言（包括但不限于邮件/电话交流、产品资料开发与培训宣讲等），有海外留学或交换背景优先；可以接受海外出差\n3、熟练运用计算机及相关办公软件；\n4、具备良好的沟通能力以及团队合作精神。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 19:11:30",
+        "updateTime": "2026-08-20 17:08:54"
+      },
+      "departments": [
+        {
+          "id": "b36ef1ffd8d849b3a094a66044f591ea",
+          "name": "国际业务中心",
+          "description": "国际业务中心致力于开拓和发展国际业务，通过提供有竞争力的产品和解决方案，不断完善全球营销与技术支持网络，快速响应客户需求，努力提升服务品质。公司已在国际及港澳台地区设立 72 个分支机构和3个海外研发中心，为全球150多个国家和地区提供产品和服务（截止2023年底）。我们以扎实的研发技术和完备的营销能力双轨驱动，为国际用户提供适配于不同场景的产品和解决方案，引领智能物联新未来。 \n海康威视国际业务中心为你提供全球化的舞台。如果你是营销精英，你能接触多样化的客户、渠道和机遇；如果你是技术达人，你能学习国际化的研发技术、研发项目。欢迎加入国际业务中心，在海康威视的海外战略布局中，与志同道合的伙伴们并肩探索全球市场的无限可能！"
+        }
+      ]
+    }
+  ]
+}

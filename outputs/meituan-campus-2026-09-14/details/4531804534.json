@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4531804534&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:44.398Z",
+  "data": {
+    "jobUnionId": "4531804534",
+    "name": "【LongCat大模型人才校招】多模态交互算法研究员",
+    "projectId": "114",
+    "projectName": "2027届LongCat大模型人才校招",
+    "jobType": "1",
+    "jobSpecialCode": "8",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "LongCat 是美团基础研发自主研发的大模型，覆盖语言、视觉、语音、具身全栈。LongCat 相继推出 LongCat-Flash、LongCat-Flash-Thinking、LongCat-Flash-Omni 等系列模型，正在构建多模态实时交互大模型。加入团队你将参与如下工作\n1. 多模态实时表征探索，研究视频与语音的视觉表征、Audio 表征以及底层模型结构，构建支撑双工交互的感知底座，攻克实时性与表达力的平衡。\n2.  全模态模型结构与训练策略，探索统一的模型架构与训练范式，使模型能够充分融合视觉、语音、文本的理解与生成能力，逼近全模态统一智能。\n3. 实时交互核心算法，研发面向人机自然对话的打断、判停与时机决策机制，让模型在复杂声学与多说话人场景下做到自然不抢话、不漏话、在恰当时机主动发起交互。\n4. 下一代交互范式探索，研究交互式思考 模型、流式工具调用等前沿能力，定义下一代多模态实时交互大模型的形态边界。\n【为什么是我们】\n1.全栈顶配算力支持，依托美团大规模算力集群，提供千卡至万卡级算力支持，具备成熟的分布式训练与低延迟推理优化栈，保障 世界动作模型与 VLA 大规模训练。\n2.与优秀人才同行，你将与行业顶尖的大模型研究员及机器人领域专家并肩作战，共同攻克具身智能的技术难点。",
+    "jobRequirement": "1.计算机、人工智能等相关专业硕士/博士学位，具备扎实的视觉、语音和深度学习学习理论功底；\n2.在 NeurIPS / ICLR / ACL / CVPR / ICCV / ICASSP / Interspeech 等顶级会议发表过高水平论文者优先；\n3.深入理解VLM，Audio LLM等至少一项前沿技术；\n4.精通 PyTorch，具备大规模分布式训练经验；",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780459821000,
+    "refreshTime": 1780459821000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【LongCat大模型人才校招】多模态交互算法研究员\n应届-LongCat 大模型人才校招\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\nLongCat 是美团基础研发自主研发的大模型，覆盖语言、视觉、语音、具身全栈。LongCat 相继推出 LongCat-Flash、LongCat-Flash-Thinking、LongCat-Flash-Omni 等系列模型，正在构建多模态实时交互大模型。加入团队你将参与如下工作\n1. 多模态实时表征探索，研究视频与语音的视觉表征、Audio 表征以及底层模型结构，构建支撑双工交互的感知底座，攻克实时性与表达力的平衡。\n2.  全模态模型结构与训练策略，探索统一的模型架构与训练范式，使模型能够充分融合视觉、语音、文本的理解与生成能力，逼近全模态统一智能。\n3. 实时交互核心算法，研发面向人机自然对话的打断、判停与时机决策机制，让模型在复杂声学与多说话人场景下做到自然不抢话、不漏话、在恰当时机主动发起交互。\n4. 下一代交互范式探索，研究交互式思考 模型、流式工具调用等前沿能力，定义下一代多模态实时交互大模型的形态边界。\n【为什么是我们】\n1.全栈顶配算力支持，依托美团大规模算力集群，提供千卡至万卡级算力支持，具备成熟的分布式训练与低延迟推理优化栈，保障 世界动作模型与 VLA 大规模训练。\n2.与优秀人才同行，你将与行业顶尖的大模型研究员及机器人领域专家并肩作战，共同攻克具身智能的技术难点。\n任职要求\n1.计算机、人工智能等相关专业硕士/博士学位，具备扎实的视觉、语音和深度学习学习理论功底；\n2.在 NeurIPS / ICLR / ACL / CVPR / ICCV / ICASSP / Interspeech 等顶级会议发表过高水平论文者优先；\n3.深入理解VLM，Audio LLM等至少一项前沿技术；\n4.精通 PyTorch，具备大规模分布式训练经验；\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

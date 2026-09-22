@@ -1,0 +1,41 @@
+{
+  "source_job_id": "e6fbe4d0ca804bb6add2e3fbeabd17a5",
+  "verified_at": "2026-09-15T01:32:05.829Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=e6fbe4d0ca804bb6add2e3fbeabd17a5",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=e6fbe4d0ca804bb6add2e3fbeabd17a5&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "e6fbe4d0ca804bb6add2e3fbeabd17a5",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "智能传感系统工程师",
+        "postAdSn": "算法/网络安全/大数据类",
+        "postStdSubSn": "算法",
+        "techDire": "光学/电磁/硬件方向",
+        "postContent": "开展电磁传感、计算成像系统技术研究，完成原型实现与系统验证。",
+        "postRequire": "硕士及以上学历，电子、微电子、仪器、通信、自控、生仪、光学、物理、数学等相关专业； \n具备技术敏感性和快速学习能力，勇于挑战难题； \n熟悉以下任一方向： \n（a）光学传感：成像光学原理、光学超表面、光路设计与装调； \n（b）电磁传感：电磁理论、系统仿真与实验； \n（c）模数混合电路：方案制定、原理图/PCB设计及调试。 \n有以下经验者优先： 计算光学成像或电磁传感系统设计或微弱信号检测相关项目经验。",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:01:25",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "038009b972b041a7b8d6b6184c02afdb",
+          "name": "研究院",
+          "description": "研究院是专注于技术创新和研究的研发机构，以市场需求为导向，以技术进步为驱动，目标是保障公司可持续的技术竞争力。研究院总部位于杭州，在上海、成都设有分院，主要研究方向包括人工智能（大模型、计算机视觉、声学语音、人机交互、安全计算等）、大数据、全面感知、计算成像、高性能计算等。研究院致力于提高机器对世界的感知、分析、理解能力，通过技术创新推动行业发展，帮助客户实现产业智能化升级。"
+        }
+      ]
+    }
+  ]
+}

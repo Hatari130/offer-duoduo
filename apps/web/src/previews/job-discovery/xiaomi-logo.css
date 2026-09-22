@@ -1,0 +1,16 @@
+.xiaomi-logo {
+  background: #ff6900;
+  color: #fff;
+  font-family: Arial, sans-serif;
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -4px;
+  padding-right: 4px;
+  box-shadow: 0 3px 8px #ff690026;
+}
+
+.xiaomi-logo.large {
+  font-size: 28px;
+  letter-spacing: -5px;
+  padding-right: 6px;
+}

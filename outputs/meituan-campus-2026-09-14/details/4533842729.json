@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4533842729&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:39.605Z",
+  "data": {
+    "jobUnionId": "4533842729",
+    "name": "【北斗】AI Agent工程师（大模型方向）",
+    "projectId": "113",
+    "projectName": "2027届北斗计划",
+    "jobType": "1",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "软件",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "我们正在构建以Code Agent为核心的下一代智能编程基础设施，通过大模型技术、强化学习与多智能体协作的深度融合，推动软件开发从辅助工具向自主智能体演进。如果你对AI Coding充满热情，渴望在Post-training、强化学习（RL）、智能体系统等领域引领技术革命，这里将是你实现技术理想的终极舞台！\n\n1. 前沿技术攻坚\n主导基于Post-training、强化学习的代码生成与优化技术研发，构建工业级AI编程解决方案\n负责Code Agent系统架构设计，探索智能体在代码全生命周期的自主决策能力\n研究多智能体协作机制，构建自动化编程智能体团队\n2. 复杂场景落地\n攻克业务场景中的代码生成、质量提升与性能调优挑战，推动LLM+RL创新落地\n设计实现基于Agent的代码智能体，实现端到端自动化开发\n构建Code Agent评估体系，持续优化智能体性能\n3. 跨领域创新\n与顶尖AI团队协作，实现学术前沿到工业落地的闭环\n探索Agent技术在美团多元业务场景中的应用，推动技术跨领域迁移\n4. 行业变革引领\n打造业界领先的Code Agent解决方案，推动AI编程从辅助工具向自主智能体演进\n引领百万开发者生态变革，定义下一代编程范式！",
+    "jobRequirement": "【岗位要求】\n1. 技术基础\n计算机科学、人工智能、数学等相关专业背景，精通Python/C++，扎实的算法与系统设计能力\n熟悉Agent架构设计，了解LangChain、AutoGPT等主流Agent框架\n2. 强化学习经验\n熟悉RL核心算法（如PPO、DQN、SAC等），有实际项目经验或顶会论文（NeurIPS/ICML/ICLR等）成果者优先\n有Code Agent、多智能体系统相关项目经验者优先\n3. 问题解决能力\n善于从复杂需求中提炼技术方案，具备快速学习新领域的能力\n能够将业务需求转化为Agent系统设计方案，具备系统架构思维\n4. 领域热情\n对AI Coding、代码生成或LLM+RL结合方向有强烈探索欲\n对Agent技术、智能体自主决策有浓厚兴趣，关注业界最新进展\n5. 开源精神\n热爱技术分享，有开源项目或技术博客者优先\n有Agent相关开源项目贡献者优先\n\n【岗位吸引力】\n1.前沿技术攻坚：主导基于 Post-training、强化学习的代码生成与优化技术研发，构建工业级 AI 编程解决方案，突破开发效率极限。\n2.复杂场景落地：攻克真实业务场景中的代码生成、质量提升与性能调优等挑战，推动 LLM+RL 在代码理解领域的创新落地，建立可量化的开发效能体系。\n3.跨领域创新：与顶尖的 AI 研究员、工程师和产品团队紧密合作，实现学术前沿到工业落地的闭环。\n4.行业变革引领：你的工作将引领百万开发者生态变革，定义下一代编程范式。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1780475181000,
+    "refreshTime": 1780475181000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【北斗】AI Agent工程师（大模型方向）\n应届-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n我们正在构建以Code Agent为核心的下一代智能编程基础设施，通过大模型技术、强化学习与多智能体协作的深度融合，推动软件开发从辅助工具向自主智能体演进。如果你对AI Coding充满热情，渴望在Post-training、强化学习（RL）、智能体系统等领域引领技术革命，这里将是你实现技术理想的终极舞台！\n1. 前沿技术攻坚\n主导基于Post-training、强化学习的代码生成与优化技术研发，构建工业级AI编程解决方案\n负责Code Agent系统架构设计，探索智能体在代码全生命周期的自主决策能力\n研究多智能体协作机制，构建自动化编程智能体团队\n2. 复杂场景落地\n攻克业务场景中的代码生成、质量提升与性能调优挑战，推动LLM+RL创新落地\n设计实现基于Agent的代码智能体，实现端到端自动化开发\n构建Code Agent评估体系，持续优化智能体性能\n3. 跨领域创新\n与顶尖AI团队协作，实现学术前沿到工业落地的闭环\n探索Agent技术在美团多元业务场景中的应用，推动技术跨领域迁移\n4. 行业变革引领\n打造业界领先的Code Agent解决方案，推动AI编程从辅助工具向自主智能体演进\n引领百万开发者生态变革，定义下一代编程范式！\n任职要求\n【岗位要求】\n1. 技术基础\n计算机科学、人工智能、数学等相关专业背景，精通Python/C++，扎实的算法与系统设计能力\n熟悉Agent架构设计，了解LangChain、AutoGPT等主流Agent框架\n2. 强化学习经验\n熟悉RL核心算法（如PPO、DQN、SAC等），有实际项目经验或顶会论文（NeurIPS/ICML/ICLR等）成果者优先\n有Code Agent、多智能体系统相关项目经验者优先\n3. 问题解决能力\n善于从复杂需求中提炼技术方案，具备快速学习新领域的能力\n能够将业务需求转化为Agent系统设计方案，具备系统架构思维\n4. 领域热情\n对AI Coding、代码生成或LLM+RL结合方向有强烈探索欲\n对Agent技术、智能体自主决策有浓厚兴趣，关注业界最新进展\n5. 开源精神\n热爱技术分享，有开源项目或技术博客者优先\n有Agent相关开源项目贡献者优先\n【岗位吸引力】\n1.前沿技术攻坚：主导基于 Post-training、强化学习的代码生成与优化技术研发，构建工业级 AI 编程解决方案，突破开发效率极限。\n2.复杂场景落地：攻克真实业务场景中的代码生成、质量提升与性能调优等挑战，推动 LLM+RL 在代码理解领域的创新落地，建立可量化的开发效能体系。\n3.跨领域创新：与顶尖的 AI 研究员、工程师和产品团队紧密合作，实现学术前沿到工业落地的闭环。\n4.行业变革引领：你的工作将引领百万开发者生态变革，定义下一代编程范式。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：\n关注我们"
+}

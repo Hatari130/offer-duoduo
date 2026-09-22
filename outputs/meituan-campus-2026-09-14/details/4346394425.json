@@ -1,0 +1,66 @@
+{
+  "url": "https://zhaopin.meituan.com/web/position/detail?jobUnionId=4346394425&highlightType=campus",
+  "verified_at": "2026-09-14T13:40:53.470Z",
+  "data": {
+    "jobUnionId": "4346394425",
+    "name": "【基座大模型北斗实习】面向真实世界的全模态搜索智能体前沿研究",
+    "projectId": "108",
+    "projectName": "北斗计划大模型实习专项",
+    "jobType": "2",
+    "jobSpecialCode": "3",
+    "jobSource": "2",
+    "jobStatus": "000",
+    "jobFamily": "技术类",
+    "jobFamilyGroup": "算法",
+    "cityList": [
+      {
+        "code": "001001",
+        "name": "北京市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      },
+      {
+        "code": "001009",
+        "name": "上海市",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "workYear": "",
+    "department": [
+      {
+        "code": "BG041",
+        "name": "核心本地商业-基础研发平台",
+        "children": null,
+        "sort": null,
+        "subCode": null,
+        "mapping": null,
+        "outerCode": null,
+        "bgNode": false
+      }
+    ],
+    "desc": null,
+    "departmentIntro": null,
+    "jobDuty": "简介：本课题主要聚焦于真实世界中的搜索智能体遇到的实际问题，分别从基础指令遵循、模态扩展、交互形式和学习范式等四个方面进行研究：\n1、智能体复杂指令遵循：大模型目前已经从实验室走向实际的生产环境，从关注Benchmark指标转为重视实际使用体验。真实使用场景以Train-Free + System Prompt的方式居多，其中System Prompt通常具有指令复杂、组合方式多样、变动频繁等特点。该方向主要研究内容有两点：一是大模型对于工具/Skill 调用的指令遵循能力；二是大模型对于复杂总结指令的遵循能力。\n2、全模态深度搜索智能体：最真实的物理世界都是全模态的，所以搜索智能体不仅在输入上需要支持全模态，而且在整个搜索过程以及最后的结果呈现上都需要支持全模态。该方向主要研究怎么将已经比较成熟的搜索智能体从单一的文本模态扩展成同时支持文本、语音、图像等多种形式的全模态智能体，要解决全模态规划、深度推理、上下文管理和记忆带来的挑战。\n3、主动交互深度研究智能体：智能体时代，所有的智能体都应该是一个具有自主意识的个体，能够主动提供服务。而当前的深度研究智能体，还处于被动给人提供信息的状态，基本不具有自主意识。该方向主要研究怎么让深度研究智能体具有自主意识、能够主动挖掘人类的真实意图、主动引导人类进行多轮互动，最终给人伙伴式体验并提升人的认知。\n4、智能体学习范式：当前智能体学习范式以RLVR为主，但是RLVR具有奖励稀疏、适用范围有限、训练不稳定和训练成本高等缺点。该方向主要研究方向包括但不限于：熵机制研究、过程奖励模型（PRM）、开放问题rubrics-based RL、credit assignment、Thinking/Tool Call Budget等。",
+    "jobRequirement": "1、硕士及以上学历，计算机、人工智能、数学、自然语言处理等相关专业，博士优先；\n2、在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n3、在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先；\n4、具备扎实的机器学习基础，对以下一个或者多个领域有深入研究者优先：\n①Pre -training / Mid-training / Post-training\n②Complex Instruct Following / Generalization / Long Context\n③Multimodal Agent / General Agent / Search Agent / Code Agent\n④RLHF / RLVR / PRM / Rubrics RL / Credit Assignment / Budget\n5、具备较强的论文阅读、问题抽象与实验设计能力，能够针对一个宽泛的课题提出实际可行的想法，并且以结果为导向，持续、稳定、高效、主动推进项目进展。",
+    "precedence": null,
+    "highLight": null,
+    "otherInfo": null,
+    "firstPostTime": 1775223032000,
+    "refreshTime": 1775223032000,
+    "tag": [
+      0
+    ],
+    "expiredTime": null,
+    "socialRecommendJob": false
+  },
+  "text": "首页\nLongCat人才招聘\n北斗计划\n社会招聘\n校园招聘\n美团赛事\n了解美团\nGlobal Careers\n登录\n【基座大模型北斗实习】面向真实世界的全模态搜索智能体前沿研究\n实习-北斗计划\n工作地点：北京市、上海市\n最多可投递3个职位，但同一时间仅有1个职位流程处于进行中，第一志愿将被优先考虑。\n分享\n立即申请\n岗位职责\n简介：本课题主要聚焦于真实世界中的搜索智能体遇到的实际问题，分别从基础指令遵循、模态扩展、交互形式和学习范式等四个方面进行研究：\n1、智能体复杂指令遵循：大模型目前已经从实验室走向实际的生产环境，从关注Benchmark指标转为重视实际使用体验。真实使用场景以Train-Free + System Prompt的方式居多，其中System Prompt通常具有指令复杂、组合方式多样、变动频繁等特点。该方向主要研究内容有两点：一是大模型对于工具/Skill 调用的指令遵循能力；二是大模型对于复杂总结指令的遵循能力。\n2、全模态深度搜索智能体：最真实的物理世界都是全模态的，所以搜索智能体不仅在输入上需要支持全模态，而且在整个搜索过程以及最后的结果呈现上都需要支持全模态。该方向主要研究怎么将已经比较成熟的搜索智能体从单一的文本模态扩展成同时支持文本、语音、图像等多种形式的全模态智能体，要解决全模态规划、深度推理、上下文管理和记忆带来的挑战。\n3、主动交互深度研究智能体：智能体时代，所有的智能体都应该是一个具有自主意识的个体，能够主动提供服务。而当前的深度研究智能体，还处于被动给人提供信息的状态，基本不具有自主意识。该方向主要研究怎么让深度研究智能体具有自主意识、能够主动挖掘人类的真实意图、主动引导人类进行多轮互动，最终给人伙伴式体验并提升人的认知。\n4、智能体学习范式：当前智能体学习范式以RLVR为主，但是RLVR具有奖励稀疏、适用范围有限、训练不稳定和训练成本高等缺点。该方向主要研究方向包括但不限于：熵机制研究、过程奖励模型（PRM）、开放问题rubrics-based RL、credit assignment、Thinking/Tool Call Budget等。\n任职要求\n1、硕士及以上学历，计算机、人工智能、数学、自然语言处理等相关专业，博士优先；\n2、在大模型领域有研究基础，或参与过有影响力的开源项目，在ICLR/NeurIPS/ICML/ACL等顶会发表论文者优先；\n3、在程序设计竞赛，如ACM/ICPC、Topcoder和Codeforces等，取得优异成绩者优先；\n4、具备扎实的机器学习基础，对以下一个或者多个领域有深入研究者优先：\n①Pre -training / Mid-training / Post-training\n②Complex Instruct Following / Generalization / Long Context\n③Multimodal Agent / General Agent / Search Agent / Code Agent\n④RLHF / RLVR / PRM / Rubrics RL / Credit Assignment / Budget\n5、具备较强的论文阅读、问题抽象与实验设计能力，能够针对一个宽泛的课题提出实际可行的想法，并且以结果为导向，持续、稳定、高效、主动推进项目进展。\n工作城市\n北京市、上海市\n\n一起成长，一起更好\n\nGrow Together, Better Together\n\n美团\n|\n@2026 美团版权所有\n京ICP备10211739号\n京公网安备 11000002002052号\n|\n隐私政策\n    招聘意见反馈：zhaopin@meituan.com\n关注我们"
+}

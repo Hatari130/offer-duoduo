@@ -1,0 +1,41 @@
+{
+  "source_job_id": "0e64f39d34194b539fb660a7ec8eb370",
+  "verified_at": "2026-09-15T01:32:08.049Z",
+  "api_url": "https://campushr.hikvision.com/api/userfacade/crsPublishPost/findId?id=0e64f39d34194b539fb660a7ec8eb370",
+  "detail_url": "https://campushr.hikvision.com/JobDetails.html?id=0e64f39d34194b539fb660a7ec8eb370&type=0&batchId=e198653730e14820b9e95b29fbc2223f",
+  "variants": [
+    {
+      "data": {
+        "id": "0e64f39d34194b539fb660a7ec8eb370",
+        "batchId": "e198653730e14820b9e95b29fbc2223f",
+        "batchName": "【2027校园招聘】",
+        "postAdName": "可靠性测试工程师",
+        "postAdSn": "测试/支撑类",
+        "postStdSubSn": "硬件测试",
+        "techDire": "可靠性",
+        "postContent": "1、参与项目开发过程，制定产品可靠性测试方案，负责硬件产品端到端硬件测试工作，保障产品硬件可靠性；\n2、能主导或协助进行环境可靠性测试（高低温、湿热、振动、冲击等）、机械可靠性测试及寿命/老化测试并输出测试报告；对测试数据进行统计分析（如MTBF计算、威布尔分析等）；\n3、能够在产品早期研发阶段介入，进行加速和筛选实验设计和测试、推动失效机理和失效模型的评估；\n4、分析产品的测试数据，基于测试结果提出产品的设计问题和改进建议；\n5、参与硬件可靠性测试方法、能力建设，并持续优化测试用例或方法；\n6、参与公司硬件可靠性测试相关业务流程、管理规范的建设及优化。",
+        "postRequire": "1、本科及以上学历，电子信息、材料科学、物理、可靠性工程等相关专业；\n2、熟悉硬件测试理论和方法；\n3、具有一定的硬件可靠性理论基础，熟悉可靠性工程理论（如浴缸曲线、MTBF、失效率计算等），能操作常规可靠性测试设备（恒温恒湿箱和振动台等），可利用可靠性工具开展FMEA；\n4、具有较强的沟通能力及团队合作精神",
+        "remark": null,
+        "jobNature": "校招应届生",
+        "workPlace": "杭州市",
+        "interviewMethodTxt": "现场/视频",
+        "requiireEdu": null,
+        "salaryStart": null,
+        "salaryEnd": null,
+        "mergeType": 0,
+        "mergeRootId": null,
+        "adNeedDept": null,
+        "specialNotes": null,
+        "createTime": "2026-08-19 20:02:20",
+        "updateTime": "2026-08-20 17:08:55"
+      },
+      "departments": [
+        {
+          "id": "c85e437f543c4494bf31fe6524368e6d",
+          "name": "智能硬件-硬件技术",
+          "description": "海康威视硬件产品研发中心致力于以全面的感知技术，帮助人、物更好的链接，构建智能世界的基础，通过核心领域技术的持续投入以提升产品的综合竞争力，形成了边缘节点、边缘域、云中心的产品架构，并建立了以杭州为中心，辐射北京、上海、武汉、西安、成都等地的研发中心体系。\n边缘节点产品：前端摄像机、智能交通与移动产品、门禁对讲与报警产品、音频产品、传感产品等。\n边缘域产品：超脑NVR、会议平板产品、智能视频传输产品等。 \n云中心产品：通用计算产品、智能计算产品、通用存储产品、流式存储产品、大屏显示产品等。"
+        }
+      ]
+    }
+  ]
+}
