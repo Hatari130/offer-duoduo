@@ -70,8 +70,8 @@ test("chat contracts require a stable client message id", () => {
   assert.equal(isSendMessageRequest({
     content: "读取材料",
     clientMessageId: "msg-3",
-    attachments: [{ id: "file-2", name: "resume.pdf", mimeType: "application/pdf", size: 12, content: "伪造文本" }]
-  }), false);
+    attachments: [{ id: "file-2", name: "resume.pdf", mimeType: "application/pdf", size: 12, content: "提取的简历文本" }]
+  }), true);
   assert.equal(isUpdateConversationRequest({ title: "字节产品岗准备" }), true);
   assert.equal(isUpdateConversationRequest({ title: "" }), false);
   assert.equal(isMessageFeedbackRequest({ feedback: "positive" }), true);

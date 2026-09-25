@@ -19,9 +19,8 @@ export interface ChatAttachment {
   name: string;
   mimeType: string;
   size: number;
-  url?: string;
-  /** Plain text extracted in the browser. PDFs are converted to text
-   * client-side with pdf.js; other binary formats are not accepted. */
+  /** Extracted document text or OCR text only. Original files, image bytes,
+   * base64 payloads and download URLs are never stored with a message. */
   content?: string;
 }
 

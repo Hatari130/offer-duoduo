@@ -23,6 +23,7 @@ import type {
 } from "@offerflow/contracts";
 import {
   MAX_INTERVIEW_AUDIO_BYTES,
+  CHAT_IMAGE_MIME_TYPES,
   isApplicationSyncRequest,
   isCreateProductFeedbackRequest,
   isCreateInterviewRecordFromTranscriptRequest,
@@ -67,6 +68,7 @@ import { createEmailVerificationService } from "./auth/email-verification.ts";
 import { opportunityCapabilityAnswer } from "./ai/capabilities.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
+import { createChatOcrProvider, OcrError, readOcrFile, validateOcrSignature, type ChatOcrProvider } from "./chat/ocr.ts";
 import {
   createInterviewQaParser,
   type InterviewQaParser
@@ -105,6 +107,7 @@ export interface OfferFlowAppOptions {
   interviewQaParser?: InterviewQaParser;
   transcriber?: InterviewTranscriptionProvider;
   emailMailer?: EmailMailer;
+  chatOcr?: ChatOcrProvider;
 }
 
 class HttpError extends Error {
@@ -303,6 +306,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const knowledge = options.knowledge ?? new KnowledgeService();
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
+  const chatOcr = options.chatOcr ?? createChatOcrProvider(config);
+  const activeOcrUsers = new Set<string>();
   const emailMailer = options.emailMailer ?? createDirectMailMailer(config);
   const emailVerification = createEmailVerificationService(config, store, emailMailer);
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
@@ -656,7 +661,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       ? undefined
       : opportunityCapabilityAnswer(prompt);
     const selectedEntries = await selectedContextKnowledge(userId, context);
-    const attachmentEntries = attachmentKnowledge(attachments);
+    const relevantAttachments = attachments.length ? attachments : history
+      .filter((message) => message.role === "user")
+      .flatMap((message) => message.attachments)
+      .slice(-2);
+    const attachmentEntries = attachmentKnowledge(relevantAttachments);
     const contextualEntries = [...selectedEntries, ...attachmentEntries];
     const explicitlySelectedEntries = [...(context.length ? selectedEntries : []), ...attachmentEntries];
     const personalApplicationCitations = useApplicationContext
@@ -1084,6 +1093,33 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
 
       const authenticatedSession = await requireSession(request);
       const userId = authenticatedSession.userId;
+
+      if (method === "POST" && path === "/v1/chat/ocr") {
+        if (!chatOcr.configured) throw new OcrError(503, "OCR_NOT_CONFIGURED", "图片识别尚未配置，请先上传文字版 PDF、TXT 或 Markdown。");
+        const mimeType = normalizeMimeType(request.headers["content-type"]);
+        if (mimeType !== "application/pdf" && !CHAT_IMAGE_MIME_TYPES.some((type) => type === mimeType)) {
+          throw new OcrError(415, "OCR_UNSUPPORTED_FILE", "请选择 PDF / PNG / JPG / WebP 文件。");
+        }
+        if (activeOcrUsers.has(userId) || activeOcrUsers.size >= 4) {
+          throw new OcrError(429, "OCR_BUSY", "已有文件正在识别，请稍后重试。");
+        }
+        activeOcrUsers.add(userId);
+        const controller = new AbortController();
+        const cancel = () => controller.abort();
+        response.once("close", cancel);
+        let bytes: Buffer | undefined;
+        try {
+          bytes = await readOcrFile(request);
+          validateOcrSignature(bytes, mimeType);
+          const text = await chatOcr.recognize(bytes, mimeType, controller.signal);
+          if (!controller.signal.aborted) success(response, { text });
+        } finally {
+          bytes?.fill(0);
+          response.off("close", cancel);
+          activeOcrUsers.delete(userId);
+        }
+        return;
+      }
 
       if (method === "GET" && path === "/v1/session") {
         success(response, { user: (await store.getUser(userId))! });
@@ -1647,12 +1683,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         if (!response.writableEnded) response.end();
         return;
       }
-      if (error instanceof HttpError || error instanceof StoreError) {
-        const retryAfterSeconds = error.details?.retryAfterSeconds;
+      if (error instanceof HttpError || error instanceof StoreError || error instanceof OcrError) {
+        const details = error instanceof OcrError ? undefined : error.details;
+        const retryAfterSeconds = details?.retryAfterSeconds;
         if (error.status === 429 && typeof retryAfterSeconds === "number") {
           response.setHeader("Retry-After", String(Math.max(1, Math.ceil(retryAfterSeconds))));
         }
-        failure(response, error.status, error.code, error.message, error.details);
+        failure(response, error.status, error.code, error.message, details);
         return;
       }
       // Error messages/objects can contain SQL payloads or upstream AI bodies.

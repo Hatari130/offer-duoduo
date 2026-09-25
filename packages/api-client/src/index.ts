@@ -13,6 +13,7 @@ import type {
   AuthDeviceSession,
   AuthSession,
   ChatContextResponse,
+  ChatOcrResponse,
   ChatStreamEvent,
   ConversationListResponse,
   ConversationResponse,
@@ -240,6 +241,13 @@ export function createApiClient(options: ApiClientOptions) {
   };
 
   const chat = {
+    recognizeFile: (file: File, signal?: AbortSignal) =>
+      request<ChatOcrResponse>("/v1/chat/ocr", {
+        method: "POST",
+        headers: { "content-type": file.type || "application/octet-stream" },
+        body: file,
+        signal
+      }),
     listConversations: () =>
       request<ConversationListResponse>("/v1/conversations"),
     listContext: () => request<ChatContextResponse>("/v1/chat-context"),

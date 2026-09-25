@@ -45,6 +45,7 @@ export async function extractPdfAttachmentText(buffer: ArrayBuffer): Promise<str
   }).promise;
   try {
     const pages: string[] = [];
+    let needsOcr = false;
     for (let pageNumber = 1; pageNumber <= pdf.numPages; pageNumber += 1) {
       const page = await pdf.getPage(pageNumber);
       const content = await page.getTextContent();
@@ -55,7 +56,9 @@ export async function extractPdfAttachmentText(buffer: ArrayBuffer): Promise<str
         .join("")
         .trim();
       if (pageText) pages.push(pageText);
+      else needsOcr = true;
     }
+    if (needsOcr || !pages.length) throw new Error("PDF_NEEDS_OCR");
     const truncated = truncateToUtf8Bytes(pages.join("\n\n"), MAX_PDF_TEXT_BYTES);
     return truncated.truncated
       ? `${truncated.text}\n\n（附件内容过长，超出部分已截断）`

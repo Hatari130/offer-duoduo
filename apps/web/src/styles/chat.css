@@ -645,6 +645,26 @@
   border-radius: 50%;
 }
 
+.composer-attachment-help,
+.composer-attachment-progress {
+  margin: 0.4rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+.composer-attachment-progress:empty { margin: 0; }
+
+.composer-cancel-upload {
+  min-height: 2rem;
+  padding: 0.25rem 0.5rem;
+  color: var(--of-text);
+  background: var(--of-surface-muted);
+  border: 1px solid var(--of-line);
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
 .recommendation-section {
   width: 100%;
   max-width: 58rem;

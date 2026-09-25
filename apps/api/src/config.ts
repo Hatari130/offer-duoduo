@@ -34,6 +34,9 @@ export interface ApiConfig {
   aiApiKey?: string;
   aiBaseUrl: string;
   aiModel: string;
+  paddleOcrToken?: string;
+  paddleOcrJobUrl: string;
+  paddleOcrModel: string;
   demoStreamDelayMs: number;
   interviewAsrProvider: "bcut" | "disabled";
   ffmpegPath: string;
@@ -100,6 +103,9 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,
     aiBaseUrl: (env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
     aiModel: env.AI_MODEL || "deepseek-chat",
+    paddleOcrToken: env.PADDLE_OCR_TOKEN?.trim() || undefined,
+    paddleOcrJobUrl: env.PADDLE_OCR_JOB_URL?.trim() || "https://paddleocr.aistudio-app.com/api/v2/ocr/jobs",
+    paddleOcrModel: env.PADDLE_OCR_MODEL?.trim() || "PaddleOCR-VL-1.6",
     demoStreamDelayMs: positiveNumber(env.DEMO_STREAM_DELAY_MS, 18),
     interviewAsrProvider:
       env.INTERVIEW_ASR_PROVIDER?.trim().toLowerCase() === "disabled" ? "disabled" : "bcut",

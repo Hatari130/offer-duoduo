@@ -1,8 +1,10 @@
-import { useLayoutEffect, useRef, useState, type ChangeEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, type KeyboardEvent, type ReactNode } from "react";
 import type { ChatAttachment } from "@offerflow/domain";
-import { ArrowUp, FileText, LoaderCircle, Paperclip, Square, X } from "lucide-react";
+import { ArrowUp, FileText, Image, LoaderCircle, Paperclip, Square, X } from "lucide-react";
 import { createUuid } from "../../app/id";
-import { extractPdfAttachmentText, MAX_PDF_ATTACHMENT_BYTES } from "./pdfAttachment";
+import { extractPdfAttachmentText } from "./pdfAttachment";
+import { CHAT_FILE_ACCEPT, extractedAttachment, validateAttachmentFile } from "./attachments";
+import { MAX_CHAT_ATTACHMENTS } from "@offerflow/contracts";
 
 interface ChatComposerProps {
   value: string;
@@ -14,6 +16,8 @@ interface ChatComposerProps {
   onAttachmentsChange: (attachments: ChatAttachment[]) => void;
   onAttachmentRequest?: () => boolean;
   onAttachmentError?: (message: string) => void;
+  onRecognizeFile: (file: File, signal: AbortSignal) => Promise<{ text: string }>;
+  onProcessingChange: (processing: boolean) => void;
   onSubmit: () => void;
   onStop: () => void;
 }
@@ -36,59 +40,82 @@ export function ChatComposer({
   onAttachmentsChange,
   onAttachmentRequest,
   onAttachmentError,
+  onRecognizeFile,
+  onProcessingChange,
   onSubmit,
   onStop
 }: ChatComposerProps) {
   const fileRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [parsing, setParsing] = useState(false);
+  const [progress, setProgress] = useState("");
+  const processingRef = useRef<AbortController>();
+
+  useEffect(() => () => {
+    processingRef.current?.abort();
+    onProcessingChange(false);
+  }, [onProcessingChange]);
+
+  useEffect(() => {
+    if (!attachments.length && !processingRef.current) setProgress("");
+  }, [attachments.length]);
 
   useLayoutEffect(() => {
     if (textareaRef.current) fitTextarea(textareaRef.current);
   }, [value]);
 
-  const addFiles = async (event: ChangeEvent<HTMLInputElement>) => {
-    const files = [...(event.target.files ?? [])].slice(0, 2 - attachments.length);
-    event.target.value = "";
-    const invalid = files.find((file) =>
-      /\.pdf$/i.test(file.name)
-        ? file.size > MAX_PDF_ATTACHMENT_BYTES
-        : !/\.(?:txt|md)$/i.test(file.name) || file.size > 200_000
-    );
-    if (invalid) {
-      onAttachmentError?.("请选择不超过 200 KB 的 TXT / Markdown，或不超过 8 MB 的 PDF 文件。");
+  const addFiles = async (files: File[]) => {
+    if (!files.length || processingRef.current || streaming) return;
+    if (onAttachmentRequest && !onAttachmentRequest()) return;
+    if (files.length + attachments.length > MAX_CHAT_ATTACHMENTS) {
+      onAttachmentError?.("每条消息最多添加 2 个附件，请移除一个后再试。");
       return;
     }
+    const controller = new AbortController();
+    processingRef.current = controller;
     setParsing(true);
+    onProcessingChange(true);
+    onAttachmentError?.("");
     try {
-      const next = await Promise.all(
-        files.map(async (file): Promise<ChatAttachment> => {
-          if (/\.pdf$/i.test(file.name)) {
-            const content = await extractPdfAttachmentText(await file.arrayBuffer());
-            if (!content.trim()) throw new Error("empty-pdf");
-            return {
-              id: createUuid(),
-              name: file.name,
-              mimeType: "application/pdf",
-              size: file.size,
-              content
-            };
+      const mimeTypes = files.map(validateAttachmentFile);
+      const next: ChatAttachment[] = [];
+      for (const [index, file] of files.entries()) {
+        if (controller.signal.aborted) return;
+        const mimeType = mimeTypes[index];
+        setProgress(`正在读取「${file.name}」…`);
+        let content: string;
+        const recognize = async () => {
+          controller.signal.throwIfAborted();
+          setProgress(`正在识别「${file.name}」中的文字…`);
+          return (await onRecognizeFile(new File([file], file.name, { type: mimeType }), controller.signal)).text;
+        };
+        if (mimeType.startsWith("image/")) {
+          content = await recognize();
+        } else if (mimeType === "application/pdf") {
+          try {
+            content = await extractPdfAttachmentText(await file.arrayBuffer());
+          } catch (error) {
+            if (error instanceof Error && error.message === "PDF_NEEDS_OCR") content = await recognize();
+            else throw new Error("PDF 解析失败，请确认文件完整且未加密后重试。");
           }
-          return {
-            id: createUuid(),
-            name: file.name,
-            mimeType: /\.md$/i.test(file.name) ? "text/markdown" : "text/plain",
-            size: file.size,
-            content: await file.text()
-          };
-        })
-      );
-      onAttachmentError?.("");
+        } else {
+          content = await file.text();
+        }
+        next.push(extractedAttachment(file, mimeType, content, createUuid()));
+      }
+      if (controller.signal.aborted) return;
       onAttachmentsChange([...attachments, ...next]);
-    } catch {
-      onAttachmentError?.("PDF 解析失败，请确认文件完整未加密后重试。");
+      setProgress(`已读取 ${next.length} 个附件，可以发送了。`);
+    } catch (error) {
+      if (controller.signal.aborted) return;
+      setProgress("");
+      onAttachmentError?.(error instanceof Error ? error.message : "附件读取失败，请重试。");
     } finally {
-      setParsing(false);
+      if (processingRef.current === controller) {
+        processingRef.current = undefined;
+        if (!controller.signal.aborted) setParsing(false);
+        onProcessingChange(false);
+      }
     }
   };
 
@@ -96,21 +123,31 @@ export function ChatComposer({
     if (event.nativeEvent.isComposing) return;
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-      if (value.trim() && !streaming && !parsing) onSubmit();
+      if ((value.trim() || attachments.length) && !streaming && !processingRef.current) onSubmit();
     }
   };
 
   return (
-    <div className="composer-shell">
+    <div className="composer-shell"
+      onDragOver={(event) => {
+        if (event.dataTransfer.types.includes("Files")) event.preventDefault();
+      }}
+      onDrop={(event) => {
+        if (!event.dataTransfer.files.length) return;
+        event.preventDefault();
+        void addFiles([...event.dataTransfer.files]);
+      }}
+    >
       {attachments.length > 0 && (
         <div className="composer-attachments" aria-label="待发送附件">
           {attachments.map((attachment) => (
             <span className="attachment-chip" key={attachment.id}>
-              <FileText aria-hidden="true" size={14} />
+              {attachment.mimeType.startsWith("image/") ? <Image aria-hidden="true" size={14} /> : <FileText aria-hidden="true" size={14} />}
               <span>{attachment.name}</span>
               <button
                 type="button"
                 aria-label={`移除 ${attachment.name}`}
+                disabled={parsing || streaming}
                 onClick={() => onAttachmentsChange(attachments.filter((item) => item.id !== attachment.id))}
               >
                 <X aria-hidden="true" size={13} />
@@ -131,7 +168,18 @@ export function ChatComposer({
           onChange(event.target.value);
         }}
         onKeyDown={handleKeyDown}
-        placeholder="说说你想推进什么，也可以粘贴岗位描述。"
+        onPaste={(event) => {
+          const files = [...event.clipboardData.items]
+            .filter((item) => item.kind === "file")
+            .map((item) => item.getAsFile())
+            .filter((file): file is File => Boolean(file));
+          if (!files.length) return;
+          // Preserve ordinary text paste, including a clipboard containing both text and an image.
+          if (!event.clipboardData.getData("text/plain")) event.preventDefault();
+          void addFiles(files);
+        }}
+        aria-describedby="chat-attachment-help"
+        placeholder="说说你想推进什么，也可以粘贴岗位描述或截图。"
       />
       <div className="composer-toolbar">
         <div className="composer-material-actions">
@@ -140,26 +188,30 @@ export function ChatComposer({
             hidden
             type="file"
             multiple
-            accept=".txt,.md,.pdf,text/plain,text/markdown,application/pdf"
-            onChange={(event) => void addFiles(event)}
+            accept={CHAT_FILE_ACCEPT}
+            onChange={(event) => {
+              const files = [...(event.target.files ?? [])];
+              event.target.value = "";
+              void addFiles(files);
+            }}
           />
           <button
             className="composer-upload-button"
             type="button"
-            aria-label={parsing ? "正在解析附件" : "上传文件：TXT、Markdown 或 PDF"}
-            title={parsing ? "正在解析附件…" : "添加 TXT / Markdown（≤200 KB）或 PDF（≤8 MB）资料"}
+            aria-label="上传文件或截图"
+            title="TXT / Markdown ≤200 KB；PDF / PNG / JPG / WebP ≤8 MB，最多 2 个附件"
             onClick={() => {
               if (onAttachmentRequest && !onAttachmentRequest()) return;
               fileRef.current?.click();
             }}
-            disabled={attachments.length >= 2 || parsing}
+            disabled={attachments.length >= MAX_CHAT_ATTACHMENTS || parsing || streaming}
           >
             {parsing ? (
               <LoaderCircle className="spin" aria-hidden="true" size={18} strokeWidth={1.7} />
             ) : (
               <Paperclip aria-hidden="true" size={18} strokeWidth={1.7} />
             )}
-            <span>{parsing ? "解析中…" : "上传文件"}</span>
+            <span>上传文件</span>
           </button>
           {contextSlot}
         </div>
@@ -172,13 +224,22 @@ export function ChatComposer({
             className="composer-send"
             type="button"
             onClick={onSubmit}
-            disabled={!value.trim() || parsing}
+            disabled={(!value.trim() && !attachments.length) || parsing}
             aria-label="发送问题"
           >
             <ArrowUp aria-hidden="true" size={19} strokeWidth={2.2} />
           </button>
         )}
       </div>
+      <p id="chat-attachment-help" className="composer-attachment-help">支持文档和截图，可粘贴或拖入。仅保留提取文字，不保存原文件。</p>
+      <div className="composer-attachment-progress" role="status" aria-atomic="true">{progress}</div>
+      {parsing && <button className="composer-cancel-upload" type="button" onClick={() => {
+        processingRef.current?.abort();
+        processingRef.current = undefined;
+        setParsing(false);
+        onProcessingChange(false);
+        setProgress("已取消读取附件。");
+      }}>取消读取</button>}
     </div>
   );
 }

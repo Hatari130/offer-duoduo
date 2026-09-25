@@ -52,6 +52,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [draft, setDraft] = useState("");
   const [taskHint, setTaskHint] = useState("");
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
+  const [attachmentProcessing, setAttachmentProcessing] = useState(false);
   const [contextOptions, setContextOptions] = useState<ChatContextOption[]>([]);
   const [selectedContext, setSelectedContext] = useState<ChatContextReference[]>([]);
   const [contextLoading, setContextLoading] = useState(false);
@@ -197,8 +198,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   };
 
   const send = async (suggested?: string) => {
-    const content = (suggested ?? draft).trim();
-    if (!content || streaming) return;
+    const content = (suggested ?? draft).trim() || (attachments.length ? "请阅读附件，概括主要内容并给出建议。" : "");
+    if (!content || streaming || attachmentProcessing) return;
     if (!requireChatLogin()) {
       if (suggested) setDraft(content);
       return;
@@ -393,6 +394,9 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           <ChatComposer
             value={draft}
             attachments={attachments}
+            key={conversationId || "new"}
+            onRecognizeFile={api.chat.recognizeFile}
+            onProcessingChange={setAttachmentProcessing}
             streaming={streaming}
             contextSlot={contextPicker}
             autoFocus
@@ -466,6 +470,9 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             <ChatComposer
               value={draft}
               attachments={attachments}
+              key={conversationId || "new"}
+              onRecognizeFile={api.chat.recognizeFile}
+              onProcessingChange={setAttachmentProcessing}
               streaming={streaming}
               contextSlot={contextPicker}
               onChange={setDraft}
