@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "node --env-file=.env --experimental-transform-types --watch src/server.ts",
-    "start": "node --env-file=.env --experimental-transform-types src/server.ts",
+    "start": "node --experimental-transform-types src/server.ts",
     "db:migrate": "node --experimental-transform-types scripts/migrate.ts",
     "db:sanitize-resumes": "node --experimental-transform-types scripts/sanitize-resume-history.ts",
     "db:import-state": "node --experimental-transform-types scripts/import-state.ts",
