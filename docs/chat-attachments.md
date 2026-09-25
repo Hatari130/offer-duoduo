@@ -6,7 +6,7 @@
 
 ## 配置
 
-在 **API 服务进程**的环境变量中设置：
+在 Git 忽略的本地文件 `apps/api/.env` 中设置，之后重启 API：
 
 ```dotenv
 PADDLE_OCR_TOKEN=实际密钥
@@ -14,11 +14,7 @@ PADDLE_OCR_JOB_URL=https://paddleocr.aistudio-app.com/api/v2/ocr/jobs
 PADDLE_OCR_MODEL=PaddleOCR-VL-1.6
 ```
 
-密钥不能使用 `VITE_` 前缀，不能提交到仓库。修改后重启 API 服务。当前启动脚本不会自动加载 `.env`；使用部署平台注入变量，或在已有环境文件上通过 Node 的 `--env-file` 选项启动（从 `apps/api` 目录执行）：
-
-```sh
-node --env-file=.env --experimental-transform-types src/server.ts
-```
+`pnpm --filter @offerflow/api dev` 和 `pnpm --filter @offerflow/api start` 会自动加载此文件。生产服务可注入相同环境变量。密钥不能使用 `VITE_` 前缀，也不能提交到仓库。
 
 未配置密钥时，文字版 PDF、TXT、Markdown 仍可使用；图片和扫描 PDF 会显示明确的未配置提示。
 

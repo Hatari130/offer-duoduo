@@ -380,13 +380,6 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             <div className="chat-atmosphere__orb chat-atmosphere__orb--primary" />
             <div className="chat-atmosphere__orb chat-atmosphere__orb--secondary" />
           </div>
-          <div className="companion-hero-badge">
-            <CompanionAvatar showPresence decorative />
-            <span className="companion-hero-badge__label">
-              <span className="companion-hero-badge__dot" aria-hidden="true" />
-              <strong>{DEFAULT_CHAT_COMPANION.name}</strong> · {DEFAULT_CHAT_COMPANION.role}
-            </span>
-          </div>
           <h1 tabIndex={-1}>今天，我们先推进哪一步？</h1>
           <p>
             找岗位、改简历、练面试。小鲤陪你从眼前的一小步开始。
@@ -413,7 +406,6 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
                 <span className="recommendation-label">从一件具体的事开始</span>
               </div>
             </header>
-            <p className="task-entry-hint">选一个方向，补充后再发送</p>
             <div className="recommendation-grid">
               {recommendationCards.map((card) => {
                 const Icon = card.icon;

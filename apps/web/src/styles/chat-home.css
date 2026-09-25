@@ -7,7 +7,6 @@
 }
 .chat-welcome { max-width: 64rem; padding-block-start: clamp(3rem, 9vh, 6rem); }
 .chat-welcome::before, .chat-welcome .chat-atmosphere { display: none; }
-.chat-welcome .companion-hero-badge { box-shadow: none; background: transparent; border-color: transparent; margin-block-end: 1rem; }
 .chat-welcome h1 {
   color: var(--of-text);
   font-size: clamp(1.8rem, 2.6vw, 2.65rem);
@@ -49,9 +48,8 @@ html[data-theme="dark"] .chat-welcome h1 { text-shadow: none; }
 .thread-composer .composer-material-actions .chat-context-popover { inset: auto auto calc(100% + 0.8rem) 0; }
 .composer-send { flex-shrink: 0; }
 .chat-welcome .recommendation-section { margin-block-start: 2.1rem; text-align: start; }
-.chat-welcome .recommendation-section > header { margin: 0; padding: 0; }
+.chat-welcome .recommendation-section > header { margin: 0 0 0.85rem; padding: 0; }
 .chat-welcome .recommendation-label { color: var(--of-text); font-size: 0.88rem; font-weight: 600; }
-.task-entry-hint { margin: 0.4rem 0 1rem; color: var(--of-text-subtle); font-size: 0.8rem; }
 .chat-welcome .recommendation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.75rem; margin: 0; padding: 0; overflow: visible; }
 .chat-task-card {
   display: flex; align-items: center; gap: 0.9rem; min-width: 0; padding: 1.2rem;
