@@ -1,0 +1,425 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校招信息速递 · JobKoI 视觉稿</title>
+<style>
+  /* ---- Tokens: one accent, warm neutrals, 6-step type scale, 3 weights ---- */
+  :root {
+    --paper: #f6f2ea;
+    --paper-sunk: #efe9de;
+    --surface: #fbf9f4;
+    --ink: #1d1b18;
+    --ink-2: #534e46;
+    --ink-3: #736c61;
+    --line: #e4ddd0;
+    --line-strong: #d2c9b8;
+    --accent: #b0502a;
+    --accent-soft: #f2e2d6;
+    --focus: #b0502a;
+
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+    --sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+
+    --t-xs: 0.75rem;   /* 12 meta */
+    --t-sm: 0.8125rem; /* 13 secondary */
+    --t-md: 0.875rem;  /* 14 body */
+    --t-lg: 1rem;      /* 16 row title */
+    --t-xl: 1.25rem;   /* 20 section */
+    --t-display: 2.5rem; /* 40 page title */
+
+    --r-sm: 6px;
+    --r-md: 10px;
+  }
+  [data-theme="dark"] {
+    --paper: #171513;
+    --paper-sunk: #1d1b18;
+    --surface: #211e1b;
+    --ink: #ede7dc;
+    --ink-2: #b8b0a3;
+    --ink-3: #8e877b;
+    --line: #2d2924;
+    --line-strong: #3d3831;
+    --accent: #e27d52;
+    --accent-soft: #3a2519;
+    --focus: #e27d52;
+  }
+
+  * { box-sizing: border-box; }
+  html { color-scheme: light; }
+  [data-theme="dark"] { color-scheme: dark; }
+  body {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: var(--t-md);
+    line-height: 1.6;
+    color: var(--ink);
+    background: var(--paper);
+    -webkit-font-smoothing: antialiased;
+    font-feature-settings: "tnum" 1;
+  }
+  a { color: inherit; text-decoration: none; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+  :focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+  svg { display: block; }
+
+  /* ---- Shell ---- */
+  .shell { display: grid; grid-template-columns: 232px 1fr; min-height: 100vh; }
+  .sidebar {
+    position: sticky; top: 0; height: 100vh;
+    display: flex; flex-direction: column;
+    padding: 24px 16px 16px;
+    background: var(--paper-sunk);
+    border-right: 1px solid var(--line);
+  }
+  .brand { display: flex; align-items: baseline; gap: 8px; padding: 0 10px 28px; }
+  .brand-mark { font-family: var(--serif); font-size: 1.375rem; font-weight: 700; letter-spacing: 0.01em; }
+  .brand-mark span { color: var(--accent); }
+  .new-chat {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 9px 12px; margin-bottom: 20px;
+    border: 1px solid var(--line-strong); border-radius: var(--r-md);
+    font-weight: 500; background: var(--surface);
+  }
+  .new-chat kbd { font-family: var(--sans); font-size: var(--t-xs); color: var(--ink-3); }
+  .nav { display: grid; gap: 2px; }
+  .nav a {
+    position: relative;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 8px 12px; border-radius: var(--r-sm);
+    color: var(--ink-2);
+  }
+  .nav a:hover { color: var(--ink); background: color-mix(in srgb, var(--ink) 5%, transparent); }
+  .nav a[aria-current="page"] { color: var(--ink); font-weight: 600; background: var(--surface); box-shadow: 0 0 0 1px var(--line); }
+  .nav a[aria-current="page"]::before {
+    content: ""; position: absolute; left: -16px; top: 10px; bottom: 10px; width: 2px; background: var(--accent); border-radius: 2px;
+  }
+  .nav small { font-size: var(--t-xs); color: var(--ink-3); font-weight: 400; }
+  .side-label { margin: 28px 12px 8px; font-size: var(--t-xs); color: var(--ink-3); }
+  .recent { display: grid; gap: 2px; }
+  .recent a { padding: 6px 12px; color: var(--ink-2); font-size: var(--t-sm); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-radius: var(--r-sm); }
+  .recent a:hover { background: color-mix(in srgb, var(--ink) 5%, transparent); }
+  .side-foot { margin-top: auto; display: grid; gap: 12px; }
+  .ext-link { display: block; padding: 12px; border-radius: var(--r-md); background: var(--surface); border: 1px solid var(--line); font-size: var(--t-sm); color: var(--ink-2); }
+  .ext-link strong { display: block; color: var(--ink); font-weight: 600; }
+  .account { display: flex; align-items: center; gap: 10px; padding: 4px 8px; font-size: var(--t-sm); }
+  .avatar { width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; background: var(--ink); color: var(--paper); font-family: var(--serif); font-weight: 700; font-size: var(--t-sm); }
+  .account span { color: var(--ink-3); font-size: var(--t-xs); display: block; line-height: 1.3; }
+
+  /* ---- Main ---- */
+  main { min-width: 0; padding: 0 48px 80px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  .topbar { display: flex; justify-content: space-between; align-items: center; height: 64px; font-size: var(--t-sm); color: var(--ink-3); }
+  .crumbs { display: flex; gap: 8px; }
+  .crumbs a:hover { color: var(--ink); }
+  .utilities { display: flex; gap: 4px; }
+  .icon-btn { display: grid; place-items: center; width: 34px; height: 34px; border-radius: var(--r-sm); color: var(--ink-2); }
+  .icon-btn:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+  .text-btn { padding: 0 10px; height: 34px; border-radius: var(--r-sm); color: var(--ink-2); font-size: var(--t-sm); }
+  .text-btn:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+
+  .masthead { padding: 40px 0 36px; border-bottom: 1px solid var(--line); }
+  .eyebrow { font-size: var(--t-xs); letter-spacing: 0.08em; color: var(--accent); font-weight: 600; margin: 0 0 12px; }
+  h1 { font-family: var(--serif); font-weight: 700; font-size: var(--t-display); line-height: 1.2; letter-spacing: 0.01em; margin: 0; }
+  .lede { margin: 14px 0 0; max-width: 40em; font-size: var(--t-lg); color: var(--ink-2); }
+  .lede b { font-weight: 600; color: var(--ink); font-variant-numeric: tabular-nums; }
+  .lede .urgent { color: var(--accent); }
+
+  /* ---- Urgent module: the only place the accent gets volume ---- */
+  .due { padding: 28px 0 32px; border-bottom: 1px solid var(--line); }
+  .section-head { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 16px; }
+  h2 { font-family: var(--serif); font-size: var(--t-xl); font-weight: 700; margin: 0; }
+  .section-head a { font-size: var(--t-sm); color: var(--ink-3); }
+  .section-head a:hover { color: var(--ink); }
+  .due-list { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .due-card {
+    display: grid; gap: 4px;
+    padding: 16px 18px 18px; border-radius: var(--r-md);
+    background: var(--surface); border: 1px solid var(--line);
+    transition: border-color 160ms ease, transform 160ms ease;
+  }
+  .due-card:hover { border-color: var(--line-strong); transform: translateY(-1px); }
+  .due-card .due-count { font-family: var(--serif); font-size: 1.75rem; line-height: 1.1; font-weight: 700; color: var(--accent); }
+  .due-card .due-count small { color: inherit; font-family: var(--sans); font-size: var(--t-sm); font-weight: 500; margin-left: 2px; }
+  .due-card strong { font-weight: 600; margin-top: 8px; }
+  .due-card span { color: var(--ink-3); font-size: var(--t-sm); }
+
+  /* ---- Filters ---- */
+  .controls { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding: 28px 0 8px; }
+  .tabs { display: flex; gap: 24px; }
+  .tab { position: relative; padding: 6px 0; color: var(--ink-3); font-weight: 500; }
+  .tab:hover { color: var(--ink); }
+  .tab[aria-selected="true"] { color: var(--ink); font-weight: 600; }
+  .tab[aria-selected="true"]::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 2px; background: var(--ink); }
+  .tab span { margin-left: 6px; font-size: var(--t-xs); color: var(--ink-3); font-weight: 400; }
+  .filters { display: flex; align-items: center; gap: 4px; }
+  .search {
+    display: flex; align-items: center; gap: 8px; width: 260px; height: 36px; padding: 0 12px; margin-right: 8px;
+    border: 1px solid var(--line-strong); border-radius: var(--r-sm); background: var(--surface); color: var(--ink-3);
+  }
+  .search input { flex: 1; min-width: 0; border: 0; outline: 0; background: none; font: inherit; color: var(--ink); }
+  .search input::placeholder { color: var(--ink-3); }
+  .search:focus-within { border-color: var(--ink-2); }
+  .filter { white-space: nowrap; flex: 0 0 auto; display: flex; align-items: center; gap: 4px; height: 36px; padding: 0 10px; border-radius: var(--r-sm); color: var(--ink-2); font-size: var(--t-sm); }
+  .filter:hover { background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink); }
+  .filter.is-set { color: var(--ink); font-weight: 600; }
+
+  /* ---- List ---- */
+  .list { margin-top: 8px; }
+  .list-head, .row {
+    display: grid;
+    grid-template-columns: minmax(0, 2.4fr) minmax(0, 1.3fr) minmax(0, 1.1fr) 104px 128px;
+    gap: 24px; align-items: center;
+  }
+  .list-head { padding: 12px 0; font-size: var(--t-xs); color: var(--ink-3); border-bottom: 1px solid var(--line); }
+  .list-head span:last-child { text-align: right; }
+  .row { padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .row:hover { background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--ink) 3%, transparent) 8%, color-mix(in srgb, var(--ink) 3%, transparent) 92%, transparent); }
+  .co { display: flex; gap: 14px; align-items: flex-start; min-width: 0; }
+  .mono {
+    flex: 0 0 auto; width: 40px; height: 40px; border-radius: var(--r-sm);
+    display: grid; place-items: center;
+    font-family: var(--serif); font-weight: 700; font-size: var(--t-lg);
+    background: var(--surface); border: 1px solid var(--line); color: var(--ink-2);
+  }
+  .co-text { min-width: 0; }
+  .co-name { display: flex; align-items: baseline; gap: 10px; font-size: var(--t-lg); font-weight: 600; line-height: 1.4; }
+  .flag { font-size: var(--t-xs); font-weight: 500; color: var(--accent); }
+  .roles { color: var(--ink-2); font-size: var(--t-sm); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .meta { color: var(--ink-2); font-size: var(--t-sm); line-height: 1.5; }
+  .meta span { display: block; color: var(--ink-3); font-size: var(--t-xs); }
+  .deadline { font-size: var(--t-sm); color: var(--ink-3); }
+  .deadline b { display: block; font-weight: 600; color: var(--ink); }
+  .deadline.is-urgent b { color: var(--accent); }
+  .actions { display: flex; justify-content: flex-end; align-items: center; gap: 4px; }
+  .link-quiet { padding: 6px 8px; border-radius: var(--r-sm); color: var(--ink-3); font-size: var(--t-sm); opacity: 0; transition: opacity 120ms ease; }
+  .row:hover .link-quiet, .row:focus-within .link-quiet { opacity: 1; }
+  .link-quiet:hover { color: var(--ink); }
+  .apply {
+    white-space: nowrap;
+    display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 14px;
+    border: 1px solid var(--line-strong); border-radius: var(--r-sm);
+    font-size: var(--t-sm); font-weight: 600; background: var(--surface);
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .row:hover .apply { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+  .row.is-closed { color: var(--ink-3); }
+  .row.is-closed .co-name, .row.is-closed .meta, .row.is-closed .roles { color: var(--ink-3); }
+  .row.is-closed .apply { color: var(--ink-3); background: none; border-style: dashed; }
+  .row.is-closed:hover .apply { background: none; color: var(--ink-2); border-color: var(--line-strong); }
+
+  .more { display: flex; justify-content: center; padding: 32px 0 0; }
+  .more button { color: var(--ink-2); font-size: var(--t-sm); padding: 8px 16px; border-radius: var(--r-sm); border: 1px solid var(--line-strong); }
+  .more button:hover { color: var(--ink); border-color: var(--ink-2); }
+  .footnote { margin-top: 40px; font-size: var(--t-xs); color: var(--ink-3); text-align: center; }
+
+  /* ---- Mobile ---- */
+  .mobile-bar, .tabbar { display: none; }
+  @media (max-width: 960px) {
+    .list-head { display: none; }
+    .row { grid-template-columns: 1fr auto; grid-template-areas: "co dl" "meta act"; gap: 10px 16px; }
+    .row > .co { grid-area: co; }
+    .row > .meta:nth-of-type(2) { display: none; }
+    .row > .meta:nth-of-type(3) { grid-area: meta; padding-left: 54px; }
+    .row > .deadline { grid-area: dl; text-align: right; }
+    .row > .actions { grid-area: act; }
+    .link-quiet { display: none; }
+  }
+  @media (max-width: 720px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    main { padding: 0 18px 96px; }
+    .topbar { display: none; }
+    .mobile-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      position: sticky; top: 0; z-index: 10; height: 56px; margin: 0 -18px; padding: 0 12px;
+      background: color-mix(in srgb, var(--paper) 88%, transparent); backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .mobile-bar .brand-mark { font-size: 1.125rem; }
+    .masthead { padding: 24px 0 20px; }
+    h1 { font-size: 1.875rem; }
+    .lede { font-size: var(--t-md); }
+    .due { padding: 20px 0 24px; }
+    .due-list { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 72%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 4px; scrollbar-width: none; }
+    .due-card { scroll-snap-align: start; }
+    .controls { padding-top: 20px; }
+    .filters { width: 100%; overflow-x: auto; scrollbar-width: none; }
+    .search { width: auto; flex: 1 0 180px; }
+    .row > .meta:nth-of-type(3) { padding-left: 0; }
+    .row { grid-template-areas: "co co" "meta dl" "act act"; }
+    .row > .actions { justify-content: stretch; }
+    .apply { flex: 1; justify-content: center; }
+    .tabbar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      position: fixed; left: 0; right: 0; bottom: 0; z-index: 10;
+      padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+      background: color-mix(in srgb, var(--paper) 92%, transparent); backdrop-filter: blur(12px);
+      border-top: 1px solid var(--line);
+    }
+    .tabbar a { display: grid; justify-items: center; gap: 2px; font-size: 0.6875rem; color: var(--ink-3); }
+    .tabbar a[aria-current="page"] { color: var(--ink); font-weight: 600; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="sidebar" aria-label="导航">
+    <div class="brand"><span class="brand-mark">JobKoI<span>.</span></span></div>
+    <a class="new-chat" href="#">新对话 <kbd>Ctrl K</kbd></a>
+    <nav class="nav" aria-label="功能">
+      <a href="#">求职陪跑 <small>内测</small></a>
+      <a href="#" aria-current="page">校招信息</a>
+      <a href="#">公司直达</a>
+      <a href="#">投递管理</a>
+      <a href="#">简历 <small>内测</small></a>
+      <a href="#">笔试练习</a>
+    </nav>
+    <p class="side-label">最近对话</p>
+    <div class="recent">
+      <a href="#">产品经理群面怎么准备</a>
+      <a href="#">把实习经历改成 STAR</a>
+      <a href="#">上海新能源车企校招</a>
+    </div>
+    <div class="side-foot">
+      <a class="ext-link" href="#"><strong>安装浏览器插件</strong>网申表单一键填写，进度自动回到这里</a>
+      <div class="account"><div class="avatar">林</div><div>林知夏<span>已同步 · 2 台设备</span></div></div>
+    </div>
+  </aside>
+
+  <main>
+    <div class="mobile-bar">
+      <button class="icon-btn" aria-label="打开导航"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h10"/></svg></button>
+      <span class="brand-mark">JobKoI<span style="color:var(--accent)">.</span></span>
+      <button class="icon-btn js-theme" aria-label="切换深浅色"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+    </div>
+
+    <div class="wrap">
+      <div class="topbar">
+        <nav class="crumbs" aria-label="位置"><a href="#">主页</a><span aria-hidden="true">/</span><span>校招信息</span></nav>
+        <div class="utilities">
+          <button class="text-btn">反馈</button>
+          <button class="icon-btn" aria-label="帮助"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.3M12 17h.01"/></svg></button>
+          <button class="icon-btn js-theme" aria-label="切换深浅色"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg></button>
+        </div>
+      </div>
+
+      <header class="masthead">
+        <p class="eyebrow">2027 届秋招 · 9 月 26 日 08:00 更新</p>
+        <h1>校招信息速递</h1>
+        <p class="lede">今天新发布 <b>83</b> 条，共 <b>7,618</b> 条正在开放投递，其中 <b class="urgent">8 条</b>将在 3 天内截止。</p>
+      </header>
+
+      <section class="due" aria-labelledby="due-title">
+        <div class="section-head">
+          <h2 id="due-title">别错过</h2>
+          <a href="#">查看全部 8 条 →</a>
+        </div>
+        <div class="due-list">
+          <a class="due-card" href="#">
+            <span class="due-count">1<small>天</small></span>
+            <strong>招商银行信用卡中心</strong>
+            <span>金融科技 · 数据分析 · 9月27日 24:00 截止</span>
+          </a>
+          <a class="due-card" href="#">
+            <span class="due-count">2<small>天</small></span>
+            <strong>米哈游</strong>
+            <span>程序 · 美术 · 策划 · 9月28日截止</span>
+          </a>
+          <a class="due-card" href="#">
+            <span class="due-count">3<small>天</small></span>
+            <strong>蔚来</strong>
+            <span>软件 · 硬件 · 设计 · 9月29日截止</span>
+          </a>
+        </div>
+      </section>
+
+      <div class="controls">
+        <div class="tabs" role="tablist" aria-label="机会范围">
+          <button class="tab" role="tab" aria-selected="true">全部<span>8,816</span></button>
+          <button class="tab" role="tab" aria-selected="false">今日新发布<span>83</span></button>
+          <button class="tab" role="tab" aria-selected="false">即将截止<span>8</span></button>
+        </div>
+        <div class="filters">
+          <label class="search">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+            <input type="search" placeholder="公司、岗位或城市" aria-label="搜索">
+          </label>
+          <button class="filter is-set">上海 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+          <button class="filter">行业 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+          <button class="filter">企业性质 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+          <button class="filter">更多 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="m6 9 6 6 6-6"/></svg></button>
+        </div>
+      </div>
+
+      <div class="list" role="table" aria-label="校招机会">
+        <div class="list-head" role="row">
+          <span role="columnheader">公司与岗位</span>
+          <span role="columnheader">行业</span>
+          <span role="columnheader">城市</span>
+          <span role="columnheader">截止</span>
+          <span role="columnheader"></span>
+        </div>
+        <div id="rows"></div>
+      </div>
+
+      <div class="more"><button>加载更多</button></div>
+      <p class="footnote">信息来自企业官方公告，投递前请以官网为准。</p>
+    </div>
+
+    <nav class="tabbar" aria-label="主要功能">
+      <a href="#">陪跑</a>
+      <a href="#" aria-current="page">机会</a>
+      <a href="#">投递</a>
+      <a href="#">我的</a>
+    </nav>
+  </main>
+</div>
+
+<script>
+  const rows = [
+    ["中", "中国二十二冶", "设计研发 · 技术 · 工程管理", "房地产与建筑", "央企", "唐山、北京 等 5 城", "招满为止", "", "HC 多"],
+    ["招", "招商银行信用卡中心", "金融科技 · 数据分析", "银行与金融", "国企", "上海、深圳", "9月27日", 1, ""],
+    ["米", "米哈游", "程序 · 美术 · 策划", "游戏", "民企", "上海", "9月28日", 2, ""],
+    ["九", "九元航空", "机务学员 · 签派学员", "航空与物流", "民企", "广州", "9月30日", 4, ""],
+    ["蔚", "蔚来", "软件 · 硬件 · 设计", "汽车与新能源", "民企", "上海、合肥", "9月29日", 3, ""],
+    ["光", "光轮智能", "产品 · 工程", "智能制造", "民企", "北京、上海", "招满为止", "", "行业独角兽"],
+    ["云", "云道智能", "求解算法 · 仿真应用", "工业软件", "民企", "北京、上海", "招满为止", "", ""],
+    ["宁", "宁德时代", "研发 · 工艺 · 质量", "汽车与新能源", "民企", "宁德、常州、上海", "10月8日", 12, ""],
+    ["华", "华东医药", "营销 · 研发", "医药与医疗", "国企", "全国", "10月15日", 19, ""],
+    ["国", "国家电网", "电工类 · 通信类", "能源", "央企", "全国", "招满为止", "", ""],
+    ["小", "小红书", "产品 · 技术 · 运营", "互联网", "民企", "上海、北京", "未开放", "closed", ""]
+  ];
+  document.getElementById("rows").innerHTML = rows.map(([m, name, roles, ind, kind, city, dl, days, flag]) => {
+    const closed = days === "closed";
+    const urgent = typeof days === "number" && days <= 3;
+    const dlHtml = closed
+      ? `<b>暂未开放</b>去年 9 月中旬`
+      : typeof days === "number"
+        ? `<b>${urgent ? `剩 ${days} 天` : dl}</b>${urgent ? dl + "截止" : "截止"}`
+        : `<b>${dl}</b>滚动招聘`;
+    return `<div class="row${closed ? " is-closed" : ""}" role="row">
+      <div class="co" role="cell"><span class="mono" aria-hidden="true">${m}</span><div class="co-text">
+        <div class="co-name">${name}${flag ? `<span class="flag">${flag}</span>` : ""}</div>
+        <div class="roles">${roles}</div></div></div>
+      <div class="meta" role="cell">${ind}<span>${kind} · 秋招 · 2027 届</span></div>
+      <div class="meta" role="cell">${city}</div>
+      <div class="deadline${urgent ? " is-urgent" : ""}" role="cell">${dlHtml}</div>
+      <div class="actions" role="cell"><a class="link-quiet" href="#">查企业</a><a class="apply" href="#">${closed ? "开放时提醒我" : "去投递 →"}</a></div>
+    </div>`;
+  }).join("");
+
+  document.querySelectorAll(".js-theme").forEach((btn) => btn.addEventListener("click", () => {
+    const root = document.documentElement;
+    root.dataset.theme = root.dataset.theme === "dark" ? "light" : "dark";
+  }));
+  const q = new URLSearchParams(location.search).get("theme");
+  if (q) document.documentElement.dataset.theme = q;
+</script>
+</body>
+</html>

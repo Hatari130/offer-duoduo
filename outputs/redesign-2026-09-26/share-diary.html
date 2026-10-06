@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>分享我的秋招记录 · JobKoI 视觉稿</title>
+<style>
+  /* App chrome tokens: apps/web/src/styles/shell.css */
+  :root {
+    --of-canvas: #f5f7fb; --of-surface: #fff; --of-surface-muted: #f3f5f9; --of-surface-sunken: #edf0f6;
+    --of-text: #252833; --of-text-strong: #161922; --of-text-muted: #535b6d; --of-text-subtle: #687187;
+    --of-line: #e3e7ef; --of-line-strong: #cbd2de;
+    --of-brand-50: #eef1ff; --of-brand-200: #cbd4ff; --of-brand-600: #3f56b8; --of-brand-700: #34499f;
+    --of-success: #3d684d;
+    --of-shadow-button: 0 1px 1px rgb(35 45 75 / 0.1), 0 6px 14px -10px rgb(45 61 117 / 0.34);
+    --of-shadow-dialog: 0 0 0 1px rgb(30 39 64 / 0.06), 0 30px 84px -30px rgb(37 47 80 / 0.32);
+    --sans: "Inter", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", serif;
+    /* Card palette: login-page warmth + logo orange */
+    --c-paper: #f6efe3; --c-paper-2: #ece2d1; --c-ink: #1f1b16; --c-ink-2: #5b5247; --c-ink-3: #8a7f71;
+    --c-koi: #e0663a; --c-koi-2: #eb9a74; --c-koi-3: #f2c8b1; --c-line: #e0d4c1; --c-gold: #c28a2c;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--sans); font-size: 14px; line-height: 1.55; color: var(--of-text); background: var(--of-canvas); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+  :focus-visible { outline: 2px solid var(--of-brand-600); outline-offset: 2px; border-radius: 6px; }
+  svg.i { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex: 0 0 auto; }
+
+  /* ---------- Host page ---------- */
+  .page { max-width: 1100px; margin: 0 auto; padding: 48px 40px; }
+  .page-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; }
+  .page-head h1 { margin: 0; font-size: 32px; font-weight: 700; color: var(--of-text-strong); }
+  .page-head p { margin: 6px 0 0; color: var(--of-text-muted); }
+  .head-actions { display: flex; gap: 8px; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 40px; padding: 0 16px; border-radius: 10px; font-weight: 600; font-size: 14px; white-space: nowrap; transition: background 120ms ease, border-color 120ms ease; }
+  .btn--ghost { border: 1px solid var(--of-line); background: var(--of-surface); color: var(--of-text-muted); }
+  .btn--ghost:hover { border-color: var(--of-line-strong); color: var(--of-text-strong); }
+  .btn--primary { background: var(--of-brand-600); color: #fff; box-shadow: var(--of-shadow-button); }
+  .btn--primary:hover { background: var(--of-brand-700); }
+  .btn--share { border: 1px solid var(--of-brand-200); background: var(--of-brand-50); color: var(--of-brand-700); }
+  .btn--share:hover { border-color: var(--of-brand-600); }
+  .fake-table { margin-top: 28px; display: grid; gap: 10px; }
+  .fake-table div { height: 60px; border-radius: 12px; background: #fff; border: 1px solid var(--of-line); }
+
+  /* ---------- Dialog ---------- */
+  .scrim { position: fixed; inset: 0; z-index: 10; display: none; place-items: center; padding: 24px; background: rgb(22 25 34 / 0.45); }
+  .scrim.is-open { display: grid; }
+  .dialog { width: min(440px, 100%); max-height: calc(100vh - 48px); display: grid; grid-template-columns: 1fr; border-radius: 20px; background: var(--of-surface); box-shadow: var(--of-shadow-dialog); overflow: hidden; }
+  .stage { position: relative; display: grid; place-items: center; padding: 32px 32px 24px; background: var(--of-surface-sunken); min-height: 536px; }
+  .bar { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; padding: 14px 16px 16px; background: var(--of-surface); transition: opacity 200ms ease; }
+  .bar .btn { height: 44px; border-radius: 12px; }
+  .bar.is-loading { opacity: 0.4; pointer-events: none; }
+
+  /* Generating */
+  .gen { position: absolute; inset: 0; display: grid; place-items: center; background: var(--of-surface-sunken); transition: opacity 260ms ease; }
+  .gen.is-done { opacity: 0; pointer-events: none; }
+  .gen-box { display: grid; gap: 10px; width: 220px; }
+  .gen-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--of-text-subtle); opacity: 0.45; transition: opacity 200ms ease, color 200ms ease; }
+  .gen-step.is-active { opacity: 1; color: var(--of-text-strong); }
+  .gen-step.is-done { opacity: 1; color: var(--of-success); }
+  .gen-dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid currentColor; display: grid; place-items: center; }
+  .gen-step.is-active .gen-dot { border-top-color: transparent; animation: spin 700ms linear infinite; }
+  .gen-step.is-done .gen-dot { background: var(--of-success); border-color: var(--of-success); }
+  .gen-step.is-done .gen-dot::after { content: "✓"; font-size: 11px; font-weight: 700; color: #fff; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ================= Record card (360×480 → 1080×1440) ================= */
+  .card { position: relative; width: 360px; height: 480px; overflow: hidden; border-radius: 14px; background: var(--c-paper); color: var(--c-ink); box-shadow: 0 24px 60px -24px rgb(31 27 22 / 0.45); opacity: 0; transform: translateY(8px) scale(0.985); transition: opacity 360ms ease, transform 360ms ease; }
+  .card.is-in { opacity: 1; transform: none; }
+  .card::before { content: ""; position: absolute; inset: 0; pointer-events: none; opacity: 0.35; mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 160 160' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); }
+  .ci { position: relative; height: 100%; padding: 22px 24px 18px; display: flex; flex-direction: column; }
+  .c-eyebrow { font-size: 10px; letter-spacing: 0.16em; font-weight: 700; color: var(--c-koi); }
+  .c-top { display: flex; align-items: flex-end; justify-content: space-between; margin-top: 4px; padding-bottom: 12px; border-bottom: 1px solid var(--c-line); }
+  .day { font-family: var(--serif); font-size: 56px; line-height: 0.95; font-weight: 700; letter-spacing: -0.02em; }
+  .day small { font-size: 15px; letter-spacing: 0.1em; color: var(--c-koi); margin-right: 4px; vertical-align: 26px; }
+  .who { text-align: right; font-size: 11px; line-height: 1.5; color: var(--c-ink-2); padding-bottom: 4px; }
+  .who b { display: block; font-family: var(--serif); font-size: 14px; color: var(--c-ink); }
+
+  /* Funnel */
+  .funnel { display: grid; gap: 6px; margin-top: 12px; }
+  .f-row { display: grid; grid-template-columns: 40px 1fr 40px; gap: 4px 10px; align-items: center; }
+  .f-label { font-size: 11px; color: var(--c-ink-2); }
+  .f-track { position: relative; height: 14px; border-radius: 5px; background: var(--c-paper-2); overflow: hidden; }
+  .f-bar { position: absolute; inset: 0 auto 0 0; border-radius: 5px; }
+  .f-names { grid-column: 2 / 3; margin-top: -5px; font-size: 9.5px; color: var(--c-ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .f-num { font-family: var(--serif); font-size: 20px; font-weight: 700; line-height: 1; text-align: right; }
+  .f-row.is-gate .f-num { color: var(--c-gold); font-size: 13px; }
+
+  /* Calendar */
+  .cal-head { display: flex; justify-content: space-between; margin-top: 12px; font-size: 10px; color: var(--c-ink-3); }
+  .cal { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 6px; }
+  .cal b { font-weight: 500; font-size: 9px; text-align: center; color: var(--c-ink-3); }
+  .cal i { position: relative; height: 17px; border-radius: 4px; background: var(--c-paper-2); font-style: normal; }
+  .cal i.pad { background: transparent; }
+  .cal i[data-l="1"] { background: var(--c-koi-3); } .cal i[data-l="2"] { background: var(--c-koi-2); } .cal i[data-l="3"] { background: var(--c-koi); }
+  .cal i.ev::after { content: ""; position: absolute; top: 3px; right: 3px; width: 5px; height: 5px; border-radius: 50%; background: var(--c-ink); box-shadow: 0 0 0 1.5px var(--c-paper); }
+  .cal i.today { outline: 1.5px solid var(--c-ink); outline-offset: 1px; }
+  .legend { display: flex; gap: 12px; margin-top: 8px; font-size: 9.5px; color: var(--c-ink-3); }
+  .legend span { display: inline-flex; align-items: center; gap: 4px; }
+  .legend .sw { display: inline-flex; gap: 2px; }
+  .legend .sw em { width: 8px; height: 8px; border-radius: 2px; }
+  .legend .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--c-ink); }
+
+  .c-foot { margin-top: auto; display: flex; justify-content: space-between; align-items: flex-end; font-size: 10px; color: var(--c-ink-3); }
+  .brand { display: flex; align-items: center; gap: 6px; font-weight: 700; font-size: 11px; color: var(--c-ink-2); }
+  .brand i { width: 6px; height: 6px; border-radius: 50%; background: var(--c-koi); }
+
+  .toast { position: fixed; left: 50%; bottom: 28px; z-index: 30; transform: translate(-50%, 16px); opacity: 0; padding: 10px 16px; border-radius: 12px; background: #161922; color: #fff; font-size: 13px; transition: 180ms ease; pointer-events: none; }
+  .toast.is-open { opacity: 1; transform: translate(-50%, 0); }
+
+  @media (max-width: 760px) {
+    .page { padding: 24px 16px; }
+    .page-head { flex-direction: column; align-items: stretch; }
+    .scrim { padding: 0; align-items: end; }
+    .dialog { grid-template-columns: 1fr; border-radius: 20px 20px 0 0; max-height: 100vh; overflow: auto; }
+    .stage { min-height: 0; padding: 20px 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 15-6.7L21 8M21 3v5h-5M21 12a9 9 0 0 1-15 6.7L3 16M3 21v-5h5"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
+  <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+</svg>
+
+<div class="page">
+  <div class="page-head">
+    <div><h1>个人投递管理</h1><p>32 条投递 · 14 条进行中</p></div>
+    <div class="head-actions">
+      <button class="btn btn--ghost">导出 Excel</button>
+      <button class="btn btn--share" id="open"><svg class="i"><use href="#i-share"/></svg>分享我的秋招记录</button>
+      <button class="btn btn--primary"><svg class="i"><use href="#i-plus"/></svg>新增投递</button>
+    </div>
+  </div>
+  <div class="fake-table"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+</div>
+
+<div class="scrim" id="scrim">
+  <div class="dialog" role="dialog" aria-modal="true" aria-label="我的秋招记录">
+    <div class="stage">
+      <div id="host">
+        <article class="card" id="card" aria-label="秋招记录卡片预览">
+          <div class="ci">
+            <div class="c-eyebrow">AUTUMN RECORD · 9.01 – 9.26</div>
+            <div class="c-top">
+              <div class="day"><small>DAY</small>26</div>
+              <div class="who"><b><span class="js-name">知夏</span>的秋招记录</b>产品经理 · 上海 / 杭州</div>
+            </div>
+
+            <div class="funnel">
+              <div class="f-row">
+                <span class="f-label">投递</span>
+                <span class="f-track"><span class="f-bar" style="width:100%;background:var(--c-koi-3)"></span></span>
+                <span class="f-num">32</span>
+                <span class="f-names">32 家公司</span>
+              </div>
+              <div class="f-row">
+                <span class="f-label">笔试</span>
+                <span class="f-track"><span class="f-bar" style="width:62%;background:var(--c-koi-2)"></span></span>
+                <span class="f-num">9</span>
+                <span class="f-names js-test">米哈游 · 招行 · 宁德时代 …</span>
+              </div>
+              <div class="f-row">
+                <span class="f-label">面试</span>
+                <span class="f-track"><span class="f-bar" style="width:40%;background:var(--c-koi)"></span></span>
+                <span class="f-num">4</span>
+                <span class="f-names js-iv">字节 · 阿里 · 快手 · 得物</span>
+              </div>
+              <div class="f-row is-gate">
+                <span class="f-label">Offer</span>
+                <span class="f-track"></span>
+                <span class="f-num">龙门</span>
+                <span class="f-names">还在往上游</span>
+              </div>
+            </div>
+
+            <div class="cal-head"><span>每天的投递</span><span>共 26 天 · 有投递 19 天</span></div>
+            <div class="cal" id="cal"></div>
+            <div class="legend">
+              <span>少<span class="sw"><em style="background:var(--c-paper-2)"></em><em style="background:var(--c-koi-3)"></em><em style="background:var(--c-koi-2)"></em><em style="background:var(--c-koi)"></em></span>多</span>
+              <span><i class="dot"></i>笔试 / 面试</span>
+            </div>
+
+            <div class="c-foot">
+              <span class="brand"><i></i>JobKoI · 秋招记录</span>
+              <span>jobkoi.com</span>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="gen" id="gen" aria-live="polite">
+        <div class="gen-box">
+          <div class="gen-step"><span class="gen-dot"></span>统计全部 32 条投递</div>
+          <div class="gen-step"><span class="gen-dot"></span>画出秋招日历</div>
+                  </div>
+      </div>
+    </div>
+
+    <div class="bar" id="bar">
+      <button class="btn btn--ghost" id="close">关闭</button>
+      <button class="btn btn--primary" id="save"><svg class="i"><use href="#i-download"/></svg>保存图片</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+  const $ = (s) => document.querySelector(s);
+
+  // 2026-09-01 is a Tuesday → one leading pad cell. Level = applications that day; ev = assessment / interview that day.
+  const days = [1,2,0,1,3,0,0, 2,1,2,0,1,0,1, 1,3,2,0,1,2,0, 1,3,0,2,0];
+  const events = new Set([10, 15, 19, 21, 23, 25]);
+  $("#cal").innerHTML = ["一","二","三","四","五","六","日"].map((d) => `<b>${d}</b>`).join("")
+    + '<i class="pad"></i>'
+    + days.map((l, i) => {
+        const cls = [events.has(i + 1) && "ev", i === days.length - 1 && "today"].filter(Boolean).join(" ");
+        return `<i data-l="${l}"${cls ? ` class="${cls}"` : ""} title="9/${i + 1}"></i>`;
+      }).join("");
+
+  const generate = () => {
+    const gen = $("#gen"), card = $("#card"), bar = $("#bar");
+    gen.classList.remove("is-done"); card.classList.remove("is-in"); bar.classList.add("is-loading");
+    const steps = [...document.querySelectorAll(".gen-step")];
+    steps.forEach((s) => s.className = "gen-step");
+    const fast = matchMedia("(prefers-reduced-motion: reduce)").matches || new URLSearchParams(location.search).has("instant");
+    const tick = fast ? 0 : 420;
+    steps.forEach((s, i) => {
+      setTimeout(() => s.classList.add("is-active"), i * tick);
+      setTimeout(() => { s.classList.remove("is-active"); s.classList.add("is-done"); }, i * tick + tick * 0.9);
+    });
+    setTimeout(() => { gen.classList.add("is-done"); card.classList.add("is-in"); bar.classList.remove("is-loading"); $("#save").focus(); }, steps.length * tick + (fast ? 0 : 120));
+  };
+
+  const open = () => { $("#scrim").classList.add("is-open"); generate(); };
+  const close = () => $("#scrim").classList.remove("is-open");
+  $("#open").onclick = open;
+  $("#close").onclick = close;
+  $("#scrim").onclick = (e) => { if (e.target.id === "scrim") close(); };
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
+
+  const toast = (t) => { const el = $("#toast"); el.textContent = t; el.classList.add("is-open"); setTimeout(() => el.classList.remove("is-open"), 2200); };
+  $("#save").onclick = () => toast("图片已保存（1080 × 1440）");
+
+  if (new URLSearchParams(location.search).has("open")) open();
+</script>
+</body>
+</html>
