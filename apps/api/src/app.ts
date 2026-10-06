@@ -48,14 +48,18 @@ import {
   isUpdateResumeTemplateRequest,
   isUpdateResumeVersionRequest,
   isSyncResumeTemplatesRequest,
-  isUpdateAdminFeedbackStatusRequest
+  isUpdateAdminFeedbackStatusRequest,
+  isCustomSkillDraft,
+  MAX_CUSTOM_SKILLS
 } from "@offerflow/contracts";
 import type {
+  ChatAgentName,
   ChatAttachment,
   ChatContextOption,
   ChatContextReference,
   ChatMessage,
   ChatOpportunityResults,
+  CustomSkillDraft,
   JobApplication,
   KnowledgeCitation,
   OpportunityFeedSnapshot,
@@ -97,8 +101,8 @@ import {
 } from "./opportunities/search.ts";
 import type { ModelClient } from "./agent/loop.ts";
 import { createOpenAiCompatibleModel } from "./agent/model.ts";
-import { runResumeCoachTurn } from "./agent/resume-coach-chat.ts";
-import { expertsFor } from "./agent/experts.ts";
+import { customExpert, officialSkills, publicExpert, resolveTeamSkills, type ExpertSkill } from "./agent/experts.ts";
+import { runTeamTurn, TEAM_PROFILES, type TeamMaterials } from "./agent/teams.ts";
 import { MemoryStore } from "./store/memory-store.ts";
 import { PostgresStore } from "./store/postgres-store.ts";
 import { StoreError, type OfferFlowStore, type SessionRecord } from "./store/store.ts";
@@ -777,8 +781,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     }
   }
 
-  /** The resume and job a resume-coach conversation works on: the first ones the user picked, else their latest resume. */
-  async function resumeCoachMaterials(
+  /** The resume and job a team works on: the first ones the user picked, else their latest resume. */
+  async function teamResumeAndJob(
     userId: string,
     references: ChatContextReference[]
   ): Promise<{ profile?: PersonalProfile; job?: TailorJobContext }> {
@@ -815,19 +819,62 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return { profile, job };
   }
 
+  /** The team that owns a conversation: the one that answered most recently. */
+  function conversationTeam(history: ChatMessage[]): ChatAgentName | undefined {
+    return [...history].reverse().find((message) => message.agentRun)?.agentRun?.agent;
+  }
+
+  function trimmedSkillDraft(draft: CustomSkillDraft): CustomSkillDraft {
+    return {
+      name: draft.name.trim(),
+      role: draft.role.trim(),
+      when: draft.when.trim(),
+      summary: draft.summary.trim(),
+      instructions: draft.instructions.trim(),
+      teams: [...new Set(draft.teams)]
+    };
+  }
+
+  /** Official skills plus the user's own, ready to put on a team. */
+  async function availableSkills(userId: string): Promise<ExpertSkill[]> {
+    return [...officialSkills(), ...(await store.listCustomSkills(userId)).map(customExpert)];
+  }
+
+  function shanghaiToday(): string {
+    return new Intl.DateTimeFormat("zh-CN", {
+      timeZone: "Asia/Shanghai",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      weekday: "long"
+    }).format(new Date());
+  }
+
   async function streamAgentAnswer(
     response: ServerResponse,
     userId: string,
     conversationId: string,
     prompt: string,
     history: ChatMessage[],
-    context: ChatContextReference[] = []
+    context: ChatContextReference[],
+    team: ChatAgentName,
+    requestedSkills: string[] | undefined
   ): Promise<void> {
     // Materials stay fixed for the conversation: use what was picked on the first message that picked anything.
     const references = context.length
       ? context
       : history.find((message) => message.role === "user" && message.context?.length)?.context ?? [];
-    const materials = await resumeCoachMaterials(userId, references);
+    const lastRun = [...history].reverse().find((message) => message.agentRun)?.agentRun;
+    const experts = resolveTeamSkills(team, await availableSkills(userId), requestedSkills ?? lastRun?.skills, TEAM_PROFILES[team].defaultSkills);
+    const materials: TeamMaterials = {
+      ...(await teamResumeAndJob(userId, references)),
+      applications: (await store.listApplications(userId)).filter((item) => !item.deletedAt).map((item) => item.application),
+      search: async (query) => {
+        const { snapshot, sourceAvailable } = await freshOpportunitySnapshot();
+        return searchOpportunitySnapshot(snapshot, query, { limit: 12, sourceAvailable });
+      },
+      today: shanghaiToday()
+    };
     const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
 
     response.statusCode = 200;
@@ -839,10 +886,12 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     await writeSse(response, { type: "message.started", message: assistantMessage });
 
     try {
-      if (!agentModel) throw new Error("AI 服务尚未配置，简历教练暂时不可用");
-      const turn = await runResumeCoachTurn({
+      if (!agentModel) throw new Error(`AI 服务尚未配置，${TEAM_PROFILES[team].name}暂时不可用`);
+      const turn = await runTeamTurn({
+        team,
         model: agentModel,
-        ...materials,
+        materials,
+        experts,
         history,
         prompt,
         onStep: (step) => writeSse(response, { type: "agent.step", messageId: assistantMessage.id, step }),
@@ -851,7 +900,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       });
       await writeSse(response, { type: "message.delta", messageId: assistantMessage.id, delta: turn.reply });
       const completed = await store.completeAssistantMessage(
-        userId, conversationId, assistantMessage.id, turn.reply, [], "complete", undefined, turn.agentRun
+        userId, conversationId, assistantMessage.id, turn.reply, [], "complete", turn.opportunityResults, turn.agentRun
       );
       await writeSse(response, { type: "message.completed", message: completed });
       await writeSse(response, { type: "done" });
@@ -1191,6 +1240,16 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         return;
       }
 
+      // Visitors see the teams and official skills on the home page; signed-in users also get their own skills.
+      if (method === "GET" && path === "/v1/chat-agents") {
+        const session = await requireSession(request).catch(() => undefined);
+        success(response, {
+          agents: Object.values(TEAM_PROFILES),
+          skills: (session ? await availableSkills(session.userId) : officialSkills()).map(publicExpert)
+        });
+        return;
+      }
+
       const authenticatedSession = await requireSession(request);
       const userId = authenticatedSession.userId;
 
@@ -1299,6 +1358,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           interviewRecords,
           resumeVersions: await store.listResumeVersions(userId),
           resumeTemplates: await store.listResumeTemplates(userId),
+          customSkills: await store.listCustomSkills(userId),
           sessions: (await store.listSessions(userId)).map(({ userId: _userId, revokedAt: _revokedAt, ...session }) => session)
         });
         return;
@@ -1485,10 +1545,40 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         }
       }
 
-      if (method === "GET" && path === "/v1/chat-agents") {
-        const roster = (agent: "resume_coach") => expertsFor(agent).map(({ id, name, role, when }) => ({ id, name, role, when }));
-        success(response, { agents: [{ id: "resume_coach" as const, name: "简历教练", experts: roster("resume_coach") }] });
+      if (method === "GET" && path === "/v1/skills/custom") {
+        success(response, { skills: await store.listCustomSkills(userId) });
         return;
+      }
+
+      if (method === "POST" && path === "/v1/skills/custom") {
+        const body = await readJson(request);
+        if (!isCustomSkillDraft(body)) throw new HttpError(400, "INVALID_SKILL", "请把技能的名字、角色、使用时机、简介和工作方法填完整");
+        if ((await store.listCustomSkills(userId)).length >= MAX_CUSTOM_SKILLS) {
+          throw new HttpError(400, "SKILL_LIMIT", `最多创建 ${MAX_CUSTOM_SKILLS} 个自己的技能`);
+        }
+        const now = new Date().toISOString();
+        const skill = await store.saveCustomSkill(userId, { ...trimmedSkillDraft(body), id: crypto.randomUUID(), createdAt: now, updatedAt: now });
+        success(response, { skill }, 201);
+        return;
+      }
+
+      const customSkillMatch = path.match(/^\/v1\/skills\/custom\/([^/]+)$/);
+      if (customSkillMatch) {
+        const skillId = decodePath(customSkillMatch[1]);
+        const existing = (await store.listCustomSkills(userId)).find((skill) => skill.id === skillId);
+        if (!existing) throw new HttpError(404, "SKILL_NOT_FOUND", "没有找到这个技能");
+        if (method === "PATCH") {
+          const body = await readJson(request);
+          if (!isCustomSkillDraft(body)) throw new HttpError(400, "INVALID_SKILL", "请把技能的名字、角色、使用时机、简介和工作方法填完整");
+          const skill = await store.saveCustomSkill(userId, { ...existing, ...trimmedSkillDraft(body), updatedAt: new Date().toISOString() });
+          success(response, { skill });
+          return;
+        }
+        if (method === "DELETE") {
+          await store.deleteCustomSkill(userId, skillId);
+          success(response, { deleted: true as const });
+          return;
+        }
       }
 
       if (method === "GET" && path === "/v1/chat-context") {
@@ -1541,9 +1631,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         const history = await store.getConversationHistory(userId, conversationId);
         const messageIndex = history.findIndex((message) => message.id === messageId);
         const sourceMessage = history.slice(0, messageIndex).reverse().find((message) => message.role === "user");
-        if (history.some((message) => message.agentRun) && sourceMessage) {
+        const retryTeam = conversationTeam(history);
+        if (retryTeam && sourceMessage) {
           const sourceIndex = history.indexOf(sourceMessage);
-          await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage.context);
+          await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage.context ?? [], retryTeam, undefined);
           return;
         }
         await streamAnswer(
@@ -1579,8 +1670,9 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           body.attachments,
           context
         );
-        if (body.agent || history.some((message) => message.agentRun)) {
-          await streamAgentAnswer(response, userId, conversationId, body.content, history, context);
+        const team = body.agent ?? conversationTeam(history);
+        if (team) {
+          await streamAgentAnswer(response, userId, conversationId, body.content, history, context, team, body.skills);
           return;
         }
         await streamAnswer(request, response, userId, conversationId, body.content, history, body.attachments, context);

@@ -123,8 +123,10 @@ test("a review panel consults two experts in parallel and stores their opinions"
   const auth = await (await fetch(`${app.baseUrl}/v1/auth/demo`, { method: "POST" })).json();
   const headers = { "Content-Type": "application/json", Authorization: `Bearer ${auth.data.accessToken}` };
 
-  const roster = (await (await fetch(`${app.baseUrl}/v1/chat-agents`, { headers })).json()).data.agents[0];
-  assert.deepEqual(roster.experts.map((expert) => expert.name), ["面试官 老陈", "HR 小周", "文字编辑 阿简"]);
+  const roster = (await (await fetch(`${app.baseUrl}/v1/chat-agents`, { headers })).json()).data;
+  assert.deepEqual(roster.agents.map((agent) => agent.id), ["resume_coach", "interview_coach", "job_radar", "career_planner"]);
+  assert.ok(roster.skills.some((skill) => skill.name === "HR 小周"));
+  assert.equal(roster.skills.some((skill) => "instructions" in skill), false, "公开名单里不能带工作方法");
 
   const conversation = (await (await fetch(`${app.baseUrl}/v1/conversations`, { method: "POST", headers, body: "{}" })).json()).data.conversation;
   const events = await sseEvents(await fetch(`${app.baseUrl}/v1/conversations/${conversation.id}/messages`, {

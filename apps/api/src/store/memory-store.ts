@@ -37,6 +37,7 @@ import {
   type ChatMessage,
   type ChatAgentRun,
   type ChatOpportunityResults,
+  type CustomSkill,
   type InterviewQaPair,
   type InterviewRecord,
   type InterviewRecordSourceType,
@@ -153,6 +154,7 @@ interface PersistedStoreState {
   tailorTasks?: StoredTailorTask[];
   interviewRecords?: StoredInterviewRecord[];
   productFeedback?: StoredProductFeedback[];
+  customSkills?: Array<CustomSkill & { userId: string }>;
   appliedChanges: Record<string, number>;
   syncLog: SyncLogEntry[];
   sequence: number;
@@ -213,6 +215,7 @@ export class MemoryStore implements OfferFlowStore {
   private readonly tailorTasks = new Map<string, StoredTailorTask>();
   private readonly interviewRecords = new Map<string, StoredInterviewRecord>();
   private readonly productFeedback: StoredProductFeedback[] = [];
+  private readonly customSkills: Array<CustomSkill & { userId: string }> = [];
   private readonly deviceCodes = new Map<string, DeviceCode>();
   private readonly handoffCodes = new Map<string, HandoffCode>();
   private readonly sessionsByHash = new Map<string, StoredSession>();
@@ -296,6 +299,7 @@ export class MemoryStore implements OfferFlowStore {
         this.sessionHashById.set(session.id, session.tokenHash);
       }
       this.productFeedback.push(...(parsed.productFeedback ?? []));
+      this.customSkills.push(...(parsed.customSkills ?? []));
       for (const code of parsed.emailVerificationCodes ?? []) {
         this.emailVerificationCodes.set(code.id, code);
       }
@@ -318,6 +322,7 @@ export class MemoryStore implements OfferFlowStore {
       tailorTasks: [...this.tailorTasks.values()],
       interviewRecords: [...this.interviewRecords.values()],
       productFeedback: this.productFeedback,
+      customSkills: this.customSkills,
       appliedChanges: Object.fromEntries(this.appliedChanges),
       syncLog: this.syncLog,
       sequence: this.sequence,
@@ -412,6 +417,7 @@ export class MemoryStore implements OfferFlowStore {
     for (const [key, value] of this.resumeTemplates) if (value.userId === userId) this.resumeTemplates.delete(key);
     for (const [key, value] of this.tailorTasks) if (value.userId === userId) this.tailorTasks.delete(key);
     for (const [key, value] of this.interviewRecords) if (value.userId === userId) this.interviewRecords.delete(key);
+    for (let index = this.customSkills.length - 1; index >= 0; index -= 1) if (this.customSkills[index].userId === userId) this.customSkills.splice(index, 1);
     for (const [hash, value] of this.sessionsByHash) if (value.userId === userId) { this.sessionsByHash.delete(hash); this.sessionHashById.delete(value.id); }
     for (const [hash, value] of this.deviceCodes) if (value.userId === userId) this.deviceCodes.delete(hash);
     for (const [hash, value] of this.handoffCodes) if (value.userId === userId) this.handoffCodes.delete(hash);
@@ -1044,6 +1050,27 @@ export class MemoryStore implements OfferFlowStore {
     const stored = this.applications.get(`${userId}:${id}`);
     if (!stored || (!includeDeleted && stored.item.deletedAt)) return undefined;
     return clone(stored.item);
+  }
+
+  listCustomSkills(userId: string): CustomSkill[] {
+    return this.customSkills
+      .filter((skill) => skill.userId === userId)
+      .map(({ userId: _userId, ...skill }) => clone(skill));
+  }
+
+  saveCustomSkill(userId: string, skill: CustomSkill): CustomSkill {
+    const index = this.customSkills.findIndex((item) => item.userId === userId && item.id === skill.id);
+    const stored = { ...clone(skill), userId };
+    if (index >= 0) this.customSkills[index] = stored;
+    else this.customSkills.push(stored);
+    this.persist();
+    return clone(skill);
+  }
+
+  deleteCustomSkill(userId: string, skillId: string): void {
+    const index = this.customSkills.findIndex((item) => item.userId === userId && item.id === skillId);
+    if (index >= 0) this.customSkills.splice(index, 1);
+    this.persist();
   }
 
   listInterviewRecords(userId: string, applicationId: string): InterviewRecord[] {

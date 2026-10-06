@@ -9,8 +9,11 @@ import type {
   ChatContextReference,
   ChatConversation,
   ChatMessage,
+  CustomSkill,
+  CustomSkillDraft,
   KnowledgeCitation
 } from "@offerflow/domain";
+import { CHAT_AGENT_NAMES } from "@offerflow/domain";
 import type { ApiError } from "./common.ts";
 import { isRecord } from "./common.ts";
 
@@ -59,16 +62,53 @@ export interface SendMessageRequest {
   context?: ChatContextReference[];
   /** Start an agent for this conversation. Later turns stay with the agent automatically. */
   agent?: ChatAgentName;
+  /** Skill ids on the team. Omitted: keep the conversation's current team (or the team defaults). */
+  skills?: string[];
 }
+
+export const MAX_TEAM_SKILLS = 8;
+export const MAX_CUSTOM_SKILLS = 20;
+export const CUSTOM_SKILL_LIMITS = { name: 20, role: 40, when: 120, summary: 60, instructions: 2000 } as const;
 
 export interface ChatAgentProfile {
   id: ChatAgentName;
   name: string;
-  experts: ChatAgentExpert[];
+  /** Short English slogan printed on the team cover. */
+  tagline: string;
+  description: string;
+  /** What the composer is pre-filled with when the team is invited. */
+  starter: string;
+  defaultSkills: string[];
 }
 
 export interface ChatAgentsResponse {
   agents: ChatAgentProfile[];
+  /** Official skills plus the signed-in user's own skills. */
+  skills: ChatAgentExpert[];
+}
+
+export type CustomSkillRequest = CustomSkillDraft;
+
+export interface CustomSkillListResponse {
+  skills: CustomSkill[];
+}
+
+export interface CustomSkillResponse {
+  skill: CustomSkill;
+}
+
+export function isCustomSkillDraft(value: unknown): value is CustomSkillDraft {
+  if (!isRecord(value)) return false;
+  const text = (key: keyof typeof CUSTOM_SKILL_LIMITS, minimum = 1) =>
+    typeof value[key] === "string" &&
+    (value[key] as string).trim().length >= minimum &&
+    (value[key] as string).length <= CUSTOM_SKILL_LIMITS[key];
+  return (
+    text("name") && text("role") && text("when") && text("summary") && text("instructions", 20) &&
+    Array.isArray(value.teams) &&
+    value.teams.length > 0 &&
+    value.teams.every((team) => typeof team === "string" && (CHAT_AGENT_NAMES as readonly string[]).includes(team))
+  );
 }
 
 export interface RetryMessageRequest {
@@ -131,7 +171,12 @@ export function isSendMessageRequest(value: unknown): value is SendMessageReques
       value.context.every(isChatContextReference) &&
       new Set(value.context.map((item) => isRecord(item) ? `${item.kind}:${item.id}` : undefined)).size === value.context.length
     )) &&
-    (value.agent === undefined || value.agent === "resume_coach")
+    (value.agent === undefined || (typeof value.agent === "string" && (CHAT_AGENT_NAMES as readonly string[]).includes(value.agent))) &&
+    (value.skills === undefined || (
+      Array.isArray(value.skills) &&
+      value.skills.length <= MAX_TEAM_SKILLS &&
+      value.skills.every((skill) => typeof skill === "string" && skill.length > 0 && skill.length <= 80)
+    ))
   );
 }
 

@@ -33,7 +33,7 @@ export interface ModelClient {
 
 export type AgentEvent =
   | { type: "tool_call"; name: string; args: Record<string, unknown> }
-  | { type: "tool_result"; name: string; result: unknown }
+  | { type: "tool_result"; name: string; args: Record<string, unknown>; result: unknown }
   | { type: "reply"; content: string };
 
 export interface AgentTurnResult {
@@ -68,8 +68,9 @@ export async function runAgentTurn(options: {
     // Results are appended in the model's original order.
     const results = await Promise.all(message.tool_calls.map(async (call) => {
       let result: unknown;
+      let args: Record<string, unknown> = {};
       try {
-        const args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
+        args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
         const tool = byName.get(call.function.name);
         onEvent?.({ type: "tool_call", name: call.function.name, args });
         result = tool
@@ -79,7 +80,7 @@ export async function runAgentTurn(options: {
         // Errors go back to the model as data so it can correct itself.
         result = { error: error instanceof Error ? error.message : String(error) };
       }
-      onEvent?.({ type: "tool_result", name: call.function.name, result });
+      onEvent?.({ type: "tool_result", name: call.function.name, args, result });
       return { call, result };
     }));
     for (const { call, result } of results) {

@@ -36,6 +36,7 @@ import {
   type ChatMessage,
   type ChatAgentRun,
   type ChatOpportunityResults,
+  type CustomSkill,
   type InterviewQaPair,
   type InterviewRecord,
   type JobApplication,
@@ -1081,6 +1082,26 @@ export class PostgresStore implements OfferFlowStore {
     const max = await this.pool.query("SELECT COALESCE(max(sequence_id), $2)::text AS cursor FROM sync_changes WHERE user_id = $1", [userId, cursor]);
     const changes = pulled.rows.sort((a,b) => Number(a.sequence_id)-Number(b.sequence_id)).map((row) => row.payload as ApplicationSyncItem);
     return { cursor: max.rows[0].cursor, changes, acceptedChangeIds, conflicts };
+  }
+
+  async listCustomSkills(userId: string): Promise<CustomSkill[]> {
+    const result = await this.pool.query("SELECT payload FROM custom_skills WHERE user_id = $1 ORDER BY created_at", [userId]);
+    return result.rows.map((row) => row.payload as CustomSkill);
+  }
+
+  async saveCustomSkill(userId: string, skill: CustomSkill): Promise<CustomSkill> {
+    await this.pool.query(
+      `INSERT INTO custom_skills (id, user_id, payload, created_at, updated_at)
+       VALUES ($1, $2, $3::jsonb, $4, $5)
+       ON CONFLICT (id) DO UPDATE SET payload = EXCLUDED.payload, updated_at = EXCLUDED.updated_at
+       WHERE custom_skills.user_id = EXCLUDED.user_id`,
+      [skill.id, userId, json(skill), skill.createdAt, skill.updatedAt]
+    );
+    return skill;
+  }
+
+  async deleteCustomSkill(userId: string, skillId: string): Promise<void> {
+    await this.pool.query("DELETE FROM custom_skills WHERE id = $1 AND user_id = $2", [skillId, userId]);
   }
 
   async listInterviewRecords(userId: string, applicationId: string): Promise<InterviewRecord[]> {

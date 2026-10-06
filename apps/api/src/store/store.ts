@@ -31,6 +31,7 @@ import type {
   ChatMessage,
   ChatAgentRun,
   ChatOpportunityResults,
+  CustomSkill,
   InterviewQaPair,
   InterviewRecord,
   InterviewRecordSourceType,
@@ -198,6 +199,11 @@ export interface OfferFlowStore {
   ): Awaitable<ApplicationSyncItem>;
   deleteApplication(userId: string, id: string, expectedRevision: number): Awaitable<ApplicationSyncItem>;
   syncApplications(userId: string, request: ApplicationSyncRequest): Awaitable<ApplicationSyncResponse>;
+
+  /** Skills the user created for their own teams. Only ever visible to that user. */
+  listCustomSkills(userId: string): Awaitable<CustomSkill[]>;
+  saveCustomSkill(userId: string, skill: CustomSkill): Awaitable<CustomSkill>;
+  deleteCustomSkill(userId: string, skillId: string): Awaitable<void>;
 
   listInterviewRecords(userId: string, applicationId: string): Awaitable<InterviewRecord[]>;
   createInterviewRecord(
