@@ -1833,3 +1833,341 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   .thinking-indicator i { animation: none; opacity: 0.55; }
   .assistant-progress::before { width: 100%; opacity: 0.38; }
 }
+
+/* Resume coach agent: mode banner, visible steps and rewrite diffs. */
+.agent-mode-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
+  margin-block-end: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  color: var(--of-text-muted);
+  background: var(--of-brand-50);
+  border: 1px solid var(--of-brand-100);
+  border-radius: 0.65rem;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.agent-mode-banner > svg {
+  flex: 0 0 auto;
+  margin-block-start: 0.2rem;
+  color: var(--of-brand-600);
+}
+
+.agent-mode-banner strong {
+  color: var(--of-brand-700);
+  font-weight: 600;
+  margin-inline-end: 0.25rem;
+}
+
+.agent-mode-banner button {
+  display: grid;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin-inline-start: auto;
+  color: var(--of-text-subtle);
+  border-radius: 999px;
+}
+
+.agent-mode-banner button:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface);
+}
+
+.agent-steps {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0 0 0.75rem;
+  padding: 0.6rem 0.75rem;
+  list-style: none;
+  background: var(--of-surface-muted);
+  border-radius: 0.65rem;
+  font-size: 0.78rem;
+}
+
+.agent-steps li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  color: var(--of-text-muted);
+}
+
+.agent-steps li > svg {
+  flex: 0 0 auto;
+  align-self: center;
+  color: var(--of-success);
+}
+
+.agent-steps li.is-rejected > svg {
+  color: var(--of-warning);
+}
+
+.agent-steps small {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rewrite-cards {
+  display: grid;
+  gap: 0.6rem;
+  margin-block-start: 0.85rem;
+}
+
+.rewrite-card {
+  padding: 0.8rem 0.9rem;
+  background: var(--of-surface);
+  border: 1px solid color-mix(in oklch, var(--of-line) 86%, var(--of-brand-200));
+  border-radius: 0.8rem;
+}
+
+.rewrite-card header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-block-end: 0.55rem;
+  font-size: 0.85rem;
+}
+
+.rewrite-card header strong {
+  color: var(--of-text-strong);
+  font-weight: 600;
+}
+
+.rewrite-card header button {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  color: var(--of-text-muted);
+  border: 1px solid var(--of-line);
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.rewrite-card header button:hover {
+  color: var(--of-text-strong);
+  border-color: var(--of-line-strong);
+}
+
+.rewrite-diff {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.rewrite-diff > div {
+  padding: 0.55rem 0.65rem;
+  border-radius: 0.55rem;
+}
+
+.rewrite-diff > div > span {
+  display: block;
+  margin-block-end: 0.2rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+.rewrite-diff p {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.rewrite-before {
+  color: var(--of-text-subtle);
+  background: var(--of-surface-muted);
+}
+
+.rewrite-after {
+  color: var(--of-text-strong);
+  background: var(--of-success-soft);
+}
+
+.rewrite-after > span {
+  color: var(--of-success);
+}
+
+.rewrite-reason {
+  margin: 0.5rem 0 0;
+  color: var(--of-text-subtle);
+  font-size: 0.75rem;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .rewrite-diff {
+    grid-template-columns: 1fr;
+  }
+}
+
+.rewrite-after p > span {
+  display: block;
+  margin-inline: -0.3rem;
+  padding-inline: 0.3rem;
+  border-radius: 0.3rem;
+}
+
+.rewrite-after p > span.is-changed {
+  background: color-mix(in oklch, var(--of-success) 14%, transparent);
+}
+
+.rewrite-after p {
+  white-space: normal;
+}
+
+.chat-page--empty .agent-mode-banner,
+.thread-composer .agent-mode-banner {
+  width: 100%;
+  max-width: 50rem;
+  margin-inline: auto;
+}
+
+.chat-page--empty .agent-mode-banner {
+  max-width: 48rem;
+  align-items: center;
+}
+
+.chat-page--empty .agent-mode-banner > svg {
+  margin-block-start: 0;
+}
+
+/* Expert panel: roster in the banner, opinion cards in messages. */
+.agent-mode-banner__text {
+  display: grid;
+  min-width: 0;
+  gap: 0.4rem;
+}
+
+.agent-mode-banner__close {
+  margin-inline-start: auto;
+}
+
+.expert-roster {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.agent-mode-banner .expert-roster button {
+  display: inline-flex;
+  width: auto;
+  height: auto;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0;
+  padding: 0.15rem 0.55rem 0.15rem 0.2rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface);
+  border: 1px solid var(--of-brand-100);
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.agent-mode-banner .expert-roster button:hover {
+  color: var(--of-brand-700);
+  border-color: var(--of-brand-200);
+}
+
+.expert-avatar {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 1.35rem;
+  height: 1.35rem;
+  color: var(--of-brand-700);
+  background: var(--of-brand-100);
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.expert-notes {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0 0 0.85rem;
+}
+
+.expert-note {
+  padding: 0.7rem 0.85rem;
+  background: var(--of-surface);
+  border: 1px solid var(--of-line);
+  border-inline-start: 3px solid var(--of-brand-300);
+  border-radius: 0.65rem;
+}
+
+.expert-note header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-end: 0.35rem;
+}
+
+.expert-note header .expert-avatar {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.8rem;
+}
+
+.expert-note header strong {
+  display: block;
+  color: var(--of-text-strong);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.expert-note header small {
+  display: block;
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+}
+
+.expert-note__body {
+  color: var(--of-text);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.expert-note__body p,
+.expert-note__body ul,
+.expert-note__body ol {
+  margin: 0.2rem 0;
+}
+
+.expert-note__body ul,
+.expert-note__body ol {
+  padding-inline-start: 1.2rem;
+}
+
+.rewrite-adjust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-block-start: 0.55rem;
+}
+
+.rewrite-adjust button {
+  padding: 0.2rem 0.6rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.75rem;
+}
+
+.rewrite-adjust button:hover {
+  color: var(--of-brand-700);
+  border-color: var(--of-brand-200);
+}

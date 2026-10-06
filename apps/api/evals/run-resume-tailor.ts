@@ -6,22 +6,14 @@
  *
  * Writes a JSON report to evals/results/ so later versions can be compared.
  */
-import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import type { PersonalProfile, ResumeTailorChange, TailorJobContext } from "@offerflow/domain";
-import { createEmptyPersonalProfile } from "@offerflow/domain";
+import type { PersonalProfile, ResumeTailorChange } from "@offerflow/domain";
 import { loadApiConfig } from "../src/config.ts";
 import { createResumeTailorProvider } from "../src/ai/resume-tailor.ts";
 import { gradeRewrite, type FabricationFinding } from "../src/agent/fabrication.ts";
-
-interface ExamCase {
-  id: string;
-  archetype: string;
-  job: TailorJobContext;
-  keywords: string[];
-  resume: Partial<PersonalProfile>;
-}
+import { loadResumeCases, profileFor, type ResumeCase as ExamCase } from "./fixtures.ts";
 
 interface RunResult {
   caseId: string;
@@ -41,17 +33,6 @@ const here = dirname(fileURLToPath(import.meta.url));
 const runsArg = process.argv.indexOf("--runs");
 const RUNS = runsArg > 0 ? Number(process.argv[runsArg + 1]) : 3;
 const CONCURRENCY = 4;
-
-function profileFor(resume: Partial<PersonalProfile>): PersonalProfile {
-  const base = createEmptyPersonalProfile();
-  return {
-    ...base,
-    ...resume,
-    experiences: (resume.experiences || []).map((entry) => ({ kind: "internship", ...entry })),
-    projects: resume.projects || [],
-    campusExperiences: resume.campusExperiences || []
-  } as PersonalProfile;
-}
 
 /** Every piece of text the candidate supplied; the only legal source of facts. */
 function evidenceOf(profile: PersonalProfile): string[] {
@@ -109,7 +90,7 @@ async function main() {
   const provider = createResumeTailorProvider(config);
   if (!provider.configured) throw new Error("没有配置 AI 密钥：请在 apps/api/.env 里设置 DEEPSEEK_API_KEY");
 
-  const exam = JSON.parse(readFileSync(join(here, "datasets/resume-tailor.json"), "utf8")) as { cases: ExamCase[] };
+  const exam = { cases: loadResumeCases() };
   const jobs = exam.cases.flatMap((item) => Array.from({ length: RUNS }, (_, run) => ({ item, run })));
   const results: RunResult[] = [];
   let next = 0;

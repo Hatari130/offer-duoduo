@@ -35,6 +35,7 @@ import {
   type ChatContextReference,
   type ChatConversation,
   type ChatMessage,
+  type ChatAgentRun,
   type ChatOpportunityResults,
   type InterviewQaPair,
   type InterviewRecord,
@@ -955,7 +956,8 @@ export class MemoryStore implements OfferFlowStore {
     content: string,
     citations: KnowledgeCitation[],
     status: ChatMessage["status"] = "complete",
-    opportunityResults?: ChatOpportunityResults
+    opportunityResults?: ChatOpportunityResults,
+    agentRun?: ChatAgentRun
   ): ChatMessage {
     const stored = this.conversations.get(conversationId);
     const list = this.messages.get(conversationId);
@@ -966,6 +968,7 @@ export class MemoryStore implements OfferFlowStore {
     message.content = content;
     message.citations = clone(citations);
     message.opportunityResults = opportunityResults ? clone(opportunityResults) : undefined;
+    message.agentRun = agentRun ? clone(agentRun) : undefined;
     message.status = status;
     stored.conversation.updatedAt = new Date().toISOString();
     stored.conversation.lastMessagePreview = content.slice(0, 80);

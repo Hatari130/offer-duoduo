@@ -1,4 +1,9 @@
 import type {
+  ChatAgentExpert,
+  ChatAgentExpertNote,
+  ChatAgentName,
+  ChatAgentRewrite,
+  ChatAgentStep,
   ChatAttachment,
   ChatContextOption,
   ChatContextReference,
@@ -52,6 +57,18 @@ export interface SendMessageRequest {
   clientMessageId: string;
   attachments?: ChatAttachment[];
   context?: ChatContextReference[];
+  /** Start an agent for this conversation. Later turns stay with the agent automatically. */
+  agent?: ChatAgentName;
+}
+
+export interface ChatAgentProfile {
+  id: ChatAgentName;
+  name: string;
+  experts: ChatAgentExpert[];
+}
+
+export interface ChatAgentsResponse {
+  agents: ChatAgentProfile[];
 }
 
 export interface RetryMessageRequest {
@@ -70,6 +87,9 @@ export type ChatStreamEvent =
   | { type: "message.started"; message: ChatMessage }
   | { type: "message.delta"; messageId: string; delta: string }
   | { type: "citation"; messageId: string; citation: KnowledgeCitation }
+  | { type: "agent.step"; messageId: string; step: ChatAgentStep }
+  | { type: "agent.rewrite"; messageId: string; rewrite: ChatAgentRewrite }
+  | { type: "agent.expert"; messageId: string; note: ChatAgentExpertNote }
   | { type: "message.completed"; message: ChatMessage }
   | { type: "error"; error: ApiError }
   | { type: "done" };
@@ -110,7 +130,8 @@ export function isSendMessageRequest(value: unknown): value is SendMessageReques
       value.context.length <= 4 &&
       value.context.every(isChatContextReference) &&
       new Set(value.context.map((item) => isRecord(item) ? `${item.kind}:${item.id}` : undefined)).size === value.context.length
-    ))
+    )) &&
+    (value.agent === undefined || value.agent === "resume_coach")
   );
 }
 

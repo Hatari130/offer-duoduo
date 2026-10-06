@@ -64,11 +64,12 @@ export async function runAgentTurn(options: {
       return { reply, steps: step, stoppedByStepLimit: false };
     }
 
-    for (const call of message.tool_calls) {
-      let args: Record<string, unknown> = {};
+    // Calls made in one reply are independent, so they run in parallel (e.g. several experts at once).
+    // Results are appended in the model's original order.
+    const results = await Promise.all(message.tool_calls.map(async (call) => {
       let result: unknown;
       try {
-        args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
+        const args = JSON.parse(call.function.arguments || "{}") as Record<string, unknown>;
         const tool = byName.get(call.function.name);
         onEvent?.({ type: "tool_call", name: call.function.name, args });
         result = tool
@@ -79,6 +80,9 @@ export async function runAgentTurn(options: {
         result = { error: error instanceof Error ? error.message : String(error) };
       }
       onEvent?.({ type: "tool_result", name: call.function.name, result });
+      return { call, result };
+    }));
+    for (const { call, result } of results) {
       messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
     }
   }

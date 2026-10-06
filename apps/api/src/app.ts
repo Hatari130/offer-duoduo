@@ -59,9 +59,10 @@ import type {
   JobApplication,
   KnowledgeCitation,
   OpportunityFeedSnapshot,
-  PersonalProfile
+  PersonalProfile,
+  TailorJobContext
 } from "@offerflow/domain";
-import { opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
+import { cloudResumeToPersonalProfile, opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
 import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
 import { createDirectMailMailer, type EmailMailer } from "./auth/direct-mail.ts";
 import { createEmailVerificationService } from "./auth/email-verification.ts";
@@ -94,6 +95,10 @@ import {
   resolveOpportunitySearchPrompt,
   searchOpportunitySnapshot
 } from "./opportunities/search.ts";
+import type { ModelClient } from "./agent/loop.ts";
+import { createOpenAiCompatibleModel } from "./agent/model.ts";
+import { runResumeCoachTurn } from "./agent/resume-coach-chat.ts";
+import { expertsFor } from "./agent/experts.ts";
 import { MemoryStore } from "./store/memory-store.ts";
 import { PostgresStore } from "./store/postgres-store.ts";
 import { StoreError, type OfferFlowStore, type SessionRecord } from "./store/store.ts";
@@ -108,6 +113,8 @@ export interface OfferFlowAppOptions {
   transcriber?: InterviewTranscriptionProvider;
   emailMailer?: EmailMailer;
   chatOcr?: ChatOcrProvider;
+  /** Model used by chat agents; defaults to the configured OpenAI-compatible API. */
+  agentModel?: ModelClient;
 }
 
 class HttpError extends Error {
@@ -303,6 +310,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     : new MemoryStore());
   const assistant = options.assistant ?? createAssistantProvider(config);
   const resumeTailor = options.resumeTailor ?? createResumeTailorProvider(config);
+  const agentModel = options.agentModel ?? (config.aiApiKey ? createOpenAiCompatibleModel(config) : undefined);
   const knowledge = options.knowledge ?? new KnowledgeService();
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
@@ -764,6 +772,98 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           }
         });
       }
+    } finally {
+      if (!response.writableEnded) response.end();
+    }
+  }
+
+  /** The resume and job a resume-coach conversation works on: the first ones the user picked, else their latest resume. */
+  async function resumeCoachMaterials(
+    userId: string,
+    references: ChatContextReference[]
+  ): Promise<{ profile?: PersonalProfile; job?: TailorJobContext }> {
+    const resumeReference = references.find((reference) => reference.kind === "resume");
+    const applicationReference = references.find((reference) => reference.kind === "application");
+    let profile: PersonalProfile | undefined;
+    if (resumeReference) {
+      profile = (await store.listResumeVersions(userId))
+        .find((item) => item.version.id === resumeReference.id)?.version.document.profile;
+    }
+    if (!profile) {
+      const latest = (await store.listResumeTemplates(userId))
+        .filter((template) => !template.deletedAt)
+        .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0];
+      profile = latest ? latest.document?.profile ?? cloudResumeToPersonalProfile(latest.profile) : undefined;
+    }
+    let job: TailorJobContext | undefined;
+    if (applicationReference) {
+      const application = (await store.listApplications(userId))
+        .find((item) => !item.deletedAt && item.application.id === applicationReference.id)?.application;
+      if (application) {
+        job = {
+          company: application.company,
+          position: application.position,
+          city: application.city,
+          sourceUrl: application.sourceUrl,
+          summary: application.summary,
+          responsibilities: application.responsibilities,
+          requirements: application.requirements,
+          rawExcerpt: application.rawExcerpt
+        };
+      }
+    }
+    return { profile, job };
+  }
+
+  async function streamAgentAnswer(
+    response: ServerResponse,
+    userId: string,
+    conversationId: string,
+    prompt: string,
+    history: ChatMessage[],
+    context: ChatContextReference[] = []
+  ): Promise<void> {
+    // Materials stay fixed for the conversation: use what was picked on the first message that picked anything.
+    const references = context.length
+      ? context
+      : history.find((message) => message.role === "user" && message.context?.length)?.context ?? [];
+    const materials = await resumeCoachMaterials(userId, references);
+    const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
+
+    response.statusCode = 200;
+    response.setHeader("content-type", "text/event-stream; charset=utf-8");
+    response.setHeader("cache-control", "no-cache, no-transform");
+    response.setHeader("connection", "keep-alive");
+    response.setHeader("x-accel-buffering", "no");
+    response.flushHeaders();
+    await writeSse(response, { type: "message.started", message: assistantMessage });
+
+    try {
+      if (!agentModel) throw new Error("AI 服务尚未配置，简历教练暂时不可用");
+      const turn = await runResumeCoachTurn({
+        model: agentModel,
+        ...materials,
+        history,
+        prompt,
+        onStep: (step) => writeSse(response, { type: "agent.step", messageId: assistantMessage.id, step }),
+        onRewrite: (rewrite) => writeSse(response, { type: "agent.rewrite", messageId: assistantMessage.id, rewrite }),
+        onExpertNote: (note) => writeSse(response, { type: "agent.expert", messageId: assistantMessage.id, note })
+      });
+      await writeSse(response, { type: "message.delta", messageId: assistantMessage.id, delta: turn.reply });
+      const completed = await store.completeAssistantMessage(
+        userId, conversationId, assistantMessage.id, turn.reply, [], "complete", undefined, turn.agentRun
+      );
+      await writeSse(response, { type: "message.completed", message: completed });
+      await writeSse(response, { type: "done" });
+    } catch (error) {
+      await store.completeAssistantMessage(userId, conversationId, assistantMessage.id, "", [], "error");
+      await writeSse(response, {
+        type: "error",
+        error: {
+          code: "CHAT_GENERATION_FAILED",
+          message: error instanceof Error ? error.message : "简历教练暂时不可用，请重试"
+        }
+      });
     } finally {
       if (!response.writableEnded) response.end();
     }
@@ -1385,6 +1485,12 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         }
       }
 
+      if (method === "GET" && path === "/v1/chat-agents") {
+        const roster = (agent: "resume_coach") => expertsFor(agent).map(({ id, name, role, when }) => ({ id, name, role, when }));
+        success(response, { agents: [{ id: "resume_coach" as const, name: "简历教练", experts: roster("resume_coach") }] });
+        return;
+      }
+
       if (method === "GET" && path === "/v1/chat-context") {
         success(response, await chatContextCatalog(userId));
         return;
@@ -1435,6 +1541,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         const history = await store.getConversationHistory(userId, conversationId);
         const messageIndex = history.findIndex((message) => message.id === messageId);
         const sourceMessage = history.slice(0, messageIndex).reverse().find((message) => message.role === "user");
+        if (history.some((message) => message.agentRun) && sourceMessage) {
+          const sourceIndex = history.indexOf(sourceMessage);
+          await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage.context);
+          return;
+        }
         await streamAnswer(
           request,
           response,
@@ -1468,6 +1579,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           body.attachments,
           context
         );
+        if (body.agent || history.some((message) => message.agentRun)) {
+          await streamAgentAnswer(response, userId, conversationId, body.content, history, context);
+          return;
+        }
         await streamAnswer(request, response, userId, conversationId, body.content, history, body.attachments, context);
         return;
       }

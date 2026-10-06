@@ -16,10 +16,12 @@ export function createOpenAiCompatibleModel(config: ApiConfig, options: { temper
           model: config.aiModel,
           temperature: options.temperature ?? 0.3,
           messages,
-          tools: tools.map(({ name, description, parameters }) => ({
-            type: "function",
-            function: { name, description, parameters }
-          }))
+          ...(tools.length ? {
+            tools: tools.map(({ name, description, parameters }) => ({
+              type: "function",
+              function: { name, description, parameters }
+            }))
+          } : {})
         })
       });
       if (!response.ok) {

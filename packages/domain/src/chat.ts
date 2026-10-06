@@ -43,6 +43,53 @@ export interface ChatOpportunityResults {
   sourceUpdatedAt?: string;
 }
 
+export type ChatAgentName = "resume_coach";
+
+/** One visible step of an agent turn, e.g. “读取简历” or a rejected rewrite. */
+export interface ChatAgentStep {
+  id: string;
+  label: string;
+  detail?: string;
+  status: "done" | "rejected";
+}
+
+export interface ChatAgentRewrite {
+  entryId: string;
+  title: string;
+  before: string;
+  after: string;
+  reason: string;
+}
+
+/** A named expert the user can see and call on, backed by a skill file. */
+export interface ChatAgentExpert {
+  id: string;
+  name: string;
+  role: string;
+  /** When the main agent (or the user) should call this expert. */
+  when: string;
+}
+
+export interface ChatAgentExpertNote {
+  id: string;
+  expertId: string;
+  expertName: string;
+  expertRole: string;
+  request: string;
+  content: string;
+}
+
+export interface ChatAgentRun {
+  agent: ChatAgentName;
+  steps: ChatAgentStep[];
+  rewrites: ChatAgentRewrite[];
+  /** Opinions from experts consulted during this turn. Missing on runs stored before experts existed. */
+  notes?: ChatAgentExpertNote[];
+  /** The model-side messages of this turn (tool calls and results), replayed
+   * on the next turn so the agent can continue where it stopped. */
+  trace: unknown[];
+}
+
 export interface ChatMessage {
   id: string;
   conversationId: string;
@@ -54,6 +101,7 @@ export interface ChatMessage {
   context?: ChatContextReference[];
   citations: KnowledgeCitation[];
   opportunityResults?: ChatOpportunityResults;
+  agentRun?: ChatAgentRun;
   feedback?: "positive" | "negative";
 }
 
