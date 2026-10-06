@@ -1039,10 +1039,6 @@
     overflow: hidden;
   }
 
-  .app-frame.app-frame--no-bottom-nav {
-    padding-block-end: 0;
-  }
-
   .app-frame.is-sidebar-collapsed { display: block; }
   .sidebar-collapse-toggle,
   .sidebar-compact-toggle { display: none; }
