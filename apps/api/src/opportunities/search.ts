@@ -250,7 +250,8 @@ export function searchOpportunitySnapshot(
   prompt: string,
   options: { limit?: number; now?: Date; sourceAvailable?: boolean; contextPrompt?: string } = {}
 ): ChatOpportunityResults {
-  const limit = Math.max(1, Math.min(options.limit ?? 5, 5));
+  // Chat answers show 5 cards; the job radar agent asks for more so it can filter them itself.
+  const limit = Math.max(1, Math.min(options.limit ?? 5, 20));
   const now = options.now ?? new Date();
   const currentFilters = filtersFor(prompt, snapshot.opportunities, now);
   const filters = options.contextPrompt

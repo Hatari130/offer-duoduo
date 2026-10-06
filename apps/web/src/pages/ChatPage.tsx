@@ -1,4 +1,6 @@
 import { useEffect, useRef, useState } from "react";
+import type { ChatAgentProfile } from "@offerflow/contracts";
+import { MAX_TEAM_SKILLS } from "@offerflow/contracts";
 import type {
   ChatAgentExpert,
   ChatAgentName,
@@ -7,51 +9,33 @@ import type {
   ChatContextOption,
   ChatContextReference,
   ChatConversation,
-  ChatMessage
+  ChatMessage,
+  CustomSkill,
+  CustomSkillDraft
 } from "@offerflow/domain";
 import { DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
-import { ArrowRight, CalendarDays, Compass, MessageCircle, PanelTop, Sparkles, X } from "lucide-react";
+import { ChevronRight, Store, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { createUuid } from "../app/id";
 import { navigate } from "../app/router";
+import { ExpertAvatar } from "../features/agents/skillMeta";
+import { SkillMarket } from "../features/agents/SkillMarket";
+import { TeamDialog } from "../features/agents/TeamDialog";
+import { TeamGallery } from "../features/agents/TeamGallery";
 import { ChatComposer } from "../features/chat/ChatComposer";
 import { CompanionAvatar } from "../features/chat/CompanionAvatar";
 import { ChatContextPicker } from "../features/chat/ChatContextPicker";
 import { MessageList } from "../features/chat/MessageList";
 import { chatPendingMode, type ChatPendingMode } from "../features/chat/pendingMode";
 
-const recommendationCards = [
-  {
-    prompt: "帮我找适合我的校招岗位。目标方向：【岗位方向】，意向城市：【城市】，毕业年份：【年份】。",
-    title: "找适合我的岗位",
-    description: "从目标方向和意向城市开始",
-    icon: Compass
-  },
-  {
-    prompt: "帮我把简历针对目标岗位改一下",
-    title: "针对岗位改简历",
-    description: "选一条投递，小鲤边问边改",
-    icon: PanelTop,
-    agent: "resume_coach"
-  },
-  {
-    prompt: "陪我练习一道【目标岗位】的面试题。请先出题，等我回答后再给具体反馈。",
-    title: "练一道面试题",
-    description: "先试着回答，再一起完善",
-    icon: MessageCircle
-  },
-  {
-    prompt: "帮我安排本周的求职计划。目标岗位：【岗位】，当前进度：【准备或投递阶段】，本周可用时间：【时间】。",
-    title: "安排本周求职",
-    description: "把目标拆成几件做得到的事",
-    icon: CalendarDays
-  }
-] as const satisfies ReadonlyArray<{ prompt: string; title: string; description: string; icon: unknown; agent?: ChatAgentName }>;
-
-function withAgentRun(message: ChatMessage, update: (run: ChatAgentRun) => ChatAgentRun): ChatMessage {
-  const run = message.agentRun ?? { agent: "resume_coach", steps: [], rewrites: [], trace: [] };
+function withAgentRun(message: ChatMessage, team: ChatAgentName, update: (run: ChatAgentRun) => ChatAgentRun): ChatMessage {
+  const run = message.agentRun ?? { agent: team, steps: [], rewrites: [], trace: [] };
   return { ...message, agentRun: update(run) };
+}
+
+function lastAgentRun(messages: ChatMessage[]): ChatAgentRun | undefined {
+  return [...messages].reverse().find((message) => message.agentRun)?.agentRun;
 }
 
 export function ChatPage({ conversationId }: { conversationId?: string }) {
@@ -60,8 +44,14 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [taskHint, setTaskHint] = useState("");
-  const [agentMode, setAgentMode] = useState<ChatAgentName>();
-  const [experts, setExperts] = useState<ChatAgentExpert[]>([]);
+  // Teams and skills. `teamSkills` undefined = not customised: the last run's team, else the defaults.
+  const [agents, setAgents] = useState<ChatAgentProfile[]>([]);
+  const [skills, setSkills] = useState<ChatAgentExpert[]>([]);
+  const [customSkills, setCustomSkills] = useState<CustomSkill[]>([]);
+  const [team, setTeam] = useState<ChatAgentName>();
+  const [teamSkills, setTeamSkills] = useState<string[]>();
+  const [teamDialog, setTeamDialog] = useState<ChatAgentName>();
+  const [marketOpen, setMarketOpen] = useState(false);
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [attachmentProcessing, setAttachmentProcessing] = useState(false);
   const [contextOptions, setContextOptions] = useState<ChatContextOption[]>([]);
@@ -75,31 +65,66 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const abortRef = useRef<AbortController>();
   const justCreatedRef = useRef<string>();
 
-  const prepareTask = (prompt: string) => {
-    if (streaming) return;
-    const next = draft.trim() ? `${draft}\n\n${prompt}` : prompt;
-    setDraft(next);
-    setTaskHint("已填入问题模板，补充括号里的内容后再发送。");
+  const focusComposer = (caretAtEnd = true) => {
     window.requestAnimationFrame(() => {
       const input = document.getElementById("career-question") as HTMLTextAreaElement | null;
       if (!input) return;
       input.focus();
-      const start = next.indexOf("【", next.length - prompt.length);
-      if (start >= 0) input.setSelectionRange(start, next.indexOf("】", start) + 1);
-      input.scrollIntoView({ block: "nearest", behavior: "instant" });
+      if (caretAtEnd) input.setSelectionRange(input.value.length, input.value.length);
     });
   };
 
-  const startAgentTask = (prompt: string, agent: ChatAgentName) => {
-    if (streaming) return;
-    setAgentMode(agent);
-    setDraft(prompt);
-    setTaskHint("已进入简历教练：在“参考资料”里选一条投递作为目标岗位，或直接粘贴岗位 JD。");
-    window.requestAnimationFrame(() => {
-      const input = document.getElementById("career-question") as HTMLTextAreaElement | null;
-      input?.focus();
-      input?.setSelectionRange(prompt.length, prompt.length);
-    });
+  // A conversation belongs to the team that answered in it; it cannot switch teams afterwards.
+  const conversationRun = lastAgentRun(messages);
+  const activeTeam = agents.find((agent) => agent.id === team);
+  const memberIds = teamSkills ?? conversationRun?.skills ?? activeTeam?.defaultSkills ?? [];
+  const members = memberIds.flatMap((id) => skills.filter((skill) => skill.id === id));
+
+  const inviteTeam = (next: ChatAgentName) => {
+    if (streaming || (conversationRun && conversationRun.agent !== next)) return;
+    const profile = agents.find((agent) => agent.id === next);
+    setTeam(next);
+    setTeamSkills(undefined);
+    setTeamDialog(undefined);
+    if (!draft.trim() && profile) setDraft(profile.starter);
+    setTaskHint(`已邀请${profile?.name ?? "团队"}。需要对照岗位时，可以在“选择已有材料”里选一条投递。`);
+    focusComposer();
+  };
+
+  const toggleSkill = (skillId: string) => {
+    if (memberIds.includes(skillId)) setTeamSkills(memberIds.filter((id) => id !== skillId));
+    else if (memberIds.length >= MAX_TEAM_SKILLS) setError(`一支团队最多 ${MAX_TEAM_SKILLS} 位专家`);
+    else setTeamSkills([...memberIds, skillId]);
+  };
+
+  const mentionExpert = (expert: ChatAgentExpert) => {
+    const mention = `@${expert.name} `;
+    setDraft((current) => current.includes(mention) ? current : `${mention}${current}`);
+    setTeamDialog(undefined);
+    focusComposer();
+  };
+
+  const refreshSkills = async () => {
+    const [roster, own] = await Promise.all([api.chat.listAgents(), api.chat.listCustomSkills()]);
+    setAgents(roster.agents);
+    setSkills(roster.skills);
+    setCustomSkills(own.skills);
+  };
+
+  const saveCustomSkill = async (skillDraft: CustomSkillDraft, id?: string) => {
+    const saved = id ? await api.chat.updateCustomSkill(id, skillDraft) : await api.chat.createCustomSkill(skillDraft);
+    await refreshSkills();
+    // A newly created skill joins the current team right away when it fits.
+    const skillId = `custom:${saved.skill.id}`;
+    if (!id && team && saved.skill.teams.includes(team) && !memberIds.includes(skillId) && memberIds.length < MAX_TEAM_SKILLS) {
+      setTeamSkills([...memberIds, skillId]);
+    }
+  };
+
+  const deleteCustomSkill = async (id: string) => {
+    await api.chat.deleteCustomSkill(id);
+    setTeamSkills(memberIds.filter((skillId) => skillId !== `custom:${id}`));
+    await refreshSkills();
   };
 
   useEffect(() => {
@@ -107,15 +132,17 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       setConversation(undefined);
       setMessages([]);
       setLoading(false);
-      setAgentMode(undefined);
+      setTeam(undefined);
+      setTeamSkills(undefined);
       return;
     }
     if (justCreatedRef.current === conversationId) {
       justCreatedRef.current = undefined;
       return;
     }
-    // Another conversation: its own history decides whether it belongs to an agent.
-    setAgentMode(undefined);
+    // Another conversation: its own history decides which team it belongs to.
+    setTeam(undefined);
+    setTeamSkills(undefined);
     let active = true;
     setLoading(true);
     setError("");
@@ -125,6 +152,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
         if (!active) return;
         setConversation(result.conversation);
         setMessages(result.messages);
+        setTeam(lastAgentRun(result.messages)?.agent);
         const latestContext = [...result.messages].reverse().find((message) => message.role === "user")?.context;
         setSelectedContext(latestContext || []);
       })
@@ -151,13 +179,21 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   }, [conversation?.id]);
 
   useEffect(() => {
-    if (status === "anonymous") return;
     let active = true;
     api.chat.listAgents()
       .then((result) => {
-        if (active) setExperts(result.agents.find((agent) => agent.id === "resume_coach")?.experts ?? []);
+        if (!active) return;
+        setAgents(result.agents);
+        setSkills(result.skills);
       })
       .catch(() => undefined);
+    if (status !== "anonymous") {
+      api.chat.listCustomSkills()
+        .then((result) => {
+          if (active) setCustomSkills(result.skills);
+        })
+        .catch(() => undefined);
+    }
     return () => {
       active = false;
     };
@@ -221,13 +257,13 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       } else if (event.type === "agent.step") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId
-            ? withAgentRun(message, (run) => ({ ...run, steps: [...run.steps, event.step] }))
+            ? withAgentRun(message, team ?? "resume_coach", (run) => ({ ...run, steps: [...run.steps, event.step] }))
             : message
         ));
       } else if (event.type === "agent.rewrite") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId
-            ? withAgentRun(message, (run) => ({
+            ? withAgentRun(message, team ?? "resume_coach", (run) => ({
               ...run,
               rewrites: [...run.rewrites.filter((item) => item.entryId !== event.rewrite.entryId), event.rewrite]
             }))
@@ -236,7 +272,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       } else if (event.type === "agent.expert") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId
-            ? withAgentRun(message, (run) => ({ ...run, notes: [...(run.notes ?? []), event.note] }))
+            ? withAgentRun(message, team ?? "resume_coach", (run) => ({ ...run, notes: [...(run.notes ?? []), event.note] }))
             : message
         ));
       } else if (event.type === "message.completed") {
@@ -318,7 +354,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             clientMessageId: clientMessage.id,
             attachments: clientMessage.attachments,
             context: clientMessage.context,
-            ...(agentMode ? { agent: agentMode } : {})
+            ...(team ? { agent: team, ...(teamSkills ? { skills: teamSkills } : {}) } : {})
           },
           controller.signal
         ),
@@ -395,42 +431,70 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     }
   };
 
-  const inAgentConversation = agentMode !== undefined || messages.some((message) => message.agentRun);
-  const mentionExpert = (expert: ChatAgentExpert) => {
-    const mention = `@${expert.name} `;
-    setDraft((current) => current.includes(mention) ? current : `${mention}${current}`);
-    window.requestAnimationFrame(() => document.getElementById("career-question")?.focus());
-  };
-  const agentBanner = inAgentConversation && (
-    <div className="agent-mode-banner">
-      <Sparkles aria-hidden="true" size={14} />
-      <div className="agent-mode-banner__text">
-        <span><strong>简历教练</strong>会读取你的简历和目标岗位，缺素材时先问你，只写你说过的事实。</span>
-        {experts.length > 0 && (
-          <div className="expert-roster" aria-label="专家团，点击可以点名请他看">
-            {experts.map((expert) => (
-              <button type="button" key={expert.id} title={expert.when} onClick={() => mentionExpert(expert)}>
-                <span className="expert-avatar" aria-hidden="true">{expert.name.slice(-1)}</span>
-                {expert.name}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      {agentMode && !messages.some((message) => message.agentRun) && (
-        <button type="button" className="agent-mode-banner__close" aria-label="退出简历教练" onClick={() => setAgentMode(undefined)}>
-          <X aria-hidden="true" size={14} />
+  const teamChip = activeTeam && (
+    <div className="team-chip">
+      <button type="button" className="team-chip__main" onClick={() => setTeamDialog(activeTeam.id)} aria-label={`${activeTeam.name}，查看和调整成员`}>
+        <span className="avatar-stack">
+          {members.slice(0, 4).map((member) => <ExpertAvatar key={member.id} expert={member} />)}
+        </span>
+        <strong>{activeTeam.name}</strong>
+        <span>{members.length ? `${members.length} 位专家为你工作` : "主教练独自工作"}</span>
+        <ChevronRight aria-hidden="true" size={14} />
+      </button>
+      {!conversationRun && (
+        <button type="button" className="team-chip__leave" aria-label="不邀请这支团队" onClick={() => setTeam(undefined)}>
+          <X aria-hidden="true" size={13} />
         </button>
       )}
     </div>
   );
   const contextPicker = status !== "anonymous" && (
-    <ChatContextPicker
-      options={contextOptions}
-      selected={selectedContext}
-      loading={contextLoading}
-      onChange={setSelectedContext}
-    />
+    <>
+      <ChatContextPicker
+        options={contextOptions}
+        selected={selectedContext}
+        loading={contextLoading}
+        onChange={setSelectedContext}
+      />
+      <button type="button" className="composer-skill-button" onClick={() => setMarketOpen(true)}>
+        <Store aria-hidden="true" size={14} />技能
+      </button>
+    </>
+  );
+  const shownTeam = agents.find((agent) => agent.id === teamDialog);
+  const shownMembers = shownTeam && shownTeam.id === team
+    ? members
+    : (shownTeam?.defaultSkills ?? []).flatMap((id) => skills.filter((skill) => skill.id === id));
+  const agentDialogs = (
+    <>
+      <TeamDialog
+        team={shownTeam}
+        members={shownMembers}
+        invited={Boolean(shownTeam && shownTeam.id === team)}
+        locked={Boolean(shownTeam && conversationRun && conversationRun.agent !== shownTeam.id)}
+        onClose={() => setTeamDialog(undefined)}
+        onInvite={() => shownTeam && (requireChatLogin() ? inviteTeam(shownTeam.id) : setTeamDialog(undefined))}
+        onRemove={toggleSkill}
+        onReset={() => setTeamSkills(activeTeam?.defaultSkills)}
+        onMention={mentionExpert}
+        onOpenMarket={() => {
+          setTeamDialog(undefined);
+          setMarketOpen(true);
+        }}
+      />
+      <SkillMarket
+        open={marketOpen}
+        onClose={() => setMarketOpen(false)}
+        agents={agents}
+        skills={skills}
+        customSkills={customSkills}
+        activeTeam={activeTeam}
+        teamSkillIds={memberIds}
+        onToggle={toggleSkill}
+        onSaveCustom={saveCustomSkill}
+        onDeleteCustom={deleteCustomSkill}
+      />
+    </>
   );
 
   if (loading) {
@@ -470,11 +534,10 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             <div className="chat-atmosphere__orb chat-atmosphere__orb--primary" />
             <div className="chat-atmosphere__orb chat-atmosphere__orb--secondary" />
           </div>
-          <h1 tabIndex={-1}>今天，我们先推进哪一步？</h1>
+          <h1 tabIndex={-1}>说出你的目标，求职团队和你一起推进</h1>
           <p>
-            找岗位、改简历、练面试。小鲤陪你从眼前的一小步开始。
+            邀请一支团队，再用技能市场里的专家升级他们。
           </p>
-          {agentBanner}
           <ChatComposer
             value={draft}
             attachments={attachments}
@@ -483,6 +546,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onProcessingChange={setAttachmentProcessing}
             streaming={streaming}
             contextSlot={contextPicker}
+            headerSlot={teamChip}
             autoFocus
             onChange={setDraft}
             onAttachmentsChange={setAttachments}
@@ -491,35 +555,18 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
-          <section className="recommendation-section" aria-label={`${DEFAULT_CHAT_COMPANION.name}可以陪你`}>
-            <header>
-              <div>
-                <span className="recommendation-label">从一件具体的事开始</span>
-              </div>
-            </header>
-            <div className="recommendation-grid">
-              {recommendationCards.map((card) => {
-                const Icon = card.icon;
-                return (
-                  <button
-                    type="button"
-                    className="chat-task-card"
-                    key={card.prompt}
-                    onClick={() => "agent" in card ? startAgentTask(card.prompt, card.agent) : prepareTask(card.prompt)}
-                    disabled={streaming}
-                  >
-                    <span className="chat-task-icon" aria-hidden="true"><Icon size={21} strokeWidth={1.7} /></span>
-                    <span className="chat-task-copy">
-                      <strong>{card.title}</strong>
-                      <span>{card.description}</span>
-                    </span>
-                    <ArrowRight aria-hidden="true" size={16} />
-                  </button>
-                );
-              })}
-            </div>
-            <span className="sr-only" role="status">{taskHint}</span>
-          </section>
+          {agents.length > 0 && (
+            <TeamGallery
+              agents={agents}
+              skills={skills}
+              activeTeam={team}
+              onInvite={(next) => {
+                if (requireChatLogin()) inviteTeam(next);
+              }}
+              onDetail={setTeamDialog}
+            />
+          )}
+          <span className="sr-only" role="status">{taskHint}</span>
           <small className="chat-disclaimer">AI 回答可能不完整，重要招聘信息请以企业官方公告为准。</small>
         </div>
       ) : (
@@ -550,7 +597,6 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             />
           </div>
           <div className="thread-composer">
-            {agentBanner}
             <ChatComposer
               value={draft}
               attachments={attachments}
@@ -559,6 +605,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               onProcessingChange={setAttachmentProcessing}
               streaming={streaming}
               contextSlot={contextPicker}
+              headerSlot={teamChip}
               onChange={setDraft}
               onAttachmentsChange={setAttachments}
               onAttachmentRequest={requireChatLogin}
@@ -573,6 +620,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       <div className="chat-status" role="alert" aria-atomic="true">
         {error && <><span>{error}</span><button type="button" aria-label="关闭提示" onClick={() => setError("")}><X aria-hidden="true" size={14} /></button></>}
       </div>
+      {agentDialogs}
     </section>
   );
 }

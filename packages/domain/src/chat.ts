@@ -43,7 +43,10 @@ export interface ChatOpportunityResults {
   sourceUpdatedAt?: string;
 }
 
-export type ChatAgentName = "resume_coach";
+/** A team the user can invite into a conversation. Each team is one agent with its own tools. */
+export type ChatAgentName = "resume_coach" | "interview_coach" | "job_radar" | "career_planner";
+
+export const CHAT_AGENT_NAMES: readonly ChatAgentName[] = ["resume_coach", "interview_coach", "job_radar", "career_planner"];
 
 /** One visible step of an agent turn, e.g. “读取简历” or a rejected rewrite. */
 export interface ChatAgentStep {
@@ -61,13 +64,37 @@ export interface ChatAgentRewrite {
   reason: string;
 }
 
-/** A named expert the user can see and call on, backed by a skill file. */
+export type ChatSkillCategory = "resume" | "interview" | "strategy" | "perspective" | "custom";
+
+/** A named expert the user can see and call on, backed by a skill (official file or user-created). */
 export interface ChatAgentExpert {
   id: string;
   name: string;
   role: string;
   /** When the main agent (or the user) should call this expert. */
   when: string;
+  /** One line for the skill market card. */
+  summary: string;
+  category: ChatSkillCategory;
+  source: "official" | "custom";
+  /** Teams this skill can join. */
+  teams: ChatAgentName[];
+}
+
+/** What a user writes to create their own skill. */
+export interface CustomSkillDraft {
+  name: string;
+  role: string;
+  when: string;
+  summary: string;
+  instructions: string;
+  teams: ChatAgentName[];
+}
+
+export interface CustomSkill extends CustomSkillDraft {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ChatAgentExpertNote {
@@ -85,6 +112,8 @@ export interface ChatAgentRun {
   rewrites: ChatAgentRewrite[];
   /** Opinions from experts consulted during this turn. Missing on runs stored before experts existed. */
   notes?: ChatAgentExpertNote[];
+  /** Skills on the team for this turn; later turns keep them unless the user changes the team. */
+  skills?: string[];
   /** The model-side messages of this turn (tool calls and results), replayed
    * on the next turn so the agent can continue where it stopped. */
   trace: unknown[];
