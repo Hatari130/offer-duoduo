@@ -1,0 +1,217 @@
+{
+  "description": "简历岗位定制考卷 v1。人物与经历均为虚构，按 2026-08-26 至 2026-10-06 生产对话中出现的 10 类典型求职者改写，不含任何真实用户信息。keywords 是 JD 里候选人确有相关经历、改写后应当被突出的能力词。",
+  "cases": [
+    {
+      "id": "chinese-lit-to-admin",
+      "archetype": "汉语言文学本科，学生组织经历，投国企行政岗",
+      "job": {
+        "company": "某能源集团省公司",
+        "position": "综合管理岗（行政方向）",
+        "city": "石家庄",
+        "sourceUrl": "https://example.com/jobs/admin-01",
+        "responsibilities": ["负责公文起草、会议组织与会议纪要", "负责内部宣传稿件撰写与公众号维护", "协调各部门日常行政事务"],
+        "requirements": ["文字功底扎实，熟悉公文写作", "具备良好的沟通协调能力", "中共党员优先"]
+      },
+      "keywords": ["公文", "会议纪要", "宣传", "协调"],
+      "resume": {
+        "selfIntroduction": "汉语言文学专业本科生，喜欢写作，做事认真负责。",
+        "strengths": "办公软件、新闻写作、摄影",
+        "experiences": [
+          { "id": "exp-1", "organization": "某市实验小学", "title": "行政助理实习生", "startDate": "2026.07", "endDate": "2026.08", "description": "• 帮忙整理学校的会议记录和通知文件\n• 协助老师准备家长会材料，负责签到" }
+        ],
+        "campusExperiences": [
+          { "id": "camp-1", "type": "学院融媒体中心", "role": "干事", "startDate": "2024.09", "endDate": "2026.06", "description": "• 学院有活动时去拍照，写新闻稿\n• 写公众号推文，管理学院公众号，共发布推文 40 余篇" }
+        ]
+      }
+    },
+    {
+      "id": "accounting-to-operations",
+      "archetype": "会计本科，事务所实习 + 自运营小红书，想转运营",
+      "job": {
+        "company": "某消费品牌",
+        "position": "新媒体运营管培生",
+        "city": "杭州",
+        "sourceUrl": "https://example.com/jobs/ops-02",
+        "responsibilities": ["负责小红书、抖音账号的内容策划与日常运营", "跟踪内容数据，复盘并优化选题", "配合品牌活动输出图文物料"],
+        "requirements": ["有社交媒体账号运营经验", "具备数据分析意识", "会使用设计工具者优先"]
+      },
+      "keywords": ["小红书", "内容", "数据", "复盘"],
+      "resume": {
+        "selfIntroduction": "会计学专业，细心严谨，对新媒体运营感兴趣。",
+        "strengths": "Excel、Photoshop、Illustrator",
+        "experiences": [
+          { "id": "exp-1", "organization": "某会计师事务所", "title": "审计实习生", "startDate": "2025.12", "endDate": "2026.02", "description": "• 参与 2 家企业的年报审计，负责底稿整理和凭证抽查\n• 核对银行流水与账面记录" }
+        ],
+        "projects": [
+          { "id": "proj-1", "name": "个人小红书账号运营", "role": "运营者", "startDate": "2025.03", "endDate": "至今", "description": "• 独立运营一个学习分享类小红书账号，累计粉丝 2300\n• 自己设计封面和排版，单篇最高点赞 1100" }
+        ],
+        "campusExperiences": [
+          { "id": "camp-1", "type": "学校宣传教育中心", "role": "干事", "startDate": "2023.09", "endDate": "2025.06", "description": "• 设计活动海报和宣传手册\n• 撰写活动推广文案" }
+        ]
+      }
+    },
+    {
+      "id": "ecommerce-livestream",
+      "archetype": "电商专业，直播助播 + 跨境店铺，投电商运营管培生",
+      "job": {
+        "company": "某文具集团",
+        "position": "电商运营管培生",
+        "city": "宁波",
+        "sourceUrl": "https://example.com/jobs/ecom-03",
+        "responsibilities": ["参与天猫、抖音店铺的日常运营与活动策划", "负责直播间排品与数据复盘", "跟进商品上架、库存与订单"],
+        "requirements": ["有直播或电商平台运营经验", "数据敏感，能用数据指导运营动作", "沟通能力强"]
+      },
+      "keywords": ["直播", "上架", "数据", "店铺"],
+      "resume": {
+        "selfIntroduction": "电子商务专业，有直播和跨境电商实操经验。",
+        "strengths": "Excel、剪映、1688、OZON 后台",
+        "experiences": [
+          { "id": "exp-1", "organization": "某汽车清洁用品品牌", "title": "直播运营实习生", "startDate": "2026.03", "endDate": "2026.05", "description": "• 配合品牌直播，协助主播讲解 5 款产品卖点\n• 负责弹幕互动和商品上架，单场直播曝光 569 人，进房 123 人" },
+          { "id": "exp-2", "organization": "某国际货运代理公司", "title": "跨境电商运营实习生", "startDate": "2025.07", "endDate": "2025.09", "description": "• 独立运营 OZON 店铺并成功出单\n• 在 1688 上比价选品，跟进订单发货" }
+        ]
+      }
+    },
+    {
+      "id": "data-assistant-to-bank-teller",
+      "archetype": "数据科学本科，课题组数据助理，投银行柜员",
+      "job": {
+        "company": "某国有银行市分行",
+        "position": "综合柜员",
+        "city": "长春",
+        "sourceUrl": "https://example.com/jobs/bank-04",
+        "responsibilities": ["办理个人与对公柜面业务", "为客户提供咨询与产品介绍", "做好服务记录与差错核对"],
+        "requirements": ["具备客户服务意识", "细致认真，责任心强", "有一定营销沟通能力"]
+      },
+      "keywords": ["沟通", "核对", "需求", "服务"],
+      "resume": {
+        "selfIntroduction": "数据科学与大数据技术专业，熟悉数据处理。",
+        "strengths": "SQL、Python、Excel",
+        "experiences": [
+          { "id": "exp-1", "organization": "某大学地理研究所课题组", "title": "数据项目助理", "startDate": "2025.03", "endDate": "2025.12", "description": "• 配合教授对接外部合作方，沟通并记录数据需求\n• 完成论文数据的清洗、交叉验证与查错，在需求变化时同步核对口径" }
+        ]
+      }
+    },
+    {
+      "id": "game-ops-to-pm",
+      "archetype": "游戏公司产品运营实习，做流失分析，想投产品经理",
+      "job": {
+        "company": "某互联网公司",
+        "position": "产品经理（增长方向）",
+        "city": "上海",
+        "sourceUrl": "https://example.com/jobs/pm-05",
+        "responsibilities": ["分析用户反馈与数据，提出产品优化方案", "制定并执行用户获取、留存、活跃提升策略", "设计 A/B 实验并评估效果"],
+        "requirements": ["具备数据分析能力", "有用户研究或增长相关经验", "逻辑清晰，善于推动跨团队协作"]
+      },
+      "keywords": ["留存", "A/B", "用户画像", "策略"],
+      "resume": {
+        "selfIntroduction": "有大厂产品运营实习经历，擅长数据分析。",
+        "strengths": "SQL、Python、XGBoost、A/B 实验设计",
+        "experiences": [
+          { "id": "exp-1", "organization": "某游戏公司", "title": "产品运营实习生", "startDate": "2026.05", "endDate": "2026.08", "description": "• 基于线上数据搭建新手流失漏斗，按 4 个阶段拆解\n• 用聚类方法得到 5 类新手画像，配合 AI Bot 投放策略设计\n• 设计 A/B 实验，新策略上线后留存相关指标提升 6.5%" }
+        ]
+      }
+    },
+    {
+      "id": "chemistry-lab",
+      "archetype": "应用化学本科，检测中心实习，投实验室检测岗",
+      "job": {
+        "company": "某检测认证公司",
+        "position": "化学检测工程师",
+        "city": "常州",
+        "sourceUrl": "https://example.com/jobs/lab-06",
+        "responsibilities": ["按标准完成样品前处理与仪器分析", "记录并审核检测数据，出具报告", "维护实验室仪器与安全规范"],
+        "requirements": ["化学相关专业", "熟悉常见前处理方法", "做事严谨，遵守安全规范"]
+      },
+      "keywords": ["前处理", "检测", "规范", "数据"],
+      "resume": {
+        "selfIntroduction": "应用化学专业本科，有实验室实习经历。",
+        "strengths": "常规化学实验操作、Origin",
+        "experiences": [
+          { "id": "exp-1", "organization": "某海关技术中心化学实验室", "title": "实习生", "startDate": "2024.04", "endDate": "2024.08", "description": "• 负责样品的无机、有机分析测试前处理\n• 协助老师整理实验记录" }
+        ]
+      }
+    },
+    {
+      "id": "hr-training-to-od",
+      "archetype": "HR 培训方向实习，投组织与人才发展岗",
+      "job": {
+        "company": "某珠宝零售集团",
+        "position": "人力岗（组织与人才发展）",
+        "city": "汕头",
+        "sourceUrl": "https://example.com/jobs/hr-07",
+        "responsibilities": ["参与培训项目的策划、执行与复盘", "参与企业文化活动策划与运营", "维护学习平台内容，整理培训数据"],
+        "requirements": ["人力资源或相关专业", "有培训项目执行经验", "沟通与组织能力强"]
+      },
+      "keywords": ["培训", "复盘", "学习平台", "满意度"],
+      "resume": {
+        "selfIntroduction": "汉语言文学专业，两段 HR 培训方向实习。",
+        "strengths": "Office、剪映、问卷星",
+        "experiences": [
+          { "id": "exp-1", "organization": "某电商公司", "title": "HR 实习生（培训方向）", "startDate": "2026.06", "endDate": "至今", "description": "• 跟进多期培训班的筹备、执行和复盘\n• 搭建报名、签到、满意度调查流程\n• 把培训视频剪辑后上传到线上学习平台" }
+        ]
+      }
+    },
+    {
+      "id": "finance-basic",
+      "archetype": "财务管理本科，两段财务实习，投基础财务岗",
+      "job": {
+        "company": "某中型制造企业",
+        "position": "财务助理",
+        "city": "上海",
+        "sourceUrl": "https://example.com/jobs/fin-08",
+        "responsibilities": ["审核报销单据与发票", "录入凭证，整理财务档案", "协助月末结账与对账"],
+        "requirements": ["财务相关专业", "持有初级会计证优先", "熟悉金蝶或用友"]
+      },
+      "keywords": ["发票", "凭证", "报销", "金蝶"],
+      "resume": {
+        "selfIntroduction": "财务管理专业本科，持有初级会计证、计算机二级证书。",
+        "strengths": "金蝶、用友、Excel 数据透视表、VLOOKUP",
+        "experiences": [
+          { "id": "exp-1", "organization": "某商贸公司", "title": "财务实习生", "startDate": "2025.07", "endDate": "2025.08", "description": "• 整理和审核发票，复核费用报销\n• 录入凭证并装订，归档财务档案" },
+          { "id": "exp-2", "organization": "某物业公司", "title": "出纳实习生", "startDate": "2026.01", "endDate": "2026.02", "description": "• 整理银行回单\n• 登记日记账" }
+        ]
+      }
+    },
+    {
+      "id": "content-ops",
+      "archetype": "新媒体硕士，大厂社区运营实习，投内容运营",
+      "job": {
+        "company": "某出海互联网公司",
+        "position": "海外内容运营",
+        "city": "广州",
+        "sourceUrl": "https://example.com/jobs/content-09",
+        "responsibilities": ["负责海外社媒账号的内容策划与发布", "运营创作者社群，提升活跃度", "跟踪热点，策划话题活动"],
+        "requirements": ["有社区或内容运营经验", "英语可作为工作语言", "对热点敏感"]
+      },
+      "keywords": ["社群", "热点", "创作者", "内容"],
+      "resume": {
+        "selfIntroduction": "整合营销传播硕士，有两段互联网内容运营实习，英语流利。",
+        "strengths": "英语（雅思 7.5）、剪映、数据看板",
+        "experiences": [
+          { "id": "exp-1", "organization": "某短视频平台", "title": "热点运营实习生", "startDate": "2025.02", "endDate": "2025.05", "description": "• 运营 60 余个剧综类热点事件，做内容解读和用户激励\n• 参与策划短剧与热点结合的站内活动" },
+          { "id": "exp-2", "organization": "某社交平台", "title": "社区运营实习生", "startDate": "2024.08", "endDate": "2024.12", "description": "• 运营明星超话社区，日均发文 20 余条\n• 维护 19 个创作者社群" }
+        ]
+      }
+    },
+    {
+      "id": "phd-pharmacology",
+      "archetype": "生物学博士，动物实验经验，投药理研究员",
+      "job": {
+        "company": "某放射性药物公司",
+        "position": "药理研究员",
+        "city": "天津",
+        "sourceUrl": "https://example.com/jobs/pharm-10",
+        "responsibilities": ["设计并开展放射性药物的体内药效与药代实验", "建立动物模型，完成影像学评价", "撰写实验报告"],
+        "requirements": ["药理学、生物学等相关专业博士", "熟悉动物实验与小动物影像", "有放射相关实验经验优先"]
+      },
+      "keywords": ["动物", "影像", "放射", "实验设计"],
+      "resume": {
+        "selfIntroduction": "生物学博士在读，研究方向为辐射后骨髓微环境。",
+        "strengths": "小鼠实验、免疫荧光、lineage tracing、microCT",
+        "projects": [
+          { "id": "proj-1", "name": "辐射对骨髓间充质基质细胞分化的影响", "role": "博士课题", "startDate": "2023.09", "endDate": "至今", "description": "• 对小鼠进行放射照射，用 lineage tracing 荧光小鼠追踪细胞来源\n• 通过免疫荧光和 microCT 评估骨髓变化" }
+        ]
+      }
+    }
+  ]
+}

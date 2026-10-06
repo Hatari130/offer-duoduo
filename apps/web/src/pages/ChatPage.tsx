@@ -1,5 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import type {
+  ChatAgentExpert,
+  ChatAgentName,
+  ChatAgentRun,
   ChatAttachment,
   ChatContextOption,
   ChatContextReference,
@@ -7,7 +10,7 @@ import type {
   ChatMessage
 } from "@offerflow/domain";
 import { DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
-import { ArrowRight, CalendarDays, Compass, MessageCircle, PanelTop, X } from "lucide-react";
+import { ArrowRight, CalendarDays, Compass, MessageCircle, PanelTop, Sparkles, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
 import { createUuid } from "../app/id";
@@ -26,10 +29,11 @@ const recommendationCards = [
     icon: Compass
   },
   {
-    prompt: "帮我修改一段简历，保留真实经历。目标岗位：【岗位】，需要修改的原文：【粘贴经历，或选择已有简历材料】。",
-    title: "改一段简历",
-    description: "把你的经历写得更清楚",
-    icon: PanelTop
+    prompt: "帮我把简历针对目标岗位改一下",
+    title: "针对岗位改简历",
+    description: "选一条投递，小鲤边问边改",
+    icon: PanelTop,
+    agent: "resume_coach"
   },
   {
     prompt: "陪我练习一道【目标岗位】的面试题。请先出题，等我回答后再给具体反馈。",
@@ -43,7 +47,12 @@ const recommendationCards = [
     description: "把目标拆成几件做得到的事",
     icon: CalendarDays
   }
-] as const;
+] as const satisfies ReadonlyArray<{ prompt: string; title: string; description: string; icon: unknown; agent?: ChatAgentName }>;
+
+function withAgentRun(message: ChatMessage, update: (run: ChatAgentRun) => ChatAgentRun): ChatMessage {
+  const run = message.agentRun ?? { agent: "resume_coach", steps: [], rewrites: [], trace: [] };
+  return { ...message, agentRun: update(run) };
+}
 
 export function ChatPage({ conversationId }: { conversationId?: string }) {
   const { status, requestLogin } = useAuth();
@@ -51,6 +60,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [taskHint, setTaskHint] = useState("");
+  const [agentMode, setAgentMode] = useState<ChatAgentName>();
+  const [experts, setExperts] = useState<ChatAgentExpert[]>([]);
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [attachmentProcessing, setAttachmentProcessing] = useState(false);
   const [contextOptions, setContextOptions] = useState<ChatContextOption[]>([]);
@@ -79,17 +90,32 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     });
   };
 
+  const startAgentTask = (prompt: string, agent: ChatAgentName) => {
+    if (streaming) return;
+    setAgentMode(agent);
+    setDraft(prompt);
+    setTaskHint("已进入简历教练：在“参考资料”里选一条投递作为目标岗位，或直接粘贴岗位 JD。");
+    window.requestAnimationFrame(() => {
+      const input = document.getElementById("career-question") as HTMLTextAreaElement | null;
+      input?.focus();
+      input?.setSelectionRange(prompt.length, prompt.length);
+    });
+  };
+
   useEffect(() => {
     if (!conversationId) {
       setConversation(undefined);
       setMessages([]);
       setLoading(false);
+      setAgentMode(undefined);
       return;
     }
     if (justCreatedRef.current === conversationId) {
       justCreatedRef.current = undefined;
       return;
     }
+    // Another conversation: its own history decides whether it belongs to an agent.
+    setAgentMode(undefined);
     let active = true;
     setLoading(true);
     setError("");
@@ -123,6 +149,19 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     window.addEventListener("offerflow:conversation-renamed", renamed);
     return () => window.removeEventListener("offerflow:conversation-renamed", renamed);
   }, [conversation?.id]);
+
+  useEffect(() => {
+    if (status === "anonymous") return;
+    let active = true;
+    api.chat.listAgents()
+      .then((result) => {
+        if (active) setExperts(result.agents.find((agent) => agent.id === "resume_coach")?.experts ?? []);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, [status]);
 
   useEffect(() => {
     if (status === "anonymous") {
@@ -179,6 +218,27 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               : message
           )
         );
+      } else if (event.type === "agent.step") {
+        setMessages((current) => current.map((message) =>
+          message.id === event.messageId
+            ? withAgentRun(message, (run) => ({ ...run, steps: [...run.steps, event.step] }))
+            : message
+        ));
+      } else if (event.type === "agent.rewrite") {
+        setMessages((current) => current.map((message) =>
+          message.id === event.messageId
+            ? withAgentRun(message, (run) => ({
+              ...run,
+              rewrites: [...run.rewrites.filter((item) => item.entryId !== event.rewrite.entryId), event.rewrite]
+            }))
+            : message
+        ));
+      } else if (event.type === "agent.expert") {
+        setMessages((current) => current.map((message) =>
+          message.id === event.messageId
+            ? withAgentRun(message, (run) => ({ ...run, notes: [...(run.notes ?? []), event.note] }))
+            : message
+        ));
       } else if (event.type === "message.completed") {
         setMessages((current) =>
           current.map((message) => message.id === event.message.id ? event.message : message)
@@ -257,7 +317,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             content,
             clientMessageId: clientMessage.id,
             attachments: clientMessage.attachments,
-            context: clientMessage.context
+            context: clientMessage.context,
+            ...(agentMode ? { agent: agentMode } : {})
           },
           controller.signal
         ),
@@ -334,6 +395,35 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
     }
   };
 
+  const inAgentConversation = agentMode !== undefined || messages.some((message) => message.agentRun);
+  const mentionExpert = (expert: ChatAgentExpert) => {
+    const mention = `@${expert.name} `;
+    setDraft((current) => current.includes(mention) ? current : `${mention}${current}`);
+    window.requestAnimationFrame(() => document.getElementById("career-question")?.focus());
+  };
+  const agentBanner = inAgentConversation && (
+    <div className="agent-mode-banner">
+      <Sparkles aria-hidden="true" size={14} />
+      <div className="agent-mode-banner__text">
+        <span><strong>简历教练</strong>会读取你的简历和目标岗位，缺素材时先问你，只写你说过的事实。</span>
+        {experts.length > 0 && (
+          <div className="expert-roster" aria-label="专家团，点击可以点名请他看">
+            {experts.map((expert) => (
+              <button type="button" key={expert.id} title={expert.when} onClick={() => mentionExpert(expert)}>
+                <span className="expert-avatar" aria-hidden="true">{expert.name.slice(-1)}</span>
+                {expert.name}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+      {agentMode && !messages.some((message) => message.agentRun) && (
+        <button type="button" className="agent-mode-banner__close" aria-label="退出简历教练" onClick={() => setAgentMode(undefined)}>
+          <X aria-hidden="true" size={14} />
+        </button>
+      )}
+    </div>
+  );
   const contextPicker = status !== "anonymous" && (
     <ChatContextPicker
       options={contextOptions}
@@ -384,6 +474,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
           <p>
             找岗位、改简历、练面试。小鲤陪你从眼前的一小步开始。
           </p>
+          {agentBanner}
           <ChatComposer
             value={draft}
             attachments={attachments}
@@ -414,7 +505,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
                     type="button"
                     className="chat-task-card"
                     key={card.prompt}
-                    onClick={() => prepareTask(card.prompt)}
+                    onClick={() => "agent" in card ? startAgentTask(card.prompt, card.agent) : prepareTask(card.prompt)}
                     disabled={streaming}
                   >
                     <span className="chat-task-icon" aria-hidden="true"><Icon size={21} strokeWidth={1.7} /></span>
@@ -459,6 +550,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             />
           </div>
           <div className="thread-composer">
+            {agentBanner}
             <ChatComposer
               value={draft}
               attachments={attachments}

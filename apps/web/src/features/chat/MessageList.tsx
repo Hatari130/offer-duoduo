@@ -1,5 +1,8 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type {
+  ChatAgentExpertNote,
+  ChatAgentRewrite,
+  ChatAgentRun,
   ChatContextKind,
   ChatMessage,
   ChatOpportunityResults,
@@ -17,6 +20,7 @@ import {
   FileText,
   MapPin,
   RefreshCw,
+  RotateCcw,
   Search,
   ThumbsDown,
   ThumbsUp,
@@ -191,6 +195,14 @@ export function MessageList({
                   {message.context.map((item) => <span key={`${item.kind}:${item.id}`}>{item.label}</span>)}
                 </div>
               )}
+              {message.agentRun && message.agentRun.steps.length > 0 && (
+                <AgentSteps run={message.agentRun} />
+              )}
+
+              {message.agentRun?.notes && message.agentRun.notes.length > 0 && (
+                <ExpertNotes notes={message.agentRun.notes} />
+              )}
+
               <div className="message-copy">
                 {message.content ? (
                   message.role === "assistant" ? (
@@ -210,6 +222,13 @@ export function MessageList({
 
               {message.opportunityResults && (
                 <OpportunityResultCards results={message.opportunityResults} />
+              )}
+
+              {message.agentRun && message.agentRun.rewrites.length > 0 && (
+                <RewriteCards
+                  rewrites={message.agentRun.rewrites}
+                  onAdjust={message.id === lastAssistantId && message.status === "complete" ? onFollowUp : undefined}
+                />
               )}
 
               {message.status === "error" && (
@@ -254,7 +273,7 @@ export function MessageList({
                 </div>
               )}
 
-              {message.id === lastAssistantId && message.status === "complete" && (
+              {message.id === lastAssistantId && message.status === "complete" && !message.agentRun && (
                 <section className="answer-next-steps" aria-label="继续推进">
                   <span>继续推进</span>
                   <div>
@@ -451,5 +470,95 @@ function ThinkingIndicator() {
     <span className="thinking-indicator" aria-label="小鲤正在整理回答">
       <i /><i /><i />
     </span>
+  );
+}
+
+function AgentSteps({ run }: { run: ChatAgentRun }) {
+  return (
+    <ol className="agent-steps" aria-label="小鲤这一轮做了什么">
+      {run.steps.map((step) => (
+        <li key={step.id} className={step.status === "rejected" ? "is-rejected" : undefined}>
+          {step.status === "rejected"
+            ? <RotateCcw aria-hidden="true" size={13} />
+            : <Check aria-hidden="true" size={13} />}
+          <span>{step.label}</span>
+          {step.detail && <small>{step.detail}</small>}
+        </li>
+      ))}
+    </ol>
+  );
+}
+
+function ExpertNotes({ notes }: { notes: ChatAgentExpertNote[] }) {
+  return (
+    <section className="expert-notes" aria-label="专家意见">
+      {notes.map((note) => (
+        <article key={note.id} className="expert-note">
+          <header>
+            <span className="expert-avatar" aria-hidden="true">{note.expertName.slice(-1)}</span>
+            <div>
+              <strong>{note.expertName}</strong>
+              <small>{note.expertRole}</small>
+            </div>
+          </header>
+          <div className="expert-note__body">
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.content}</ReactMarkdown>
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
+// The three most common follow-ups in real resume conversations ("太长", "太 AI", "换一个").
+const REWRITE_ADJUSTMENTS = ["再短一点", "去掉 AI 味", "换个说法"] as const;
+
+function RewriteCards({ rewrites, onAdjust }: { rewrites: ChatAgentRewrite[]; onAdjust?: (prompt: string) => void }) {
+  const [copied, setCopied] = useState<string>();
+  const copy = async (rewrite: ChatAgentRewrite) => {
+    await navigator.clipboard.writeText(rewrite.after);
+    setCopied(rewrite.entryId);
+    window.setTimeout(() => setCopied((current) => current === rewrite.entryId ? undefined : current), 1600);
+  };
+  return (
+    <section className="rewrite-cards" aria-label={`改写结果 ${rewrites.length} 条`}>
+      {rewrites.map((rewrite) => {
+        // Lines that do not appear verbatim in the original are the ones the coach changed or added.
+        const original = new Set(rewrite.before.split("\n").map((line) => line.trim()));
+        const changedLines = new Set(rewrite.after.split("\n").flatMap((line, index) => original.has(line.trim()) ? [] : [index]));
+        return (
+        <article key={rewrite.entryId} className="rewrite-card">
+          <header>
+            <strong>{rewrite.title}</strong>
+            <button type="button" onClick={() => void copy(rewrite)}>
+              {copied === rewrite.entryId ? <Check aria-hidden="true" size={13} /> : <Copy aria-hidden="true" size={13} />}
+              {copied === rewrite.entryId ? "已复制" : "复制改后"}
+            </button>
+          </header>
+          <div className="rewrite-diff">
+            <div className="rewrite-before"><span>改前</span><p>{rewrite.before}</p></div>
+            <div className="rewrite-after">
+              <span>改后</span>
+              <p>
+                {rewrite.after.split("\n").map((line, index) => (
+                  <span key={index} className={changedLines.has(index) ? "is-changed" : undefined}>{line}</span>
+                ))}
+              </p>
+            </div>
+          </div>
+          {rewrite.reason && <p className="rewrite-reason">{rewrite.reason}</p>}
+          {onAdjust && (
+            <div className="rewrite-adjust" aria-label={`调整「${rewrite.title}」`}>
+              {REWRITE_ADJUSTMENTS.map((adjustment) => (
+                <button type="button" key={adjustment} onClick={() => onAdjust(`把「${rewrite.title}」${adjustment}`)}>
+                  {adjustment}
+                </button>
+              ))}
+            </div>
+          )}
+        </article>
+        );
+      })}
+    </section>
   );
 }

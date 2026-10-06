@@ -12,6 +12,7 @@ import type {
   AuthCapabilities,
   AuthDeviceSession,
   AuthSession,
+  ChatAgentsResponse,
   ChatContextResponse,
   ChatOcrResponse,
   ChatStreamEvent,
@@ -251,6 +252,7 @@ export function createApiClient(options: ApiClientOptions) {
     listConversations: () =>
       request<ConversationListResponse>("/v1/conversations"),
     listContext: () => request<ChatContextResponse>("/v1/chat-context"),
+    listAgents: () => request<ChatAgentsResponse>("/v1/chat-agents"),
     createConversation: (body: CreateConversationRequest = {}) =>
       request<ConversationResponse>("/v1/conversations", {
         method: "POST",

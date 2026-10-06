@@ -1,0 +1,525 @@
+{
+  "summary": {
+    "model": "deepseek-chat",
+    "runsPerCase": 3,
+    "cases": 10,
+    "attempts": 30,
+    "errorRate": 0,
+    "runsWithAnyFabrication": 0,
+    "meanFabricationRate": 0,
+    "meanChanges": 0.8666666666666667,
+    "noChangeRate": 0.4666666666666667,
+    "keywordCoverageBefore": 0.6,
+    "keywordCoverageAfter": 0.6,
+    "meanLatencyMs": 1479,
+    "findingsByKind": {}
+  },
+  "results": [
+    {
+      "caseId": "accounting-to-operations",
+      "run": 0,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1975
+    },
+    {
+      "caseId": "accounting-to-operations",
+      "run": 1,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1622
+    },
+    {
+      "caseId": "accounting-to-operations",
+      "run": 2,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1843
+    },
+    {
+      "caseId": "chemistry-lab",
+      "run": 0,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "应用化学专业本科，有实验室实习经历。",
+          "after": "应用化学专业本科，具备实验室实习经历。"
+        },
+        {
+          "label": "工作经历 · 某海关技术中心化学实验室",
+          "before": "负责样品的无机、有机分析测试前处理",
+          "after": "负责无机、有机分析测试的样品前处理"
+        }
+      ],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1252
+    },
+    {
+      "caseId": "chemistry-lab",
+      "run": 1,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "应用化学专业本科，有实验室实习经历。",
+          "after": "应用化学专业本科，具备实验室实习经历。"
+        },
+        {
+          "label": "工作经历 · 某海关技术中心化学实验室",
+          "before": "负责样品的无机、有机分析测试前处理",
+          "after": "负责无机、有机分析测试的样品前处理"
+        }
+      ],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1624
+    },
+    {
+      "caseId": "chemistry-lab",
+      "run": 2,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "应用化学专业本科，有实验室实习经历。",
+          "after": "应用化学专业本科，具备实验室实习经历。"
+        },
+        {
+          "label": "工作经历 · 某海关技术中心化学实验室",
+          "before": "负责样品的无机、有机分析测试前处理",
+          "after": "负责无机、有机分析测试的样品前处理"
+        }
+      ],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1012
+    },
+    {
+      "caseId": "chinese-lit-to-admin",
+      "run": 0,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "汉语言文学专业本科生，喜欢写作，做事认真负责。",
+          "after": "汉语言文学专业本科生，热爱写作，做事认真负责。"
+        },
+        {
+          "label": "技能特长",
+          "before": "办公软件、新闻写作、摄影",
+          "after": "熟练使用办公软件，具备新闻写作与摄影能力。"
+        }
+      ],
+      "keywordCoverageBefore": 0,
+      "keywordCoverageAfter": 0,
+      "ok": true,
+      "latencyMs": 1833
+    },
+    {
+      "caseId": "chinese-lit-to-admin",
+      "run": 1,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "汉语言文学专业本科生，喜欢写作，做事认真负责。",
+          "after": "汉语言文学专业本科生，热爱写作，做事认真负责。"
+        },
+        {
+          "label": "技能特长",
+          "before": "办公软件、新闻写作、摄影",
+          "after": "熟练使用办公软件，具备新闻写作与摄影能力。"
+        }
+      ],
+      "keywordCoverageBefore": 0,
+      "keywordCoverageAfter": 0,
+      "ok": true,
+      "latencyMs": 1840
+    },
+    {
+      "caseId": "chinese-lit-to-admin",
+      "run": 2,
+      "changes": 1,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "汉语言文学专业本科生，喜欢写作，做事认真负责。",
+          "after": "汉语言文学专业本科生，热爱写作，做事认真负责。"
+        }
+      ],
+      "keywordCoverageBefore": 0,
+      "keywordCoverageAfter": 0,
+      "ok": true,
+      "latencyMs": 1746
+    },
+    {
+      "caseId": "content-ops",
+      "run": 0,
+      "changes": 1,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "工作经历 · 某短视频平台",
+          "before": "运营 60 余个剧综类热点事件，做内容解读和用户激励",
+          "after": "运营 60 余个剧综类热点事件，负责内容解读与用户激励"
+        }
+      ],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1432
+    },
+    {
+      "caseId": "content-ops",
+      "run": 1,
+      "changes": 1,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "工作经历 · 某短视频平台",
+          "before": "运营 60 余个剧综类热点事件，做内容解读和用户激励",
+          "after": "运营 60 余个剧综类热点事件，负责内容解读与用户激励"
+        }
+      ],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1075
+    },
+    {
+      "caseId": "content-ops",
+      "run": 2,
+      "changes": 1,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "工作经历 · 某短视频平台",
+          "before": "运营 60 余个剧综类热点事件，做内容解读和用户激励",
+          "after": "运营 60 余个剧综类热点事件，负责内容解读与用户激励"
+        }
+      ],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1588
+    },
+    {
+      "caseId": "data-assistant-to-bank-teller",
+      "run": 0,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "数据科学与大数据技术专业，熟悉数据处理。",
+          "after": "数据科学与大数据技术专业，熟悉数据处理，具备细致核对与沟通协作意识。"
+        },
+        {
+          "label": "技能特长",
+          "before": "SQL、Python、Excel",
+          "after": "SQL、Python、Excel，具备数据核对与沟通协作能力"
+        }
+      ],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1023
+    },
+    {
+      "caseId": "data-assistant-to-bank-teller",
+      "run": 1,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1374
+    },
+    {
+      "caseId": "data-assistant-to-bank-teller",
+      "run": 2,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "数据科学与大数据技术专业，熟悉数据处理。",
+          "after": "数据科学与大数据技术专业，熟悉数据处理，具备细致核对与沟通协作基础。"
+        },
+        {
+          "label": "技能特长",
+          "before": "SQL、Python、Excel",
+          "after": "SQL、Python、Excel，具备数据核对与沟通记录能力"
+        }
+      ],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1390
+    },
+    {
+      "caseId": "ecommerce-livestream",
+      "run": 0,
+      "changes": 1,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "电子商务专业，有直播和跨境电商实操经验。",
+          "after": "电子商务专业，具备直播运营与跨境电商实操经验。"
+        }
+      ],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 2003
+    },
+    {
+      "caseId": "ecommerce-livestream",
+      "run": 1,
+      "changes": 1,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "电子商务专业，有直播和跨境电商实操经验。",
+          "after": "电子商务专业，具备直播运营与跨境电商实操经验。"
+        }
+      ],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1853
+    },
+    {
+      "caseId": "ecommerce-livestream",
+      "run": 2,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "电子商务专业，有直播和跨境电商实操经验。",
+          "after": "电子商务专业，具备直播运营与跨境电商实操经验。"
+        },
+        {
+          "label": "工作经历 · 某汽车清洁用品品牌",
+          "before": "负责弹幕互动和商品上架，单场直播曝光 569 人，进房 123 人",
+          "after": "负责弹幕互动与商品上架，单场直播曝光 569 人、进房 123 人"
+        }
+      ],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1447
+    },
+    {
+      "caseId": "finance-basic",
+      "run": 0,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1125
+    },
+    {
+      "caseId": "finance-basic",
+      "run": 1,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1176
+    },
+    {
+      "caseId": "finance-basic",
+      "run": 2,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1460
+    },
+    {
+      "caseId": "game-ops-to-pm",
+      "run": 0,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1435
+    },
+    {
+      "caseId": "game-ops-to-pm",
+      "run": 1,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1423
+    },
+    {
+      "caseId": "game-ops-to-pm",
+      "run": 2,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.75,
+      "keywordCoverageAfter": 0.75,
+      "ok": true,
+      "latencyMs": 1520
+    },
+    {
+      "caseId": "hr-training-to-od",
+      "run": 0,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1941
+    },
+    {
+      "caseId": "hr-training-to-od",
+      "run": 1,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "汉语言文学专业，两段 HR 培训方向实习。",
+          "after": "汉语言文学专业，拥有两段 HR 培训方向实习经历。"
+        },
+        {
+          "label": "技能特长",
+          "before": "Office、剪映、问卷星",
+          "after": "熟练使用 Office、剪映、问卷星"
+        }
+      ],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1428
+    },
+    {
+      "caseId": "hr-training-to-od",
+      "run": 2,
+      "changes": 2,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [
+        {
+          "label": "个人总结",
+          "before": "汉语言文学专业，两段 HR 培训方向实习。",
+          "after": "汉语言文学专业，拥有两段 HR 培训方向实习经历。"
+        },
+        {
+          "label": "技能特长",
+          "before": "Office、剪映、问卷星",
+          "after": "熟练使用 Office、剪映、问卷星"
+        }
+      ],
+      "keywordCoverageBefore": 1,
+      "keywordCoverageAfter": 1,
+      "ok": true,
+      "latencyMs": 1358
+    },
+    {
+      "caseId": "phd-pharmacology",
+      "run": 0,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1331
+    },
+    {
+      "caseId": "phd-pharmacology",
+      "run": 1,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1172
+    },
+    {
+      "caseId": "phd-pharmacology",
+      "run": 2,
+      "changes": 0,
+      "fabricationRate": 0,
+      "findings": [],
+      "rewrites": [],
+      "keywordCoverageBefore": 0.25,
+      "keywordCoverageAfter": 0.25,
+      "ok": true,
+      "latencyMs": 1069
+    }
+  ]
+}
