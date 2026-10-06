@@ -13,6 +13,9 @@ import type {
   AuthDeviceSession,
   AuthSession,
   ChatAgentsResponse,
+  CustomSkillListResponse,
+  CustomSkillRequest,
+  CustomSkillResponse,
   ChatContextResponse,
   ChatOcrResponse,
   ChatStreamEvent,
@@ -253,6 +256,13 @@ export function createApiClient(options: ApiClientOptions) {
       request<ConversationListResponse>("/v1/conversations"),
     listContext: () => request<ChatContextResponse>("/v1/chat-context"),
     listAgents: () => request<ChatAgentsResponse>("/v1/chat-agents"),
+    listCustomSkills: () => request<CustomSkillListResponse>("/v1/skills/custom"),
+    createCustomSkill: (body: CustomSkillRequest) =>
+      request<CustomSkillResponse>("/v1/skills/custom", { method: "POST", body: JSON.stringify(body) }),
+    updateCustomSkill: (skillId: string, body: CustomSkillRequest) =>
+      request<CustomSkillResponse>(`/v1/skills/custom/${encodeURIComponent(skillId)}`, { method: "PATCH", body: JSON.stringify(body) }),
+    deleteCustomSkill: (skillId: string) =>
+      request<{ deleted: true }>(`/v1/skills/custom/${encodeURIComponent(skillId)}`, { method: "DELETE" }),
     createConversation: (body: CreateConversationRequest = {}) =>
       request<ConversationResponse>("/v1/conversations", {
         method: "POST",

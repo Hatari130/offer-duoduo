@@ -1,0 +1,811 @@
+/* Agent teams and the skill market. */
+
+/* Reset the browser's button look; :where keeps specificity at zero so the rules below win. */
+:where(.agents-modal, .team-chip, .team-gallery) button,
+:where(.composer-skill-button) {
+  padding: 0;
+  color: inherit;
+  font: inherit;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+
+/* ---------- Avatars ---------- */
+.expert-avatar {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--of-brand-700);
+  background: var(--of-brand-100);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.expert-avatar--large {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1rem;
+}
+
+.expert-avatar--interview { color: #9a3f2c; background: #fbe1d8; }
+.expert-avatar--strategy { color: #23685a; background: #d5eee7; }
+.expert-avatar--perspective { color: #8a5a1d; background: #f8e7c4; }
+.expert-avatar--custom { color: #5b3d99; background: #e8defa; }
+
+[data-theme="dark"] .expert-avatar--interview { color: #f4b4a2; background: #4a2a22; }
+[data-theme="dark"] .expert-avatar--strategy { color: #9ad8c6; background: #1d3b34; }
+[data-theme="dark"] .expert-avatar--perspective { color: #f0cd8c; background: #43331a; }
+[data-theme="dark"] .expert-avatar--custom { color: #cdb8f5; background: #352a4d; }
+
+.avatar-stack {
+  display: inline-flex;
+}
+
+.avatar-stack .expert-avatar {
+  box-shadow: 0 0 0 2px var(--of-surface);
+}
+
+.avatar-stack .expert-avatar + .expert-avatar {
+  margin-inline-start: -0.35rem;
+}
+
+/* ---------- Team gallery (home) ---------- */
+.team-gallery {
+  width: 100%;
+  max-width: 64rem;
+  margin: 2.25rem auto 0;
+  text-align: start;
+}
+
+.team-gallery header {
+  margin-block-end: 1rem;
+}
+
+.team-gallery h2 {
+  margin: 0;
+  color: var(--of-text-strong);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.team-gallery header p {
+  margin: 0.25rem 0 0;
+  color: var(--of-text-subtle);
+  font-size: 0.8125rem;
+}
+
+.team-gallery__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12.5rem, 1fr));
+  gap: 1rem;
+}
+
+.team-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--of-surface);
+  border: 1px solid var(--of-line);
+  border-radius: 1rem;
+  box-shadow: var(--of-shadow-card);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.team-card:hover {
+  border-color: var(--of-line-strong);
+  box-shadow: var(--of-shadow-float);
+  transform: translateY(-2px);
+}
+
+.team-card.is-invited {
+  border-color: var(--of-brand-300);
+  box-shadow: 0 0 0 3px var(--of-brand-50), var(--of-shadow-card);
+}
+
+.team-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+}
+
+.team-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.85rem 0.95rem 0.95rem;
+}
+
+.team-card h3 {
+  margin: 0;
+  color: var(--of-text-strong);
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.team-card__body > p {
+  margin: 0;
+  color: var(--of-text-muted);
+  font-size: 0.8rem;
+  line-height: 1.55;
+}
+
+.team-card__members {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-block-start: auto;
+  min-width: 0;
+}
+
+.team-card__members small {
+  overflow: hidden;
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-card__actions {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem;
+  margin-block-start: 0.35rem;
+}
+
+.team-card__actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  height: 2.1rem;
+  padding: 0 0.75rem;
+  border-radius: 0.6rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.team-card__detail {
+  color: var(--of-text-muted);
+  border: 1px solid var(--of-line);
+}
+
+.team-card__detail:hover {
+  color: var(--of-text-strong);
+  border-color: var(--of-line-strong);
+}
+
+.team-card__invite {
+  color: #fff;
+  background: var(--of-action-primary, var(--of-brand-600));
+}
+
+.team-card__invite:hover {
+  background: var(--of-action-primary-hover, var(--of-brand-700));
+}
+
+.team-card__invite[aria-pressed="true"] {
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+}
+
+/* ---------- Composer: team chip and skill button ---------- */
+.composer-header {
+  display: flex;
+  padding: 0.65rem 0.85rem 0;
+}
+
+.team-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.2rem;
+  background: var(--of-brand-50);
+  border: 1px solid var(--of-brand-100);
+  border-radius: 999px;
+}
+
+.team-chip__main {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.1rem 0.4rem 0.1rem 0.15rem;
+  color: var(--of-text-muted);
+  border-radius: 999px;
+  font-size: 0.78rem;
+}
+
+.team-chip__main:hover {
+  background: var(--of-surface);
+}
+
+.team-chip__main strong {
+  color: var(--of-brand-700);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.team-chip__main > span:not(.avatar-stack) {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-chip__leave {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  color: var(--of-text-subtle);
+  border-radius: 999px;
+}
+
+.team-chip__leave:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface);
+}
+
+.composer-skill-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  height: 2rem;
+  padding: 0 0.6rem;
+  color: var(--of-text-muted);
+  border-radius: 0.55rem;
+  font-size: 0.8125rem;
+}
+
+.composer-skill-button:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface-muted);
+}
+
+/* ---------- Modals ---------- */
+.agents-modal {
+  width: min(56rem, calc(100vw - 2rem));
+  max-height: min(48rem, calc(100vh - 3rem));
+  padding: 0;
+  overflow: auto;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border: 0;
+  border-radius: 1.1rem;
+  box-shadow: var(--of-shadow-dialog);
+}
+
+.agents-modal::backdrop {
+  background: rgb(15 18 28 / 0.42);
+}
+
+.agents-modal__close {
+  position: sticky;
+  z-index: 2;
+  top: 0.75rem;
+  float: right;
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: 0.75rem 0.75rem 0 0;
+  color: var(--of-text-muted);
+  background: var(--of-surface);
+  border-radius: 999px;
+  box-shadow: var(--of-shadow-card);
+}
+
+.agents-modal__close:hover {
+  color: var(--of-text-strong);
+}
+
+.team-dialog {
+  width: min(34rem, calc(100vw - 2rem));
+}
+
+.team-dialog .team-cover {
+  border-radius: 1.1rem 1.1rem 0 0;
+}
+
+.team-dialog__body {
+  padding: 1.1rem 1.4rem 1.3rem;
+}
+
+.team-dialog__body h2 {
+  margin: 0;
+  color: var(--of-text-strong);
+  font-size: 1.2rem;
+}
+
+.team-dialog__body > p {
+  margin: 0.35rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.team-dialog__body h3 {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 1.2rem 0 0.6rem;
+  color: var(--of-text-strong);
+  font-size: 0.875rem;
+}
+
+.team-dialog__body h3 span {
+  color: var(--of-text-subtle);
+  font-size: 0.75rem;
+  font-weight: 400;
+}
+
+.team-members {
+  display: grid;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.team-members li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.7rem;
+  padding: 0.65rem 0.7rem;
+  background: var(--of-surface-muted);
+  border-radius: 0.75rem;
+}
+
+.team-members li > div {
+  flex: 1;
+  min-width: 0;
+}
+
+.team-members strong {
+  color: var(--of-text-strong);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.team-members small {
+  margin-inline-start: 0.4rem;
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+}
+
+.team-members p {
+  margin: 0.15rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.78rem;
+}
+
+.team-members__actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.team-members__actions button {
+  display: grid;
+  place-items: center;
+  width: 1.9rem;
+  height: 1.9rem;
+  color: var(--of-text-muted);
+  border-radius: 0.5rem;
+}
+
+.team-members__actions button:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface);
+}
+
+.team-members__empty {
+  justify-content: center;
+  color: var(--of-text-subtle);
+  font-size: 0.8125rem;
+}
+
+.team-dialog__body footer,
+.skill-form footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-block-start: 1.2rem;
+}
+
+.team-dialog__primary,
+.team-dialog__secondary,
+.skill-form__delete {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 2.4rem;
+  padding: 0 1rem;
+  border-radius: 0.65rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.team-dialog__primary {
+  color: #fff;
+  background: var(--of-action-primary, var(--of-brand-600));
+}
+
+.team-dialog__primary:hover:not(:disabled) {
+  background: var(--of-action-primary-hover, var(--of-brand-700));
+}
+
+.team-dialog__primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.team-dialog__secondary {
+  color: var(--of-text-muted);
+  border: 1px solid var(--of-line);
+}
+
+.team-dialog__secondary:hover {
+  color: var(--of-text-strong);
+  border-color: var(--of-line-strong);
+}
+
+/* ---------- Skill market ---------- */
+.skill-market__body,
+.skill-form {
+  padding: 1.6rem 1.8rem 1.8rem;
+}
+
+.skill-market h2,
+.skill-form h2 {
+  margin: 0;
+  color: var(--of-text-strong);
+  font-size: 1.25rem;
+}
+
+.skill-market__context {
+  margin: 0.35rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.8125rem;
+}
+
+.skill-market__context strong {
+  color: var(--of-brand-700);
+}
+
+.skill-market h3 {
+  margin: 1.5rem 0 0.75rem;
+  color: var(--of-text-strong);
+  font-size: 0.95rem;
+}
+
+.skill-market__toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.skill-market__toolbar h3 {
+  margin-block-end: 0;
+}
+
+.skill-market__search {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: min(16rem, 100%);
+  height: 2.2rem;
+  margin-block-start: 1.5rem;
+  padding: 0 0.75rem;
+  color: var(--of-text-subtle);
+  border: 1px solid var(--of-line);
+  border-radius: 999px;
+}
+
+.skill-market__search input {
+  flex: 1;
+  min-width: 0;
+  color: var(--of-text);
+  background: transparent;
+  border: 0;
+  outline: 0;
+  font: inherit;
+  font-size: 0.8125rem;
+}
+
+.skill-market__search:focus-within {
+  border-color: var(--of-brand-300);
+}
+
+.skill-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.85rem 0 0.9rem;
+}
+
+.skill-tabs button {
+  height: 2rem;
+  padding: 0 0.85rem;
+  color: var(--of-text-muted);
+  border: 1px solid var(--of-line);
+  border-radius: 999px;
+  font-size: 0.8rem;
+}
+
+.skill-tabs button:hover {
+  color: var(--of-text-strong);
+}
+
+.skill-tabs button[aria-selected="true"] {
+  color: var(--of-surface);
+  background: var(--of-text-strong);
+  border-color: var(--of-text-strong);
+}
+
+.skill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+
+.skill-card {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.5rem 0.75rem;
+  padding: 0.9rem;
+  text-align: start;
+  background: var(--of-surface);
+  border: 1px solid var(--of-line);
+  border-radius: 0.85rem;
+}
+
+.skill-card.is-joined {
+  border-color: var(--of-brand-200);
+  background: color-mix(in oklch, var(--of-brand-50) 60%, var(--of-surface));
+}
+
+.skill-card__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.skill-card__text strong {
+  display: block;
+  color: var(--of-text-strong);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.skill-card__text p {
+  margin: 0.2rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.skill-card__text small {
+  display: block;
+  margin-block-start: 0.35rem;
+  color: var(--of-text-subtle);
+  font-size: 0.7rem;
+}
+
+.skill-card__actions {
+  display: flex;
+  grid-column: 2;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.skill-card__join {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  height: 1.85rem;
+  padding: 0 0.65rem;
+  color: var(--of-brand-700);
+  border: 1px solid var(--of-brand-200);
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.skill-card__join:hover:not(:disabled) {
+  background: var(--of-brand-50);
+}
+
+.skill-card__join[aria-pressed="true"] {
+  color: var(--of-success);
+  border-color: transparent;
+  background: var(--of-success-soft);
+}
+
+.skill-card__join:disabled {
+  color: var(--of-text-subtle);
+  border-color: var(--of-line);
+  cursor: not-allowed;
+}
+
+.skill-card__icon {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  color: var(--of-text-subtle);
+  border-radius: 0.5rem;
+}
+
+.skill-card__icon:hover {
+  color: var(--of-text-strong);
+  background: var(--of-surface-muted);
+}
+
+.skill-card--create {
+  align-items: center;
+  border: 1px dashed var(--of-line-strong);
+  border-radius: 0.85rem;
+  background: var(--of-surface);
+  cursor: pointer;
+}
+
+.skill-card--create:hover {
+  border-color: var(--of-brand-300);
+}
+
+.skill-card__plus {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--of-brand-600);
+  background: var(--of-brand-50);
+  border-radius: 999px;
+}
+
+.skill-market__empty {
+  color: var(--of-text-subtle);
+  font-size: 0.8125rem;
+}
+
+/* ---------- Create / edit my skill ---------- */
+.skill-form {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.skill-form__back {
+  display: inline-flex;
+  justify-self: start;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--of-text-muted);
+  font-size: 0.8125rem;
+}
+
+.skill-form__back:hover {
+  color: var(--of-text-strong);
+}
+
+.skill-form__intro {
+  margin: -0.4rem 0 0;
+  color: var(--of-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+.skill-form__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.9rem;
+}
+
+.skill-form__field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.skill-form__field > span {
+  color: var(--of-text-strong);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.skill-form__field small {
+  margin-inline-start: 0.5rem;
+  color: var(--of-text-subtle);
+  font-weight: 400;
+}
+
+.skill-form__field input,
+.skill-form__field textarea {
+  width: 100%;
+  padding: 0.55rem 0.7rem;
+  color: var(--of-text);
+  background: var(--of-surface);
+  border: 1px solid var(--of-line-control, var(--of-line));
+  border-radius: 0.6rem;
+  font: inherit;
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+.skill-form__field textarea {
+  resize: vertical;
+}
+
+.skill-form__field input:focus,
+.skill-form__field textarea:focus {
+  border-color: var(--of-brand-300);
+  outline: 2px solid var(--of-brand-50);
+}
+
+.skill-form__teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 0.8125rem;
+}
+
+.skill-form__teams legend {
+  margin-block-end: 0.4rem;
+  color: var(--of-text-strong);
+  font-weight: 600;
+}
+
+.skill-form__teams label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--of-text-muted);
+}
+
+.skill-form__error {
+  margin: 0;
+  color: var(--of-danger);
+  font-size: 0.8125rem;
+}
+
+.skill-form__delete {
+  margin-inline-end: auto;
+  color: var(--of-danger);
+  border: 1px solid var(--of-line);
+}
+
+@media (max-width: 640px) {
+  .skill-market__body,
+  .skill-form {
+    padding: 1.2rem;
+  }
+
+  .skill-form__row {
+    grid-template-columns: 1fr;
+  }
+
+  .team-card__members small {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-card {
+    transition: none;
+  }
+
+  .team-card:hover {
+    transform: none;
+  }
+}

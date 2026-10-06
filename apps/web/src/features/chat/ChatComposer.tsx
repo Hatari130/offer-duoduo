@@ -12,6 +12,8 @@ interface ChatComposerProps {
   streaming: boolean;
   autoFocus?: boolean;
   contextSlot?: ReactNode;
+  /** Shown above the text box, e.g. the invited team. */
+  headerSlot?: ReactNode;
   onChange: (value: string) => void;
   onAttachmentsChange: (attachments: ChatAttachment[]) => void;
   onAttachmentRequest?: () => boolean;
@@ -36,6 +38,7 @@ export function ChatComposer({
   streaming,
   autoFocus,
   contextSlot,
+  headerSlot,
   onChange,
   onAttachmentsChange,
   onAttachmentRequest,
@@ -138,6 +141,7 @@ export function ChatComposer({
         void addFiles([...event.dataTransfer.files]);
       }}
     >
+      {headerSlot && <div className="composer-header">{headerSlot}</div>}
       {attachments.length > 0 && (
         <div className="composer-attachments" aria-label="待发送附件">
           {attachments.map((attachment) => (

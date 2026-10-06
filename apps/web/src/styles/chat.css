@@ -1834,52 +1834,7 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   .assistant-progress::before { width: 100%; opacity: 0.38; }
 }
 
-/* Resume coach agent: mode banner, visible steps and rewrite diffs. */
-.agent-mode-banner {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.45rem;
-  margin-block-end: 0.5rem;
-  padding: 0.5rem 0.65rem;
-  color: var(--of-text-muted);
-  background: var(--of-brand-50);
-  border: 1px solid var(--of-brand-100);
-  border-radius: 0.65rem;
-  font-size: 0.78rem;
-  line-height: 1.5;
-}
-
-.agent-mode-banner > svg {
-  flex: 0 0 auto;
-  margin-block-start: 0.2rem;
-  color: var(--of-brand-600);
-}
-
-.agent-mode-banner strong {
-  color: var(--of-brand-700);
-  font-weight: 600;
-  margin-inline-end: 0.25rem;
-}
-
-.agent-mode-banner button {
-  display: grid;
-  padding: 0;
-  background: transparent;
-  border: 0;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 1.5rem;
-  height: 1.5rem;
-  margin-inline-start: auto;
-  color: var(--of-text-subtle);
-  border-radius: 999px;
-}
-
-.agent-mode-banner button:hover {
-  color: var(--of-text-strong);
-  background: var(--of-surface);
-}
-
+/* Agent turns: visible steps and rewrite diffs. */
 .agent-steps {
   display: grid;
   gap: 0.3rem;
@@ -2028,72 +1983,10 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   white-space: normal;
 }
 
-.chat-page--empty .agent-mode-banner,
-.thread-composer .agent-mode-banner {
-  width: 100%;
-  max-width: 50rem;
-  margin-inline: auto;
-}
 
-.chat-page--empty .agent-mode-banner {
-  max-width: 48rem;
-  align-items: center;
-}
 
-.chat-page--empty .agent-mode-banner > svg {
-  margin-block-start: 0;
-}
 
-/* Expert panel: roster in the banner, opinion cards in messages. */
-.agent-mode-banner__text {
-  display: grid;
-  min-width: 0;
-  gap: 0.4rem;
-}
-
-.agent-mode-banner__close {
-  margin-inline-start: auto;
-}
-
-.expert-roster {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-}
-
-.agent-mode-banner .expert-roster button {
-  display: inline-flex;
-  width: auto;
-  height: auto;
-  align-items: center;
-  gap: 0.35rem;
-  margin: 0;
-  padding: 0.15rem 0.55rem 0.15rem 0.2rem;
-  color: var(--of-text-muted);
-  background: var(--of-surface);
-  border: 1px solid var(--of-brand-100);
-  border-radius: 999px;
-  font-size: 0.75rem;
-}
-
-.agent-mode-banner .expert-roster button:hover {
-  color: var(--of-brand-700);
-  border-color: var(--of-brand-200);
-}
-
-.expert-avatar {
-  display: inline-grid;
-  flex: 0 0 auto;
-  place-items: center;
-  width: 1.35rem;
-  height: 1.35rem;
-  color: var(--of-brand-700);
-  background: var(--of-brand-100);
-  border-radius: 999px;
-  font-size: 0.72rem;
-  font-weight: 600;
-}
-
+/* Expert opinion cards in messages. */
 .expert-notes {
   display: grid;
   gap: 0.5rem;
