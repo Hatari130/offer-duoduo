@@ -85,7 +85,7 @@ function createTeamSession(
   materials: TeamMaterials,
   experts: ExpertSkill[],
   model: ModelClient,
-  conversation: { userStatements: () => string[]; transcript: () => string[] },
+  conversation: { userStatements: () => string[]; transcript: () => string[]; shownBefore: string[] },
   onExpertNote: (note: ChatAgentExpertNote) => void
 ): TeamSession {
   const shared = { experts, expertModel: model, onExpertNote, userStatements: conversation.userStatements };
@@ -94,7 +94,13 @@ function createTeamSession(
     return { ...session, systemPrompt: interviewCoachSystemPrompt(experts) };
   }
   if (team === "job_radar") {
-    const session = createJobRadarSession({ ...shared, search: materials.search, applications: materials.applications, profile: materials.profile });
+    const session = createJobRadarSession({
+      ...shared,
+      search: materials.search,
+      applications: materials.applications,
+      profile: materials.profile,
+      shownBefore: conversation.shownBefore
+    });
     return { ...session, systemPrompt: jobRadarSystemPrompt(experts) };
   }
   if (team === "career_planner") {
@@ -176,10 +182,24 @@ export interface TeamTurnResult {
   opportunityResults?: ChatOpportunityResults;
 }
 
+/** Opening ids the job radar already showed as cards in this conversation, read from the stored traces. */
+function shownOpportunityIds(history: ChatMessage[]): string[] {
+  return history.flatMap((message) => ((message.agentRun?.trace ?? []) as AgentMessage[]).flatMap((item) =>
+    (item.tool_calls ?? []).filter((call) => call.function.name === "show_opportunities").flatMap((call) => {
+      try {
+        const ids = (JSON.parse(call.function.arguments || "{}") as { ids?: unknown }).ids;
+        return Array.isArray(ids) ? ids.map(String) : [];
+      } catch {
+        return [];
+      }
+    })));
+}
+
 export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult> {
   const pending: Array<Promise<void>> = [];
   let messages: AgentMessage[] = [];
   const conversation = {
+    shownBefore: shownOpportunityIds(input.history),
     userStatements: () => messages.filter((message) => message.role === "user").map((message) => message.content || ""),
     transcript: () => messages
       .filter((message) => (message.role === "user" || message.role === "assistant") && message.content)

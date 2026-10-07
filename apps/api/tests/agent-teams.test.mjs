@@ -108,6 +108,22 @@ test("the job radar can only show openings that came back from a search", async 
   assert.deepEqual(session.results().items.map((opportunity) => opportunity.id), ["b"]);
 });
 
+test("search results flag companies already applied to and openings shown before", async () => {
+  const item = (id, company) => ({ id, company, title: "产品经理", graduationYears: ["2027"], roleTags: [], cities: ["北京"], officialUrl: "https://example.com" });
+  const session = createJobRadarSession({
+    search: async () => ({ query: "", total: 3, items: [item("a", "滴滴出行"), item("b", "美团"), item("c", "小米")], sourceAvailable: true, isBroadSearch: false }),
+    applications: [{ id: "app-1", company: "滴滴", position: "产品经理", stage: "applied" }],
+    userStatements: () => [],
+    shownBefore: ["b"]
+  });
+  const found = await session.tools.find((tool) => tool.name === "search_opportunities").run({ query: "北京 产品" });
+  assert.deepEqual(found.items.map((opportunity) => [opportunity.id, Boolean(opportunity.applied), Boolean(opportunity.shownBefore)]), [
+    ["a", true, false],
+    ["b", false, true],
+    ["c", false, false]
+  ]);
+});
+
 test("long conversations replay tool calls only for the last two turns", () => {
   const turn = (index) => [
     { id: `u${index}`, role: "user", content: `第 ${index} 轮`, status: "complete" },

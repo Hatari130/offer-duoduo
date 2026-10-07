@@ -82,11 +82,29 @@ export function listApplicationsTool(applications: JobApplication[]): AgentTool 
 const FINDING_LABEL: Record<FabricationFinding["kind"], string> = {
   number: "数字",
   term: "技术或工具名",
-  ownership: "把配合性的工作写成了主导"
+  ownership: "把配合性的工作写成了主导",
+  magnitude: "夸大效果的说法"
 };
+
+/**
+ * Every place a flagged word appears, with a little context. Without this the model
+ * fixes the first occurrence, resubmits, and is rejected again for the next one.
+ */
+function occurrences(text: string, value: string): string[] {
+  const lower = text.toLowerCase();
+  const needle = value.toLowerCase();
+  const snippets: string[] = [];
+  for (let index = lower.indexOf(needle); index >= 0 && snippets.length < 4; index = lower.indexOf(needle, index + needle.length)) {
+    snippets.push(`…${text.slice(Math.max(0, index - 10), index + needle.length + 10).replace(/\s+/g, " ")}…`);
+  }
+  return snippets;
+}
 
 /** Problems with text that uses facts the user never gave; empty means it may be written. */
 export function unsupportedFacts(text: string, evidence: string[], options: { allow?: string[]; before?: string } = {}): string[] {
-  return findUnsupportedClaims(text, evidence, options)
-    .map((finding) => `${FINDING_LABEL[finding.kind]}「${finding.value}」在简历和用户的话里都找不到出处`);
+  return findUnsupportedClaims(text, evidence, options).map((finding) => {
+    const places = occurrences(text, finding.value);
+    const where = places.length ? `，共 ${places.length} 处：${places.join("；")}` : "";
+    return `${FINDING_LABEL[finding.kind]}「${finding.value}」在简历和用户的话里都找不到出处${where}`;
+  });
 }

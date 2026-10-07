@@ -18,6 +18,7 @@ import { createOpenAiCompatibleModel } from "../src/agent/model.ts";
 import { createResumeCoachSession, resumeCoachSystemPrompt, resumeEntries } from "../src/agent/resume-coach.ts";
 import { findUnsupportedClaims } from "../src/agent/fabrication.ts";
 import { loadResumeCases, mentions, profileFor, readDataset, type ResumeCase } from "./fixtures.ts";
+import { judge, meanScores } from "./judge.ts";
 
 type Attitude = "cooperative" | "forgetful" | "wants_fabrication";
 
@@ -77,7 +78,7 @@ function simulatorPrompt(scenario: Scenario, resumeCase: ResumeCase): string {
   ].filter(Boolean).join("\n");
 }
 
-async function simulateConversation(scenario: Scenario, resumeCase: ResumeCase, agentModel: ModelClient, userModel: ModelClient) {
+async function simulateConversation(scenario: Scenario, resumeCase: ResumeCase, agentModel: ModelClient, userModel: ModelClient, judgeModel: ModelClient) {
   const profile = profileFor(resumeCase.resume);
   const agentMessages: AgentMessage[] = [{ role: "system", content: resumeCoachSystemPrompt() }];
   // From the simulator's point of view the agent is the "user" and it is the "assistant".
@@ -85,7 +86,8 @@ async function simulateConversation(scenario: Scenario, resumeCase: ResumeCase, 
   const userStatements = () => agentMessages.filter((message) => message.role === "user").map((message) => message.content || "");
   const session = createResumeCoachSession({ profile, job: resumeCase.job, userStatements });
 
-  let rejectedProposals = 0;
+  // What the guard sent back and why, so false rejections can be found by reading them.
+  const rejected: Array<{ text: string; problems: string[] }> = [];
   let toolCalls = 0;
   let rounds = 0;
   let firstDeliveryRound: number | undefined;
@@ -102,7 +104,8 @@ async function simulateConversation(scenario: Scenario, resumeCase: ResumeCase, 
       onEvent: (event) => {
         if (event.type === "tool_call") toolCalls++;
         if (event.type === "tool_result" && event.name === "propose_rewrite" && (event.result as { accepted?: boolean }).accepted === false) {
-          rejectedProposals++;
+          const output = event.result as { problems?: string[]; problem?: string };
+          rejected.push({ text: String(event.args.text || ""), problems: output.problems ?? [output.problem ?? ""] });
         }
       }
     });
@@ -137,8 +140,15 @@ async function simulateConversation(scenario: Scenario, resumeCase: ResumeCase, 
     delivered: accepted.length > 0,
     firstDeliveryRound,
     acceptedRewrites: accepted.length,
-    rejectedProposals,
+    rejectedProposals: rejected.length,
+    rejected,
     fabricatedClaims: fabricated.length,
+    judge: await Promise.all(accepted.map((rewrite) => judge(judgeModel, {
+      before: rewrite.before,
+      after: rewrite.after,
+      evidence: evidence.join("\n"),
+      job: `${resumeCase.job.company} · ${resumeCase.job.position}`
+    }))),
     transcript: agentMessages.filter((message) => message.role === "user" || (message.role === "assistant" && message.content))
       .map((message) => `${message.role === "user" ? "用户" : "小鲤"}：${message.content}`),
     rewrites: accepted
@@ -149,6 +159,7 @@ async function main() {
   const config = loadApiConfig(process.env);
   const agentModel = createOpenAiCompatibleModel(config, { temperature: 0.3 });
   const userModel = createOpenAiCompatibleModel(config, { temperature: 0.7 });
+  const judgeModel = createOpenAiCompatibleModel(config, { temperature: 0 });
   const cases = new Map(loadResumeCases().map((item) => [item.id, item]));
   const scenarios = readDataset<{ scenarios: Scenario[] }>("resume-coach-sim.json").scenarios
     .filter((scenario) => !ONLY || ONLY.includes(scenario.id));
@@ -160,7 +171,7 @@ async function main() {
     while (next < jobs.length) {
       const { scenario, run } = jobs[next++];
       try {
-        const result = await simulateConversation(scenario, cases.get(scenario.resumeCase)!, agentModel, userModel);
+        const result = await simulateConversation(scenario, cases.get(scenario.resumeCase)!, agentModel, userModel, judgeModel);
         results.push({ ...result, run });
         console.log(`✓ ${scenario.id} #${run + 1}  轮数=${result.rounds}  素材 挖出 ${result.factsSurfaced}/${result.factsTotal} 写入 ${result.factsUsed}/${result.factsTotal}  首次交付=第${result.firstDeliveryRound ?? "-"}轮  被拦截=${result.rejectedProposals}  编造=${result.fabricatedClaims}`);
       } catch (error) {
@@ -181,6 +192,8 @@ async function main() {
     ),
     fabricatedClaims: items.reduce((sum, item) => sum + item.fabricatedClaims, 0),
     rejectedProposals: items.reduce((sum, item) => sum + item.rejectedProposals, 0),
+    judgeFaithful: meanScores(items.flatMap((item) => item.judge)).faithful,
+    judgeNatural: meanScores(items.flatMap((item) => item.judge)).natural,
     meanRounds: ratio(items.reduce((sum, item) => sum + item.rounds, 0), items.length)
   });
   const summary = {
