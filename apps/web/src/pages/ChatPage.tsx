@@ -4,6 +4,7 @@ import { MAX_TEAM_SKILLS } from "@offerflow/contracts";
 import type {
   ChatAgentExpert,
   ChatAgentName,
+  JobApplication,
   ChatAgentRun,
   ChatAttachment,
   ChatContextOption,
@@ -27,6 +28,7 @@ import { ChatComposer } from "../features/chat/ChatComposer";
 import { CompanionAvatar } from "../features/chat/CompanionAvatar";
 import { ChatContextPicker } from "../features/chat/ChatContextPicker";
 import { MessageList } from "../features/chat/MessageList";
+import { TodayBrief, type BriefAction } from "../features/chat/TodayBrief";
 import { chatPendingMode, type ChatPendingMode } from "../features/chat/pendingMode";
 
 function withAgentRun(message: ChatMessage, team: ChatAgentName, update: (run: ChatAgentRun) => ChatAgentRun): ChatMessage {
@@ -62,6 +64,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [pendingMode, setPendingMode] = useState<ChatPendingMode>();
   const [error, setError] = useState("");
   const [copiedMessageId, setCopiedMessageId] = useState<string>();
+  // The “今天” brief (experimental): signed-in users only, shown once their applications have loaded.
+  const [applications, setApplications] = useState<JobApplication[]>();
   const abortRef = useRef<AbortController>();
   const justCreatedRef = useRef<string>();
 
@@ -223,6 +227,36 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       });
     return () => { active = false; };
   }, [status]);
+
+  useEffect(() => {
+    if (status !== "authenticated") {
+      setApplications(undefined);
+      return;
+    }
+    let active = true;
+    api.applications.list()
+      .then((result) => {
+        if (active) setApplications(result.applications.filter((item) => !item.deletedAt).map((item) => item.application));
+      })
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, [status]);
+
+  const runBriefAction = (action: BriefAction) => {
+    if (action.type === "applications") {
+      navigate("/app/applications");
+      return;
+    }
+    if (!requireChatLogin()) return;
+    inviteTeam(action.team);
+    const material = action.applicationId
+      ? contextOptions.find((option) => option.kind === "application" && option.id === action.applicationId)
+      : undefined;
+    if (material) {
+      const { selectable: _selectable, ...reference } = material;
+      setSelectedContext([reference]);
+    }
+  };
 
   const requireChatLogin = () => {
     if (status !== "anonymous") return true;
@@ -538,10 +572,21 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             <div className="chat-atmosphere__orb chat-atmosphere__orb--primary" />
             <div className="chat-atmosphere__orb chat-atmosphere__orb--secondary" />
           </div>
-          <h1 tabIndex={-1}>说出你的目标，求职团队和你一起推进</h1>
+          <h1 tabIndex={-1}>说出你的目标，<span>求职团队和你一起推进</span></h1>
           <p>
             邀请一支团队，再用技能市场里的专家升级他们。
           </p>
+          {agents.length > 0 && (
+            <TeamGallery
+              agents={agents}
+              skills={skills}
+              activeTeam={team}
+              onOpen={setTeamDialog}
+              onInvite={(next) => {
+                if (requireChatLogin()) inviteTeam(next);
+              }}
+            />
+          )}
           <ChatComposer
             value={draft}
             attachments={attachments}
@@ -559,13 +604,8 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
             onSubmit={() => void send()}
             onStop={() => abortRef.current?.abort()}
           />
-          {agents.length > 0 && (
-            <TeamGallery
-              agents={agents}
-              skills={skills}
-              activeTeam={team}
-              onOpen={setTeamDialog}
-            />
+          {status === "authenticated" && applications && (
+            <TodayBrief applications={applications} onAction={runBriefAction} />
           )}
           <span className="sr-only" role="status">{taskHint}</span>
           <small className="chat-disclaimer">AI 回答可能不完整，重要招聘信息请以企业官方公告为准。</small>

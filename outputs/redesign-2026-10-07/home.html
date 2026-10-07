@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>首页 · 统一风格视觉稿</title>
+<style>
+  :root {
+    --canvas: #f6f7fb;
+    --surface: #ffffff;
+    --muted: #f2f4f8;
+    --line: #e6e9f0;
+    --line-strong: #d3d9e4;
+    --ink: #161922;
+    --ink-2: #4d5567;
+    --ink-3: #8089a0;
+    --brand: #3f56b8;
+    --brand-soft: #eef1ff;
+    --brand-ink: #34499f;
+    --warm: #d9772b;
+    --warm-soft: #fdf0e4;
+    --shadow: 0 1px 2px rgb(22 25 34 / .04), 0 8px 24px -16px rgb(22 25 34 / .18);
+    --shadow-lift: 0 2px 4px rgb(22 25 34 / .04), 0 18px 40px -24px rgb(22 25 34 / .35);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, Georgia, serif;
+    --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+    --deck-card: clamp(9.5rem, 12.5vw, 11.25rem);
+  }
+  [data-theme="dark"] {
+    --canvas: #0d1118;
+    --surface: #141a24;
+    --muted: #1a2130;
+    --line: #232b3a;
+    --line-strong: #2f3949;
+    --ink: #eef1f7;
+    --ink-2: #b3bbcc;
+    --ink-3: #7c869b;
+    --brand: #8ea2ff;
+    --brand-soft: #1e2645;
+    --brand-ink: #b9c6ff;
+    --warm: #f0a25e;
+    --warm-soft: #33241a;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -16px rgb(0 0 0 / .6);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / .3), 0 18px 40px -24px rgb(0 0 0 / .8);
+  }
+  /* Cover colours, same variables as the app. */
+  .team-cover { --cover-card: #fff; display: block; width: 100%; height: 100%; }
+  .team-cover[data-team="resume_coach"] { --cover-paper: #eef2ff; --cover-ink: #26324f; --cover-accent: #3f56b8; --cover-soft: #cbd4ff; }
+  .team-cover[data-team="interview_coach"] { --cover-paper: #fff1ec; --cover-ink: #4a2a22; --cover-accent: #c4533b; --cover-soft: #f6c9bb; }
+  .team-cover[data-team="job_radar"] { --cover-paper: #e9f6f2; --cover-ink: #1f3f38; --cover-accent: #2f7d6d; --cover-soft: #b7e0d5; }
+  .team-cover[data-team="career_planner"] { --cover-paper: #fff6e3; --cover-ink: #4a3415; --cover-accent: #a8671c; --cover-soft: #f1d6a4; }
+  [data-theme="dark"] .team-cover { --cover-card: #ffffff1f; }
+  [data-theme="dark"] .team-cover[data-team="resume_coach"] { --cover-paper: #1a2140; --cover-ink: #dfe5ff; --cover-accent: #8ea2ff; --cover-soft: #344072; }
+  [data-theme="dark"] .team-cover[data-team="interview_coach"] { --cover-paper: #2b1c18; --cover-ink: #ffe3da; --cover-accent: #f08a70; --cover-soft: #5a342a; }
+  [data-theme="dark"] .team-cover[data-team="job_radar"] { --cover-paper: #122b26; --cover-ink: #d6f3ea; --cover-accent: #5cc7ae; --cover-soft: #24524a; }
+  [data-theme="dark"] .team-cover[data-team="career_planner"] { --cover-paper: #2a2213; --cover-ink: #fbe9c6; --cover-accent: #e8a54b; --cover-soft: #574522; }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--sans); color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+  .frame { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+
+  /* ---------- 侧栏 ---------- */
+  .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 4px; padding: 20px 14px; background: var(--surface); border-right: 1px solid var(--line); }
+  .logo { display: flex; align-items: center; gap: 8px; padding: 4px 10px 18px; font-weight: 700; font-size: 18px; color: var(--brand); }
+  .logo i { width: 22px; height: 12px; border-bottom: 4px solid var(--brand); border-radius: 0 0 14px 14px; transform: rotate(-12deg); }
+  .new-chat { display: flex; align-items: center; justify-content: space-between; height: 40px; margin-bottom: 10px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; font-size: 14px; font-weight: 500; transition: border-color .2s, box-shadow .2s; }
+  .new-chat:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
+  .new-chat kbd { color: var(--ink-3); font: 12px var(--sans); }
+  .nav { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border-radius: 10px; color: var(--ink-2); font-size: 14px; transition: background .15s, color .15s; }
+  .nav:hover { background: var(--muted); color: var(--ink); }
+  .nav.is-on { background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+  .nav svg { width: 18px; height: 18px; flex: none; }
+  .recent { margin-top: 22px; padding: 0 12px; }
+  .recent h4 { margin: 0 0 8px; color: var(--ink-3); font-size: 12px; font-weight: 500; }
+  .recent a { display: block; overflow: hidden; padding: 7px 0; color: var(--ink-2); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; border-radius: 8px; transition: color .15s; }
+  .recent a:hover { color: var(--ink); }
+  .me { display: flex; align-items: center; gap: 10px; margin-top: auto; padding: 10px 12px; border-radius: 12px; font-size: 13px; }
+  .me i { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 10px; background: var(--brand-soft); color: var(--brand-ink); font-style: normal; font-weight: 700; }
+  .me small { display: block; color: var(--ink-3); font-size: 12px; }
+
+  /* ---------- 顶部 ---------- */
+  main { position: relative; padding: 0 clamp(20px, 4vw, 56px) 64px; overflow: hidden; }
+  main::before { content: ""; position: absolute; inset: -20% -10% auto; height: 520px; background: radial-gradient(40% 60% at 30% 30%, rgb(63 86 184 / .09), transparent 70%), radial-gradient(35% 50% at 75% 20%, rgb(217 119 43 / .07), transparent 70%); pointer-events: none; }
+  .top { display: flex; justify-content: flex-end; gap: 8px; padding: 18px 0; position: relative; }
+  .pill { height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: 13px; transition: box-shadow .2s, border-color .2s; }
+  .pill:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
+  .wrap { position: relative; max-width: 880px; margin: 0 auto; }
+
+  .hero { text-align: center; padding-top: 28px; }
+  h1 { margin: 0; font-family: var(--serif); font-size: clamp(30px, 3.4vw, 42px); font-weight: 700; letter-spacing: .01em; }
+  .hero p { margin: 12px 0 0; color: var(--ink-2); font-size: 15px; }
+
+  /* ---------- 团队卡片：扇形叠放 ---------- */
+  .deck { position: relative; height: calc(var(--deck-card) * 1.7); margin: 8px 0 0; }
+  .card { --shift: 0px; position: absolute; z-index: var(--z); top: 50%; left: 50%; width: var(--deck-card); height: var(--deck-card); border-radius: 14px; box-shadow: 0 10px 22px -16px rgb(17 28 48 / .35);
+    transform: translate(-50%, -50%) translateX(calc(var(--x) + var(--shift))) translateY(var(--y)) rotate(var(--r));
+    transition: transform .38s var(--ease), width .38s var(--ease), height .38s var(--ease), border-radius .32s, background-color .2s, box-shadow .32s; opacity: 0; animation: deal .6s var(--ease) forwards; animation-delay: var(--d); }
+  @keyframes deal { from { opacity: 0; transform: translate(-50%, -40%) translateX(0) rotate(0) scale(.9); } to { opacity: 1; } }
+  .card[data-p="before"] { --shift: -2.6rem; }
+  .card[data-p="after"] { --shift: 2.6rem; }
+  .card[data-p="self"] { z-index: 20; width: calc(var(--deck-card) * 1.14); height: calc(var(--deck-card) * 1.44); border-radius: 18px; background: var(--surface); box-shadow: 0 26px 56px -28px rgb(17 28 48 / .5);
+    transform: translate(-50%, -50%) translateX(var(--x)) translateY(calc(var(--y) - 4px)) rotate(0) scale(1.08); }
+  .cover { position: absolute; inset: 0; overflow: hidden; border-radius: inherit; transition: inset .38s var(--ease), border-radius .32s; }
+  .card[data-p="self"] .cover { inset: 9px 9px 58px; border-radius: 11px; }
+  .badge { position: absolute; z-index: 3; bottom: 8px; left: 8px; display: none; padding: 2px 8px; border-radius: 99px; background: var(--brand); color: #fff; font-size: 11px; font-weight: 600; }
+  [data-theme="dark"] .badge { color: #0d1118; }
+  .card.is-invited .badge { display: block; }
+  .card.is-invited:not([data-p="self"]) { box-shadow: 0 0 0 2px var(--brand), 0 10px 22px -16px rgb(17 28 48 / .35); }
+  .details { position: absolute; left: 11px; right: 11px; bottom: 9px; height: 42px; display: flex; align-items: center; justify-content: space-between; gap: 8px; opacity: 0; transform: translateY(10px); pointer-events: none; transition: opacity .16s, transform .22s var(--ease); }
+  .card[data-p="self"] .details { opacity: 1; transform: none; pointer-events: auto; transition: opacity .22s .08s, transform .3s var(--ease) .05s; }
+  .details strong { display: block; font-size: 13px; font-weight: 600; }
+  .faces { display: flex; margin-top: 3px; }
+  .faces svg { width: 18px; height: 18px; border-radius: 50%; box-shadow: 0 0 0 1.5px var(--surface); }
+  .faces svg + svg { margin-left: -5px; }
+  .invite { height: 28px; padding: 0 13px; border-radius: 99px; background: var(--ink); color: var(--surface); font-size: 12px; font-weight: 600; transition: transform .18s var(--ease), opacity .18s; }
+  .invite:hover { transform: translateY(-1px); opacity: .85; }
+
+  /* ---------- 输入框 ---------- */
+  .composer { position: relative; z-index: 2; padding: 14px 14px 10px; background: var(--surface); border: 1px solid var(--line); border-radius: 22px; box-shadow: var(--shadow); transition: border-color .3s, box-shadow .3s var(--ease); }
+  .composer:focus-within { border-color: var(--line-strong); box-shadow: 0 0 0 4px var(--brand-soft), var(--shadow-lift); }
+  .chip-team { display: none; align-items: center; gap: 8px; width: fit-content; margin: 0 0 6px 2px; padding: 4px 10px 4px 5px; border-radius: 99px; background: var(--brand-soft); color: var(--brand-ink); font-size: 13px; }
+  .chip-team.is-on { display: inline-flex; animation: pop .45s var(--ease); }
+  @keyframes pop { from { opacity: 0; transform: translateY(8px) scale(.94); } to { opacity: 1; transform: none; } }
+  .chip-team .faces { margin: 0; }
+  .chip-team .faces svg { width: 22px; height: 22px; box-shadow: 0 0 0 1.5px var(--brand-soft); }
+  .chip-team span { color: var(--ink-3); font-size: 12px; }
+  .chip-team button { width: 18px; height: 18px; border-radius: 50%; color: var(--ink-3); font-size: 12px; }
+  textarea { display: block; width: 100%; min-height: 64px; padding: 6px 6px 0; border: 0; outline: 0; resize: none; background: transparent; color: var(--ink); font: 15px/1.6 var(--sans); }
+  textarea::placeholder { color: var(--ink-3); }
+  .tools { display: flex; align-items: center; gap: 4px; }
+  .tool { white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; height: 32px; padding: 0 10px; border-radius: 10px; color: var(--ink-2); font-size: 13px; transition: background .15s, color .15s; }
+  .tool:hover { background: var(--muted); color: var(--ink); }
+  .tool svg { width: 16px; height: 16px; }
+  .send { width: 36px; height: 36px; margin-left: auto; display: grid; place-items: center; border-radius: 50%; background: var(--muted); color: var(--ink-3); transition: background .2s, color .2s, transform .2s var(--ease); }
+  .send.is-ready { background: var(--brand); color: #fff; }
+  [data-theme="dark"] .send.is-ready { color: #0d1118; }
+  .send.is-ready:hover { transform: translateY(-1px); }
+
+  /* ---------- 今天 ---------- */
+  .today { margin-top: 34px; }
+  .today h2 { display: flex; align-items: baseline; gap: 10px; margin: 0 0 12px; font-family: var(--serif); font-size: 18px; }
+  .today h2 small { color: var(--ink-3); font-family: var(--sans); font-size: 12px; font-weight: 400; }
+  .brief { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .item { display: flex; flex-direction: column; gap: 10px; padding: 14px; text-align: left; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; opacity: 0; animation: rise .5s var(--ease) forwards; transition: border-color .2s, box-shadow .3s var(--ease), transform .3s var(--ease); }
+  .item:hover { border-color: var(--line-strong); box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+  @keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .item header { display: flex; align-items: center; gap: 8px; color: var(--ink-3); font-size: 12px; }
+  .item header svg { width: 22px; height: 22px; border-radius: 50%; }
+  .item .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 0 4px var(--warm-soft); margin: 0 4px 0 6px; }
+  .item b { font-size: 15px; font-weight: 600; line-height: 1.4; }
+  .item p { margin: 0; color: var(--ink-2); font-size: 13px; line-height: 1.55; }
+  .item .go { margin-top: auto; color: var(--brand-ink); font-size: 13px; font-weight: 500; opacity: .0; transform: translateX(-4px); transition: opacity .2s, transform .3s var(--ease); }
+  .item:hover .go { opacity: 1; transform: none; }
+  .foot { margin-top: 26px; text-align: center; color: var(--ink-3); font-size: 12px; }
+
+  @media (max-width: 900px) {
+    .frame { grid-template-columns: 1fr; }
+    .side { display: none; }
+    :root { --deck-card: min(26vw, 7.2rem); }
+    .card[data-p="before"] { --shift: -1.4rem; }
+    .card[data-p="after"] { --shift: 1.4rem; }
+    .brief { grid-template-columns: 1fr; }
+    .tool { padding: 0 7px; font-size: 12px; }
+    .item .go { opacity: 1; transform: none; }
+    .top .pill:not(.theme) { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before { animation: none !important; transition: none !important; }
+    .card, .item { opacity: 1; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <aside class="side">
+    <div class="logo"><i></i>JobKoI</div>
+    <button class="new-chat" type="button">＋ 新对话 <kbd>⌘K</kbd></button>
+    <a class="nav is-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg>求职陪跑</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>校招信息速递</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 20V8l7-4 7 4v12M9 20v-6h6v6"/></svg>公司投递直达</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>简历模板</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg>个人投递管理</a>
+    <div class="recent">
+      <h4>最近对话</h4>
+      <a>帮我把简历针对美团产品岗改一下</a>
+      <a>模拟一场小红书运营的面试</a>
+      <a>上海 2027 届产品岗还有哪些能投</a>
+    </div>
+    <div class="me"><i>陈</i><div>陈同学<small>2027 届 · 已投 42 个</small></div></div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <button class="pill" type="button">共建反馈</button>
+      <button class="pill theme" id="theme" type="button">深色</button>
+    </div>
+    <div class="wrap">
+      <section class="hero">
+        <h1>说出你的目标，求职团队和你一起推进</h1>
+        <p>邀请一支团队，再用技能市场里的专家升级他们。</p>
+      </section>
+
+      <section class="deck" id="deck" aria-label="邀请一支团队"></section>
+
+      <div class="composer">
+        <div class="chip-team" id="chip">
+          <span class="faces" id="chipFaces"></span>
+          <strong id="chipName"></strong><span id="chipCount"></span>
+          <button type="button" id="leave" aria-label="不邀请">✕</button>
+        </div>
+        <textarea id="box" placeholder="说说你想推进什么，也可以粘贴岗位描述或截图。"></textarea>
+        <div class="tools">
+          <button class="tool" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="m21 11-8.5 8.5a5 5 0 0 1-7-7L14 4a3.5 3.5 0 0 1 5 5l-8.5 8.5a2 2 0 0 1-3-3L15 7"/></svg>上传文件</button>
+          <button class="tool" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 5v14M5 12h14"/></svg>选择已有材料</button>
+          <button class="tool" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 10h16l-1.5-5h-13zM5 10v9h14v-9M9 19v-5h6v5"/></svg>技能</button>
+          <button class="send" id="send" type="button" aria-label="发送"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+        </div>
+      </div>
+
+      <section class="today">
+        <h2>今天 <small>10 月 7 日 · 根据你的投递和简历整理</small></h2>
+        <div class="brief">
+          <button class="item" type="button" style="animation-delay:.35s">
+            <header><span class="dot"></span>快截止</header>
+            <b>美团、小红书的投递 3 天内截止</b>
+            <p>美团产品经理 10 月 9 日、小红书社区运营 10 月 10 日，都还没投。</p>
+            <span class="go">去投递 →</span>
+          </button>
+          <button class="item" type="button" style="animation-delay:.42s">
+            <header><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#e6f6ec"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><g stroke="#b07a4f" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M17.5 14.5 L14.6 7.8 M15.8 10.6 L12 9.6 M15.1 9.2 L16.8 6"></path><path d="M30.5 14.5 L33.4 7.8 M32.2 10.6 L36 9.6 M32.9 9.2 L31.2 6"></path></g><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#6cc39a"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 24 C12.5 15.5 18 12.2 24 12.2 C30 12.2 35.5 15.5 34.6 24 C33.8 21.6 32.4 20 30.6 19.8 C29.6 21 27.6 21.2 26.4 19.9 C25.2 21.2 22.8 21.2 21.6 19.9 C20.4 21.2 18.4 21 17.4 19.8 C15.6 20 14.2 21.6 13.4 24Z" fill="#a0643c"></path><ellipse cx="12.2" cy="19.6" rx="3.2" ry="1.7" fill="#c98b5e" transform="rotate(-28 12.2 19.6)"></ellipse><ellipse cx="35.8" cy="19.6" rx="3.2" ry="1.7" fill="#c98b5e" transform="rotate(28 35.8 19.6)"></ellipse></g></g></svg>岗位雷达</header>
+            <b>新找到 6 个和你匹配的岗位</b>
+            <p>上海 · 产品方向 · 2027 届，其中 2 个是本周新开放的。</p>
+            <span class="go">看看是哪 6 个 →</span>
+          </button>
+          <button class="item" type="button" style="animation-delay:.49s">
+            <header><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#dfe6f5"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#2f3a5c"></path><path d="M20 34.6 L24 39.6 L28 34.6Z" fill="#fff"></path><path d="M23 38.6 L25 38.6 L25.8 44.4 L24 46.4 L22.2 44.4Z" fill="#d9534f"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M22 30 Q24 31.2 26 30" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 23 C12.8 14.5 18 12.2 24 12.2 C30 12.2 35.2 14.5 34.6 23 C33.6 19.4 31.6 17.6 28.5 17.2 C25 16.8 21 17.6 18.5 17.4 C15.8 18 14.2 20 13.4 23Z" fill="#3d3f46"></path><path d="M13.4 23 C13.3 21 13.7 19.6 14.6 18.6 L15.2 23.4Z M34.6 23 C34.7 21 34.3 19.6 33.4 18.6 L32.8 23.4Z" fill="#a3a8b0"></path><path d="M18.3 22.4 L21.8 22 M26.2 22 L29.7 22.4" stroke="#3d3f46" stroke-width="1.1" stroke-linecap="round"></path><g fill="#ffffff33" stroke="#2b2d33" stroke-width="1.1"><rect x="16.8" y="23.4" width="6.4" height="4.9" rx="1.6"></rect><rect x="24.8" y="23.4" width="6.4" height="4.9" rx="1.6"></rect><path d="M23.2 25.4 L24.8 25.4" fill="none"></path></g></g></g></svg>面试陪练</header>
+            <b>明天 14:00 字节跳动二面</b>
+            <p>老陈按这个岗位准备了 5 道题，花 20 分钟练一遍？</p>
+            <span class="go">开始模拟 →</span>
+          </button>
+        </div>
+      </section>
+      <p class="foot">AI 回答可能不完整，重要招聘信息请以企业官方公告为准。</p>
+    </div>
+  </main>
+</div>
+
+<template id="covers">
+  <div data-team="resume_coach"><svg class="team-cover team-cover--square" data-team="resume_coach" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Sharpen. Prove. Stand out."><rect width="240" height="240" style="fill:var(--cover-paper)"></rect><circle cx="212" cy="16" r="58" style="fill:var(--cover-soft)" opacity="0.45"></circle><circle cx="-6" cy="238" r="46" style="fill:var(--cover-soft)" opacity="0.35"></circle><g transform="translate(-62 84)"><g transform="translate(204 36) rotate(6)"><rect width="92" height="120" rx="8" style="fill:var(--cover-card);stroke:var(--cover-soft);stroke-width:2"></rect><rect x="14" y="22" width="64" height="5" rx="2.5" style="fill:var(--cover-soft)"></rect><rect x="14" y="38" width="64" height="5" rx="2.5" style="fill:var(--cover-soft)"></rect><rect x="14" y="54" width="40" height="5" rx="2.5" style="fill:var(--cover-soft)"></rect><rect x="14" y="70" width="64" height="5" rx="2.5" style="fill:var(--cover-soft)"></rect><rect x="14" y="86" width="64" height="5" rx="2.5" style="fill:var(--cover-soft)"></rect><rect x="14" y="102" width="40" height="5" rx="2.5" style="fill:var(--cover-soft)"></rect><rect x="10" y="49" width="72" height="14" rx="3" style="fill:var(--cover-accent)" opacity="0.25"></rect><path d="M66 108 l10 -10 6 6 -10 10z" style="fill:var(--cover-accent)"></path></g></g><text x="22" y="52" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Sharpen.</text><text x="22" y="86" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Prove.</text><text x="22" y="120" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Stand out.</text></svg></div>
+  <div data-team="interview_coach"><svg class="team-cover team-cover--square" data-team="interview_coach" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Ask. Answer. Improve."><rect width="240" height="240" style="fill:var(--cover-paper)"></rect><circle cx="212" cy="16" r="58" style="fill:var(--cover-soft)" opacity="0.45"></circle><circle cx="-6" cy="238" r="46" style="fill:var(--cover-soft)" opacity="0.35"></circle><g transform="translate(-62 84)"><g transform="translate(190 40)"><rect width="84" height="52" rx="14" style="fill:var(--cover-card);stroke:var(--cover-soft);stroke-width:2"></rect><path d="M18 52 l-4 14 16 -14z" style="fill:var(--cover-card);stroke:var(--cover-soft);stroke-width:2"></path><text x="42" y="35" text-anchor="middle" font-size="26" font-weight="700" style="fill:var(--cover-accent)">?</text><rect x="32" y="68" width="84" height="46" rx="14" style="fill:var(--cover-accent)" opacity="0.9"></rect><path d="M98 114 l6 12 -16 -12z" style="fill:var(--cover-accent)" opacity="0.9"></path><circle cx="60" cy="91" r="4" style="fill:var(--cover-card)"></circle><circle cx="74" cy="91" r="4" style="fill:var(--cover-card)"></circle><circle cx="88" cy="91" r="4" style="fill:var(--cover-card)"></circle></g></g><text x="22" y="52" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Ask.</text><text x="22" y="86" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Answer.</text><text x="22" y="120" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Improve.</text></svg></div>
+  <div data-team="job_radar"><svg class="team-cover team-cover--square" data-team="job_radar" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Search. Filter. Match."><rect width="240" height="240" style="fill:var(--cover-paper)"></rect><circle cx="212" cy="16" r="58" style="fill:var(--cover-soft)" opacity="0.45"></circle><circle cx="-6" cy="238" r="46" style="fill:var(--cover-soft)" opacity="0.35"></circle><g transform="translate(-62 84)"><g transform="translate(244 100)"><circle r="62" style="fill:none;stroke:var(--cover-soft);stroke-width:2"></circle><circle r="42" style="fill:none;stroke:var(--cover-soft);stroke-width:2"></circle><circle r="22" style="fill:none;stroke:var(--cover-soft);stroke-width:2"></circle><path d="M0 0 L62 0 A62 62 0 0 0 43.8 -43.8 Z" style="fill:var(--cover-accent)" opacity="0.2"></path><line x1="0" y1="0" x2="43.8" y2="-43.8" style="stroke:var(--cover-accent);stroke-width:2.5"></line><circle r="5" style="fill:var(--cover-accent)"></circle><circle cx="28" cy="-32" r="5" style="fill:var(--cover-accent)" opacity="0.75"></circle><circle cx="-38" cy="18" r="5" style="fill:var(--cover-accent)" opacity="0.75"></circle><circle cx="14" cy="42" r="5" style="fill:var(--cover-accent)" opacity="0.75"></circle><circle cx="-20" cy="-46" r="5" style="fill:var(--cover-accent)" opacity="0.75"></circle></g></g><text x="22" y="52" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Search.</text><text x="22" y="86" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Filter.</text><text x="22" y="120" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Match.</text></svg></div>
+  <div data-team="career_planner"><svg class="team-cover team-cover--square" data-team="career_planner" viewBox="0 0 240 240" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Plan. Act. Review."><rect width="240" height="240" style="fill:var(--cover-paper)"></rect><circle cx="212" cy="16" r="58" style="fill:var(--cover-soft)" opacity="0.45"></circle><circle cx="-6" cy="238" r="46" style="fill:var(--cover-soft)" opacity="0.35"></circle><g transform="translate(-62 84)"><g transform="translate(206 40)"><rect width="96" height="104" rx="10" style="fill:var(--cover-card);stroke:var(--cover-soft);stroke-width:2"></rect><rect width="96" height="20" rx="10" style="fill:var(--cover-accent)" opacity="0.85"></rect><g><rect x="10" y="32" width="15" height="15" rx="4" style="fill:var(--cover-accent)" opacity="0.85"></rect><path d="M14 39.5 l3 3 5 -5.5" style="fill:none;stroke:var(--cover-card);stroke-width:2;stroke-linecap:round"></path></g><g><rect x="30" y="32" width="15" height="15" rx="4" style="fill:var(--cover-accent)" opacity="0.85"></rect><path d="M34 39.5 l3 3 5 -5.5" style="fill:none;stroke:var(--cover-card);stroke-width:2;stroke-linecap:round"></path></g><g><rect x="50" y="32" width="15" height="15" rx="4" style="fill:var(--cover-accent)" opacity="0.85"></rect><path d="M54 39.5 l3 3 5 -5.5" style="fill:none;stroke:var(--cover-card);stroke-width:2;stroke-linecap:round"></path></g><g><rect x="70" y="32" width="15" height="15" rx="4" style="fill:var(--cover-accent)" opacity="0.85"></rect><path d="M74 39.5 l3 3 5 -5.5" style="fill:none;stroke:var(--cover-card);stroke-width:2;stroke-linecap:round"></path></g><g><rect x="10" y="54" width="15" height="15" rx="4" style="fill:var(--cover-accent)" opacity="0.85"></rect><path d="M14 61.5 l3 3 5 -5.5" style="fill:none;stroke:var(--cover-card);stroke-width:2;stroke-linecap:round"></path></g><g><rect x="30" y="54" width="15" height="15" rx="4" style="fill:var(--cover-accent)" opacity="0.85"></rect><path d="M34 61.5 l3 3 5 -5.5" style="fill:none;stroke:var(--cover-card);stroke-width:2;stroke-linecap:round"></path></g><g><rect x="50" y="54" width="15" height="15" rx="4" style="fill:var(--cover-soft)" opacity="0.6"></rect></g><g><rect x="70" y="54" width="15" height="15" rx="4" style="fill:var(--cover-soft)" opacity="0.6"></rect></g><g><rect x="10" y="76" width="15" height="15" rx="4" style="fill:var(--cover-soft)" opacity="0.6"></rect></g><g><rect x="30" y="76" width="15" height="15" rx="4" style="fill:var(--cover-soft)" opacity="0.6"></rect></g><g><rect x="50" y="76" width="15" height="15" rx="4" style="fill:var(--cover-soft)" opacity="0.6"></rect></g><g><rect x="70" y="76" width="15" height="15" rx="4" style="fill:var(--cover-soft)" opacity="0.6"></rect></g></g></g><text x="22" y="52" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Plan.</text><text x="22" y="86" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Act.</text><text x="22" y="120" font-family="&#x27;Noto Serif SC&#x27;, &#x27;Source Han Serif SC&#x27;, Georgia, serif" font-size="27" font-weight="700" style="fill:var(--cover-ink)">Review.</text></svg></div>
+</template>
+<template id="faces">
+  <div data-id="hr-screener"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#dde4ff"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#3f56b8"></path><path d="M20.6 34.8 L24 40.4 L27.4 34.8Z" fill="#fff"></path><path d="M11.8 39 C10 22 14 11 24 11 C34 11 38 22 36.2 39 C35.5 41 32 41 31.5 39 L16.5 39 C16 41 12.5 41 11.8 39Z" fill="#2d211d"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 25 C13.4 16 18 12.2 24 12.6 C30 12.2 34.6 16 34.6 25 C33 20 28.5 16.5 24 15.6 C19.5 16.5 15 20 13.4 25Z" fill="#2d211d"></path><rect x="28.4" y="15.2" width="4.4" height="1.9" rx="0.95" fill="#ffd25e" transform="rotate(-28 30.6 16.15)"></rect></g></g></svg></div>
+  <div data-id="business-interviewer"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#dfe6f5"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#2f3a5c"></path><path d="M20 34.6 L24 39.6 L28 34.6Z" fill="#fff"></path><path d="M23 38.6 L25 38.6 L25.8 44.4 L24 46.4 L22.2 44.4Z" fill="#d9534f"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M22 30 Q24 31.2 26 30" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 23 C12.8 14.5 18 12.2 24 12.2 C30 12.2 35.2 14.5 34.6 23 C33.6 19.4 31.6 17.6 28.5 17.2 C25 16.8 21 17.6 18.5 17.4 C15.8 18 14.2 20 13.4 23Z" fill="#3d3f46"></path><path d="M13.4 23 C13.3 21 13.7 19.6 14.6 18.6 L15.2 23.4Z M34.6 23 C34.7 21 34.3 19.6 33.4 18.6 L32.8 23.4Z" fill="#a3a8b0"></path><path d="M18.3 22.4 L21.8 22 M26.2 22 L29.7 22.4" stroke="#3d3f46" stroke-width="1.1" stroke-linecap="round"></path><g fill="#ffffff33" stroke="#2b2d33" stroke-width="1.1"><rect x="16.8" y="23.4" width="6.4" height="4.9" rx="1.6"></rect><rect x="24.8" y="23.4" width="6.4" height="4.9" rx="1.6"></rect><path d="M23.2 25.4 L24.8 25.4" fill="none"></path></g></g></g></svg></div>
+  <div data-id="plain-editor"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#f1e6fb"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><g transform="rotate(-28 24 10.5)"><rect x="14" y="9.2" width="18" height="2.6" fill="#ffcf4a"></rect><path d="M32 9.2 L35.2 10.5 L32 11.8Z" fill="#f3d7b0"></path><path d="M34.2 10.1 L35.2 10.5 L34.2 10.9Z" fill="#2a2320"></path><rect x="12.2" y="9.2" width="2" height="2.6" fill="#ff8fa3"></rect></g><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#b892e0"></path><rect x="19" y="33.2" width="10" height="3.6" rx="1.8" fill="#a37fd0"></rect><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><circle cx="24" cy="10.8" r="4.8" fill="#3b2c35"></circle><path d="M13.4 25 C12.6 15.5 18 12.4 24 12.4 C30 12.4 35.4 15.5 34.6 25 C33.4 20 29.5 17.4 24 17.2 C18.5 17.4 14.6 20 13.4 25Z" fill="#3b2c35"></path></g></g></svg></div>
+  <div data-id="star-digger"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#e3eefb"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#4c7fbf"></path><path d="M18.4 36 L18.4 48 M29.6 36 L29.6 48" stroke="#3a6aa5" stroke-width="2"></path><circle cx="18.4" cy="40.2" r="0.9" fill="#ffd25e"></circle><circle cx="29.6" cy="40.2" r="0.9" fill="#ffd25e"></circle><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M12.8 22 C12.8 10.8 35.2 10.8 35.2 22Z" fill="#ffc93c"></path><path d="M24 11.8 L24 20.6" stroke="#f0a92a" stroke-width="1.6"></path><rect x="11" y="20.4" width="26" height="2.8" rx="1.4" fill="#f0a92a"></rect><circle cx="24" cy="16.2" r="2.6" fill="#fff6c8" stroke="#f0a92a" stroke-width="1"></circle><g fill="#c9875a"><circle cx="17.6" cy="28.2" r="0.45"></circle><circle cx="18.8" cy="29.1" r="0.45"></circle><circle cx="29.2" cy="29.1" r="0.45"></circle><circle cx="30.4" cy="28.2" r="0.45"></circle></g></g></g></svg></div>
+  <div data-id="answer-coach"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#ffe3d6"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><path d="M30 14 C37 11 41.5 18 39 27 C38 31 35.5 33 34 33 C36 28 36 21 31.5 17Z" fill="#3a2a26"></path><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#ff9f7a"></path><path d="M18.5 35.5 L24 41 L29.5 35.5" fill="none" stroke="#fff" stroke-width="1.2"></path><rect x="22.2" y="40.2" width="3.8" height="2.6" rx="1.2" fill="#ffd25e"></rect><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.2 25 C12.4 15.5 18 12 24 12 C30 12 35.6 15.5 34.8 25 C33.5 21 31 18.6 27 18 C26 20 22 21 18.5 20.5 C16 21.5 14.2 23 13.2 25Z" fill="#3a2a26"></path><path d="M14.6 19.6 C18 14.4 30 14.4 33.4 19.6" fill="none" stroke="#ff7a59" stroke-width="2.4" stroke-linecap="round"></path></g></g></svg></div>
+  <div data-id="group-interview"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#e7e2ff"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#8e7cf0"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.4 29 Q24 32.8 26.6 29Z" fill="#7a2e2e" stroke="#2a2320" stroke-width="0.8" stroke-linejoin="round"></path><path d="M13.2 24 C12.6 18 14 15 16 13.5 L15.5 10.5 L19 12.4 L20.5 9 L23.5 11.6 L26 8.6 L28 11.6 L31.5 9.8 L31.6 13.4 C34 15.5 35.2 19 34.8 24 C33 20 30 18.2 26.5 18 C22 18.5 17.5 19 13.2 24Z" fill="#2b2420"></path><path d="M12.6 25 C12.6 11.5 35.4 11.5 35.4 25" fill="none" stroke="#4a4a52" stroke-width="1.6"></path><rect x="10.8" y="22.4" width="3.6" height="6" rx="1.6" fill="#ff7a59"></rect><rect x="33.6" y="22.4" width="3.6" height="6" rx="1.6" fill="#ff7a59"></rect><path d="M12.8 28.4 C14 33 18 33.6 20.4 32.4" fill="none" stroke="#4a4a52" stroke-width="1.2" stroke-linecap="round"></path><circle cx="21" cy="32.1" r="1.1" fill="#4a4a52"></circle></g></g></svg></div>
+  <div data-id="job-analyst"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#e6f6ec"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><g stroke="#b07a4f" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M17.5 14.5 L14.6 7.8 M15.8 10.6 L12 9.6 M15.1 9.2 L16.8 6"></path><path d="M30.5 14.5 L33.4 7.8 M32.2 10.6 L36 9.6 M32.9 9.2 L31.2 6"></path></g><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#6cc39a"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 24 C12.5 15.5 18 12.2 24 12.2 C30 12.2 35.5 15.5 34.6 24 C33.8 21.6 32.4 20 30.6 19.8 C29.6 21 27.6 21.2 26.4 19.9 C25.2 21.2 22.8 21.2 21.6 19.9 C20.4 21.2 18.4 21 17.4 19.8 C15.6 20 14.2 21.6 13.4 24Z" fill="#a0643c"></path><ellipse cx="12.2" cy="19.6" rx="3.2" ry="1.7" fill="#c98b5e" transform="rotate(-28 12.2 19.6)"></ellipse><ellipse cx="35.8" cy="19.6" rx="3.2" ry="1.7" fill="#c98b5e" transform="rotate(28 35.8 19.6)"></ellipse></g></g></svg></div>
+  <div data-id="soe-hr"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#fde2e0"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#d9534f"></path><path d="M19.4 34.8 L24 38 L28.6 34.8 L27 38.6 L24 38 L21 38.6Z" fill="#fff"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><g fill="#2a201c"><circle cx="14.4" cy="21.4" r="3.8"></circle><circle cx="16.6" cy="16.4" r="4.2"></circle><circle cx="20.6" cy="13.2" r="4.3"></circle><circle cx="26" cy="12.8" r="4.4"></circle><circle cx="31" cy="15" r="4.2"></circle><circle cx="33.8" cy="19.6" r="3.9"></circle><circle cx="14.2" cy="24.6" r="2.6"></circle><circle cx="34" cy="23.8" r="2.8"></circle></g><circle cx="13.6" cy="30.2" r="1.3" fill="#fff" stroke="#e3d6d0" stroke-width="0.5"></circle><circle cx="34.4" cy="30.2" r="1.3" fill="#fff" stroke="#e3d6d0" stroke-width="0.5"></circle></g></g></svg></div>
+  <div data-id="funnel-analyst"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#d8f1ec"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#4fb3a9"></path><path d="M15 38 C18.5 35 29.5 35 33 38" fill="none" stroke="#3b9188" stroke-width="1.4"></path><path d="M21.5 36.5 L21.5 41 M26.5 36.5 L26.5 41" stroke="#fff" stroke-width="1" stroke-linecap="round"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 24 C12.8 14.8 18.5 12 24.5 12 C30.5 12 35.4 15 34.6 24 C34 20.5 32.5 18.5 30 17.6 C26 19.6 19.5 19.8 15.5 18.6 C14.2 20 13.6 22 13.4 24Z" fill="#232323"></path><g fill="#ffffff33" stroke="#2a6f8f" stroke-width="1.1"><circle cx="20" cy="25.8" r="3.2"></circle><circle cx="28" cy="25.8" r="3.2"></circle><path d="M23.2 25.6 Q24 25 24.8 25.6" fill="none"></path></g></g></g></svg></div>
+  <div data-id="career-planner"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#fff0cf"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#f2b84b"></path><path d="M20.5 34.8 L24 40 L27.5 34.8Z" fill="#fff"></path><path d="M12 31 C10.5 17 16 10.8 24 10.8 C32 10.8 37.5 17 36 31 C35.6 33 33 33.4 32.2 31.4 L15.8 31.4 C15 33.4 12.4 33 12 31Z" fill="#5a3427"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M14.2 23.5 C14.5 15.5 20 12.6 25.5 12.8 C31 13 34.5 16.5 34.4 22 C31.5 18.6 27 17.4 22.5 18.8 C19 19.8 16 21.5 14.2 23.5Z" fill="#5a3427"></path><circle cx="14.2" cy="30.4" r="1.2" fill="#f2c14e"></circle><circle cx="33.8" cy="30.4" r="1.2" fill="#f2c14e"></circle></g></g></svg></div>
+  <div data-id="senior-peer"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#fde7d7"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#f08c5a"></path><path d="M15 38 C18.5 35 29.5 35 33 38" fill="none" stroke="#d9703f" stroke-width="1.4"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.6 21 L34.4 21 C34.6 23.6 33.6 25 32.4 25.4 C31.6 23.2 29.6 22.4 27.4 22.6 L20.6 22.6 C18.4 22.4 16.4 23.2 15.6 25.4 C14.4 25 13.4 23.6 13.6 21Z" fill="#3a2a22"></path><path d="M13 21.4 C13 11.6 35 11.6 35 21.4Z" fill="#3aa66a"></path><rect x="13" y="19.6" width="22" height="2.4" rx="1" fill="#2f8a57"></rect><path d="M30 13.6 C34 12 38 13 39.2 15.2 C36.4 15.8 33.6 16.4 31.4 17.2Z" fill="#2f8a57"></path><circle cx="24" cy="12.4" r="1" fill="#2f8a57"></circle></g></g></svg></div>
+</template>
+
+<script>
+  const teams = [
+    { id: "resume_coach", name: "简历精修团队", members: ["hr-screener", "business-interviewer", "plain-editor", "star-digger"], starter: "帮我把简历针对这个岗位改一下" },
+    { id: "interview_coach", name: "面试陪练团队", members: ["business-interviewer", "answer-coach", "hr-screener", "group-interview"], starter: "我们来模拟一场这个岗位的面试吧" },
+    { id: "job_radar", name: "岗位雷达团队", members: ["job-analyst", "soe-hr", "funnel-analyst"], starter: "帮我找几个现在还能投、适合我的岗位" },
+    { id: "career_planner", name: "求职规划团队", members: ["career-planner", "funnel-analyst", "senior-peer"], starter: "帮我看看现在的投递情况，排一下这周的计划" }
+  ];
+  const tilts = [5, -4, 3, -4], lifts = [6, -4, 4, -6];
+  const cover = (id) => document.getElementById("covers").content.querySelector(`[data-team="${id}"]`).innerHTML;
+  const face = (id) => document.getElementById("faces").content.querySelector(`[data-id="${id}"]`).innerHTML;
+  const deck = document.getElementById("deck");
+  deck.innerHTML = teams.map((t, i) => `
+    <article class="card" data-i="${i}" style="--x:${(i - 1.5) * 78}%;--y:${lifts[i]}px;--r:${tilts[i]}deg;--z:${i + 1};--d:${80 + i * 70}ms">
+      <div class="cover">${cover(t.id)}</div>
+      <span class="badge">✓ 已邀请</span>
+      <div class="details">
+        <div><strong>${t.name.replace("团队", "")}</strong><span class="faces">${t.members.map(face).join("")}</span></div>
+        <button class="invite" type="button" data-team="${i}">邀请</button>
+      </div>
+    </article>`).join("");
+
+  const cards = [...deck.querySelectorAll(".card")];
+  const hover = (index) => cards.forEach((card, i) => {
+    if (index === undefined) card.removeAttribute("data-p");
+    else card.dataset.p = i === index ? "self" : i < index ? "before" : "after";
+  });
+  cards.forEach((card, i) => card.addEventListener("mouseenter", () => hover(i)));
+  deck.addEventListener("mouseleave", () => hover());
+  // The deal-in animation would fight the hover transform; drop it once it has played.
+  cards.forEach((card) => card.addEventListener("animationend", () => { card.style.animation = "none"; card.style.opacity = 1; }));
+
+  const chip = document.getElementById("chip");
+  const box = document.getElementById("box");
+  const send = document.getElementById("send");
+  const ready = () => send.classList.toggle("is-ready", box.value.trim().length > 0);
+  box.addEventListener("input", ready);
+  deck.addEventListener("click", (event) => {
+    const button = event.target.closest(".invite");
+    if (!button) return;
+    const team = teams[Number(button.dataset.team)];
+    cards.forEach((card, i) => card.classList.toggle("is-invited", teams[i] === team));
+    document.getElementById("chipFaces").innerHTML = team.members.map(face).join("");
+    document.getElementById("chipName").textContent = team.name;
+    document.getElementById("chipCount").textContent = `${team.members.length} 位专家为你工作`;
+    chip.classList.remove("is-on"); void chip.offsetWidth; chip.classList.add("is-on");
+    box.value = team.starter; ready(); box.focus();
+  });
+  document.getElementById("leave").addEventListener("click", () => {
+    chip.classList.remove("is-on");
+    cards.forEach((card) => card.classList.remove("is-invited"));
+  });
+
+  const toggle = document.getElementById("theme");
+  toggle.addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme !== "dark";
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    toggle.textContent = dark ? "浅色" : "深色";
+  });
+</script>
+</body>
+</html>

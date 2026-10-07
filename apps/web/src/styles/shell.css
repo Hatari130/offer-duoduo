@@ -108,7 +108,7 @@
   padding: 1rem 0.875rem 0.75rem;
   overflow: visible;
   overflow-anchor: none;
-  background: #fbfcff;
+  background: #ffffff;
   border-inline-end: 1px solid rgb(167 180 216 / 0.3);
   box-shadow: 0.8rem 0 3rem -2.5rem rgb(54 72 125 / 0.24);
 }
@@ -1113,7 +1113,7 @@
     width: min(19rem, calc(100vw - 3rem));
     padding-block-start: calc(1.1rem + env(safe-area-inset-top));
     padding-block-end: calc(0.8rem + env(safe-area-inset-bottom));
-    background: #fbfcff;
+    background: #ffffff;
     border-inline-end: 1px solid rgb(151 169 214 / 0.34);
     box-shadow: var(--of-shadow-float);
     visibility: hidden;

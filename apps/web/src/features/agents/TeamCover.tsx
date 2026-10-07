@@ -65,14 +65,25 @@ function Motif({ team }: { team: ChatAgentName }) {
   );
 }
 
-export function TeamCover({ team, tagline }: { team: ChatAgentName; tagline: string }) {
+/** Wide (16:9) for the dialog; square for the home deck, with the motif moved under the slogan. */
+export function TeamCover({ team, tagline, square = false }: { team: ChatAgentName; tagline: string; square?: boolean }) {
   const words = tagline.split(/(?<=\.)\s+/);
+  const [width, height] = square ? [240, 240] : [320, 180];
   return (
-    <svg className="team-cover" data-team={team} viewBox="0 0 320 180" role="img" aria-label={tagline}>
-      <rect width="320" height="180" style={PAPER} />
-      <circle cx="292" cy="16" r="58" style={SOFT} opacity="0.45" />
-      <circle cx="-6" cy="178" r="46" style={SOFT} opacity="0.35" />
-      <Motif team={team} />
+    <svg
+      className={`team-cover${square ? " team-cover--square" : ""}`}
+      data-team={team}
+      viewBox={`0 0 ${width} ${height}`}
+      preserveAspectRatio="xMidYMid slice"
+      role="img"
+      aria-label={tagline}
+    >
+      <rect width={width} height={height} style={PAPER} />
+      <circle cx={width - 28} cy="16" r="58" style={SOFT} opacity="0.45" />
+      <circle cx="-6" cy={height - 2} r="46" style={SOFT} opacity="0.35" />
+      <g transform={square ? "translate(-62 84)" : undefined}>
+        <Motif team={team} />
+      </g>
       {words.map((word, index) => (
         <text
           key={word}

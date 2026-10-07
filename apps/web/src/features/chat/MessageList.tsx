@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { ExpertAvatar } from "../agents/skillMeta";
 import { CompanionAvatar } from "./CompanionAvatar";
 import type { ChatPendingMode } from "./pendingMode";
 
@@ -532,7 +533,7 @@ function ExpertNoteCard({ note }: { note: ChatAgentExpertNote }) {
   return (
     <article className={`expert-note${long && !expanded ? " is-clamped" : ""}`}>
       <header>
-        <span className="expert-avatar" aria-hidden="true">{note.expertName.slice(-1)}</span>
+        <ExpertAvatar expert={{ id: note.expertId, name: note.expertName, category: note.expertId.startsWith("custom:") ? "custom" : "resume" }} />
         <strong>{note.expertName}</strong>
         <small>{note.expertRole}</small>
       </header>

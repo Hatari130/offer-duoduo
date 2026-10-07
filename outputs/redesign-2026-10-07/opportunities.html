@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>校招信息速递 · 统一风格视觉稿</title>
+<style>
+  /* ---------- 规则：和首页同一套语言 ----------
+     1 个品牌色 + 1 个暖色点缀（只用于“快截止”）
+     标题用衬线（和团队封面呼应），正文无衬线
+     一屏只有一个实心主按钮：悬浮的那一行
+     所有动效同一条曲线 cubic-bezier(.22,1,.36,1)，150–380ms */
+  :root {
+    --canvas: #f6f7fb;
+    --surface: #ffffff;
+    --muted: #f2f4f8;
+    --line: #e6e9f0;
+    --line-strong: #d3d9e4;
+    --ink: #161922;
+    --ink-2: #4d5567;
+    --ink-3: #8089a0;
+    --brand: #3f56b8;
+    --brand-soft: #eef1ff;
+    --brand-ink: #34499f;
+    --warm: #d9772b;
+    --warm-soft: #fdf0e4;
+    --shadow: 0 1px 2px rgb(22 25 34 / .04), 0 8px 24px -16px rgb(22 25 34 / .18);
+    --shadow-lift: 0 2px 4px rgb(22 25 34 / .04), 0 18px 40px -24px rgb(22 25 34 / .35);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, Georgia, serif;
+    --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  [data-theme="dark"] {
+    --canvas: #0d1118;
+    --surface: #141a24;
+    --muted: #1a2130;
+    --line: #232b3a;
+    --line-strong: #2f3949;
+    --ink: #eef1f7;
+    --ink-2: #b3bbcc;
+    --ink-3: #7c869b;
+    --brand: #8ea2ff;
+    --brand-soft: #1e2645;
+    --brand-ink: #b9c6ff;
+    --warm: #f0a25e;
+    --warm-soft: #33241a;
+    --shadow: 0 1px 2px rgb(0 0 0 / .3), 0 8px 24px -16px rgb(0 0 0 / .6);
+    --shadow-lift: 0 2px 4px rgb(0 0 0 / .3), 0 18px 40px -24px rgb(0 0 0 / .8);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--sans); color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased; }
+  button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+  .frame { display: grid; grid-template-columns: 248px minmax(0, 1fr); min-height: 100vh; }
+
+  /* ---------- 侧栏：和现在一致，只去掉多余徽章 ---------- */
+  .side { position: sticky; top: 0; height: 100vh; display: flex; flex-direction: column; gap: 4px; padding: 20px 14px; background: var(--surface); border-right: 1px solid var(--line); }
+  .logo { display: flex; align-items: center; gap: 8px; padding: 4px 10px 18px; font-weight: 700; font-size: 18px; color: var(--brand); }
+  .logo i { width: 22px; height: 12px; border-bottom: 4px solid var(--brand); border-radius: 0 0 14px 14px; transform: rotate(-12deg); }
+  .new-chat { display: flex; align-items: center; gap: 8px; height: 40px; margin-bottom: 10px; padding: 0 12px; border: 1px solid var(--line); border-radius: 12px; font-size: 14px; font-weight: 500; transition: border-color .2s, box-shadow .2s; }
+  .new-chat:hover { border-color: var(--line-strong); box-shadow: var(--shadow); }
+  .nav { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border-radius: 10px; color: var(--ink-2); font-size: 14px; transition: background .15s, color .15s; }
+  .nav:hover { background: var(--muted); color: var(--ink); }
+  .nav.is-on { background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+  .nav svg { width: 18px; height: 18px; flex: none; }
+  .nav small { margin-left: auto; color: var(--ink-3); font-size: 11px; font-weight: 400; }
+
+  /* ---------- 主区 ---------- */
+  main { padding: 40px clamp(20px, 4vw, 56px) 80px; }
+  .wrap { max-width: 1080px; margin: 0 auto; }
+
+  .head { display: flex; align-items: flex-end; justify-content: space-between; gap: 24px; flex-wrap: wrap; }
+  h1 { margin: 0; font-family: var(--serif); font-size: 34px; font-weight: 700; letter-spacing: .01em; }
+  .lede { margin: 8px 0 0; color: var(--ink-2); font-size: 14px; }
+  /* 统计：三张彩色卡 → 一行安静的数字 */
+  .stats { display: flex; gap: 28px; }
+  .stat { display: grid; gap: 2px; }
+  .stat b { font-family: var(--serif); font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat span { color: var(--ink-3); font-size: 12px; }
+  .stat.is-warm b { color: var(--warm); }
+
+  /* 搜索 + 筛选：一条胶囊 */
+  .finder { display: flex; align-items: center; gap: 6px; margin-top: 28px; padding: 6px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); transition: box-shadow .3s var(--ease), border-color .3s; }
+  .finder:focus-within { border-color: var(--brand); box-shadow: 0 0 0 4px var(--brand-soft), var(--shadow); }
+  .finder input { flex: 1; min-width: 0; height: 40px; padding: 0 12px 0 38px; border: 0; outline: 0; background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%238089a0' stroke-width='2' stroke-linecap='round'%3E%3Ccircle cx='8' cy='8' r='6'/%3E%3Cpath d='m13 13 3.5 3.5'/%3E%3C/svg%3E") 12px center no-repeat; color: var(--ink); font: inherit; font-size: 14px; }
+  .chip { display: inline-flex; align-items: center; gap: 4px; height: 34px; padding: 0 12px; border-radius: 10px; color: var(--ink-2); font-size: 13px; white-space: nowrap; transition: background .15s, color .15s; }
+  .chip:hover { background: var(--muted); color: var(--ink); }
+  .chip.is-on { background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+  .chip svg { width: 12px; height: 12px; opacity: .6; }
+  .divider { width: 1px; height: 20px; background: var(--line); }
+
+  /* 分段控件 */
+  .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 22px 0 14px; }
+  .seg { position: relative; display: inline-flex; padding: 3px; background: var(--muted); border-radius: 12px; }
+  .seg button { white-space: nowrap; position: relative; z-index: 1; height: 32px; padding: 0 14px; border-radius: 9px; color: var(--ink-2); font-size: 13px; transition: color .2s; }
+  .seg button.is-on { color: var(--ink); font-weight: 600; }
+  .seg button em { margin-left: 6px; color: var(--ink-3); font-style: normal; font-size: 12px; font-variant-numeric: tabular-nums; }
+  .seg .thumb { position: absolute; top: 3px; bottom: 3px; border-radius: 9px; background: var(--surface); box-shadow: 0 1px 2px rgb(22 25 34 / .08), 0 0 0 1px var(--line); transition: left .38s var(--ease), width .38s var(--ease); }
+  .sort { color: var(--ink-3); font-size: 13px; }
+
+  /* 和首页的团队连起来：这一页也能交给岗位雷达 */
+  .radar { display: flex; align-items: center; gap: 14px; margin-bottom: 14px; padding: 12px 14px 12px 12px; background: linear-gradient(100deg, var(--brand-soft), var(--surface) 70%); border: 1px solid var(--line); border-radius: 16px; }
+  .stack { display: flex; }
+  .stack svg { width: 32px; height: 32px; border-radius: 50%; box-shadow: 0 0 0 2px var(--surface); transition: transform .3s var(--ease); }
+  .stack svg + svg { margin-left: -8px; }
+  .radar:hover .stack svg:nth-child(1) { transform: translateX(-3px); }
+  .radar:hover .stack svg:nth-child(3) { transform: translateX(3px); }
+  .radar p { flex: 1; margin: 0; font-size: 14px; color: var(--ink-2); }
+  .radar p b { color: var(--ink); font-weight: 600; }
+  .ghost { height: 34px; padding: 0 14px; border: 1px solid var(--line-strong); border-radius: 999px; background: var(--surface); font-size: 13px; font-weight: 500; transition: border-color .2s, transform .2s var(--ease), box-shadow .2s; }
+  .ghost:hover { border-color: var(--brand); color: var(--brand-ink); transform: translateY(-1px); box-shadow: var(--shadow); }
+
+  /* 列表：表格 → 卡片行，强调色只留给“快截止” */
+  .list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .row { display: grid; grid-template-columns: 44px minmax(0, 1fr) 140px 120px 188px; align-items: center; gap: 16px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; opacity: 0; transform: translateY(6px); animation: rise .5s var(--ease) forwards; transition: border-color .2s, box-shadow .3s var(--ease), transform .3s var(--ease); }
+  .row:hover { border-color: var(--line-strong); box-shadow: var(--shadow-lift); transform: translateY(-1px); }
+  @keyframes rise { to { opacity: 1; transform: none; } }
+  .mono { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; font-family: var(--serif); font-size: 18px; font-weight: 700; }
+  .t-soe { background: #eef1ff; color: #34499f; }
+  .t-fin { background: #e9f6f2; color: #2f7d6d; }
+  .t-net { background: #fff1ec; color: #c4533b; }
+  .t-med { background: #fff6e3; color: #a8671c; }
+  [data-theme="dark"] .t-soe { background: #1e2645; color: #b9c6ff; }
+  [data-theme="dark"] .t-fin { background: #122b26; color: #5cc7ae; }
+  [data-theme="dark"] .t-net { background: #2b1c18; color: #f08a70; }
+  [data-theme="dark"] .t-med { background: #2a2213; color: #e8a54b; }
+  .who { min-width: 0; }
+  .who strong { display: flex; align-items: baseline; gap: 8px; font-size: 15px; font-weight: 600; }
+  .who strong small { color: var(--ink-3); font-size: 12px; font-weight: 400; }
+  .who p { margin: 4px 0 0; overflow: hidden; color: var(--ink-2); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+  .who p span + span::before { content: "·"; margin: 0 6px; color: var(--ink-3); }
+  .meta { display: grid; gap: 3px; font-size: 13px; color: var(--ink-2); }
+  .meta small { color: var(--ink-3); font-size: 12px; }
+  .due { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--ink-2); }
+  .due.is-soon { color: var(--warm); font-weight: 600; }
+  .due.is-soon::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--warm); box-shadow: 0 0 0 4px var(--warm-soft); }
+  /* 每行默认只有一个安静的箭头；悬浮时才出现实心“投递” */
+  .act { display: flex; justify-content: flex-end; gap: 6px; }
+  .act .peek { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 10px; color: var(--ink-3); transition: opacity .2s; }
+  .act .go, .act .co { height: 34px; padding: 0 14px; white-space: nowrap; border-radius: 10px; font-size: 13px; font-weight: 600; opacity: 0; transform: translateX(6px); pointer-events: none; transition: opacity .2s, transform .3s var(--ease), background .2s; }
+  .act .co { font-weight: 500; color: var(--ink-2); }
+  .act .co:hover { background: var(--muted); }
+  .act .go { background: var(--brand); color: #fff; }
+  [data-theme="dark"] .act .go { color: #0d1118; }
+  .act .go:hover { filter: brightness(1.08); }
+  .row:hover .act .go, .row:hover .act .co, .row:focus-within .act .go, .row:focus-within .act .co { opacity: 1; transform: none; pointer-events: auto; }
+  .row:hover .act .peek { display: none; }
+  .hc { white-space: nowrap; margin-left: 2px; padding: 1px 6px; border-radius: 6px; background: var(--muted); color: var(--ink-2); font-size: 11px; font-weight: 500; }
+
+  /* ---------- 规则说明 ---------- */
+  .rules { margin-top: 56px; padding-top: 28px; border-top: 1px dashed var(--line-strong); }
+  .rules h2 { margin: 0 0 6px; font-family: var(--serif); font-size: 22px; }
+  .rules > p { margin: 0 0 18px; color: var(--ink-2); font-size: 14px; }
+  .rule-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 12px; }
+  .rule { padding: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .rule h3 { margin: 0 0 10px; font-size: 13px; color: var(--ink-3); font-weight: 500; }
+  .swatches { display: flex; gap: 8px; }
+  .sw { display: grid; gap: 4px; font-size: 11px; color: var(--ink-3); text-align: center; }
+  .sw i { width: 40px; height: 40px; border-radius: 10px; border: 1px solid var(--line); }
+  .type-a { font-family: var(--serif); font-size: 26px; font-weight: 700; }
+  .type-b { margin-top: 4px; color: var(--ink-2); font-size: 14px; }
+  .btns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .solid { height: 34px; padding: 0 14px; border-radius: 10px; background: var(--brand); color: #fff; font-size: 13px; font-weight: 600; }
+  [data-theme="dark"] .solid { color: #0d1118; }
+  .rule ul { margin: 0; padding-left: 18px; color: var(--ink-2); font-size: 13px; line-height: 1.8; }
+  .curve { display: flex; align-items: center; gap: 10px; }
+  .curve .track { position: relative; flex: 1; height: 8px; border-radius: 99px; background: var(--muted); }
+  .curve .dot { position: absolute; top: -4px; left: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--brand); transition: left .38s var(--ease); }
+  .rule:hover .curve .dot { left: calc(100% - 16px); }
+
+  .theme { position: fixed; right: 20px; top: 20px; z-index: 5; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); font-size: 13px; }
+
+  @media (max-width: 900px) {
+    .frame { grid-template-columns: 1fr; }
+    .side { display: none; }
+    main { padding-top: 64px; }
+    .row { grid-template-columns: 40px minmax(0, 1fr) auto; grid-template-areas: "mono who go" "mono due go"; row-gap: 6px; padding: 12px; }
+    .mono { grid-area: mono; width: 40px; height: 40px; align-self: start; }
+    .who { grid-area: who; }
+    .due { grid-area: due; font-size: 12px; }
+    .act { grid-area: go; }
+    .row .meta.city { display: none; }
+    .who strong { flex-wrap: wrap; row-gap: 2px; }
+    .sort { display: none; }
+    .seg button { padding: 0 10px; }
+    .radar { flex-wrap: wrap; }
+    .radar p { flex-basis: calc(100% - 110px); font-size: 13px; }
+    .radar .ghost { width: 100%; }
+    .act .go, .act .co { opacity: 1; transform: none; pointer-events: auto; }
+    .act .co, .act .peek { display: none; }
+    /* 手机没有悬浮：每行都显示投递，所以用浅色，不抢眼 */
+    .act .go { background: var(--brand-soft); color: var(--brand-ink); }
+    [data-theme="dark"] .act .go { color: var(--brand-ink); }
+    .finder { flex-wrap: wrap; }
+    .finder input { flex-basis: 100%; }
+    .divider { display: none; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before { animation: none !important; transition: none !important; }
+    .row { opacity: 1; transform: none; }
+  }
+</style>
+</head>
+<body>
+<button class="theme" id="theme" type="button">切换深色</button>
+<div class="frame">
+  <aside class="side">
+    <div class="logo"><i></i>JobKoI</div>
+    <button class="new-chat" type="button">＋ 新对话</button>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg>求职陪跑</a>
+    <a class="nav is-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>校招信息速递<small>实时</small></a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 20V8l7-4 7 4v12M9 20v-6h6v6"/></svg>公司投递直达</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>简历模板</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg>个人投递管理</a>
+  </aside>
+
+  <main>
+    <div class="wrap">
+      <header class="head">
+        <div>
+          <h1>校招信息速递</h1>
+          <p class="lede">聚合公开校招信息，按截止时间帮你排好先后。</p>
+        </div>
+        <div class="stats" aria-label="今日概况">
+          <div class="stat"><b>295</b><span>今日新增</span></div>
+          <div class="stat"><b>8,209</b><span>开放投递</span></div>
+          <div class="stat is-warm"><b>134</b><span>7 天内截止</span></div>
+        </div>
+      </header>
+
+      <div class="finder">
+        <input type="search" placeholder="搜索公司、岗位或城市">
+        <span class="divider"></span>
+        <button class="chip is-on" type="button">2027 届 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m3 4.5 3 3 3-3"/></svg></button>
+        <button class="chip" type="button">城市 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m3 4.5 3 3 3-3"/></svg></button>
+        <button class="chip" type="button">企业性质 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m3 4.5 3 3 3-3"/></svg></button>
+        <button class="chip" type="button">行业 <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.6"><path d="m3 4.5 3 3 3-3"/></svg></button>
+      </div>
+
+      <div class="bar">
+        <div class="seg" id="seg">
+          <span class="thumb"></span>
+          <button class="is-on" type="button">全部<em>9,458</em></button>
+          <button type="button">最新发布<em>295</em></button>
+          <button type="button">即将截止<em>134</em></button>
+        </div>
+        <span class="sort">按截止时间 ↑</span>
+      </div>
+
+      <section class="radar">
+        <span class="stack"><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#e6f6ec"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><g stroke="#b07a4f" stroke-width="1.8" stroke-linecap="round" fill="none"><path d="M17.5 14.5 L14.6 7.8 M15.8 10.6 L12 9.6 M15.1 9.2 L16.8 6"></path><path d="M30.5 14.5 L33.4 7.8 M32.2 10.6 L36 9.6 M32.9 9.2 L31.2 6"></path></g><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#6cc39a"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 24 C12.5 15.5 18 12.2 24 12.2 C30 12.2 35.5 15.5 34.6 24 C33.8 21.6 32.4 20 30.6 19.8 C29.6 21 27.6 21.2 26.4 19.9 C25.2 21.2 22.8 21.2 21.6 19.9 C20.4 21.2 18.4 21 17.4 19.8 C15.6 20 14.2 21.6 13.4 24Z" fill="#a0643c"></path><ellipse cx="12.2" cy="19.6" rx="3.2" ry="1.7" fill="#c98b5e" transform="rotate(-28 12.2 19.6)"></ellipse><ellipse cx="35.8" cy="19.6" rx="3.2" ry="1.7" fill="#c98b5e" transform="rotate(28 35.8 19.6)"></ellipse></g></g></svg><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#fde2e0"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#d9534f"></path><path d="M19.4 34.8 L24 38 L28.6 34.8 L27 38.6 L24 38 L21 38.6Z" fill="#fff"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><g fill="#2a201c"><circle cx="14.4" cy="21.4" r="3.8"></circle><circle cx="16.6" cy="16.4" r="4.2"></circle><circle cx="20.6" cy="13.2" r="4.3"></circle><circle cx="26" cy="12.8" r="4.4"></circle><circle cx="31" cy="15" r="4.2"></circle><circle cx="33.8" cy="19.6" r="3.9"></circle><circle cx="14.2" cy="24.6" r="2.6"></circle><circle cx="34" cy="23.8" r="2.8"></circle></g><circle cx="13.6" cy="30.2" r="1.3" fill="#fff" stroke="#e3d6d0" stroke-width="0.5"></circle><circle cx="34.4" cy="30.2" r="1.3" fill="#fff" stroke="#e3d6d0" stroke-width="0.5"></circle></g></g></svg><svg viewBox="0 0 48 48" aria-hidden="true" focusable="false"><clipPath id=":R0:"><circle cx="24" cy="24" r="24"></circle></clipPath><g clip-path="url(#:R0:)"><rect width="48" height="48" fill="#d8f1ec"></rect><g transform="translate(24 28) scale(1.18) translate(-24 -28)"><rect x="21" y="30" width="6" height="6" rx="2" fill="#ffe1c8"></rect><path d="M6 48 C7 38.5 14 34.4 24 34.4 C34 34.4 41 38.5 42 48Z" fill="#4fb3a9"></path><path d="M15 38 C18.5 35 29.5 35 33 38" fill="none" stroke="#3b9188" stroke-width="1.4"></path><path d="M21.5 36.5 L21.5 41 M26.5 36.5 L26.5 41" stroke="#fff" stroke-width="1" stroke-linecap="round"></path><ellipse cx="13.4" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><ellipse cx="34.6" cy="25.6" rx="2" ry="2.6" fill="#ffe1c8"></ellipse><circle cx="24" cy="24.6" r="10.6" fill="#ffe1c8"></circle><circle cx="17.6" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><circle cx="30.4" cy="29" r="1.8" fill="#ff8a8a" opacity="0.35"></circle><ellipse cx="20" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><ellipse cx="28" cy="25.8" rx="1.35" ry="1.7" fill="#2a2320"></ellipse><circle cx="20.45" cy="25.2" r="0.45" fill="#fff"></circle><circle cx="28.45" cy="25.2" r="0.45" fill="#fff"></circle><path d="M21.8 29.6 Q24 31.6 26.2 29.6" fill="none" stroke="#2a2320" stroke-width="1.1" stroke-linecap="round"></path><path d="M13.4 24 C12.8 14.8 18.5 12 24.5 12 C30.5 12 35.4 15 34.6 24 C34 20.5 32.5 18.5 30 17.6 C26 19.6 19.5 19.8 15.5 18.6 C14.2 20 13.6 22 13.4 24Z" fill="#232323"></path><g fill="#ffffff33" stroke="#2a6f8f" stroke-width="1.1"><circle cx="20" cy="25.8" r="3.2"></circle><circle cx="28" cy="25.8" r="3.2"></circle><path d="M23.2 25.6 Q24 25 24.8 25.6" fill="none"></path></g></g></g></svg></span>
+        <p><b>岗位雷达团队</b>可以按你的简历和硬性条件，从这 9,458 个岗位里挑出最值得投的 6 个。</p>
+        <button class="ghost" type="button">让团队帮我筛</button>
+      </section>
+
+      <ul class="list" id="list"></ul>
+
+      <section class="rules">
+        <h2>这一版的规则</h2>
+        <p>不是加颜色，而是让每个页面都说同一种语言。规则定下来后，简历模板、投递管理按同样的方式改。</p>
+        <div class="rule-grid">
+          <div class="rule">
+            <h3>颜色：一个品牌色 + 一个暖色</h3>
+            <div class="swatches">
+              <span class="sw"><i style="background:var(--brand)"></i>品牌</span>
+              <span class="sw"><i style="background:var(--brand-soft)"></i>选中</span>
+              <span class="sw"><i style="background:var(--warm)"></i>快截止</span>
+              <span class="sw"><i style="background:var(--muted)"></i>底色</span>
+            </div>
+          </div>
+          <div class="rule">
+            <h3>字体：标题衬线，正文无衬线</h3>
+            <div class="type-a">校招信息速递</div>
+            <div class="type-b">和团队封面的衬线标语呼应，首页大标题也一起换。</div>
+          </div>
+          <div class="rule">
+            <h3>按钮：一屏只有一个实心按钮</h3>
+            <div class="btns"><button class="solid" type="button">投递 →</button><button class="ghost" type="button">次要操作</button><span class="chip is-on">已选筛选</span></div>
+          </div>
+          <div class="rule">
+            <h3>动效：同一条曲线（悬浮这张卡试试）</h3>
+            <div class="curve"><span class="track"><span class="dot"></span></span></div>
+            <ul><li>悬浮 150–200ms，移动和展开 300–380ms</li><li>快起慢停：cubic-bezier(.22,1,.36,1)</li></ul>
+          </div>
+          <div class="rule">
+            <h3>去掉的东西</h3>
+            <ul><li>三张彩色统计卡 → 一行数字</li><li>每行实心蓝按钮 → 悬浮才出现</li><li>红色“超多hc”、蓝色“秋招”标签 → 灰色小字</li><li>侧栏“内测中”徽章</li></ul>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+
+<script>
+  const jobs = [
+    { c: "招商局太平湾", t: "t-soe", kind: "国企", tags: ["规划管理岗", "重大项目管理岗"], city: "大连", pub: "10月3日", due: "招满为止", hc: true },
+    { c: "美团", t: "t-net", kind: "互联网", tags: ["产品经理", "商业分析", "运营"], city: "北京 · 上海", pub: "9月28日", due: "10月9日截止", soon: true },
+    { c: "国家电投集团国核设备", t: "t-soe", kind: "央企", tags: ["详见投递页"], city: "全国", pub: "10月3日", due: "招满为止", hc: true },
+    { c: "小红书", t: "t-net", kind: "互联网", tags: ["产品经理", "社区运营"], city: "上海", pub: "9月30日", due: "10月10日截止", soon: true },
+    { c: "华润电力", t: "t-soe", kind: "央企", tags: ["专业技术类", "生产运行类"], city: "全国", pub: "10月2日", due: "招满为止" },
+    { c: "天津滨海农商银行", t: "t-fin", kind: "银行", tags: ["营业网点基层业务岗营销", "柜面服务"], city: "天津", pub: "10月2日", due: "10月31日截止" },
+    { c: "南方财经全媒体集团", t: "t-med", kind: "国企", tags: ["详见投递页"], city: "广州", pub: "10月2日", due: "招满为止", hc: true }
+  ];
+  const list = document.getElementById("list");
+  list.innerHTML = jobs.map((j, i) => `
+    <li class="row" style="animation-delay:${i * 45}ms">
+      <span class="mono ${j.t}">${j.c[0]}</span>
+      <div class="who">
+        <strong>${j.c}<small>${j.kind} · 2027 届</small>${j.hc ? '<span class="hc">HC 多</span>' : ""}</strong>
+        <p>${j.tags.map((tag) => `<span>${tag}</span>`).join("")}</p>
+      </div>
+      <div class="meta city">${j.city}<small>${j.pub} 发布</small></div>
+      <span class="due${j.soon ? " is-soon" : ""}">${j.due}</span>
+      <div class="act">
+        <span class="peek" aria-hidden="true">→</span>
+        <button class="co" type="button">查企业</button>
+        <button class="go" type="button">投递 →</button>
+      </div>
+    </li>`).join("");
+
+  const seg = document.getElementById("seg");
+  const thumb = seg.querySelector(".thumb");
+  const place = (button) => { thumb.style.left = button.offsetLeft + "px"; thumb.style.width = button.offsetWidth + "px"; };
+  seg.querySelectorAll("button").forEach((button) => button.addEventListener("click", () => {
+    seg.querySelector(".is-on").classList.remove("is-on");
+    button.classList.add("is-on");
+    place(button);
+  }));
+  place(seg.querySelector(".is-on"));
+
+  document.querySelectorAll(".finder .chip").forEach((chip) => chip.addEventListener("click", () => chip.classList.toggle("is-on")));
+
+  const toggle = document.getElementById("theme");
+  toggle.addEventListener("click", () => {
+    const dark = document.documentElement.dataset.theme !== "dark";
+    document.documentElement.dataset.theme = dark ? "dark" : "light";
+    toggle.textContent = dark ? "切换浅色" : "切换深色";
+  });
+</script>
+</body>
+</html>

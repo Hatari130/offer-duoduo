@@ -1,7 +1,7 @@
 /* Agent teams and the skill market. */
 
 /* Reset the browser's button look; :where keeps specificity at zero so the rules below win. */
-:where(.agents-modal, .team-chip, .team-gallery) button,
+:where(.agents-modal, .team-chip, .team-deck) button,
 :where(.composer-skill-button) {
   padding: 0;
   color: inherit;
@@ -54,53 +54,213 @@
   margin-inline-start: -0.35rem;
 }
 
-/* ---------- Team gallery (home) ---------- */
-.team-gallery {
+/* ---------- Team deck (home) ---------- */
+/* A fanned deck of overlapping cards. Hover straightens and enlarges a card,
+   pushes its neighbours aside and reveals its name, members and invite button. */
+.team-deck {
+  --deck-card: clamp(9.5rem, 13vw, 11.5rem);
+  --deck-hover-width: calc(var(--deck-card) * 1.14);
+  --deck-hover-height: calc(var(--deck-card) * 1.44);
+  --deck-ease: cubic-bezier(0.22, 1, 0.36, 1);
   width: 100%;
   max-width: 60rem;
-  margin: 2.5rem auto 0;
-  text-align: start;
+  margin: -0.75rem auto 0;
 }
 
-.team-gallery h2 {
-  margin: 0 0 0.85rem;
-  color: var(--of-text-subtle);
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-}
-
-.team-gallery__grid {
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 0.875rem;
-}
-
-.team-card {
+/* Tall enough that the picked card grows without covering the title or the composer. */
+.team-deck__stack {
   position: relative;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  text-align: start;
-  background: var(--of-surface);
-  border: 1px solid var(--of-line);
+  height: calc(var(--deck-card) * 1.7);
+}
+
+.team-deck-card {
+  --deck-shift: 0px;
+  position: absolute;
+  z-index: var(--deck-z);
+  top: 50%;
+  left: 50%;
+  width: var(--deck-card);
+  height: var(--deck-card);
   border-radius: 0.875rem;
-  transition: transform 200ms ease, box-shadow 200ms ease, border-color 200ms ease;
+  background: transparent;
+  box-shadow: 0 10px 22px -16px rgb(17 28 48 / 0.35);
+  transform: translate(-50%, -50%) translateX(calc(var(--deck-x) + var(--deck-shift))) translateY(var(--deck-y)) rotate(var(--deck-rotate));
+  transition:
+    transform 380ms var(--deck-ease),
+    width 380ms var(--deck-ease),
+    height 380ms var(--deck-ease),
+    border-radius 320ms ease,
+    background-color 200ms ease,
+    box-shadow 320ms ease;
 }
 
-.team-card:hover {
-  border-color: var(--of-line-strong);
-  box-shadow: var(--of-shadow-float);
-  transform: translateY(-2px);
+/* First paint: the cards are dealt onto the table one by one. */
+@media (prefers-reduced-motion: no-preference) {
+  .team-deck-card { animation: deck-deal 600ms var(--deck-ease) backwards; animation-delay: calc(var(--deck-z) * 70ms); }
+}
+@keyframes deck-deal {
+  from { opacity: 0; transform: translate(-50%, -40%) scale(0.9); }
 }
 
-.team-card:focus-visible {
+.team-deck-card[data-position="before"] { --deck-shift: -2.6rem; }
+.team-deck-card[data-position="after"] { --deck-shift: 2.6rem; }
+
+.team-deck-card[data-position="self"] {
+  z-index: 20;
+  width: var(--deck-hover-width);
+  height: var(--deck-hover-height);
+  border-radius: 1.1rem;
+  background: var(--of-surface);
+  box-shadow: 0 26px 56px -28px rgb(17 28 48 / 0.5);
+  transform: translate(-50%, -50%) translateX(var(--deck-x)) translateY(calc(var(--deck-y) - 4px)) rotate(0deg) scale(1.08);
+}
+
+.team-deck-card__cover {
+  position: absolute;
+  inset: 0;
+  display: block;
+  overflow: hidden;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: none;
+  cursor: pointer;
+  transition: inset 380ms var(--deck-ease), border-radius 320ms ease;
+}
+
+.team-deck-card[data-position="self"] .team-deck-card__cover {
+  inset: 0.55rem 0.55rem 3.6rem;
+  border-radius: 0.7rem;
+}
+
+.team-deck-card__cover:focus-visible,
+.team-deck-card__invite:focus-visible {
   outline: 2px solid var(--of-brand-500);
   outline-offset: 2px;
 }
 
-.team-card.is-invited {
-  border-color: var(--of-brand-400, var(--of-brand-300));
+.team-deck-card .team-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Bottom-left: the next card overlaps the right side, the slogan fills the top. */
+.team-deck-card__badge {
+  position: absolute;
+  z-index: 3;
+  bottom: 0.5rem;
+  left: 0.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.15rem 0.45rem;
+  color: #fff;
+  background: var(--of-action-primary, var(--of-brand-600));
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 600;
+  transition: opacity 200ms ease;
+}
+
+.team-deck-card[data-position="self"] .team-deck-card__badge {
+  opacity: 0;
+}
+
+/* Name, members and invite: hidden in the fan, slide up when the card is picked. */
+.team-deck-card__details {
+  position: absolute;
+  right: 0.7rem;
+  bottom: 0.6rem;
+  left: 0.7rem;
+  display: flex;
+  height: 2.6rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(0.6rem);
+  transition: opacity 160ms ease, transform 220ms var(--deck-ease);
+}
+
+.team-deck-card[data-position="self"] .team-deck-card__details {
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+  transition: opacity 220ms ease 80ms, transform 300ms var(--deck-ease) 50ms;
+}
+
+.team-deck-card__name {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.team-deck-card__name strong {
+  overflow: hidden;
+  color: var(--of-text-strong);
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.2;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.team-deck-card__name .expert-avatar {
+  width: 1.1rem;
+  height: 1.1rem;
+}
+
+.team-deck-card__name .avatar-stack .expert-avatar + .expert-avatar {
+  margin-inline-start: -0.3rem;
+}
+
+.team-deck-card__invite {
+  flex: 0 0 auto;
+  height: 1.75rem;
+  padding: 0 0.8rem;
+  color: #fff;
+  background: var(--of-text-strong);
+  border: 0;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 180ms ease, transform 180ms ease;
+}
+
+.team-deck-card__invite:hover {
+  background: color-mix(in srgb, var(--of-text-strong) 80%, transparent);
+  transform: translateY(-1px);
+}
+
+[data-theme="dark"] .team-deck-card__invite {
+  color: var(--of-surface);
+}
+
+.team-deck-card.is-invited:not([data-position="self"]) {
+  box-shadow: 0 0 0 2px var(--of-brand-400, var(--of-brand-300)), 0 10px 22px -16px rgb(17 28 48 / 0.35);
+}
+
+/* Phones: a tighter fan; there is no hover, so a tap on the cover opens the team. */
+@media (max-width: 40rem) {
+  .team-deck {
+    --deck-card: min(26vw, 7rem);
+  }
+
+  .team-deck-card[data-position="before"] { --deck-shift: -1.4rem; }
+  .team-deck-card[data-position="after"] { --deck-shift: 1.4rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .team-deck-card,
+  .team-deck-card__cover,
+  .team-deck-card__details,
+  .team-deck-card__badge {
+    transition: none;
+  }
 }
 
 .team-cover {
@@ -110,71 +270,20 @@
   aspect-ratio: 16 / 9;
 }
 
+.team-cover--square {
+  aspect-ratio: 1;
+}
+
 .team-cover[data-team="resume_coach"] { --cover-paper: #eef2ff; --cover-ink: #26324f; --cover-accent: #3f56b8; --cover-soft: #cbd4ff; }
 .team-cover[data-team="interview_coach"] { --cover-paper: #fff1ec; --cover-ink: #4a2a22; --cover-accent: #c4533b; --cover-soft: #f6c9bb; }
 .team-cover[data-team="job_radar"] { --cover-paper: #e9f6f2; --cover-ink: #1f3f38; --cover-accent: #2f7d6d; --cover-soft: #b7e0d5; }
 .team-cover[data-team="career_planner"] { --cover-paper: #fff6e3; --cover-ink: #4a3415; --cover-accent: #a8671c; --cover-soft: #f1d6a4; }
 .team-cover { --cover-card: #fff; }
-
 [data-theme="dark"] .team-cover { --cover-card: #ffffff1f; }
 [data-theme="dark"] .team-cover[data-team="resume_coach"] { --cover-paper: #1a2140; --cover-ink: #dfe5ff; --cover-accent: #8ea2ff; --cover-soft: #344072; }
 [data-theme="dark"] .team-cover[data-team="interview_coach"] { --cover-paper: #2b1c18; --cover-ink: #ffe3da; --cover-accent: #f08a70; --cover-soft: #5a342a; }
 [data-theme="dark"] .team-cover[data-team="job_radar"] { --cover-paper: #122b26; --cover-ink: #d6f3ea; --cover-accent: #5cc7ae; --cover-soft: #24524a; }
 [data-theme="dark"] .team-cover[data-team="career_planner"] { --cover-paper: #2a2213; --cover-ink: #fbe9c6; --cover-accent: #e8a54b; --cover-soft: #574522; }
-
-.team-card .team-cover {
-  transition: transform 300ms ease;
-}
-
-.team-card:hover .team-cover {
-  transform: scale(1.03);
-}
-
-.team-card__badge {
-  position: absolute;
-  inset-block-start: 0.6rem;
-  inset-inline-end: 0.6rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.2rem;
-  padding: 0.2rem 0.5rem;
-  color: #fff;
-  background: var(--of-action-primary, var(--of-brand-600));
-  border-radius: 999px;
-  font-size: 0.6875rem;
-  font-weight: 600;
-}
-
-.team-card__footer {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
-  padding: 0.7rem 0.85rem;
-  background: var(--of-surface);
-}
-
-.team-card__footer strong {
-  overflow: hidden;
-  color: var(--of-text-strong);
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.team-card__footer .expert-avatar {
-  width: 1.3rem;
-  height: 1.3rem;
-  font-size: 0.65rem;
-}
-
-@media (max-width: 52rem) {
-  .team-gallery__grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
 
 /* ---------- Composer: team chip and skill button ---------- */
 .composer-header {
@@ -791,18 +900,16 @@
   .skill-form__row {
     grid-template-columns: 1fr;
   }
-
-  .team-card__members small {
-    display: none;
-  }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .team-card {
-    transition: none;
-  }
+/* Drawn portraits fill the circle themselves. */
+.expert-avatar--portrait {
+  overflow: hidden;
+  background: none;
+}
 
-  .team-card:hover {
-    transform: none;
-  }
+.expert-avatar--portrait svg {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
