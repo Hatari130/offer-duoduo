@@ -7,6 +7,7 @@ import { MemoryStore } from "../src/store/memory-store.ts";
 import { createEmptyPersonalProfile } from "../../../packages/domain/src/index.ts";
 import { createInterviewCoachSession } from "../src/agent/interview-coach.ts";
 import { createJobRadarSession } from "../src/agent/job-radar.ts";
+import { agentMessagesFromHistory } from "../src/agent/teams.ts";
 
 const call = (id, name, args) => ({ id, type: "function", function: { name, arguments: JSON.stringify(args) } });
 
@@ -105,4 +106,32 @@ test("the job radar can only show openings that came back from a search", async 
   assert.match(tool("show_opportunities").run({ ids: ["zzz"] }).error, /zzz/);
   assert.deepEqual(tool("show_opportunities").run({ ids: ["b"] }), { shown: 1 });
   assert.deepEqual(session.results().items.map((opportunity) => opportunity.id), ["b"]);
+});
+
+test("long conversations replay tool calls only for the last two turns", () => {
+  const turn = (index) => [
+    { id: `u${index}`, role: "user", content: `第 ${index} 轮`, status: "complete" },
+    {
+      id: `a${index}`,
+      role: "assistant",
+      content: `回复 ${index}`,
+      status: "complete",
+      agentRun: {
+        agent: "resume_coach",
+        steps: [],
+        rewrites: index === 1 ? [{ entryId: "camp-1", title: "融媒体中心", before: "写推文", after: "撰写推文 40 余篇", reason: "" }] : [],
+        trace: [
+          { role: "assistant", content: null, tool_calls: [call(`t${index}`, "get_resume", {})] },
+          { role: "tool", tool_call_id: `t${index}`, content: "整份简历".repeat(500) },
+          { role: "assistant", content: `回复 ${index}` }
+        ]
+      }
+    }
+  ];
+  const messages = agentMessagesFromHistory([1, 2, 3, 4].flatMap(turn), "系统提示");
+  const toolCalls = messages.filter((message) => message.role === "tool").map((message) => message.tool_call_id);
+  assert.deepEqual(toolCalls, ["t3", "t4"]);
+  assert.equal(messages.filter((message) => message.role === "user").length, 4);
+  // An old turn keeps its reply and what it settled on.
+  assert.equal(messages[2].content, "回复 1\n（这一轮已写好：「融媒体中心」→ 撰写推文 40 余篇）");
 });

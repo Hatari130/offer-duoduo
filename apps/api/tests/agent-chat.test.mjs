@@ -175,3 +175,89 @@ test("an invented number is rejected by the guard and shown as a rejected step",
   assert.match(step.detail, /50/);
   assert.equal(events.some((event) => event.type === "agent.rewrite"), false);
 });
+
+async function demoConversation(app) {
+  const auth = await (await fetch(`${app.baseUrl}/v1/auth/demo`, { method: "POST" })).json();
+  const headers = { "Content-Type": "application/json", Authorization: `Bearer ${auth.data.accessToken}` };
+  const conversation = (await (await fetch(`${app.baseUrl}/v1/conversations`, { method: "POST", headers, body: "{}" })).json()).data.conversation;
+  const send = (content, extra = {}) => fetch(`${app.baseUrl}/v1/conversations/${conversation.id}/messages`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({ content, clientMessageId: crypto.randomUUID(), agent: "resume_coach", ...extra })
+  });
+  return { headers, conversation, send };
+}
+
+test("the reply streams token by token and a preamble before a tool call is withdrawn", async (t) => {
+  const script = [
+    { text: ["我先看", "看简历"], message: { role: "assistant", content: "我先看看简历", tool_calls: [call("t1", "get_resume", {})] } },
+    { text: ["简历还", "没有，", "先建一份吧。"], message: { role: "assistant", content: "简历还没有，先建一份吧。" } }
+  ];
+  const model = {
+    async complete(messages, tools, options = {}) {
+      const next = script.shift();
+      for (const delta of next.text) options.onText?.(delta);
+      return next.message;
+    }
+  };
+  const app = await startServer(model);
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+  });
+  const { send } = await demoConversation(app);
+  const events = await sseEvents(await send("帮我改简历"));
+  const text = events.filter((event) => ["message.delta", "message.reset"].includes(event.type))
+    .map((event) => event.type === "message.reset" ? "|reset|" : event.delta);
+  assert.deepEqual(text, ["我先看", "看简历", "|reset|", "简历还", "没有，", "先建一份吧。"]);
+  assert.equal(events.find((event) => event.type === "message.completed").message.content, "简历还没有，先建一份吧。");
+});
+
+test("stopping a team turn cancels the model call and keeps one turn per user at a time", async (t) => {
+  let started;
+  const modelStarted = new Promise((resolve) => { started = resolve; });
+  let cancelled = false;
+  const model = {
+    complete(messages, tools, options = {}) {
+      started();
+      options.onText?.("正在想");
+      return new Promise((resolve, reject) => {
+        options.signal?.addEventListener("abort", () => {
+          cancelled = true;
+          reject(options.signal.reason);
+        });
+      });
+    }
+  };
+  const app = await startServer(model);
+  t.after(async () => {
+    app.server.close();
+    await once(app.server, "close");
+  });
+  const { headers, conversation, send } = await demoConversation(app);
+
+  const stop = new AbortController();
+  const first = send("帮我改简历", { signal: stop.signal });
+  const firstResponse = await first;
+  await modelStarted;
+
+  const busy = await send("再发一条");
+  assert.equal(busy.status, 429);
+  assert.equal((await busy.json()).error.code, "AGENT_BUSY");
+
+  stop.abort();
+  await firstResponse.body.cancel().catch(() => {});
+  for (let i = 0; i < 50 && !cancelled; i++) await new Promise((resolve) => setTimeout(resolve, 20));
+  assert.equal(cancelled, true, "模型请求应被取消");
+
+  let messages = [];
+  for (let i = 0; i < 50; i++) {
+    messages = (await (await fetch(`${app.baseUrl}/v1/conversations/${conversation.id}`, { headers })).json()).data.messages;
+    if (messages.at(-1)?.status === "stopped") break;
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  assert.equal(messages.at(-1).status, "stopped");
+  assert.equal(messages.at(-1).content, "正在想");
+  // The refused message was not stored.
+  assert.equal(messages.filter((message) => message.role === "user").length, 1);
+});

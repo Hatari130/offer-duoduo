@@ -9,6 +9,7 @@ import { randomUUID } from "node:crypto";
 import type {
   ChatAgentExpertNote,
   ChatAgentName,
+  ChatAttachment,
   ChatAgentRewrite,
   ChatAgentRun,
   ChatAgentStep,
@@ -104,18 +105,47 @@ function createTeamSession(
   return { ...session, systemPrompt: resumeCoachSystemPrompt(experts) };
 }
 
-/** Rebuild what the model saw in earlier turns from stored chat messages. */
+/**
+ * What the user said in one turn, including the text extracted from their
+ * attachments (a pasted JD, an uploaded resume). It all counts as evidence.
+ */
+export function userTurnText(content: string, attachments: ChatAttachment[] = []): string {
+  const files = attachments
+    .filter((attachment) => attachment.content?.trim())
+    .map((attachment) => `【附件：${attachment.name}】\n${attachment.content!.trim().slice(0, 20_000)}`);
+  return [content, ...files].join("\n\n");
+}
+
+/** Turns whose tool calls are replayed in full; older turns keep only what was said and decided. */
+export const FULL_TRACE_TURNS = 2;
+
+/** An old agent turn without its tool calls: the reply plus the rewrites it settled on. */
+function compactTurn(message: ChatMessage): string {
+  const rewrites = (message.agentRun?.rewrites ?? []).map((rewrite) => `「${rewrite.title}」→ ${rewrite.after}`);
+  return [message.content, rewrites.length ? `（这一轮已写好：${rewrites.join("；")}）` : ""].filter(Boolean).join("\n");
+}
+
+/**
+ * Rebuild what the model saw in earlier turns from stored chat messages.
+ * Tool results (a whole resume, search hits) are the bulk of a trace, so only the
+ * last FULL_TRACE_TURNS keep them; the model can call a tool again if it needs one.
+ * User messages are always kept whole: they are the evidence the guard checks against.
+ */
 export function agentMessagesFromHistory(history: ChatMessage[], systemPrompt: string): AgentMessage[] {
   const messages: AgentMessage[] = [{ role: "system", content: systemPrompt }];
-  for (const message of history) {
+  const traced = history.filter((message) => message.role === "assistant" && message.agentRun?.trace.length);
+  const replayFrom = traced.length > FULL_TRACE_TURNS ? history.indexOf(traced[traced.length - FULL_TRACE_TURNS]) : 0;
+  history.forEach((message, index) => {
     if (message.role === "user") {
-      messages.push({ role: "user", content: message.content });
-    } else if (message.role === "assistant" && message.agentRun?.trace.length) {
+      messages.push({ role: "user", content: userTurnText(message.content, message.attachments) });
+    } else if (message.role === "assistant" && message.agentRun?.trace.length && index >= replayFrom) {
       messages.push(...(message.agentRun.trace as AgentMessage[]));
+    } else if (message.role === "assistant" && message.agentRun?.trace.length) {
+      messages.push({ role: "assistant", content: compactTurn(message) });
     } else if (message.role === "assistant" && message.content) {
       messages.push({ role: "assistant", content: message.content });
     }
-  }
+  });
   return messages;
 }
 
@@ -127,9 +157,15 @@ export interface TeamTurnInput {
   /** Conversation messages before the current user message. */
   history: ChatMessage[];
   prompt: string;
+  /** Files attached to the current message; only their extracted text is used. */
+  attachments?: ChatAttachment[];
   onStep?: (step: ChatAgentStep) => void | Promise<void>;
   onRewrite?: (rewrite: ChatAgentRewrite) => void | Promise<void>;
   onExpertNote?: (note: ChatAgentExpertNote) => void | Promise<void>;
+  /** Cancels the turn (stop button, closed tab). */
+  signal?: AbortSignal;
+  onText?: (delta: string) => void | Promise<void>;
+  onTextReset?: () => void | Promise<void>;
 }
 
 export interface TeamTurnResult {
@@ -147,11 +183,15 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
       .filter((message) => (message.role === "user" || message.role === "assistant") && message.content)
       .map((message) => `${message.role === "user" ? "候选人" : "面试官"}：${message.content}`)
   };
-  const session = createTeamSession(input.team, input.materials, input.experts, input.model, conversation, (note) => {
+  // Expert calls stop with the turn too.
+  const expertModel: ModelClient = {
+    complete: (messages, tools, options) => input.model.complete(messages, tools, { ...options, signal: input.signal })
+  };
+  const session = createTeamSession(input.team, input.materials, input.experts, expertModel, conversation, (note) => {
     pending.push(Promise.resolve(input.onExpertNote?.(note)));
   });
   messages = agentMessagesFromHistory(input.history, session.systemPrompt);
-  messages.push({ role: "user", content: input.prompt });
+  messages.push({ role: "user", content: userTurnText(input.prompt, input.attachments) });
   const turnStart = messages.length;
 
   const steps: ChatAgentStep[] = [];
@@ -174,6 +214,13 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
     model: input.model,
     tools: session.tools,
     messages,
+    signal: input.signal,
+    onText: input.onText ? (delta) => {
+      pending.push(Promise.resolve(input.onText!(delta)));
+    } : undefined,
+    onTextReset: () => {
+      pending.push(Promise.resolve(input.onTextReset?.()));
+    },
     onEvent: (event) => {
       if (event.type !== "tool_result") return;
       const output = (event.result ?? {}) as Record<string, unknown>;

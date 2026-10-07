@@ -254,6 +254,10 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               : message
           )
         );
+      } else if (event.type === "message.reset") {
+        setMessages((current) => current.map((message) =>
+          message.id === event.messageId ? { ...message, content: "" } : message
+        ));
       } else if (event.type === "agent.step") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId

@@ -27,8 +27,14 @@ export interface AgentTool {
   run(args: Record<string, unknown>): unknown | Promise<unknown>;
 }
 
+export interface ModelCallOptions {
+  signal?: AbortSignal;
+  /** When given, the model streams and text is forwarded as it is generated. */
+  onText?: (delta: string) => void;
+}
+
 export interface ModelClient {
-  complete(messages: AgentMessage[], tools: AgentTool[]): Promise<AgentMessage>;
+  complete(messages: AgentMessage[], tools: AgentTool[], options?: ModelCallOptions): Promise<AgentMessage>;
 }
 
 export type AgentEvent =
@@ -49,14 +55,31 @@ export async function runAgentTurn(options: {
   messages: AgentMessage[];
   maxSteps?: number;
   onEvent?: (event: AgentEvent) => void;
+  /** Stops between steps and cancels the model call in flight. */
+  signal?: AbortSignal;
+  /** Streams the reply text. Text written before a tool call is withdrawn with onTextReset. */
+  onText?: (delta: string) => void;
+  onTextReset?: () => void;
 }): Promise<AgentTurnResult> {
-  const { model, tools, messages, onEvent } = options;
+  const { model, tools, messages, onEvent, signal } = options;
   const maxSteps = options.maxSteps ?? 8;
   const byName = new Map(tools.map((tool) => [tool.name, tool]));
 
   for (let step = 1; step <= maxSteps; step++) {
-    const message = await model.complete(messages, tools);
+    signal?.throwIfAborted();
+    let streamedText = false;
+    const message = await model.complete(messages, tools, {
+      signal,
+      ...(options.onText ? {
+        onText: (delta: string) => {
+          streamedText = true;
+          options.onText!(delta);
+        }
+      } : {})
+    });
     messages.push(message);
+    // A preamble streamed before deciding to call tools is not the answer.
+    if (message.tool_calls?.length && streamedText) options.onTextReset?.();
 
     if (!message.tool_calls?.length) {
       const reply = message.content?.trim() || "";
