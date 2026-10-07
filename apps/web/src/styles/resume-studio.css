@@ -769,36 +769,6 @@
 .resume-paper--compact .resume-preview-entry li { margin-block-start: 0.35mm; }
 .resume-paper--compact .resume-content-project { margin-block-start: 1.2mm; }
 
-.resume-editor-intro {
-  padding: 1.15rem 1.2rem;
-  margin-block-end: 1rem;
-  background: var(--studio-raised);
-  border: 1px solid var(--studio-line);
-  border-radius: 1rem;
-  color: var(--of-text);
-}
-.resume-editor-intro span {
-  display: inline-block;
-  color: #2563eb;
-  font-size: 0.75rem;
-  font-weight: 760;
-  letter-spacing: 0.02em;
-}
-.resume-editor-intro strong {
-  display: block;
-  margin-block-start: 0.25rem;
-  color: var(--of-text-strong);
-  font-family: var(--of-font-display, serif);
-  font-size: 1.05rem;
-  font-weight: 700;
-}
-.resume-editor-intro p {
-  margin: 0.5rem 0 0;
-  color: var(--of-text-muted);
-  font-size: 0.8125rem;
-  line-height: 1.6;
-}
-
 .resume-template-picker { padding: 1rem; margin-block-end: 0.9rem; background: var(--studio-raised); border: 1px solid var(--studio-line); border-radius: 1rem; }
 .resume-template-picker > header { display: flex; align-items: end; justify-content: space-between; gap: 1rem; margin-block-end: 0.8rem; }
 .resume-template-picker > header span { display: block; color: #2563eb; font-size: 0.75rem; font-weight: 780; letter-spacing: 0.02em; }
@@ -847,12 +817,6 @@
 .resume-template-card.is-editorial .resume-template-mini i:first-child { width: 78%; background: #36312c; }
 .resume-template-card.is-compact .resume-template-mini { grid-template-columns: 0.38fr 0.62fr; column-gap: 0.16rem; }
 .resume-template-card.is-compact .resume-template-mini i:first-child { width: auto; grid-column: 1 / -1; }
-
-.resume-parse-health { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.8rem 1rem; align-items: center; padding: 0.75rem 0.9rem; margin-block-end: 0.9rem; color: var(--studio-moss); background: var(--of-success-soft); border: 1px solid color-mix(in oklch, var(--studio-moss) 24%, var(--studio-line)); border-radius: 0.85rem; }
-.resume-parse-health.needs-review { color: var(--of-warning); background: var(--of-warning-soft); border-color: color-mix(in oklch, var(--of-warning) 24%, var(--studio-line)); }
-.resume-parse-health div span { display: block; font-size: 0.75rem; font-weight: 750; letter-spacing: 0.02em; }
-.resume-parse-health div strong { display: block; margin-block-start: 0.1rem; font-size: 0.82rem; }
-.resume-parse-health p { margin: 0; color: var(--studio-muted); font-size: 0.8125rem; line-height: 1.5; }
 
 .resume-studio-alert {
   position: relative;
@@ -2045,9 +2009,6 @@
 
 @media (max-width: 72rem) {
   .resume-studio-topbar { width: max(52%, 31rem); grid-template-columns: auto minmax(8rem, 1fr) auto; }
-  .resume-studio-controls .resume-color-control,
-  .resume-studio-controls .resume-page-control { display: none; }
-  .resume-document-settings { display: block; }
   .resume-studio-workspace { grid-template-columns: minmax(31rem, 52%) minmax(24rem, 1fr) 7.2rem; }
   .resume-template-grid { grid-template-columns: 1fr; }
   .resume-step-rail { padding-inline: 0.45rem; }
@@ -2063,11 +2024,6 @@
   .resume-studio-title strong { font-size: 0.88rem; }
   .resume-back { width: 2.75rem; padding: 0; justify-content: center; font-size: 0; }
   .resume-save-state { display: none; }
-  .resume-studio-controls { gap: 0.3rem; }
-  .resume-studio-controls .primary-button,
-  .resume-studio-controls .resume-export-button { min-width: 2.75rem; min-height: 2.75rem; padding-inline: 0.75rem; font-size: 0; }
-  .resume-document-settings > summary { width: 2.75rem; padding: 0; }
-  .resume-document-settings > summary span { display: none; }
   .resume-mobile-tabs { display: grid; grid-template-columns: 1fr 1fr; gap: 0.35rem; padding: 0.45rem max(0.45rem, env(safe-area-inset-right)) 0.45rem max(0.45rem, env(safe-area-inset-left)); background: var(--studio-surface); border-block-end: 1px solid var(--studio-line); }
   .resume-mobile-tabs button { display: inline-flex; min-height: 2.75rem; align-items: center; justify-content: center; gap: 0.4rem; color: var(--studio-muted); background: transparent; border-radius: 0.65rem; font-size: 0.8125rem; font-weight: 700; }
   .resume-mobile-tabs button[aria-selected="true"] { color: var(--of-action-primary-text, #ffffff); background: var(--of-action-primary, #3f56b8); }
@@ -2078,12 +2034,6 @@
   .resume-editor-pane.is-mobile-active { display: grid; grid-template-rows: auto auto minmax(0, 1fr) auto; }
   .resume-preview-pane { padding-block-start: 0; }
   .resume-step-rail { display: none; }
-  .resume-step-strip { display: flex; gap: 0.35rem; padding: 0.55rem 0.75rem; overflow-x: auto; background: var(--studio-raised); border-block-end: 1px solid var(--studio-line); scrollbar-width: none; }
-  .resume-step-strip::-webkit-scrollbar { display: none; }
-  .resume-step-strip button { display: inline-flex; min-width: max-content; min-height: 2.35rem; align-items: center; gap: 0.32rem; padding-inline: 0.6rem; color: var(--of-text-subtle); background: transparent; border: 1px solid transparent; border-radius: 99px; font-size: 0.75rem; }
-  .resume-step-strip button > span { display: grid; width: 1.25rem; height: 1.25rem; place-items: center; color: #fff; background: #c9c9c7; border-radius: 50%; font-size: 0.65rem; font-weight: 760; }
-  .resume-step-strip button[aria-current="step"] { color: #1d4ed8; background: #eff6ff; border-color: #bfdbfe; font-weight: 720; }
-  .resume-step-strip button[aria-current="step"] > span { background: #2563eb; }
   .resume-paper-stage { justify-content: center; padding: 1.25rem 1rem calc(2rem + env(safe-area-inset-bottom)); }
 }
 
@@ -2099,17 +2049,11 @@
   .resume-section-action { grid-column: 2; }
   .resume-template-grid { grid-template-columns: 1fr; }
   .resume-ai-review li { grid-template-columns: 1fr; }
-  .resume-preview-toolbar { padding-inline: 0.65rem; }
-  .resume-preview-tool > span { display: none; }
-  .resume-preview-tool.resume-page-control { padding-inline: 0.55rem; }
-  .resume-preview-tool.resume-color-control { width: 2.75rem; justify-content: center; padding-inline: 0; }
-  .resume-toolbar-menu > summary { padding-inline: 0.55rem; font-size: 0; }
 }
 
 @media (max-width: 30rem) {
   .resume-studio-title { display: none; }
   .resume-studio-topbar { grid-template-columns: auto 1fr; }
-  .resume-studio-controls { justify-content: end; }
 }
 
 @media print {
@@ -2129,7 +2073,6 @@
   .resume-paper-wrapper { transform: none !important; width: 210mm; }
   .resume-studio-topbar,
   .resume-mobile-tabs,
-  .resume-preview-toolbar,
   .resume-canvas-controls,
   .resume-page-break-line,
   .resume-batch-modal-backdrop,

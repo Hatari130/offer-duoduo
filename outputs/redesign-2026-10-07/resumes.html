@@ -1,0 +1,598 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>简历模板 · 视觉稿 v2</title>
+<style>
+  :root {
+    --canvas: #f6f7fb; --surface: #fff; --muted: #f2f4f8; --sunken: #eceff5;
+    --line: #e6e9f0; --line-strong: #d3d9e4;
+    --ink: #161922; --ink-2: #4d5567; --ink-3: #8089a0;
+    --brand: #3f56b8; --brand-soft: #eef1ff; --brand-ink: #34499f;
+    --warm: #d9772b; --warm-soft: #fdf0e4; --ok: #2f7d5b; --ok-soft: #e8f5ee;
+    --shadow: 0 1px 2px rgb(22 25 34 / .04), 0 8px 24px -16px rgb(22 25 34 / .18);
+    --shadow-lift: 0 2px 4px rgb(22 25 34 / .05), 0 30px 60px -30px rgb(22 25 34 / .45);
+    --ease: cubic-bezier(.22, 1, .36, 1);
+    --serif: "Noto Serif SC", "Source Han Serif SC", "Songti SC", STSong, Georgia, serif;
+    --sans: "Noto Sans SC", "PingFang SC", "Microsoft YaHei UI", "Microsoft YaHei", system-ui, sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: var(--sans); color: var(--ink); background: var(--canvas); -webkit-font-smoothing: antialiased; }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { background: none; border: 0; cursor: pointer; }
+  .frame { display: grid; grid-template-columns: 248px minmax(0, 1fr); height: 100vh; }
+
+  /* ---------- 侧栏 ---------- */
+  .side { display: flex; flex-direction: column; gap: 4px; padding: 20px 14px; background: var(--surface); border-right: 1px solid var(--line); }
+  .logo { display: flex; align-items: center; gap: 8px; padding: 4px 10px 18px; font-weight: 700; font-size: 18px; color: var(--brand); }
+  .logo i { width: 22px; height: 12px; border-bottom: 4px solid var(--brand); border-radius: 0 0 14px 14px; transform: rotate(-12deg); }
+  .nav { display: flex; align-items: center; gap: 10px; height: 40px; padding: 0 12px; border-radius: 10px; color: var(--ink-2); font-size: 14px; }
+  .nav.is-on { background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+  .nav svg { width: 18px; height: 18px; }
+  .view { display: none; min-width: 0; height: 100vh; overflow: auto; }
+  .view.is-on { display: block; }
+  #edView { overflow: hidden; }
+
+  /* ---------- 视图 1：模板首页 ---------- */
+  .lib { max-width: 1080px; margin: 0 auto; padding: 44px clamp(20px, 4vw, 48px) 64px; }
+  .lib-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .lib h1 { margin: 0; font-family: var(--serif); font-size: 34px; }
+  .mini-actions { display: inline-flex; padding: 3px; background: var(--muted); border-radius: 11px; }
+  .mini-actions button { height: 32px; padding: 0 14px; border-radius: 8px; color: var(--ink-2); font-size: 13px; transition: background .15s, color .15s, box-shadow .15s; }
+  .mini-actions button:hover { background: var(--surface); color: var(--ink); box-shadow: 0 1px 2px rgb(22 25 34 / .08), 0 0 0 1px var(--line); }
+  .lib h2 { margin: 34px 0 16px; font-family: var(--serif); font-size: 20px; }
+
+  /* 模板墙：悬浮时卡片抬起、随鼠标轻微倾斜，纸面以鼠标位置为中心放大，能看清排版细节 */
+  .tpls { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 28px; perspective: 1400px; }
+  .tpl { margin: 0; }
+  .tpl .thumb { --rx: 0deg; --ry: 0deg; position: relative; display: block; width: 100%; padding: 0; aspect-ratio: 210 / 297; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 12px; box-shadow: var(--shadow); transform: rotateX(var(--rx)) rotateY(var(--ry)); transition: transform .5s var(--ease), box-shadow .5s var(--ease), border-color .3s; cursor: zoom-in; }
+  .tpl .thumb.is-hover { box-shadow: var(--shadow-lift); border-color: var(--line-strong); transition: transform .12s linear, box-shadow .5s var(--ease); }
+  .tpl .lens { position: absolute; inset: 0; transform-origin: var(--ox, 50%) var(--oy, 30%); transition: transform .6s var(--ease); }
+  .tpl .thumb.is-hover .lens { transform: scale(1.5); transition: transform .6s var(--ease), transform-origin .25s linear; }
+  .tpl .lens .paper { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; }
+  .tpl .glare { position: absolute; inset: 0; background: radial-gradient(500px circle at var(--gx, 50%) var(--gy, 0%), rgb(255 255 255 / .35), transparent 40%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+  .tpl .thumb.is-hover .glare { opacity: 1; }
+  .tpl .use { position: absolute; left: 50%; bottom: 18px; height: 38px; padding: 0 18px; border-radius: 99px; background: var(--ink); color: #fff; font-size: 13.5px; font-weight: 600; white-space: nowrap; box-shadow: 0 10px 24px -10px rgb(22 25 34 / .6); opacity: 0; transform: translate(-50%, 12px); transition: opacity .25s, transform .45s var(--ease); }
+  .tpl .thumb.is-hover .use { opacity: 1; transform: translate(-50%, 0); }
+  .tpl figcaption { display: flex; align-items: baseline; justify-content: space-between; margin-top: 12px; }
+  .tpl figcaption b { font-family: var(--serif); font-size: 17px; }
+  .tpl figcaption .dots { display: flex; gap: 6px; }
+  .tpl figcaption .dots button { width: 14px; height: 14px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgb(255 255 255 / .8); transition: transform .2s var(--ease); }
+  .tpl figcaption .dots button:hover { transform: scale(1.2); }
+  .tpl figcaption .dots button.is-on { box-shadow: 0 0 0 2px var(--canvas), 0 0 0 3.5px currentColor; }
+  .mine { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+  .doc { display: flex; gap: 14px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; transition: box-shadow .3s var(--ease), border-color .2s, transform .3s var(--ease); }
+  .doc:hover { border-color: var(--line-strong); box-shadow: var(--shadow-lift); transform: translateY(-2px); }
+  .doc .mini { flex: none; position: relative; width: 64px; height: 90px; overflow: hidden; background: #fff; border: 1px solid var(--line); border-radius: 6px; }
+  .doc .mini .paper { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; }
+  .doc .tag { display: inline-block; padding: 1px 7px; border-radius: 6px; background: var(--muted); color: var(--ink-2); font-size: 11.5px; }
+  .doc .tag.is-job { background: var(--warm-soft); color: #9a5418; }
+  .doc b { display: block; margin: 6px 0 2px; font-size: 14.5px; }
+  .doc small { color: var(--ink-3); font-size: 12px; }
+  .doc .acts { display: flex; gap: 6px; margin-top: 10px; }
+  .chip-btn { height: 28px; padding: 0 10px; border-radius: 8px; background: var(--muted); color: var(--ink-2); font-size: 12.5px; transition: background .15s, color .15s; }
+  .chip-btn:hover { background: var(--sunken); color: var(--ink); }
+  .chip-btn.is-primary { background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+
+  /* ---------- 视图 2：编辑器 ---------- */
+  .ed { display: grid; grid-template-rows: 60px minmax(0, 1fr); height: 100vh; }
+  .topbar { display: flex; align-items: center; gap: 12px; padding: 0 18px; background: var(--surface); border-bottom: 1px solid var(--line); }
+  .back { color: var(--ink-2); font-size: 14px; }
+  .title-input { width: 200px; height: 34px; padding: 0 8px; border: 1px solid transparent; border-radius: 8px; background: transparent; font-weight: 600; font-size: 15px; }
+  .title-input:hover, .title-input:focus { border-color: var(--line); outline: 0; background: var(--muted); }
+  .saved { color: var(--ok); font-size: 12.5px; }
+  .grow { flex: 1; }
+  .tb-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); font-size: 13.5px; transition: border-color .2s, background .2s; }
+  .tb-btn:hover { border-color: var(--line-strong); background: var(--muted); }
+  .tb-btn.is-on { border-color: var(--brand); color: var(--brand-ink); background: var(--brand-soft); }
+  .export { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 16px; border-radius: 10px; background: var(--brand); color: #fff; font-size: 13.5px; font-weight: 600; }
+  .export small { padding: 1px 6px; border-radius: 6px; background: rgb(255 255 255 / .18); font-size: 11px; font-weight: 500; }
+
+  .work { display: grid; grid-template-columns: 208px 392px minmax(0, 1fr); min-height: 0; }
+  .mods { padding: 16px 10px; overflow: auto; background: var(--surface); border-right: 1px solid var(--line); }
+  .mod { display: flex; align-items: center; gap: 8px; height: 40px; padding: 0 8px; border-radius: 10px; color: var(--ink-2); font-size: 14px; cursor: pointer; transition: background .15s; }
+  .mod:hover { background: var(--muted); }
+  .mod.is-on { background: var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+  .mod.is-hidden .name { color: var(--ink-3); text-decoration: line-through; }
+  .mod .grip { flex: none; width: 10px; color: var(--ink-3); cursor: grab; font-size: 12px; letter-spacing: -2px; }
+  .mod .name { flex: 1; }
+  .mod .hint { min-width: 18px; height: 18px; padding: 0 5px; border-radius: 99px; background: var(--warm-soft); color: var(--warm); font-size: 11px; font-weight: 600; text-align: center; line-height: 18px; }
+  .mod .eye { width: 24px; height: 24px; border-radius: 6px; color: var(--ink-3); opacity: 0; transition: opacity .15s; }
+  .mod:hover .eye, .mod.is-hidden .eye { opacity: 1; }
+  .mod.dragging { opacity: .4; }
+  .add-mod { width: 100%; height: 36px; margin-top: 8px; border: 1px dashed var(--line-strong); border-radius: 10px; color: var(--ink-3); font-size: 13px; }
+
+  .form { position: relative; padding: 18px 18px 40px; overflow: auto; background: var(--canvas); border-right: 1px solid var(--line); }
+  .form h3 { margin: 0 0 14px; font-family: var(--serif); font-size: 20px; }
+  .field { display: grid; gap: 5px; margin-bottom: 12px; }
+  .field label { color: var(--ink-2); font-size: 12.5px; }
+  .field input, .field textarea { width: 100%; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--surface); outline: 0; font-size: 14px; line-height: 1.6; resize: vertical; transition: border-color .2s, box-shadow .2s; }
+  .field input:focus, .field textarea:focus { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .item { margin-bottom: 12px; padding: 14px; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  .item.is-flash { animation: flash 1.2s var(--ease); }
+  @keyframes flash { 0% { box-shadow: 0 0 0 4px var(--brand-soft); border-color: var(--brand); } 100% { box-shadow: none; } }
+  @keyframes rise { from { opacity: 0; transform: translateY(6px); } }
+  .item-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .item-head b { font-size: 14px; }
+  .checks { display: grid; gap: 4px; margin: -4px 0 10px; }
+  .check { display: flex; align-items: center; gap: 6px; color: #9a5418; font-size: 12px; }
+  .check::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--warm); flex: none; }
+  .ai-btn { display: inline-flex; align-items: center; gap: 5px; height: 28px; padding: 0 11px; border-radius: 99px; background: var(--brand-soft); color: var(--brand-ink); font-size: 12.5px; font-weight: 600; transition: transform .2s var(--ease), background .2s; }
+  .ai-btn:hover { transform: translateY(-1px); background: #e3e8ff; }
+  .add-item { width: 100%; height: 40px; border: 1px dashed var(--line-strong); border-radius: 12px; color: var(--ink-2); font-size: 13px; }
+  .polish { margin-top: 12px; padding: 12px; background: var(--surface); border: 1px solid var(--brand); border-radius: 12px; box-shadow: 0 0 0 3px var(--brand-soft); animation: rise .35s var(--ease); }
+  .polish header { margin-bottom: 8px; color: var(--brand-ink); font-size: 12px; font-weight: 600; }
+  .polish .before { padding: 8px 10px; border-radius: 8px; background: var(--muted); color: var(--ink-3); font-size: 12.5px; line-height: 1.6; text-decoration: line-through; text-decoration-color: rgb(128 137 160 / .5); }
+  .polish .after { margin-top: 6px; padding: 8px 10px; border-radius: 8px; background: var(--ok-soft); font-size: 12.5px; line-height: 1.6; }
+  .polish .why { margin: 8px 0 0; color: var(--ink-3); font-size: 12px; line-height: 1.5; }
+  .polish .ask { margin: 8px 0 0; padding: 8px 10px; border-radius: 8px; background: var(--warm-soft); color: #7a4413; font-size: 12.5px; }
+  .polish footer { display: flex; gap: 6px; margin-top: 10px; }
+  .solid { height: 30px; padding: 0 14px; border-radius: 8px; background: var(--brand); color: #fff; font-size: 12.5px; font-weight: 600; }
+
+  .drawer { position: absolute; inset: 0; z-index: 4; padding: 18px; overflow: auto; background: var(--surface); transform: translateX(-104%); transition: transform .38s var(--ease); box-shadow: 12px 0 30px -20px rgb(22 25 34 / .3); }
+  .drawer.is-open { transform: none; }
+  .form.is-locked { overflow: hidden; }
+  .drawer h3 { display: flex; justify-content: space-between; align-items: center; }
+  .drawer h5 { margin: 18px 0 8px; color: var(--ink-3); font-size: 12px; font-weight: 500; }
+  .mini-tpls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .mini-tpl { padding: 6px; border: 1px solid var(--line); border-radius: 10px; font-size: 12px; text-align: center; }
+  .mini-tpl .t { position: relative; aspect-ratio: 210/297; overflow: hidden; margin-bottom: 4px; border-radius: 4px; background: #fff; border: 1px solid var(--line); }
+  .mini-tpl .t .paper { position: absolute; top: 0; left: 0; transform-origin: 0 0; pointer-events: none; }
+  .mini-tpl.is-on { border-color: var(--brand); box-shadow: 0 0 0 3px var(--brand-soft); color: var(--brand-ink); font-weight: 600; }
+  .swatches { display: flex; gap: 10px; }
+  .swatch { width: 28px; height: 28px; border-radius: 50%; box-shadow: inset 0 0 0 2px rgb(255 255 255 / .9); transition: transform .2s var(--ease); }
+  .swatch.is-on { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px currentColor; }
+  .slider { display: grid; grid-template-columns: 70px 1fr 48px; align-items: center; gap: 10px; margin-bottom: 10px; font-size: 13px; color: var(--ink-2); }
+  .slider input { accent-color: var(--brand); }
+  .slider output { color: var(--ink-3); font-size: 12px; text-align: right; font-variant-numeric: tabular-nums; }
+
+  .pv { position: relative; display: grid; grid-template-rows: 48px minmax(0, 1fr); min-width: 0; background: var(--sunken); }
+  .pv-bar { display: flex; align-items: center; gap: 10px; padding: 0 18px; }
+  .pages { display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border-radius: 99px; font-size: 12.5px; font-weight: 600; }
+  .pages.is-fit { background: var(--ok-soft); color: var(--ok); }
+  .pages.is-over { background: var(--warm-soft); color: var(--warm); }
+  .fit { height: 30px; padding: 0 12px; border-radius: 99px; background: var(--ink); color: #fff; font-size: 12.5px; font-weight: 600; }
+  .fit[hidden] { display: none; }
+  .pv-scroll { overflow: auto; padding: 8px 24px 40px; }
+  .stage { position: relative; margin: 0 auto; }
+  .stage .paper { position: absolute; top: 0; left: 0; transform-origin: 0 0; box-shadow: 0 2px 6px rgb(22 25 34 / .08), 0 24px 50px -30px rgb(22 25 34 / .4); }
+  .pagebreak { position: absolute; left: -10px; right: -10px; border-top: 1.5px dashed var(--warm); pointer-events: none; }
+  .pagebreak span { position: absolute; right: 0; top: -22px; padding: 2px 8px; border-radius: 6px; background: var(--warm); color: #fff; font-size: 11px; }
+
+  /* =====================================================================
+     简历纸面：A4 210 × 297 mm，全部用 pt / mm，屏幕预览和导出的 PDF 一致。
+     间距是一套比例：--lead = 正文字号 × 行高（一行的高度），
+       要点之间 0.09 行；同模块条目之间 0.36 行；模块之间 0.68 行；标题到内容 0.28 行。
+     压缩到一页时，按 间距 → 行距 → 字号 → 页边距 的顺序收紧。
+     ===================================================================== */
+  .paper {
+    --accent: #1f2330;
+    --fs: 10pt; --lh: 1.55; --gap: 1; --mx: 18mm; --my: 15mm;
+    --lead: calc(var(--fs) * var(--lh));
+    --paper-serif: "Songti SC", "STSong", "SimSun", "Noto Serif SC", serif;
+    --ink-p: #1d212b; --ink-p2: #4a5160; --ink-p3: #7a8191; --rule: #d9dde5;
+    width: 210mm; min-height: 297mm; padding: var(--my) var(--mx);
+    background: #fff; color: var(--ink-p); text-align: left;
+    /* 系统字体优先：思源/Noto 字体导出 PDF 时，部分汉字会被写成“康熙部首”编码（人 → ⼈），
+       招聘系统解析简历时就读错字。苹方和微软雅黑没有这个问题。 */
+    font-family: "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", "Noto Sans SC", sans-serif;
+    font-size: var(--fs); line-height: var(--lh);
+    font-variant-numeric: tabular-nums;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .paper p, .paper ul { margin: 0; }
+  .p-name { font-size: calc(var(--fs) * 2); font-weight: 700; line-height: 1.2; letter-spacing: .06em; }
+  .p-line { margin-top: calc(var(--lead) * .3); color: var(--ink-p2); font-size: calc(var(--fs) * .92); }
+  .p-line + .p-line { margin-top: calc(var(--lead) * .05); }
+  .p-line span + span::before { content: ""; display: inline-block; width: 1px; height: .8em; margin: 0 .7em; vertical-align: -.05em; background: #c3c8d2; }
+  .paper section { margin-top: calc(var(--lead) * .68 * var(--gap)); }
+  .paper h6 { margin: 0 0 calc(var(--lead) * .28 * var(--gap)); font-size: calc(var(--fs) * 1.1); font-weight: 700; line-height: 1.4; letter-spacing: .08em; color: var(--accent); }
+  .entry + .entry { margin-top: calc(var(--lead) * .36 * var(--gap)); }
+  .e-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; font-weight: 600; }
+  .e-head .org span { font-weight: 400; color: var(--ink-p2); }
+  .e-head .org span::before { content: ""; display: inline-block; width: 1px; height: .8em; margin: 0 .5em; vertical-align: -.05em; background: #c3c8d2; }
+  .e-head time { flex: none; color: var(--ink-p3); font-size: calc(var(--fs) * .9); font-weight: 400; }
+  .entry.is-simple .e-head { font-weight: 500; }
+  /* 公司｜部门｜角色 与时间同一行：每段经历省一行，留给更舒展的间距。 */
+  .e-head .org .role { color: var(--ink-p); font-weight: 400; }
+  .paper ul { list-style: none; padding: 0; margin-top: calc(var(--lead) * .08); }
+  .paper li { position: relative; padding-left: 1em; text-align: justify; }
+  .paper li + li { margin-top: calc(var(--lead) * .09 * var(--gap)); }
+  .paper li::before { content: ""; position: absolute; left: .25em; top: calc(var(--lead) / 2 - 1.5pt); width: 3pt; height: 3pt; border-radius: 50%; background: var(--accent); opacity: .75; }
+  .paper li b { font-weight: 600; }
+  /* AI 润色留下的待补充项：在纸面上醒目标出，提醒导出前填好 */
+  .paper mark.todo { padding: 0 .2em; border-radius: 2pt; background: #fde7cf; color: #8a4a12; }
+  .paper .plain { text-align: justify; }
+
+  /* 经典（clarity）：黑白为主，模块标题下一条细线 */
+  .t-clarity h6 { padding-bottom: calc(var(--lead) * .12); border-bottom: .75pt solid var(--accent); }
+  .t-clarity .p-head { padding-bottom: calc(var(--lead) * .45); border-bottom: 1.5pt solid var(--accent); }
+
+  /* 雅致（editorial）：衬线标题、居中抬头、标题前一小段色条 */
+  .t-editorial .p-head { text-align: center; }
+  .t-editorial .p-name { font-family: var(--paper-serif); letter-spacing: .18em; }
+  .t-editorial h6 { display: flex; align-items: center; gap: .6em; font-family: var(--paper-serif); letter-spacing: .2em; }
+  .t-editorial h6::after { content: ""; flex: 1; height: .5pt; background: var(--rule); }
+  .t-editorial h6::before { content: ""; width: 3pt; height: 1em; background: var(--accent); border-radius: 1pt; }
+
+  /* 紧凑（compact）：模块名放左栏，内容在右，同样的字更省空间（阅读顺序仍是单栏） */
+  .t-compact .p-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1em; padding-bottom: calc(var(--lead) * .5); border-bottom: 1pt solid var(--accent); }
+  .t-compact .p-head .p-lines { text-align: right; }
+  .t-compact .p-line { margin-top: 0; }
+  .t-compact section { display: grid; grid-template-columns: 19mm minmax(0, 1fr); column-gap: 4mm; }
+  .t-compact h6 { margin: 0; font-size: calc(var(--fs) * 1.02); letter-spacing: .12em; }
+
+  @media (max-width: 1280px) { .work { grid-template-columns: 196px 340px minmax(0, 1fr); } }
+  @media (prefers-reduced-motion: reduce) { *, *::before { animation: none !important; transition: none !important; } }
+
+  /* 导出：只打印纸面 */
+  @page { size: A4; margin: 0; }
+  .print-root { display: none; }
+  @media print {
+    body { background: #fff; }
+    .frame { display: none !important; }
+    .print-root { display: block !important; }
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+  <aside class="side">
+    <div class="logo"><i></i>JobKoI</div>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v11H8l-4 4z"/></svg>求职陪跑</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 9h8M8 13h8M8 17h5"/></svg>校招信息速递</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 20V8l7-4 7 4v12M9 20v-6h6v6"/></svg>公司投递直达</a>
+    <a class="nav is-on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/></svg>简历模板</a>
+    <a class="nav"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5h6v2"/></svg>个人投递管理</a>
+  </aside>
+
+  <div class="view is-on" id="libView">
+    <div class="lib">
+      <div class="lib-head">
+        <h1>简历模板</h1>
+        <div class="mini-actions"><button type="button">导入 PDF</button><button type="button" data-open="clarity">空白新建</button></div>
+      </div>
+      <h2>模板</h2>
+      <div class="tpls" id="tplWall"></div>
+      <h2>我的简历</h2>
+      <div class="mine" id="mine"></div>
+    </div>
+  </div>
+
+  <div class="view" id="edView">
+    <div class="ed">
+      <div class="topbar">
+        <button class="back" type="button" id="back">← 简历模板</button>
+        <input class="title-input" value="通用简历" aria-label="简历名称">
+        <span class="saved">✓ 已自动保存</span>
+        <span class="grow"></span>
+        <button class="tb-btn" type="button" id="styleBtn">◐ 样式</button>
+        <button class="export" type="button" id="exportBtn">导出 PDF <small>免费</small></button>
+      </div>
+      <div class="work">
+        <nav class="mods" aria-label="模块"><div id="modList"></div><button class="add-mod" type="button">＋ 自定义模块</button></nav>
+        <section class="form" id="form">
+          <div id="formBody"></div>
+          <aside class="drawer" id="drawer" aria-label="样式">
+            <h3>样式 <button class="chip-btn" type="button" id="closeDrawer">完成</button></h3>
+            <h5>模板</h5><div class="mini-tpls" id="miniTpls"></div>
+            <h5>主题色</h5><div class="swatches" id="swatches"></div>
+            <h5>排版</h5>
+            <div class="slider">字号<input type="range" min="9" max="11" step="0.25" id="fs"><output id="fsOut"></output></div>
+            <div class="slider">行距<input type="range" min="1.35" max="1.7" step="0.05" id="lh"><output id="lhOut"></output></div>
+            <div class="slider">间距<input type="range" min="0.6" max="1.3" step="0.05" id="gap"><output id="gapOut"></output></div>
+            <div class="slider">页边距<input type="range" min="12" max="22" step="1" id="mx"><output id="mxOut"></output></div>
+          </aside>
+        </section>
+        <section class="pv">
+          <div class="pv-bar"><span class="pages" id="pages"></span><button class="fit" type="button" id="fitBtn" hidden>压缩到一页</button></div>
+          <div class="pv-scroll" id="pvScroll"><div class="stage" id="stage"></div></div>
+        </section>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="print-root" id="printRoot"></div>
+
+<script>
+/* 内容和现有简历数据一一对应：个人信息 / 简介 / 教育 / 实习 / 项目 / 校园 / 荣誉 / 技能；
+   要点沿用现有“标签：内容”的写法。模板只是样式，不改内容。 */
+const DEFAULTS = { fs: 10, lh: 1.55, gap: 1, mx: 18 };
+const state = {
+  template: "clarity", accent: "#1f2330", ...DEFAULTS, active: "internship",
+  info: { name: "林知夏", intent: "AI 产品经理", city: "上海", arrive: "随时到岗", phone: "138 0000 0000", email: "lin.zhixia@example.com", link: "linzhixia.design" },
+  sections: [
+    { id: "summary", title: "个人简介", visible: true, text: "关注 AI 产品与工作流创新，做过从用户问题识别、方案设计到上线复盘的完整项目，擅长把复杂需求拆成清晰的字段和可验证的目标。" },
+    { id: "education", title: "教育背景", visible: true, items: [
+      { org: "江南大学（示例）", dept: "数字媒体学院", date: "2022.09 – 2025.06", role: "工业设计 · 硕士", bullets: ["GPA 3.8/4.0，专业前 10%；主修课程：用户研究、服务设计、数据分析"] },
+      { org: "海城理工大学（示例）", dept: "设计学院", date: "2018.09 – 2022.06", role: "产品设计 · 本科", bullets: [] } ] },
+    { id: "internship", title: "实习经历", visible: true, items: [
+      { org: "启明智能科技（示例）", dept: "企业智能事业部", date: "2024.03 – 2024.09", role: "AI 产品实习生 · 企业知识库问答", bullets: [
+        "需求分析：访谈 18 位业务用户，梳理高频检索与权限管理场景，输出需求文档与验收口径，推动两轮评审",
+        "方案落地：协同算法与研发完成检索增强、引用溯源和反馈闭环，上线后问题命中率提升 21%",
+        "数据复盘：搭建核心指标看板，周度复盘时间从 2 小时缩短到 30 分钟" ] },
+      { org: "远舟网络（示例）", dept: "产品部", date: "2023.6 – 2023.11", role: "产品经理实习生 · 内容创作工具", bullets: [
+        "参与内容创作工具的需求分析,原型设计与上线验收",
+        "体验优化：基于埋点与用户反馈重构发布流程，平均完成时长降低 32%",
+        "负责新手引导优化，提升了用户体验" ] } ] },
+    { id: "projects", title: "项目经历", visible: true, items: [
+      { org: "求职信息整理助手", dept: "独立项目", date: "2024.10 – 至今", role: "产品负责人", bullets: [
+        "产品设计：把岗位收藏、进度跟踪和面试复盘整合为一个工作流，完成 4 个版本迭代",
+        "验证结果：邀请 60 位用户参与测试，次周留存 48%" ] },
+      { org: "校园职业规划助手", dept: "课程项目", date: "2024.01 – 2024.05", role: "组长 · 4 人", bullets: [
+        "完成 12 次用户访谈与两轮可用性测试，优化信息层级和关键任务路径" ] } ] },
+    { id: "campus", title: "校园经历", visible: true, items: [
+      { org: "学院融媒体中心", dept: "新媒体部", date: "2022.09 – 2024.06", role: "部长", bullets: [
+        "带领 6 人小组运营学院公众号，两年发布推文 120 余篇，单篇最高阅读 1.2 万" ] } ] },
+    { id: "awards", title: "荣誉奖项", visible: true, items: [
+      { org: "全国大学生工业设计大赛 省级二等奖", date: "2023.11", bullets: [] },
+      { org: "研究生学业奖学金 一等", date: "2023.10", bullets: [] } ] },
+    { id: "skills", title: "专业技能", visible: true, items: [
+      { bullets: [
+        "产品：需求分析、用户研究、原型设计（Figma）、数据复盘",
+        "AI：理解大模型、RAG 与 Agent 的基本原理，能把业务目标拆成可验证的方案",
+        "数据：SQL 基础、埋点设计与漏斗分析" ] } ] }
+  ]
+};
+// 只保留三个模板，id 与现有数据一致（clarity / editorial / compact），老简历打开就是新样式。
+const TEMPLATES = [
+  { id: "clarity", name: "经典", accent: "#1f2330" },
+  { id: "editorial", name: "雅致", accent: "#2f4a8a" },
+  { id: "compact", name: "紧凑", accent: "#1f5f57" }
+];
+const COLORS = ["#1f2330", "#2f4a8a", "#1f5f57", "#7a4a1d", "#8a3a33"];
+const POLISH = {
+  "internship-1": {
+    before: "参与内容创作工具的需求分析,原型设计与上线验收\n负责新手引导优化，提升了用户体验",
+    after: "需求与验收：参与内容创作工具的需求分析、原型设计与上线验收\n新手引导：设计新手引导优化方案，上线后核心功能首日使用率提升【需要你补充：多少】",
+    why: "统一中文标点，补上和其他要点一致的“标签：”；“提升了用户体验”没有可验证的结果。",
+    ask: "首日使用率提升了多少？告诉我数字，我直接写进去。"
+  },
+  "internship-0": {
+    before: "需求分析：访谈 18 位业务用户，梳理高频检索与权限管理场景，输出需求文档与验收口径，推动两轮评审",
+    after: "需求分析：访谈 18 位业务用户，梳理出高频检索与权限管理两类核心场景；输出需求文档与验收口径，推动设计、算法、研发完成两轮评审",
+    why: "一句里有三件事，拆成“发现了什么”和“推动了什么”；数字都来自原文。"
+  }
+};
+
+const esc = (s) => String(s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+const todo = (html) => html.replace(/【需要你补充[^】]*】/g, (m) => `<mark class="todo">${m}</mark>`);
+const bullet = (text) => { const m = text.match(/^([^：:，,]{2,8})[：:](.+)$/); return todo(m ? `<b>${esc(m[1])}：</b>${esc(m[2])}` : esc(text)); };
+function paperHTML(s = state, template = s.template, accent = s.accent) {
+  const i = s.info;
+  const lines = `<div class="p-line"><span>求职意向：${esc(i.intent)}</span><span>${esc(i.city)}</span><span>${esc(i.arrive)}</span></div><div class="p-line"><span>${esc(i.phone)}</span><span>${esc(i.email)}</span><span>${esc(i.link)}</span></div>`;
+  const head = template === "compact"
+    ? `<div class="p-head"><div class="p-name">${esc(i.name)}</div><div class="p-lines">${lines}</div></div>`
+    : `<div class="p-head"><div class="p-name">${esc(i.name)}</div>${lines}</div>`;
+  const body = s.sections.filter((sec) => sec.visible).map((sec) => {
+    const content = sec.text !== undefined ? `<p class="plain">${esc(sec.text)}</p>` : sec.items.map((it) => `<div class="entry${!it.role && !it.bullets.length ? " is-simple" : ""}">
+      ${it.org ? `<div class="e-head"><span class="org">${esc(it.org)}${it.dept ? `<span>${esc(it.dept)}</span>` : ""}${it.role ? `<span class="role">${esc(it.role)}</span>` : ""}</span><time>${esc(it.date || "")}</time></div>` : ""}
+      ${it.bullets.length ? `<ul>${it.bullets.map((b) => `<li>${bullet(b)}</li>`).join("")}</ul>` : ""}</div>`).join("");
+    return `<section data-sec="${sec.id}"><h6>${sec.title}</h6><div>${content}</div></section>`;
+  }).join("");
+  // 紧凑模板默认小一号、行距略紧；其余参数和用户设置一致。
+  const fs = template === "compact" ? s.fs - 0.5 : s.fs, lh = template === "compact" ? s.lh - 0.05 : s.lh;
+  return `<div class="paper t-${template}" style="--accent:${accent};--fs:${fs}pt;--lh:${lh};--gap:${s.gap};--mx:${s.mx}mm;--my:${Math.round(s.mx * 0.84)}mm">${head}${body}</div>`;
+}
+const fitPaper = (box) => { const paper = box.querySelector(".paper"); paper.style.transform = `scale(${box.clientWidth / paper.offsetWidth})`; };
+
+/* ---------- 模板首页 ---------- */
+function renderLibrary() {
+  document.getElementById("tplWall").innerHTML = TEMPLATES.map((t) => `<figure class="tpl">
+      <button class="thumb" type="button" data-open="${t.id}"><div class="lens">${paperHTML(state, t.id, t.accent)}</div><span class="glare"></span><span class="use">用这个模板</span></button>
+      <figcaption><b>${t.name}</b><span class="dots">${COLORS.slice(0, 3).map((c) => `<button type="button" data-dot="${t.id}|${c}" class="${c === t.accent ? "is-on" : ""}" style="background:${c};color:${c}" aria-label="换个颜色看看"></button>`).join("")}</span></figcaption></figure>`).join("");
+  document.getElementById("mine").innerHTML = [
+    { tag: "通用版", title: "通用简历", meta: "1 页 · 10 月 7 日更新", tpl: "clarity" },
+    { tag: "岗位版", job: true, title: "快手 · 平台产品经理", meta: "10 月 6 日", tpl: "editorial" },
+    { tag: "岗位版", job: true, title: "美团 · 产品经理（AI 方向）", meta: "10 月 5 日", tpl: "clarity" }
+  ].map((d) => `<div class="doc"><div class="mini">${paperHTML(state, d.tpl, TEMPLATES.find((t) => t.id === d.tpl).accent)}</div><div><span class="tag${d.job ? " is-job" : ""}">${d.tag}</span><b>${d.title}</b><small>${d.meta}</small><div class="acts"><button class="chip-btn is-primary" type="button" data-open="${d.tpl}">继续编辑</button><button class="chip-btn" type="button">导出</button><button class="chip-btn" type="button">复制</button></div></div></div>`).join("");
+  requestAnimationFrame(() => { document.querySelectorAll(".tpl .lens, .doc .mini").forEach(fitPaper); });
+}
+// 悬浮：卡片随鼠标轻微倾斜，纸面以鼠标位置为中心放大，高光跟着移动。
+document.getElementById("tplWall").addEventListener("mousemove", (event) => {
+  const thumb = event.target.closest(".thumb");
+  if (!thumb) return;
+  const r = thumb.getBoundingClientRect();
+  const x = (event.clientX - r.left) / r.width, y = (event.clientY - r.top) / r.height;
+  thumb.classList.add("is-hover");
+  thumb.style.setProperty("--ry", `${(x - .5) * 8}deg`);
+  thumb.style.setProperty("--rx", `${(.5 - y) * 6}deg`);
+  thumb.style.setProperty("--gx", `${x * 100}%`);
+  thumb.style.setProperty("--gy", `${y * 100}%`);
+  const lens = thumb.querySelector(".lens");
+  lens.style.setProperty("--ox", `${x * 100}%`);
+  lens.style.setProperty("--oy", `${y * 100}%`);
+});
+document.getElementById("tplWall").addEventListener("mouseout", (event) => {
+  const thumb = event.target.closest(".thumb");
+  if (!thumb || thumb.contains(event.relatedTarget)) return;
+  thumb.classList.remove("is-hover");
+  thumb.style.setProperty("--rx", "0deg");
+  thumb.style.setProperty("--ry", "0deg");
+});
+
+/* ---------- 编辑器 ---------- */
+function checksFor(item) {
+  const found = [];
+  if (/\d{4}\.\d(\D|$)/.test(item.date || "")) found.push(`时间写法不统一：“${item.date}”，月份写两位，如 2023.06`);
+  item.bullets.forEach((b, n) => {
+    if (/[一-龥],|,[一-龥]/.test(b)) found.push(`第 ${n + 1} 条混用了英文逗号`);
+    if (/【需要你补充/.test(b)) found.push(`第 ${n + 1} 条还有待补充的内容，导出前填上`);
+    const vague = b.match(/提升了用户体验|负责相关|积极参与|良好的/);
+    if (vague) found.push(`第 ${n + 1} 条“${vague[0]}”太空，换成能验证的结果`);
+  });
+  return found;
+}
+const hintsOf = (sec) => sec.items ? sec.items.reduce((sum, it) => sum + checksFor(it).length, 0) : 0;
+function renderMods() {
+  document.getElementById("modList").innerHTML = `<div class="mod${state.active === "info" ? " is-on" : ""}" data-sec="info"><span class="grip"></span><span class="name">个人信息</span></div>` +
+    state.sections.map((sec) => { const h = hintsOf(sec); return `<div class="mod${sec.id === state.active ? " is-on" : ""}${sec.visible ? "" : " is-hidden"}" data-sec="${sec.id}" draggable="true"><span class="grip">⋮⋮</span><span class="name">${sec.title}</span>${h ? `<em class="hint">${h}</em>` : ""}<button class="eye" type="button" data-eye="${sec.id}" aria-label="显示或隐藏">${sec.visible ? "◉" : "◌"}</button></div>`; }).join("");
+}
+const field = (label, key, value, multiline = false) => `<div class="field"><label>${label}</label>${multiline ? `<textarea rows="${Math.max(3, value.split("\n").length + 1)}" data-key="${key}">${esc(value)}</textarea>` : `<input data-key="${key}" value="${esc(value)}">`}</div>`;
+function renderForm() {
+  const body = document.getElementById("formBody");
+  if (state.active === "info") {
+    const i = state.info;
+    body.innerHTML = `<h3>个人信息</h3>${field("姓名", "info.name", i.name)}<div class="row2">${field("求职意向", "info.intent", i.intent)}${field("意向城市", "info.city", i.city)}</div><div class="row2">${field("手机号", "info.phone", i.phone)}${field("邮箱", "info.email", i.email)}</div><div class="row2">${field("到岗时间", "info.arrive", i.arrive)}${field("个人主页", "info.link", i.link)}</div>`;
+    return;
+  }
+  const sec = state.sections.find((s) => s.id === state.active);
+  if (sec.text !== undefined) { body.innerHTML = `<h3>${sec.title}</h3>${field("内容", `${sec.id}.text`, sec.text, true)}`; return; }
+  const canPolish = ["internship", "projects", "campus"].includes(sec.id);
+  body.innerHTML = `<h3>${sec.title}</h3>` + sec.items.map((it, n) => {
+    const key = `${sec.id}-${n}`, checks = checksFor(it);
+    return `<div class="item" data-item="${key}">
+      <div class="item-head"><b>${esc(it.org || "要点")}</b>${canPolish ? `<button class="ai-btn" type="button" data-polish="${key}">✦ AI 润色</button>` : ""}</div>
+      ${it.org ? `<div class="row2">${field("名称", `${key}.org`, it.org)}${field("时间", `${key}.date`, it.date || "")}</div>${it.role !== undefined ? field("角色", `${key}.role`, it.role) : ""}` : ""}
+      ${checks.length ? `<div class="checks">${checks.map((c) => `<span class="check">${c}</span>`).join("")}</div>` : ""}
+      ${field("要点（一行一条，可写成“标签：内容”）", `${key}.bullets`, it.bullets.join("\n"), true)}<div class="slot"></div></div>`;
+  }).join("") + `<button class="add-item" type="button">＋ 添加一段</button>`;
+}
+const A4_PX = 297 * 96 / 25.4;
+// How much of the page the content uses, measured to the bottom of the last section.
+const contentFill = (paper) => {
+  const last = [...paper.querySelectorAll("section")].pop();
+  return last ? (last.offsetTop + last.offsetHeight + parseFloat(getComputedStyle(paper).paddingBottom)) / A4_PX : 1;
+};
+function renderPreview() {
+  const stage = document.getElementById("stage");
+  stage.innerHTML = paperHTML();
+  const paper = stage.querySelector(".paper");
+  const scale = Math.min(1, (document.getElementById("pvScroll").clientWidth - 48) / paper.offsetWidth);
+  paper.style.transform = `scale(${scale})`;
+  const height = paper.scrollHeight, over = height > A4_PX + 1;
+  stage.style.width = `${paper.offsetWidth * scale}px`;
+  stage.style.height = `${Math.max(height, A4_PX) * scale}px`;
+  if (over) { const line = document.createElement("div"); line.className = "pagebreak"; line.style.top = `${A4_PX * scale}px`; line.innerHTML = "<span>第 1 页到这里</span>"; stage.appendChild(line); }
+  const badge = document.getElementById("pages");
+  badge.className = `pages ${over ? "is-over" : "is-fit"}`;
+  const fill = height / A4_PX, sparse = !over && contentFill(paper) < 0.88;
+  badge.textContent = over ? `约 ${fill.toFixed(1)} 页` : "✓ 1 页";
+  const fitBtn = document.getElementById("fitBtn");
+  fitBtn.hidden = !over && !sparse;
+  fitBtn.textContent = over ? "压缩到一页" : "铺满一页";
+  return over;
+}
+function renderDrawer() {
+  document.getElementById("miniTpls").innerHTML = TEMPLATES.map((t) => `<button class="mini-tpl${t.id === state.template ? " is-on" : ""}" type="button" data-tpl="${t.id}"><div class="t">${paperHTML(state, t.id)}</div>${t.name}</button>`).join("");
+  requestAnimationFrame(() => document.querySelectorAll(".mini-tpl .t").forEach(fitPaper));
+  document.getElementById("swatches").innerHTML = COLORS.map((c) => `<button class="swatch${c === state.accent ? " is-on" : ""}" type="button" data-color="${c}" style="background:${c};color:${c}" aria-label="主题色"></button>`).join("");
+  const fmt = { fs: (v) => `${v}pt`, lh: (v) => v.toFixed(2), gap: (v) => `${Math.round(v * 100)}%`, mx: (v) => `${v}mm` };
+  for (const id of ["fs", "lh", "gap", "mx"]) { document.getElementById(id).value = state[id]; document.getElementById(id + "Out").textContent = fmt[id](state[id]); }
+}
+const renderAll = () => { renderMods(); renderForm(); renderPreview(); };
+
+/* 适配一页：超出时先收间距，再收行距，再收字号，最后收页边距（都有下限）；
+   太空时只放大间距（上限 1.3 倍），让内容均匀铺满，而不是把字放大。 */
+async function fitOnePage() {
+  const paperNow = () => document.querySelector("#stage .paper");
+  if (!renderPreview()) {
+    // 先放大间距（上限 1.4 倍），还空再放大行距（上限 1.7），一步一步试，超出就退回上一步。
+    const loosen = [["gap", 0.05, 1.4], ["lh", 0.05, 1.7]];
+    for (const [key, step, max] of loosen) {
+      while (contentFill(paperNow()) < 0.94 && state[key] + step <= max + 1e-9) {
+        state[key] = +(state[key] + step).toFixed(2);
+        if (renderPreview()) { state[key] = +(state[key] - step).toFixed(2); renderPreview(); break; }
+        await new Promise((r) => setTimeout(r, 50));
+      }
+    }
+    renderAll(); renderDrawer();
+    return;
+  }
+  const steps = [
+    () => state.gap > 0.7 && (state.gap = +(state.gap - 0.05).toFixed(2)),
+    () => state.lh > 1.42 && (state.lh = +(state.lh - 0.05).toFixed(2)),
+    () => state.fs > 9.5 && (state.fs = +(state.fs - 0.25).toFixed(2)),
+    () => state.mx > 14 && (state.mx -= 1)
+  ];
+  for (let k = 0; k < 40 && renderPreview(); k++) {
+    if (!steps.some((step) => step())) break;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  renderAll(); renderDrawer();
+}
+function openEditor(template) {
+  state.template = template;
+  state.accent = TEMPLATES.find((t) => t.id === template).accent;
+  document.getElementById("libView").classList.remove("is-on");
+  document.getElementById("edView").classList.add("is-on");
+  renderAll(); renderDrawer();
+}
+document.addEventListener("click", (event) => {
+  const t = event.target.closest("[data-open],[data-dot],[data-sec],[data-eye],[data-tpl],[data-color],[data-polish],[data-apply],#back,#styleBtn,#closeDrawer,#fitBtn,#exportBtn");
+  if (!t) return;
+  if (t.dataset.dot) { const [id, color] = t.dataset.dot.split("|"); TEMPLATES.find((x) => x.id === id).accent = color; return renderLibrary(); }
+  if (t.dataset.open) return openEditor(t.dataset.open);
+  if (t.id === "back") { document.getElementById("edView").classList.remove("is-on"); document.getElementById("libView").classList.add("is-on"); return renderLibrary(); }
+  if (t.id === "styleBtn" || t.id === "closeDrawer") {
+    const open = document.getElementById("drawer").classList.toggle("is-open");
+    const form = document.getElementById("form");
+    if (open) form.scrollTop = 0;
+    form.classList.toggle("is-locked", open);
+    document.getElementById("styleBtn").classList.toggle("is-on", open);
+    return;
+  }
+  if (t.id === "fitBtn") return fitOnePage();
+  if (t.id === "exportBtn") { document.getElementById("printRoot").innerHTML = paperHTML(); return window.print(); }
+  if (t.dataset.eye) { const sec = state.sections.find((s) => s.id === t.dataset.eye); sec.visible = !sec.visible; event.stopPropagation(); return renderAll(); }
+  if (t.dataset.tpl) { state.template = t.dataset.tpl; renderPreview(); return renderDrawer(); }
+  if (t.dataset.color) { state.accent = t.dataset.color; renderPreview(); return renderDrawer(); }
+  if (t.dataset.polish) {
+    const slot = t.closest(".item").querySelector(".slot"), r = POLISH[t.dataset.polish];
+    slot.innerHTML = r
+      ? `<div class="polish"><header>✦ AI 润色 · 只用你写过的事实</header><div class="before">${esc(r.before).replace(/\n/g, "<br>")}</div><div class="after">${esc(r.after).replace(/\n/g, "<br>")}</div><p class="why">${r.why}</p>${r.ask ? `<p class="ask">${r.ask}</p>` : ""}<footer><button class="solid" type="button" data-apply="${t.dataset.polish}">采用</button><button class="chip-btn" type="button">再短一点</button><button class="chip-btn" type="button">换个说法</button></footer></div>`
+      : `<div class="polish"><header>✦ AI 润色</header><p class="why">这段事实清楚、有结果，暂时不需要改。</p></div>`;
+    return;
+  }
+  if (t.dataset.apply) {
+    const [secId, n] = t.dataset.apply.split("-"), it = state.sections.find((s) => s.id === secId).items[Number(n)], r = POLISH[t.dataset.apply];
+    const before = r.before.split("\n"), after = r.after.split("\n");
+    it.bullets = it.bullets.map((b) => before.includes(b) ? after[before.indexOf(b)] : b);
+    renderAll();
+    document.querySelector(`[data-item="${t.dataset.apply}"]`)?.classList.add("is-flash");
+    return;
+  }
+  if (t.dataset.sec) { state.active = t.dataset.sec; renderAll(); document.getElementById("form").scrollTop = 0; }
+});
+document.getElementById("formBody").addEventListener("input", (event) => {
+  const key = event.target.dataset.key; if (!key) return;
+  const [path, prop] = key.split(".");
+  if (path === "info") state.info[prop] = event.target.value;
+  else if (prop === "text") state.sections.find((s) => s.id === path).text = event.target.value;
+  else { const [secId, n] = path.split("-"); const it = state.sections.find((s) => s.id === secId).items[Number(n)]; it[prop] = prop === "bullets" ? event.target.value.split("\n").filter((l) => l.trim()) : event.target.value; }
+  renderPreview(); renderMods();
+});
+for (const id of ["fs", "lh", "gap", "mx"]) document.getElementById(id).addEventListener("input", (event) => { state[id] = Number(event.target.value); renderDrawer(); renderPreview(); });
+let dragged;
+const modList = document.getElementById("modList");
+modList.addEventListener("dragstart", (e) => { dragged = e.target.closest(".mod")?.dataset.sec; e.target.classList.add("dragging"); });
+modList.addEventListener("dragover", (e) => e.preventDefault());
+modList.addEventListener("drop", (e) => {
+  const target = e.target.closest(".mod")?.dataset.sec;
+  if (!dragged || !target || target === "info" || dragged === target) return renderMods();
+  const [moved] = state.sections.splice(state.sections.findIndex((s) => s.id === dragged), 1);
+  state.sections.splice(state.sections.findIndex((s) => s.id === target), 0, moved);
+  renderAll();
+});
+window.addEventListener("resize", () => document.getElementById("edView").classList.contains("is-on") ? renderPreview() : renderLibrary());
+
+// ?print=clarity 只渲染纸面，用来导出 PDF 验证排版。
+const printTpl = new URLSearchParams(location.search).get("print");
+if (printTpl) {
+  state.template = printTpl; state.accent = TEMPLATES.find((t) => t.id === printTpl).accent;
+  const params = new URLSearchParams(location.search);
+  for (const key of ["fs", "lh", "gap", "mx"]) if (params.get(key)) state[key] = Number(params.get(key));
+  if (params.get("font")) document.getElementById("printRoot").style.setProperty("--font-test", params.get("font"));
+  document.querySelector(".frame").style.display = "none";
+  const root = document.getElementById("printRoot");
+  root.style.display = "block"; root.innerHTML = paperHTML();
+  if (params.get("font")) root.querySelector(".paper").style.fontFamily = params.get("font");
+} else {
+  renderLibrary();
+  if (location.hash === "#editor") openEditor("clarity");
+}
+</script>
+</body>
+</html>

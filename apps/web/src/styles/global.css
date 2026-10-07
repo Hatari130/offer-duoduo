@@ -271,8 +271,7 @@ img {
   border-color: color-mix(in srgb, var(--of-danger) 20%, transparent);
 }
 
-.app-boot,
-.page-loading {
+.app-boot {
   display: grid;
   min-height: 100dvh;
   place-content: center;
@@ -280,6 +279,10 @@ img {
   gap: var(--of-space-4);
   color: var(--of-text-muted);
   font-size: var(--of-font-size-label);
+}
+
+.route-fallback {
+  min-height: 60dvh;
 }
 
 .app-boot .brand-lockup {

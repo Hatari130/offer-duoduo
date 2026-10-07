@@ -1,35 +1,3 @@
-.feedback-trigger {
-  position: fixed;
-  inset-block-start: 1rem;
-  inset-inline-end: 1.25rem;
-  z-index: 14;
-  display: inline-flex;
-  min-height: 2.5rem;
-  align-items: center;
-  gap: 0.45rem;
-  padding-inline: 0.85rem;
-  color: var(--of-brand-700);
-  background: rgb(255 255 255 / 0.82);
-  border: 1px solid color-mix(in srgb, var(--of-brand-300) 55%, white);
-  border-radius: 999px;
-  font-size: 0.75rem;
-  font-weight: 700;
-  box-shadow: 0 0.5rem 1.4rem -0.8rem rgb(54 76 153 / 0.35);
-  backdrop-filter: blur(0.9rem) saturate(125%);
-}
-
-.feedback-trigger::after {
-  width: 0.36rem;
-  height: 0.36rem;
-  content: "";
-  background: #f08462;
-  border-radius: 50%;
-  box-shadow: 0 0 0 0.2rem rgb(240 132 98 / 0.12);
-}
-
-.feedback-trigger:hover { background: white; border-color: var(--of-brand-300); transform: translateY(-1px); }
-.mobile-feedback-trigger { display: none; }
-
 .feedback-dialog { width: min(38rem, calc(100% - 2rem)); }
 .feedback-dialog > header { background: linear-gradient(135deg, #f8faff, #fff8f4); }
 .feedback-dialog > header h2 { color: var(--of-text-strong); }
@@ -105,21 +73,6 @@
 .feedback-success strong { color: var(--of-text-strong); font-size: 0.92rem; }
 .feedback-success p { margin: 0.3rem 0 0; color: var(--of-text-muted); font-size: 0.76rem; line-height: 1.55; }
 
-@media (max-width: 60rem) {
-  .feedback-trigger { display: none; }
-  .mobile-feedback-trigger {
-    display: grid;
-    width: 2.75rem;
-    height: 2.75rem;
-    place-items: center;
-    color: var(--of-brand-700);
-    background: transparent;
-    border: 0;
-    border-radius: 0.7rem;
-  }
-  .mobile-feedback-trigger:hover { background: var(--of-brand-50); }
-}
-
 @media (max-width: 32rem) {
   .feedback-category-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .feedback-dialog > footer { align-items: stretch; flex-direction: column-reverse; }
@@ -127,7 +80,6 @@
 }
 
 @media (forced-colors: active) {
-  .feedback-trigger,
   .feedback-category-grid span,
   .feedback-field textarea,
   .feedback-field input { border: 1px solid CanvasText; }

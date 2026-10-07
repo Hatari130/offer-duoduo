@@ -1,24 +1,54 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { conversationIdFromPath, navigate, usePathname } from "./router";
 import { AppShell } from "../layouts/AppShell";
-import { LoginPage } from "../pages/LoginPage";
 import { ChatPage } from "../pages/ChatPage";
-import { OpportunitiesPage } from "../pages/OpportunitiesPage";
-import { CompanyDirectoryPage } from "../pages/CompanyDirectoryPage";
-import { ApplicationsPage } from "../pages/ApplicationsPage";
-import { SettingsPage } from "../pages/SettingsPage";
-import { ExtensionConnectPage } from "../pages/ExtensionConnectPage";
-import { ResumeStudioPage } from "../pages/ResumeStudioPage";
-import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
-import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
-import { HelpCenterPage } from "../pages/HelpCenterPage";
 import { Logo } from "../components/Logo";
-import { LegalPage } from "../pages/LegalPage";
 import { AuthDialog } from "../components/AuthDialog";
 import { CompanionOnboardingDialog } from "../components/CompanionOnboardingDialog";
 import { loginReasonForPath } from "./authAccess";
+
+// Chat is the landing route and stays in the entry chunk; every other page loads on demand.
+const pageLoaders = {
+  login: () => import("../pages/LoginPage"),
+  opportunities: () => import("../pages/OpportunitiesPage"),
+  companies: () => import("../pages/CompanyDirectoryPage"),
+  applications: () => import("../pages/ApplicationsPage"),
+  settings: () => import("../pages/SettingsPage"),
+  extensionConnect: () => import("../pages/ExtensionConnectPage"),
+  resumeStudio: () => import("../pages/ResumeStudioPage"),
+  resumeLibrary: () => import("../pages/ResumeLibraryPage"),
+  browserExtension: () => import("../pages/BrowserExtensionPage"),
+  helpCenter: () => import("../pages/HelpCenterPage"),
+  legal: () => import("../pages/LegalPage")
+};
+
+const LoginPage = lazy(() => pageLoaders.login().then((m) => ({ default: m.LoginPage })));
+const OpportunitiesPage = lazy(() => pageLoaders.opportunities().then((m) => ({ default: m.OpportunitiesPage })));
+const CompanyDirectoryPage = lazy(() => pageLoaders.companies().then((m) => ({ default: m.CompanyDirectoryPage })));
+const ApplicationsPage = lazy(() => pageLoaders.applications().then((m) => ({ default: m.ApplicationsPage })));
+const SettingsPage = lazy(() => pageLoaders.settings().then((m) => ({ default: m.SettingsPage })));
+const ExtensionConnectPage = lazy(() => pageLoaders.extensionConnect().then((m) => ({ default: m.ExtensionConnectPage })));
+const ResumeStudioPage = lazy(() => pageLoaders.resumeStudio().then((m) => ({ default: m.ResumeStudioPage })));
+const ResumeLibraryPage = lazy(() => pageLoaders.resumeLibrary().then((m) => ({ default: m.ResumeLibraryPage })));
+const BrowserExtensionPage = lazy(() => pageLoaders.browserExtension().then((m) => ({ default: m.BrowserExtensionPage })));
+const HelpCenterPage = lazy(() => pageLoaders.helpCenter().then((m) => ({ default: m.HelpCenterPage })));
+const LegalPage = lazy(() => pageLoaders.legal().then((m) => ({ default: m.LegalPage })));
+
+// Warm the sidebar destinations once the browser is idle so in-app navigation never waits on the network.
+function prefetchShellPages() {
+  const run = () => {
+    void pageLoaders.opportunities();
+    void pageLoaders.companies();
+    void pageLoaders.applications();
+    void pageLoaders.resumeLibrary();
+  };
+  if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(run, { timeout: 4000 });
+  else setTimeout(run, 2000);
+}
+
+const pageFallback = <div className="route-fallback" aria-busy="true" />;
 
 const titles: Array<[RegExp, string]> = [
   [/^\/app\/chat/, "求职陪跑"],
@@ -86,9 +116,13 @@ export function App() {
     return () => window.removeEventListener("keydown", shortcut);
   }, [requestLogin, status]);
 
-  if (extensionLanding) return <BrowserExtensionPage />;
-  if (helpPage) return <HelpCenterPage />;
-  if (legalPage) return <LegalPage kind={pathname === "/privacy" ? "privacy" : "terms"} />;
+  useEffect(() => {
+    if (status === "authenticated" || status === "guest") prefetchShellPages();
+  }, [status]);
+
+  if (extensionLanding) return <Suspense fallback={pageFallback}><BrowserExtensionPage /></Suspense>;
+  if (helpPage) return <Suspense fallback={pageFallback}><HelpCenterPage /></Suspense>;
+  if (legalPage) return <Suspense fallback={pageFallback}><LegalPage kind={pathname === "/privacy" ? "privacy" : "terms"} /></Suspense>;
 
   if (status === "loading") {
     return (
@@ -100,11 +134,11 @@ export function App() {
     );
   }
 
-  if (pathname === "/login") return <LoginPage />;
+  if (pathname === "/login") return <Suspense fallback={pageFallback}><LoginPage /></Suspense>;
   const tailorMatch = pathname.match(/^\/app\/resumes\/tailor\/([^/]+)$/);
-  if (tailorMatch && !protectedReason) return <ResumeStudioPage key={`task:${tailorMatch[1]}`} taskId={decodeURIComponent(tailorMatch[1])} />;
+  if (tailorMatch && !protectedReason) return <Suspense fallback={pageFallback}><ResumeStudioPage key={`task:${tailorMatch[1]}`} taskId={decodeURIComponent(tailorMatch[1])} /></Suspense>;
   const resumeEditMatch = pathname.match(/^\/app\/resumes\/edit\/([^/]+)$/);
-  if (resumeEditMatch && !protectedReason) return <ResumeStudioPage key={`template:${resumeEditMatch[1]}`} templateId={decodeURIComponent(resumeEditMatch[1])} />;
+  if (resumeEditMatch && !protectedReason) return <Suspense fallback={pageFallback}><ResumeStudioPage key={`template:${resumeEditMatch[1]}`} templateId={decodeURIComponent(resumeEditMatch[1])} /></Suspense>;
 
   let page: React.ReactNode;
   if (protectedReason) page = <ChatPage />;
@@ -118,7 +152,7 @@ export function App() {
 
   return (
     <>
-      <AppShell pathname={pathname}>{page}</AppShell>
+      <AppShell pathname={pathname}><Suspense fallback={pageFallback}>{page}</Suspense></AppShell>
       <AuthDialog />
       <CompanionOnboardingDialog />
     </>

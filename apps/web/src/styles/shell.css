@@ -807,21 +807,6 @@
   box-shadow: none;
 }
 
-.workspace-shell--guest {
-  grid-template-rows: 3.75rem minmax(0, 1fr);
-}
-
-.guest-toolbar {
-  position: relative;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding-inline: clamp(1rem, 2.4vw, 2rem);
-  background: color-mix(in srgb, var(--of-surface-raised) 94%, transparent);
-  border-block-end: 1px solid var(--of-line-subtle);
-}
-
 .guest-login-link,
 .mobile-login-link {
   display: inline-flex;
@@ -1061,13 +1046,6 @@
   .mobile-login-link {
     min-height: 2.75rem;
     padding-inline: 0.85rem;
-  }
-
-  .guest-toolbar { display: none; }
-
-  .workspace-shell--guest {
-    height: 100%;
-    grid-template-rows: minmax(0, 1fr);
   }
 
   .mobile-header > button {

@@ -28,6 +28,9 @@ export interface FabricationOptions {
 
 // Words that claim the candidate led the work. "参与/协助" in the source must not become these.
 const OWNERSHIP_WORDS = ["负责", "主导", "牵头", "带领", "主持", "独立完成", "独立负责", "从0到1", "从零到一"];
+// Of those, the ones that claim sole ownership need evidence whatever the original said:
+// "写推文" → "独立完成选题、写稿、排版" is an upgrade even though the original never said 参与.
+const SOLE_OWNERSHIP_WORDS = ["主导", "牵头", "独立完成", "独立负责"];
 const SUPPORTING_WORDS = ["参与", "协助", "配合", "辅助", "帮忙", "帮助", "支持"];
 // Words that claim how big the effect was. Without a number or the user's own words behind them they are exaggeration.
 const MAGNITUDE_WORDS = ["显著", "大幅", "全量", "极大", "翻倍", "成倍", "数倍", "爆发式", "行业领先", "业内领先", "大规模"];
@@ -70,7 +73,7 @@ export function findUnsupportedClaims(
   const wasSupportingRole = options.before === undefined
     || SUPPORTING_WORDS.some((word) => options.before!.includes(word));
   for (const word of OWNERSHIP_WORDS) {
-    if (wasSupportingRole && rewritten.includes(word) && !source.includes(word)) {
+    if ((wasSupportingRole || SOLE_OWNERSHIP_WORDS.includes(word)) && rewritten.includes(word) && !source.includes(word)) {
       findings.push({ kind: "ownership", value: word });
     }
   }
@@ -80,6 +83,31 @@ export function findUnsupportedClaims(
   }
 
   return findings;
+}
+
+// Section headings of a job posting. Two different ones in a piece of text mean it is a JD.
+const JOB_POSTING_MARKERS = /岗位职责|工作职责|职位职责|职位描述|岗位描述|工作内容|任职要求|岗位要求|职位要求|任职资格|任职条件|加分项|responsibilities|requirements|qualifications|(?:^|\n)\s*(?:职责|要求)\s*[:：]/gi;
+
+function jobPostingStart(text: string): number | undefined {
+  const matches = [...text.matchAll(JOB_POSTING_MARKERS)];
+  const distinct = new Set(matches.map((match) => match[0].replace(/[\s:：]/g, "").toLowerCase()));
+  if (distinct.size < 2) return undefined;
+  return text.lastIndexOf("\n", matches[0].index) + 1;
+}
+
+/**
+ * What the user said about themselves, without any job posting they pasted.
+ * A JD's "熟练使用 SQL" is what the employer wants, not what the candidate did,
+ * so it must not count as evidence. Attached JDs are dropped whole; a JD typed
+ * into a message is cut from its first section heading.
+ */
+export function withoutJobPostings(statement: string): string {
+  return statement.split(/(?=【附件：)/).flatMap((part) => {
+    const start = jobPostingStart(part);
+    if (start !== undefined && part.startsWith("【附件：")) return [];
+    const own = part.slice(0, start).trim();
+    return own ? [own] : [];
+  }).join("\n\n");
 }
 
 export interface RewriteChange {

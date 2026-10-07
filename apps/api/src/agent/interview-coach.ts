@@ -7,7 +7,7 @@
  */
 import type { ChatAgentExpertNote, PersonalProfile, TailorJobContext } from "@offerflow/domain";
 import { createConsultExpertTool, type ExpertSkill } from "./experts.ts";
-import { getJobTool, getResumeTool, resumeEntries, unsupportedFacts } from "./material-tools.ts";
+import { getJobTool, getResumeTool, resumeEntries, unsupportedFacts, userEvidence } from "./material-tools.ts";
 import type { AgentTool, ModelClient } from "./loop.ts";
 import { expertPanelRules, jobMaterials, type AcceptedRewrite } from "./resume-coach.ts";
 
@@ -48,7 +48,7 @@ export function createInterviewCoachSession(options: {
         const answer = String(args.answer || "").trim();
         if (!question || !answer) return { accepted: false, problem: "题目和示范答案都不能为空" };
         const said = options.userStatements();
-        const evidence = [...entries.map((entry) => `${entry.title}\n${entry.text}`), ...said];
+        const evidence = userEvidence(entries, said);
         const problems = unsupportedFacts(answer, evidence, {
           allow: options.job ? [options.job.position, options.job.company] : [],
           // The user's latest answer is the "before": upgrading 参与 there to 主导 is flagged.

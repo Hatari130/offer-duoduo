@@ -23,7 +23,7 @@ import { loadApiConfig } from "../src/config.ts";
 import type { AgentMessage, ModelClient } from "../src/agent/loop.ts";
 import { createOpenAiCompatibleModel } from "../src/agent/model.ts";
 import { officialSkills, resolveTeamSkills } from "../src/agent/experts.ts";
-import { resumeEntries } from "../src/agent/material-tools.ts";
+import { resumeEntries, userEvidence } from "../src/agent/material-tools.ts";
 import { findUnsupportedClaims } from "../src/agent/fabrication.ts";
 import { runTeamTurn, TEAM_PROFILES, type TeamMaterials, type TeamTurnResult } from "../src/agent/teams.ts";
 import { fetchCampusHiringSnapshot, loadCampusHiringSnapshot, searchOpportunitySnapshot } from "../src/opportunities/search.ts";
@@ -109,10 +109,10 @@ function consultedExperts(turns: TeamTurnResult[]): string[] {
 }
 
 function evidenceFor(resumeCase: ResumeCase, conversation: Conversation): string[] {
-  return [
-    ...resumeEntries(profileFor(resumeCase.resume)).map((entry) => `${entry.title}\n${entry.text}`),
-    ...conversation.history.filter((message) => message.role === "user").map((message) => message.content)
-  ];
+  return userEvidence(
+    resumeEntries(profileFor(resumeCase.resume)),
+    conversation.history.filter((message) => message.role === "user").map((message) => message.content)
+  );
 }
 
 async function pool<T>(jobs: Array<() => Promise<T>>, concurrency = 4): Promise<T[]> {

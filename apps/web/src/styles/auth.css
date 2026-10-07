@@ -812,7 +812,6 @@
   box-shadow: var(--of-shadow-float);
 }
 
-.extension-connect-card > .of-logo,
 .extension-connect-card > svg { margin-inline: auto; }
 
 .extension-connect-icon {

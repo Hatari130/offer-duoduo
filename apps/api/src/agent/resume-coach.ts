@@ -2,12 +2,14 @@
  * Resume team: tailor one resume to one job.
  *
  * The coach may only use facts from the resume or from what the user said in
- * this conversation. propose_rewrite enforces that in code with the
- * fabrication grader, so a rejected rewrite goes back to the model to fix.
+ * this conversation. propose_rewrite enforces that with two gates: the code
+ * grader (numbers, tool names, ownership words), then a model that checks each
+ * new claim against the evidence. A rejected rewrite goes back to the model to fix.
  */
 import type { ChatAgentExpertNote, PersonalProfile, TailorJobContext } from "@offerflow/domain";
+import { unbackedClaims } from "./claim-check.ts";
 import { createConsultExpertTool, expertRoster, officialSkills, resolveTeamSkills, type ExpertSkill } from "./experts.ts";
-import { getJobTool, getResumeTool, resumeEntries, unsupportedFacts } from "./material-tools.ts";
+import { getJobTool, getResumeTool, resumeEntries, unsupportedFacts, userEvidence } from "./material-tools.ts";
 import type { AgentTool, ModelClient } from "./loop.ts";
 
 export { resumeEntries, type ResumeEntry } from "./material-tools.ts";
@@ -44,6 +46,8 @@ export function createResumeCoachSession(options: {
   experts?: ExpertSkill[];
   expertModel?: ModelClient;
   onExpertNote?: (note: ChatAgentExpertNote) => void;
+  /** Checks each new claim in a rewrite against the evidence. Without it only the code check runs. */
+  claimChecker?: ModelClient;
 }) {
   const entries = options.profile ? resumeEntries(options.profile) : [];
   const accepted = new Map<string, AcceptedRewrite>();
@@ -54,7 +58,7 @@ export function createResumeCoachSession(options: {
     getJobTool(options.job),
     {
       name: "propose_rewrite",
-      description: "提交某一条简历条目的改写稿。系统会检查改写里的数字、技术名和职责强度是否都能在简历原文或用户的回答里找到出处；找不到就会被退回，你需要删掉无出处的内容，或者去问用户。每条只提交一次最终稿，被退回后再改。",
+      description: "提交某一条简历条目的改写稿。系统会检查改写里的数字、技术名、职责强度、新增的动作和能力判断是否都能在简历原文或用户的回答里找到出处（用户贴的岗位 JD 不算出处）；找不到就会被退回，你需要删掉无出处的内容，或者去问用户。每条只提交一次最终稿，被退回后再改。",
       parameters: {
         type: "object",
         properties: {
@@ -65,16 +69,19 @@ export function createResumeCoachSession(options: {
         required: ["entry_id", "text", "reason"],
         additionalProperties: false
       },
-      run: (args) => {
+      async run(args) {
         const entry = entries.find((candidate) => candidate.id === args.entry_id);
         if (!entry) return { accepted: false, problem: `没有 id 为 ${String(args.entry_id)} 的条目，请先调用 get_resume 查看` };
         const text = String(args.text || "").trim();
         if (!text) return { accepted: false, problem: "改写稿是空的" };
-        const evidence = [...entries.map((candidate) => `${candidate.title}\n${candidate.text}`), ...options.userStatements()];
+        const evidence = userEvidence(entries, options.userStatements());
         const problems = unsupportedFacts(text, evidence, {
           allow: options.job ? [options.job.position, options.job.company] : [],
           before: entry.text
         });
+        if (!problems.length && options.claimChecker) {
+          problems.push(...await unbackedClaims(options.claimChecker, { before: entry.text, after: text, evidence }));
+        }
         if (problems.length) return { accepted: false, problems, hint: "删掉这些内容，或者先问用户确认真实情况" };
         accepted.set(entry.id, { entryId: entry.id, title: entry.title, before: entry.text, after: text, reason: String(args.reason || "") });
         return { accepted: true, entry_id: entry.id };

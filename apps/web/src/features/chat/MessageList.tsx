@@ -28,8 +28,7 @@ import {
   ThumbsUp,
   X
 } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import { Markdown } from "./Markdown";
 import { ExpertAvatar } from "../agents/skillMeta";
 import { CompanionAvatar } from "./CompanionAvatar";
 import type { ChatPendingMode } from "./pendingMode";
@@ -218,16 +217,7 @@ export function MessageList({
               <div className="message-copy">
                 {message.content ? (
                   message.role === "assistant" ? (
-                    <ReactMarkdown
-                      remarkPlugins={[remarkGfm]}
-                      components={{
-                        a: ({ node: _node, ...props }) => (
-                          <a {...props} target="_blank" rel="noreferrer" />
-                        )
-                      }}
-                    >
-                      {message.content}
-                    </ReactMarkdown>
+                    <Markdown externalLinks>{message.content}</Markdown>
                   ) : message.content
                 ) : message.status === "streaming" ? <ThinkingIndicator /> : null}
               </div>
@@ -538,7 +528,7 @@ function ExpertNoteCard({ note }: { note: ChatAgentExpertNote }) {
         <small>{note.expertRole}</small>
       </header>
       <div className="expert-note__body">
-        <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.content}</ReactMarkdown>
+        <Markdown>{note.content}</Markdown>
       </div>
       {long && (
         <button type="button" className="expert-note__toggle" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>

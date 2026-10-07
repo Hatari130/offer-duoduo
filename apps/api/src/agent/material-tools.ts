@@ -4,8 +4,13 @@
  */
 import type { JobApplication, PersonalProfile, TailorJobContext } from "@offerflow/domain";
 import { STAGE_LABELS } from "@offerflow/domain";
-import { findUnsupportedClaims, type FabricationFinding } from "./fabrication.ts";
+import { findUnsupportedClaims, withoutJobPostings, type FabricationFinding } from "./fabrication.ts";
 import type { AgentTool } from "./loop.ts";
+
+/** Everything written text may draw on: the resume, and what the user said about themselves. */
+export function userEvidence(entries: ResumeEntry[], statements: string[]): string[] {
+  return [...entries.map((entry) => `${entry.title}\n${entry.text}`), ...statements.map(withoutJobPostings)];
+}
 
 export interface ResumeEntry {
   id: string;

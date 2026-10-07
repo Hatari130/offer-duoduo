@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>小鲤 · 标志方向</title>
+<style>
+  :root { --ink: #1f2430; --muted: #6b7180; --line: #e6e8ee; --paper: #f7f8fb; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 40px 48px 64px; font: 14px/1.6 "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--ink); background: var(--paper); }
+  h1 { margin: 0 0 4px; font-size: 24px; }
+  .lede { margin: 0 0 28px; color: var(--muted); }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .card { padding: 22px; background: #fff; border: 1px solid var(--line); border-radius: 18px; }
+  .card h2 { margin: 0; font-size: 17px; }
+  .card p { margin: 4px 0 16px; color: var(--muted); font-size: 13px; }
+  .hero { display: flex; justify-content: center; align-items: center; gap: 20px; height: 184px; margin-bottom: 16px; background: #f3f5f9; border-radius: 14px; }
+  .hero .av { width: 132px; height: 132px; }
+  .hero .av.dark-tile { width: 72px; height: 72px; }
+  .label { margin: 14px 0 8px; color: var(--muted); font-size: 12px; font-weight: 600; }
+  .sizes, .states { display: flex; align-items: end; gap: 14px; }
+  .sizes span, .states span { display: grid; justify-items: center; gap: 4px; color: var(--muted); font-size: 11px; }
+  .av { display: block; flex: none; }
+  .av svg { display: block; width: 100%; height: 100%; }
+  .thread { display: grid; gap: 10px; padding: 14px; border-radius: 14px; }
+  .thread.light { background: #fff; border: 1px solid var(--line); }
+  .thread.dark { margin-top: 10px; background: #14171d; color: #e8e9ec; }
+  .row { display: flex; gap: 10px; align-items: flex-start; }
+  .row.me { justify-content: flex-end; }
+  .bubble { padding: 8px 12px; border-radius: 12px; font-size: 13px; }
+  .light .bubble.ai { background: #f3f5f9; }
+  .light .bubble.me { background: #eef1fb; }
+  .dark .bubble.ai { background: #22262e; }
+  .dark .bubble.me { background: #2b3358; }
+  .who { font-size: 12px; font-weight: 700; }
+  .who i { margin-inline-start: 6px; font-style: normal; font-weight: 500; opacity: 0.6; }
+  .expert { width: 32px; height: 32px; border-radius: 50%; background: #ffe3d6; display: grid; place-items: center; font-size: 11px; color: #a4553a; font-weight: 700; flex: none; }
+  .me-avatar { width: 32px; height: 32px; border-radius: 10px; background: #f7e6e7; display: grid; place-items: center; font-size: 12px; color: #9d5f67; font-weight: 700; flex: none; }
+
+  /* State motion: the mark never changes its face, only how it moves. */
+  .bob { animation: bob 1.6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+  .spin { animation: spin 2.4s linear infinite; transform-origin: 24px 24px; }
+  .flow { stroke-dasharray: 3 4; animation: flow 0.9s linear infinite; }
+  .leap { animation: leap 2.2s cubic-bezier(.3, 0, .2, 1) infinite; transform-box: view-box; transform-origin: 24px 24px; }
+  @keyframes bob { 50% { transform: translate(1px, -1.6px); } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes flow { to { stroke-dashoffset: -7; } }
+  @keyframes leap { 0%, 55%, 100% { transform: none; } 70% { transform: translate(1.5px, -3px) rotate(-6deg); } 85% { transform: translate(.5px, -1px); } }
+  @media (prefers-reduced-motion: reduce) { .bob, .spin, .flow, .leap { animation: none; } }
+</style>
+</head>
+<body>
+<h1>小鲤 · 标志方向</h1>
+<p class="lede">不画五官，只用 Logo 的元素：两道蓝弧、橙色太阳、紫色星点。用圆角方块和专家的圆形头像区分开。状态只靠动效表达：思考时游动或水纹流动，完成时跃起，出错时红斑变灰、鱼头下垂。</p>
+<div class="grid" id="grid"></div>
+
+<script>
+const C = { sky: "#86c8ff", blue: "#4b83ed", deep: "#3e63c9", sun: "#ff824f", core: "#ffc083", spark: "#8a79f2", mute: "#b9bec8" };
+let uid = 0;
+
+function tile(inner, dark, defs = "") {
+  return `<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>${defs}</defs><rect width="48" height="48" rx="14" fill="${dark ? "#1d2534" : "#eef4ff"}"/>${inner}</svg>`;
+}
+
+// A teardrop koi pointing along +x: round head with the orange tancho, body tapering to a forked tail.
+function koiShape(grad, state) {
+  const tancho = state === "error" ? C.mute : C.sun;
+  const coreFill = state === "error" ? "#d8dce3" : C.core;
+  return `
+    <path d="M-16.5 .8 L-23 -4.2 Q-20.6 1.2 -23.4 6Z" fill="${C.sky}"/>
+    <path d="M-6 3.6 Q-4 9 -9.5 9.4 Q-8.6 6 -9.2 4.4Z" fill="${C.sky}"/>
+    <path d="M0 -6.2 A6.2 6.2 0 1 1 0 6.2 Q-8 5.6 -17 1.2 Q-8.5 -3.6 0 -6.2Z" fill="url(#${grad})"/>
+    <circle cx="1.4" cy="-1.2" r="2.8" fill="${tancho}"/>
+    <circle cx=".6" cy="-2" r=".95" fill="${coreFill}"/>`;
+}
+const koiGrad = (id) => `<linearGradient id="${id}" x1="-17" y1="0" x2="6" y2="0" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${C.sky}"/><stop offset=".55" stop-color="${C.blue}"/><stop offset="1" stop-color="${C.deep}"/></linearGradient>`;
+const sparks = (pts) => pts.map(([x, y, r, c]) => `<path d="M${x} ${y - r}l${r * .3} ${r * .7} ${r * .7} ${r * .3}-${r * .7} ${r * .3}-${r * .3} ${r * .7}-${r * .3}-${r * .7}-${r * .7}-${r * .3} ${r * .7}-${r * .3}z" fill="${c}"/>`).join("");
+
+// A · 跃鲤：一条鲤鱼沿 Logo 的弧线跃出，下方一道浅蓝水纹。
+function markA(state = "idle", dark = false) {
+  const g = `g${uid++}`;
+  const tilt = state === "error" ? 0 : -38;
+  const wake = `<path class="${state === "thinking" ? "flow" : ""}" d="M8 37.5C16 42 28 41.5 38.5 33.5" fill="none" stroke="${C.sky}" stroke-width="3" stroke-linecap="round" opacity=".9"/>`;
+  const fish = `<g class="${state === "thinking" ? "bob" : state === "done" ? "leap" : ""}"><g transform="translate(${state === "error" ? 29 : 30} ${state === "error" ? 24 : 19}) rotate(${tilt})">${koiShape(g, state)}</g></g>`;
+  const extra = state === "done" ? sparks([[39, 10, 2.6, C.spark], [42.5, 17, 1.6, C.sun]]) : state === "error" ? "" : `<circle cx="40.5" cy="27.5" r="1.5" fill="${C.spark}"/>`;
+  return tile(wake + fish + extra, dark, koiGrad(g));
+}
+
+// B · 环鲤：一条鲤鱼首尾相衔绕成环，思考时整圈转动，本身就是加载动画。
+function markB(state = "idle", dark = false) {
+  const g = `g${uid++}`;
+  const tancho = state === "error" ? C.mute : C.sun;
+  const ring = `
+    <path d="M35.28 28.1A12 12 0 1 1 30 13.6" fill="none" stroke="${C.sky}" stroke-width="4.2" stroke-linecap="round"/>
+    <path d="M12.7 28.1A12 12 0 0 1 30 13.6" fill="none" stroke="url(#${g})" stroke-width="6.4" stroke-linecap="round"/>
+    <path d="M35.3 28.1L40.2 24Q37.6 24.6 34.3 22Z" fill="${C.sky}"/>
+    <circle cx="30" cy="13.6" r="5" fill="${C.deep}"/>
+    <circle cx="31.3" cy="13.9" r="2.4" fill="${tancho}"/>
+    <circle cx="30.7" cy="13.2" r=".85" fill="${state === "error" ? "#d8dce3" : C.core}"/>`;
+  const body = state === "thinking" ? `<g class="spin">${ring}</g>` : state === "error" ? `<g transform="rotate(28 24 24)">${ring}</g>` : ring;
+  const extra = state === "done" ? sparks([[24, 24, 3.4, C.spark], [41, 12, 1.8, C.sun]]) : `<circle cx="24" cy="24" r="1.6" fill="${C.spark}" opacity="${state === "error" ? .35 : 1}"/>`;
+  const defs = `<linearGradient id="${g}" x1="12" y1="30" x2="31" y2="12" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="${C.sky}"/><stop offset="1" stop-color="${C.blue}"/></linearGradient>`;
+  return tile(body + extra, dark, defs);
+}
+
+// C · Logo 鲤：直接沿用 Logo 的两道轨道，把箭头换成一条小鲤鱼，太阳的橙色移到鱼头上。
+function markC(state = "idle", dark = false) {
+  const g = `g${uid++}`;
+  const cls = state === "thinking" ? "flow" : "";
+  const orbits = `
+    <g transform="translate(5.5 9)" fill="none" stroke-linecap="round">
+      <path class="${cls}" d="M4.5 18.9c5.3 5.4 14.2 5.2 21.4-.45 2.4-1.9 4.2-4.2 5.35-6.55" stroke="${C.sky}" stroke-width="3.6"/>
+      <path class="${cls}" d="M5.2 20.3c6.65 2.65 14.25.8 19.5-4.3" stroke="${C.blue}" stroke-width="3.6"/>
+    </g>`;
+  const pos = state === "error" ? "translate(31 21) rotate(18) scale(.72)" : "translate(33 13.5) rotate(-52) scale(.72)";
+  const fish = `<g class="${state === "done" ? "leap" : state === "thinking" ? "bob" : ""}"><g transform="${pos}">${koiShape(g, state)}</g></g>`;
+  const extra = state === "done" ? sparks([[41, 7.5, 2.4, C.spark], [43, 22, 1.5, C.sun]]) : state === "error" ? "" : `<circle cx="8.5" cy="16" r="1.5" fill="${C.spark}"/>`;
+  return tile(orbits + fish + extra, dark, koiGrad(g));
+}
+
+const variants = [
+  { name: "A · 跃鲤", note: "一条鲤鱼沿弧线向右上跃出，下面一道水纹。最直白地讲「跃龙门」，鱼的轮廓最完整，小尺寸下也认得出。", draw: markA },
+  { name: "B · 环鲤", note: "鲤鱼首尾相衔绕成一个环，意思是陪伴和循环。思考状态就是整环转动，不需要另做加载动画。抽象程度最高，像鱼的程度最低。", draw: markB },
+  { name: "C · Logo 鲤", note: "直接用 Logo 的两道轨道，把箭头换成一条小鲤鱼。和品牌最统一，侧边栏里 Logo 和小鲤一看就是一家。缺点是和 Logo 太像，层级上有些重复。", draw: markC }
+];
+const stateNames = { idle: "默认", thinking: "思考中（动）", done: "完成（动）", error: "出错" };
+
+document.getElementById("grid").innerHTML = variants.map((v) => `
+  <section class="card">
+    <h2>${v.name}</h2>
+    <p>${v.note}</p>
+    <div class="hero"><i class="av" style="width:132px;height:132px">${v.draw()}</i><i class="av" style="width:72px;height:72px">${v.draw("idle", true)}</i></div>
+    <div class="label">真实尺寸</div>
+    <div class="sizes">${[20, 28, 36, 44, 64].map((s) => `<span><i class="av" style="width:${s}px;height:${s}px">${v.draw()}</i>${s}px</span>`).join("")}</div>
+    <div class="label">状态（44px）</div>
+    <div class="states">${Object.keys(stateNames).map((k) => `<span><i class="av" style="width:44px;height:44px">${v.draw(k)}</i>${stateNames[k]}</span>`).join("")}</div>
+    <div class="label">在对话里（和圆形的专家头像并排）</div>
+    ${["light", "dark"].map((tone) => `
+      <div class="thread ${tone}">
+        <div class="row me"><div class="bubble me">帮我看看简历最该先改哪里</div><div class="me-avatar">我</div></div>
+        <div class="row"><i class="av" style="width:36px;height:36px">${v.draw("idle", tone === "dark")}</i><div><div class="who">小鲤<i>并肩型 AI 求职搭子</i></div><div class="bubble ai">先改星河科技那段实习，它最靠前却没有结果。</div></div></div>
+        <div class="row"><span class="expert">林</span><div><div class="who">小林<i>复盘教练</i></div><div class="bubble ai">我补一句：把「参与」改成你具体做了什么。</div></div></div>
+      </div>`).join("")}
+  </section>`).join("");
+</script>
+</body>
+</html>

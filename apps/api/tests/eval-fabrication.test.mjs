@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { findUnsupportedClaims, gradeRewrite } from "../src/agent/fabrication.ts";
+import { findUnsupportedClaims, gradeRewrite, withoutJobPostings } from "../src/agent/fabrication.ts";
 
 const resume = [
   "参与校园二手交易小程序的需求调研，访谈 12 名用户，整理需求文档。",
@@ -85,4 +85,24 @@ test("从0到1 is judged as an ownership claim, not as the numbers 0 and 1", () 
     findUnsupportedClaims("从0到1搭建账号", ["参与账号运营"], { before: "参与账号运营" }),
     [{ kind: "ownership", value: "从0到1" }]
   );
+});
+
+test("claims of sole ownership need evidence even when the original was not a supporting role", () => {
+  const before = "写公众号推文，管理学院公众号";
+  assert.deepEqual(
+    findUnsupportedClaims("独立完成公众号选题与写稿", [before], { before }),
+    [{ kind: "ownership", value: "独立完成" }]
+  );
+  // A plain 负责 still needs the original to have said 参与/协助 before it is flagged.
+  assert.deepEqual(findUnsupportedClaims("负责学院公众号推文写作", [before], { before }), []);
+});
+
+test("a pasted job posting is not the user's own words", () => {
+  const typed = "帮我按这个岗位改一下，我做过两次用户访谈\n字节跳动 产品经理\n岗位职责：\n负责需求分析\n任职要求：\n熟悉 SQL";
+  assert.equal(withoutJobPostings(typed), "帮我按这个岗位改一下，我做过两次用户访谈\n字节跳动 产品经理");
+  const attached = "这是岗位\n\n【附件：jd.pdf】\n职位描述：做数据分析\n职位要求：熟练使用 Python";
+  assert.equal(withoutJobPostings(attached), "这是岗位");
+  // One heading in the user's own answer is not a JD.
+  const answer = "我当时的岗位职责是整理会议纪要，一周大概 3 份";
+  assert.equal(withoutJobPostings(answer), answer);
 });

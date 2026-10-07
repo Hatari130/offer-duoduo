@@ -107,7 +107,7 @@ function createTeamSession(
     const session = createCareerPlannerSession({ ...shared, applications: materials.applications, profile: materials.profile, today: materials.today });
     return { ...session, systemPrompt: careerPlannerSystemPrompt(experts, materials.today) };
   }
-  const session = createResumeCoachSession({ ...shared, profile: materials.profile, job: materials.job });
+  const session = createResumeCoachSession({ ...shared, profile: materials.profile, job: materials.job, claimChecker: model });
   return { ...session, systemPrompt: resumeCoachSystemPrompt(experts) };
 }
 

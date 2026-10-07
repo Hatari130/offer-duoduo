@@ -1,7 +1,7 @@
 import { Logo } from "../components/Logo";
 import { AuthCard } from "../components/AuthCard";
 import { SiteCompliance } from "../components/SiteCompliance";
-import loginJourney from "../assets/auth/login-journey.png";
+import loginJourney from "../assets/auth/login-journey.webp";
 
 export function LoginPage() {
   return (

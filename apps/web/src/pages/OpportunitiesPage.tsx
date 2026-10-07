@@ -559,7 +559,7 @@ export function OpportunitiesPage() {
               disabled={loading}
               aria-label="刷新校招信息"
             >
-              <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" size={17} strokeWidth={1.9} />刷新
+              <RefreshCw className={loading ? "spin" : ""} aria-hidden="true" size={17} strokeWidth={1.9} /><span>刷新</span>
             </button>
           </div>
         </div>

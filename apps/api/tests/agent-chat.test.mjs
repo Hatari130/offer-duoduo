@@ -8,12 +8,13 @@ import { createEmptyPersonalProfile, createResumeDocument } from "../../../packa
 
 const call = (id, name, args) => ({ id, type: "function", function: { name, arguments: JSON.stringify(args) } });
 
-/** Replays scripted assistant messages and records what the model was shown. */
+/** Replays scripted assistant messages and records what the model was shown. The claim checker always passes. */
 function scriptedModel(script) {
   const seen = [];
   return {
     seen,
     async complete(messages) {
+      if (messages[0].content?.includes("简历事实核对员")) return { role: "assistant", content: "{\"unsupported\":[]}" };
       seen.push(structuredClone(messages));
       const next = script.shift();
       if (!next) throw new Error("script exhausted");

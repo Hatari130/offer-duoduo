@@ -37,8 +37,8 @@ const profile = {
 
 const messages: AgentMessage[] = [{ role: "system", content: resumeCoachSystemPrompt() }];
 const userStatements = () => messages.filter((message) => message.role === "user").map((message) => message.content || "");
-const session = createResumeCoachSession({ profile, job: item.job, userStatements });
 const model = createOpenAiCompatibleModel(loadApiConfig(process.env));
+const session = createResumeCoachSession({ profile, job: item.job, userStatements, claimChecker: model });
 
 const gray = (text: string) => `\x1b[90m${text}\x1b[0m`;
 const short = (value: unknown) => {

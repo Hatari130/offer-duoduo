@@ -28,6 +28,7 @@ import { ChatComposer } from "../features/chat/ChatComposer";
 import { CompanionAvatar } from "../features/chat/CompanionAvatar";
 import { ChatContextPicker } from "../features/chat/ChatContextPicker";
 import { MessageList } from "../features/chat/MessageList";
+import { preloadMarkdown } from "../features/chat/Markdown";
 import { TodayBrief, type BriefAction } from "../features/chat/TodayBrief";
 import { chatPendingMode, type ChatPendingMode } from "../features/chat/pendingMode";
 
@@ -53,6 +54,12 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
   const [team, setTeam] = useState<ChatAgentName>();
   const [teamSkills, setTeamSkills] = useState<string[]>();
   const [teamDialog, setTeamDialog] = useState<ChatAgentName>();
+  // A reply streams in within seconds of the first send; have the renderer ready before that.
+  useEffect(() => {
+    if (conversationId) preloadMarkdown();
+    else if (typeof window.requestIdleCallback === "function") window.requestIdleCallback(preloadMarkdown, { timeout: 3000 });
+    else setTimeout(preloadMarkdown, 1500);
+  }, [conversationId]);
   const [marketOpen, setMarketOpen] = useState(false);
   const [attachments, setAttachments] = useState<ChatAttachment[]>([]);
   const [attachmentProcessing, setAttachmentProcessing] = useState(false);
