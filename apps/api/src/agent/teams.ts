@@ -55,7 +55,7 @@ export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
   career_planner: {
     id: "career_planner",
     name: "求职规划团队",
-    tagline: "Plan. Review. Keep going.",
+    tagline: "Plan. Act. Review.",
     description: "看你的真实投递记录，排这周做得完的计划，复盘卡在哪一步。",
     starter: "帮我看看现在的投递情况，排一下这周的计划",
     defaultSkills: PLANNER_TEAM_DEFAULT_SKILLS
@@ -115,6 +115,8 @@ export function userTurnText(content: string, attachments: ChatAttachment[] = []
     .map((attachment) => `【附件：${attachment.name}】\n${attachment.content!.trim().slice(0, 20_000)}`);
   return [content, ...files].join("\n\n");
 }
+
+const TOOL_CALL_RULE = "【输出规则】要调用工具时直接调用，调用前不要写任何文字（不要写“我先看看”“稍等”之类）。文字只用于最后给用户的回复或向用户提问。";
 
 /** Turns whose tool calls are replayed in full; older turns keep only what was said and decided. */
 export const FULL_TRACE_TURNS = 2;
@@ -190,7 +192,8 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
   const session = createTeamSession(input.team, input.materials, input.experts, expertModel, conversation, (note) => {
     pending.push(Promise.resolve(input.onExpertNote?.(note)));
   });
-  messages = agentMessagesFromHistory(input.history, session.systemPrompt);
+  // Replies stream to the user, so a lead-in written before a tool call would flash on screen and vanish.
+  messages = agentMessagesFromHistory(input.history, `${session.systemPrompt}\n\n${TOOL_CALL_RULE}`);
   messages.push({ role: "user", content: userTurnText(input.prompt, input.attachments) });
   const turnStart = messages.length;
 
@@ -234,7 +237,7 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
           const job = input.materials.job;
           emitStep(job
             ? { label: "读取岗位要求", detail: `${job.company} · ${job.position}`, status: "done" }
-            : { label: "读取岗位要求", detail: "未选择岗位，以对话里的 JD 为准", status: "rejected" });
+            : { label: "读取岗位要求", detail: "未选择岗位，以对话里的 JD 为准", status: "done" });
           break;
         }
         case "list_applications":

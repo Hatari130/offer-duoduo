@@ -4,6 +4,8 @@
   height: 100%;
   min-height: 0;
   grid-template-rows: auto minmax(0, 1fr) auto;
+  /* Without this the column grows to fit a long nowrap title and the thread overflows on phones. */
+  grid-template-columns: minmax(0, 1fr);
   overflow: hidden;
   color: var(--of-text);
   background: var(--of-surface, #fffdfb);
@@ -1226,12 +1228,26 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 
 .message--user .message-body {
   max-width: min(82%, 36rem);
-  padding: 0.85rem 1rem;
+  padding: 0.7rem 1rem;
   color: var(--of-text-strong, #171714);
-  background: color-mix(in oklch, var(--of-brand-50) 70%, var(--of-surface, #fffdfb));
-  border: 1px solid color-mix(in oklch, var(--of-brand-600, #ad6042) 18%, var(--of-line));
-  border-radius: 1.15rem 1.15rem 0.35rem 1.15rem;
+  background: var(--of-surface-muted);
+  border-radius: 1.25rem 1.25rem 0.4rem 1.25rem;
 }
+
+.message--user .message-copy { line-height: 1.65; }
+
+.message-author {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  margin-block: 0.4rem 0.5rem;
+  font-size: 0.8125rem;
+  line-height: 1.2;
+}
+
+.message-author strong { color: var(--of-text-strong); font-weight: 600; }
+.message-author span { color: var(--of-text-subtle); }
+.message-author span::before { content: "·"; margin-inline-end: 0.4rem; }
 
 .message-copy {
   color: var(--of-text);
@@ -1288,12 +1304,19 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   text-underline-offset: 0.18em;
 }
 
+/* The coach uses backticks to name resume entries, not code: a soft highlight reads better than a mono box. */
 .message--assistant .message-copy :not(pre) > code {
-  padding: 0.12em 0.35em;
-  background: var(--of-surface-muted);
-  border: 1px solid var(--of-line);
-  border-radius: 0.35rem;
-  font-size: 0.9em;
+  padding: 0.08em 0.3em;
+  color: var(--of-brand-700);
+  background: var(--of-brand-50);
+  border-radius: 0.3rem;
+  font-family: inherit;
+  font-size: 0.95em;
+}
+
+[data-theme="dark"] .message--assistant .message-copy :not(pre) > code {
+  color: var(--of-brand-200, #c9d4ff);
+  background: color-mix(in oklch, var(--of-brand-500) 22%, transparent);
 }
 
 .message--assistant .message-copy pre {
@@ -1632,27 +1655,32 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 .message-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3rem;
-  margin-block-start: 0.75rem;
+  gap: 0.15rem;
+  margin-block-start: 0.6rem;
+  margin-inline-start: -0.45rem;
+}
+
+/* Older answers show their actions on hover; the latest one always does. */
+@media (hover: hover) {
+  .message:not(.is-latest) .message-actions { opacity: 0; transition: opacity 150ms ease; }
+  .message:not(.is-latest):hover .message-actions,
+  .message:not(.is-latest) .message-actions:focus-within { opacity: 1; }
 }
 
 .message-actions button {
-  display: inline-flex;
-  min-height: 2.25rem;
-  align-items: center;
-  gap: 0.35rem;
-  padding-inline: 0.6rem;
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
   color: var(--of-text-subtle);
   background: transparent;
   border: 0;
-  border-radius: 0.55rem;
-  font-size: 0.75rem;
+  border-radius: 0.5rem;
 }
 
 .message-actions button:hover { color: var(--of-text); background: var(--of-surface-muted); }
 
 .message-actions button[aria-pressed="true"] { color: var(--of-brand-700); background: var(--of-brand-50); }
-.message-action-divider { width: 1px; height: 1.1rem; align-self: center; margin-inline: 0.2rem; background: var(--of-line); }
 
 .answer-next-steps {
   display: grid;
@@ -1821,7 +1849,6 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   .assistant-progress li { justify-content: center; padding-inline: 0.3rem; }
   .assistant-progress li > i { width: 1.15rem; height: 1.15rem; }
   .message-actions button { min-width: 2.75rem; min-height: 2.75rem; justify-content: center; }
-  .message-action-divider { display: none; }
   .answer-next-steps button { min-height: 2.75rem; }
   .citation-dialog footer { align-items: start; flex-direction: column; }
   .thread-composer { padding-inline: 0.75rem; }
@@ -1833,40 +1860,82 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   .assistant-progress::before { width: 100%; opacity: 0.38; }
 }
 
-/* Agent turns: visible steps and rewrite diffs. */
-.agent-steps {
-  display: grid;
-  gap: 0.3rem;
+/* Agent turns: the work process, expert notes and rewrite diffs. */
+.agent-process {
   margin: 0 0 0.75rem;
-  padding: 0.6rem 0.75rem;
-  list-style: none;
-  background: var(--of-surface-muted);
-  border-radius: 0.65rem;
-  font-size: 0.78rem;
+  font-size: 0.8125rem;
 }
 
-.agent-steps li {
+.agent-process summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.3rem 0.65rem 0.3rem 0.55rem;
+  color: var(--of-text-muted);
+  background: var(--of-surface-muted);
+  border-radius: 999px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.agent-process summary::-webkit-details-marker { display: none; }
+.agent-process summary:hover { color: var(--of-text-strong); }
+.agent-process summary > svg:first-child { color: var(--of-success); }
+
+.agent-process__chevron {
+  color: var(--of-text-subtle);
+  transition: transform 150ms ease;
+}
+
+.agent-process[open] .agent-process__chevron { transform: rotate(180deg); }
+
+.agent-process__pulse {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--of-brand-500);
+  border-radius: 999px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .agent-process__pulse { animation: agent-pulse 1.2s ease-in-out infinite; }
+}
+
+@keyframes agent-pulse {
+  50% { opacity: 0.35; transform: scale(0.75); }
+}
+
+.agent-process ol {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.35rem;
+  margin: 0.55rem 0 0 0.85rem;
+  padding: 0 0 0 0.85rem;
+  list-style: none;
+  border-inline-start: 1px solid var(--of-line);
+}
+
+.agent-process li {
   display: flex;
   align-items: baseline;
   gap: 0.4rem;
+  min-width: 0;
   color: var(--of-text-muted);
 }
 
-.agent-steps li > svg {
+.agent-process li > svg {
   flex: 0 0 auto;
   align-self: center;
   color: var(--of-success);
 }
 
-.agent-steps li.is-rejected > svg {
-  color: var(--of-warning);
-}
+.agent-process li.is-rejected > svg { color: var(--of-warning); }
 
-.agent-steps small {
+.agent-process small {
   min-width: 0;
   overflow: hidden;
   color: var(--of-text-subtle);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1878,10 +1947,10 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 }
 
 .rewrite-card {
-  padding: 0.8rem 0.9rem;
+  padding: 0.9rem 1rem 0.85rem;
   background: var(--of-surface);
-  border: 1px solid color-mix(in oklch, var(--of-line) 86%, var(--of-brand-200));
-  border-radius: 0.8rem;
+  border: 1px solid var(--of-line);
+  border-radius: 0.9rem;
 }
 
 .rewrite-card header {
@@ -1903,11 +1972,13 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   flex: 0 0 auto;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.25rem 0.55rem;
+  padding: 0.3rem 0.65rem;
   color: var(--of-text-muted);
+  background: transparent;
   border: 1px solid var(--of-line);
-  border-radius: 0.5rem;
+  border-radius: 999px;
   font-size: 0.75rem;
+  cursor: pointer;
 }
 
 .rewrite-card header button:hover {
@@ -1922,8 +1993,8 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 }
 
 .rewrite-diff > div {
-  padding: 0.55rem 0.65rem;
-  border-radius: 0.55rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.65rem;
 }
 
 .rewrite-diff > div > span {
@@ -1947,7 +2018,7 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 
 .rewrite-after {
   color: var(--of-text-strong);
-  background: var(--of-success-soft);
+  background: color-mix(in srgb, var(--of-success-soft) 60%, var(--of-surface));
 }
 
 .rewrite-after > span {
@@ -1969,13 +2040,14 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 
 .rewrite-after p > span {
   display: block;
-  margin-inline: -0.3rem;
-  padding-inline: 0.3rem;
-  border-radius: 0.3rem;
+  margin-inline-start: -0.5rem;
+  padding-inline-start: 0.4rem;
+  border-inline-start: 2px solid transparent;
 }
 
-.rewrite-after p > span.is-changed {
-  background: color-mix(in oklch, var(--of-success) 14%, transparent);
+/* Marks only the lines that changed, and only when some lines were kept as they were. */
+.rewrite-after p.has-kept-lines > span.is-changed {
+  border-inline-start-color: var(--of-success);
 }
 
 .rewrite-after p {
@@ -1988,48 +2060,62 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 /* Expert opinion cards in messages. */
 .expert-notes {
   display: grid;
-  gap: 0.5rem;
-  margin: 0 0 0.85rem;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 0.6rem;
+  margin: 0 0 1rem;
 }
 
 .expert-note {
-  padding: 0.7rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 0.75rem 0.85rem;
   background: var(--of-surface);
   border: 1px solid var(--of-line);
-  border-inline-start: 3px solid var(--of-brand-300);
-  border-radius: 0.65rem;
+  border-radius: 0.85rem;
 }
 
 .expert-note header {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-block-end: 0.35rem;
+  gap: 0.45rem;
+  min-width: 0;
+  margin-block-end: 0.4rem;
 }
 
 .expert-note header .expert-avatar {
-  width: 1.6rem;
-  height: 1.6rem;
-  font-size: 0.8rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.75rem;
 }
 
 .expert-note header strong {
-  display: block;
+  flex: 0 0 auto;
   color: var(--of-text-strong);
-  font-size: 0.82rem;
+  font-size: 0.8125rem;
   font-weight: 600;
 }
 
 .expert-note header small {
-  display: block;
+  min-width: 0;
+  overflow: hidden;
   color: var(--of-text-subtle);
   font-size: 0.72rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .expert-note__body {
-  color: var(--of-text);
+  color: var(--of-text-muted);
   font-size: 0.8125rem;
-  line-height: 1.6;
+  line-height: 1.65;
+}
+
+/* Markdown bodies have block children, so clamp by height and fade the last line. */
+.expert-note.is-clamped .expert-note__body {
+  max-height: 6.8em;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 60%, transparent);
 }
 
 .expert-note__body p,
@@ -2043,6 +2129,17 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
   padding-inline-start: 1.2rem;
 }
 
+.expert-note__toggle {
+  align-self: flex-start;
+  margin-block-start: 0.35rem;
+  padding: 0;
+  color: var(--of-link, var(--of-brand-600));
+  background: none;
+  border: 0;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
 .rewrite-adjust {
   display: flex;
   flex-wrap: wrap;
@@ -2051,7 +2148,8 @@ html[data-theme="dark"] .recommendation-bento-card[data-tone="lilac"] {
 }
 
 .rewrite-adjust button {
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.7rem;
+  cursor: pointer;
   color: var(--of-text-muted);
   background: var(--of-surface-muted);
   border: 1px solid transparent;

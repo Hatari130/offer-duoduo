@@ -564,10 +564,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               agents={agents}
               skills={skills}
               activeTeam={team}
-              onInvite={(next) => {
-                if (requireChatLogin()) inviteTeam(next);
-              }}
-              onDetail={setTeamDialog}
+              onOpen={setTeamDialog}
             />
           )}
           <span className="sr-only" role="status">{taskHint}</span>
@@ -581,7 +578,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               <div className="thread-header__copy">
                 <span className="thread-header__eyebrow">
                   <strong>{DEFAULT_CHAT_COMPANION.name}</strong>
-                  <i>{DEFAULT_CHAT_COMPANION.role}</i>
+                  <i>{conversationRun ? activeTeam?.name : DEFAULT_CHAT_COMPANION.role}</i>
                 </span>
                 <h1 tabIndex={-1}>{conversation?.title || "求职对话"}</h1>
               </div>
@@ -598,6 +595,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               onFeedback={feedback}
               onFollowUp={(prompt) => void send(prompt)}
               onOpenWorkspace={(kind) => navigate(kind === "resume" ? "/app/resumes" : "/app/applications")}
+              teamNames={Object.fromEntries(agents.map((agent) => [agent.id, agent.name]))}
             />
           </div>
           <div className="thread-composer">

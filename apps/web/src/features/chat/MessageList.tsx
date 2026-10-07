@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type {
   ChatAgentExpertNote,
+  ChatAgentName,
   ChatAgentRewrite,
   ChatAgentRun,
   ChatContextKind,
@@ -16,6 +17,7 @@ import {
   Building2,
   CalendarClock,
   Check,
+  ChevronDown,
   Copy,
   FileText,
   MapPin,
@@ -40,6 +42,8 @@ interface MessageListProps {
   onFeedback: (message: ChatMessage, feedback: "positive" | "negative") => void;
   onFollowUp: (prompt: string) => void;
   onOpenWorkspace: (kind: ChatContextKind) => void;
+  /** Team names for the byline of agent turns. */
+  teamNames?: Partial<Record<ChatAgentName, string>>;
 }
 
 const followUps = [
@@ -103,7 +107,8 @@ export function MessageList({
   onRetry,
   onFeedback,
   onFollowUp,
-  onOpenWorkspace
+  onOpenWorkspace,
+  teamNames = {}
 }: MessageListProps) {
   const endRef = useRef<HTMLDivElement>(null);
   const [pinnedToBottom, setPinnedToBottom] = useState(true);
@@ -176,7 +181,7 @@ export function MessageList({
         const workspaceKinds = [...new Set(messageContext.map((item) => item.kind))];
         return (
           <article
-            className={`message message--${message.role}`}
+            className={`message message--${message.role}${message.id === lastAssistantId ? " is-latest" : ""}`}
             key={message.id}
             aria-busy={message.status === "streaming"}
           >
@@ -184,6 +189,12 @@ export function MessageList({
               <CompanionAvatar className="assistant-avatar" size="small" />
             )}
             <div className="message-body">
+              {message.role === "assistant" && message.agentRun && (
+                <div className="message-author">
+                  <strong>小鲤</strong>
+                  {teamNames[message.agentRun.agent] && <span>{teamNames[message.agentRun.agent]}</span>}
+                </div>
+              )}
               {message.attachments.length > 0 && (
                 <div className="message-attachments" aria-label="本轮上传资料">
                   {message.attachments.map((attachment) => <span key={attachment.id}><FileText aria-hidden="true" size={13} />{attachment.name}</span>)}
@@ -196,7 +207,7 @@ export function MessageList({
                 </div>
               )}
               {message.agentRun && message.agentRun.steps.length > 0 && (
-                <AgentSteps run={message.agentRun} />
+                <AgentProcess run={message.agentRun} working={message.status === "streaming"} />
               )}
 
               {message.agentRun?.notes && message.agentRun.notes.length > 0 && (
@@ -243,30 +254,37 @@ export function MessageList({
               {message.role === "assistant" && message.status !== "streaming" && (
                 <div className="message-actions" aria-label="回答操作">
                   {message.content && (
-                    <button type="button" onClick={() => onCopy(message)}>
-                      {copiedMessageId === message.id ? <Check aria-hidden="true" size={14} /> : <Copy aria-hidden="true" size={14} />}
-                      {copiedMessageId === message.id ? "已复制" : "复制回答"}
+                    <button
+                      type="button"
+                      onClick={() => onCopy(message)}
+                      aria-label={copiedMessageId === message.id ? "已复制" : "复制回答"}
+                      title={copiedMessageId === message.id ? "已复制" : "复制回答"}
+                    >
+                      {copiedMessageId === message.id ? <Check aria-hidden="true" size={15} /> : <Copy aria-hidden="true" size={15} />}
                     </button>
                   )}
-                  <button type="button" onClick={() => onRetry(message)}>
-                    <RefreshCw aria-hidden="true" size={14} />再生成一版
+                  <button type="button" onClick={() => onRetry(message)} aria-label="再生成一版" title="再生成一版">
+                    <RefreshCw aria-hidden="true" size={15} />
                   </button>
                   {message.status === "complete" && (
                     <>
-                      <span className="message-action-divider" aria-hidden="true" />
                       <button
                         type="button"
                         aria-pressed={message.feedback === "positive"}
+                        aria-label="有帮助"
+                        title="有帮助"
                         onClick={() => onFeedback(message, "positive")}
                       >
-                        <ThumbsUp aria-hidden="true" size={14} />有帮助
+                        <ThumbsUp aria-hidden="true" size={15} />
                       </button>
                       <button
                         type="button"
                         aria-pressed={message.feedback === "negative"}
+                        aria-label="没帮助"
+                        title="没帮助"
                         onClick={() => onFeedback(message, "negative")}
                       >
-                        <ThumbsDown aria-hidden="true" size={14} />没帮助
+                        <ThumbsDown aria-hidden="true" size={15} />
                       </button>
                     </>
                   )}
@@ -473,40 +491,60 @@ function ThinkingIndicator() {
   );
 }
 
-function AgentSteps({ run }: { run: ChatAgentRun }) {
+/** What the team did this turn: open with the current step while working, folded once done. */
+function AgentProcess({ run, working }: { run: ChatAgentRun; working: boolean }) {
+  const current = run.steps.at(-1);
   return (
-    <ol className="agent-steps" aria-label="小鲤这一轮做了什么">
-      {run.steps.map((step) => (
-        <li key={step.id} className={step.status === "rejected" ? "is-rejected" : undefined}>
-          {step.status === "rejected"
-            ? <RotateCcw aria-hidden="true" size={13} />
-            : <Check aria-hidden="true" size={13} />}
-          <span>{step.label}</span>
-          {step.detail && <small>{step.detail}</small>}
-        </li>
-      ))}
-    </ol>
+    <details className="agent-process" open={working || undefined}>
+      <summary>
+        {working
+          ? <span className="agent-process__pulse" aria-hidden="true" />
+          : <Check aria-hidden="true" size={13} />}
+        <span>{working ? current?.label ?? "开始工作" : `完成 ${run.steps.length} 步`}</span>
+        <ChevronDown aria-hidden="true" size={14} className="agent-process__chevron" />
+      </summary>
+      <ol aria-label="小鲤这一轮做了什么">
+        {run.steps.map((step) => (
+          <li key={step.id} className={step.status === "rejected" ? "is-rejected" : undefined}>
+            {step.status === "rejected"
+              ? <RotateCcw aria-hidden="true" size={12} />
+              : <Check aria-hidden="true" size={12} />}
+            <span>{step.label}</span>
+            {step.detail && <small>{step.detail}</small>}
+          </li>
+        ))}
+      </ol>
+    </details>
   );
 }
 
 function ExpertNotes({ notes }: { notes: ChatAgentExpertNote[] }) {
   return (
     <section className="expert-notes" aria-label="专家意见">
-      {notes.map((note) => (
-        <article key={note.id} className="expert-note">
-          <header>
-            <span className="expert-avatar" aria-hidden="true">{note.expertName.slice(-1)}</span>
-            <div>
-              <strong>{note.expertName}</strong>
-              <small>{note.expertRole}</small>
-            </div>
-          </header>
-          <div className="expert-note__body">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.content}</ReactMarkdown>
-          </div>
-        </article>
-      ))}
+      {notes.map((note) => <ExpertNoteCard key={note.id} note={note} />)}
     </section>
+  );
+}
+
+function ExpertNoteCard({ note }: { note: ChatAgentExpertNote }) {
+  const [expanded, setExpanded] = useState(false);
+  const long = note.content.length > 140;
+  return (
+    <article className={`expert-note${long && !expanded ? " is-clamped" : ""}`}>
+      <header>
+        <span className="expert-avatar" aria-hidden="true">{note.expertName.slice(-1)}</span>
+        <strong>{note.expertName}</strong>
+        <small>{note.expertRole}</small>
+      </header>
+      <div className="expert-note__body">
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>{note.content}</ReactMarkdown>
+      </div>
+      {long && (
+        <button type="button" className="expert-note__toggle" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>
+          {expanded ? "收起" : "展开全文"}
+        </button>
+      )}
+    </article>
   );
 }
 
@@ -539,7 +577,7 @@ function RewriteCards({ rewrites, onAdjust }: { rewrites: ChatAgentRewrite[]; on
             <div className="rewrite-before"><span>改前</span><p>{rewrite.before}</p></div>
             <div className="rewrite-after">
               <span>改后</span>
-              <p>
+              <p className={changedLines.size < rewrite.after.split("\n").length ? "has-kept-lines" : undefined}>
                 {rewrite.after.split("\n").map((line, index) => (
                   <span key={index} className={changedLines.has(index) ? "is-changed" : undefined}>{line}</span>
                 ))}

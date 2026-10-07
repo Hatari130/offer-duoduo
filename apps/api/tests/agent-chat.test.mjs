@@ -76,7 +76,7 @@ test("resume coach runs as an agent in chat and resumes from stored state on the
 
   const first = await sseEvents(await send("帮我把简历针对这个岗位改一下", { agent: "resume_coach" }));
   const steps = first.filter((event) => event.type === "agent.step").map((event) => [event.step.label, event.step.status]);
-  assert.deepEqual(steps, [["读取简历", "done"], ["读取岗位要求", "rejected"]]);
+  assert.deepEqual(steps, [["读取简历", "done"], ["读取岗位要求", "done"]]);
   const firstMessage = first.find((event) => event.type === "message.completed").message;
   assert.equal(firstMessage.content, "公众号一共写了多少篇？最高的一篇阅读量多少？");
   assert.equal(firstMessage.agentRun.agent, "resume_coach");
