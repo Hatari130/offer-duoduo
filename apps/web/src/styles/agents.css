@@ -58,19 +58,20 @@
 /* A fanned deck of overlapping cards. Hover straightens and enlarges a card,
    pushes its neighbours aside and reveals its name, members and invite button. */
 .team-deck {
-  --deck-card: clamp(9.5rem, 13vw, 11.5rem);
+  /* Sized by the screen height too, so the home page fits without scrolling. */
+  --deck-card: clamp(7rem, min(12.5vw, 17vh), 10.5rem);
   --deck-hover-width: calc(var(--deck-card) * 1.14);
   --deck-hover-height: calc(var(--deck-card) * 1.44);
   --deck-ease: cubic-bezier(0.22, 1, 0.36, 1);
   width: 100%;
   max-width: 60rem;
-  margin: -0.75rem auto 0;
+  margin: -0.25rem auto 0;
 }
 
 /* Tall enough that the picked card grows without covering the title or the composer. */
 .team-deck__stack {
   position: relative;
-  height: calc(var(--deck-card) * 1.7);
+  height: calc(var(--deck-card) * 1.62);
 }
 
 .team-deck-card {

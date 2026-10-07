@@ -286,16 +286,6 @@
   font-weight: 550;
 }
 
-.nav-link .nav-release-badge {
-  padding: 0.18rem 0.42rem;
-  color: #7950aa;
-  background: linear-gradient(115deg, #f2ecff, #f9f1ff);
-  border-radius: 999px;
-  font-size: 0.61rem;
-  font-weight: 720;
-  letter-spacing: 0.02em;
-}
-
 .recent-threads {
   min-height: 0;
   max-height: 50rem;

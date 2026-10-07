@@ -28,10 +28,10 @@ export function TodayBrief({ applications, onAction }: { applications: JobApplic
                 ? <span className="today-brief__face"><ExpertPortrait id={card.portrait} /></span>
                 : <span className="today-brief__dot" aria-hidden="true" />}
               {card.label}
+              <span className="today-brief__cta">{card.cta}</span>
             </span>
             <strong>{card.title}</strong>
             <span className="today-brief__detail">{card.detail}</span>
-            <span className="today-brief__cta">{card.cta}</span>
           </button>
         ))}
       </div>

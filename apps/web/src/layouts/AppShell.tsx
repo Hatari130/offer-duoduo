@@ -62,10 +62,10 @@ function AppLink({ href, className, onNavigate, guard, ariaCurrent, title, child
 }
 
 const primaryNavigation = [
-  { href: "/app/chat", label: "求职陪跑", mobileLabel: "陪跑", icon: MessageCircleMore, requiresAuth: false, badge: "内测中" },
+  { href: "/app/chat", label: "求职陪跑", mobileLabel: "陪跑", icon: MessageCircleMore, requiresAuth: false },
   { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper, requiresAuth: false },
   { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2, requiresAuth: false },
-  { href: "/app/resumes", label: "简历模板", mobileLabel: "简历", icon: FileText, requiresAuth: true, badge: "内测中" },
+  { href: "/app/resumes", label: "简历模板", mobileLabel: "简历", icon: FileText, requiresAuth: true },
   { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness, requiresAuth: true }
 ];
 
@@ -395,20 +395,13 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   return (
     <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
-      <div className="workspace-quick-actions" role="group" aria-label="帮助、显示与反馈">
+      <div className="workspace-quick-actions" role="group" aria-label="显示设置">
         {isGuest && (
           <AppLink href="/login" className="guest-login-link" title="登录工作台">
             <LogIn aria-hidden="true" size={15} strokeWidth={2} />
             <span>登录</span>
           </AppLink>
         )}
-        <button className="feedback-trigger" type="button" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
-          <MessageCircleMore aria-hidden="true" size={16} />共建反馈
-        </button>
-        <AppLink href="/help-center" className="help-center-trigger" title="打开帮助中心">
-          <CircleHelp aria-hidden="true" size={19} strokeWidth={1.9} />
-          <span className="sr-only">打开帮助中心</span>
-        </AppLink>
         <ThemeToggle theme={colorTheme} onToggle={toggleColorTheme} />
       </div>
       <header className={`mobile-header${isVisitor ? " is-guest" : ""}`}>
@@ -422,13 +415,6 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
           <Menu aria-hidden="true" size={21} />
         </button>
         <Logo />
-        <button className="mobile-feedback-trigger" type="button" aria-label="打开共建反馈" aria-haspopup="dialog" onClick={() => setFeedbackOpen(true)}>
-          <MessageCircleMore aria-hidden="true" size={20} />
-        </button>
-        <AppLink href="/help-center" className="help-center-trigger help-center-trigger--mobile" title="打开帮助中心">
-          <CircleHelp aria-hidden="true" size={20} strokeWidth={1.9} />
-          <span className="sr-only">打开帮助中心</span>
-        </AppLink>
         <ThemeToggle className="theme-toggle--mobile" theme={colorTheme} onToggle={toggleColorTheme} />
         {isVisitor ? (
           <button className="mobile-login-link" type="button" onClick={() => requestLogin("登录后即可同步并继续使用全部功能。")}>登录</button>
@@ -504,8 +490,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
               >
                 <Icon aria-hidden="true" size={18} strokeWidth={1.8} />
                 <span className="sidebar-item-label">{item.label}</span>
-                {item.badge && <em className="nav-release-badge">{item.badge}</em>}
-                {!item.badge && item.href === "/app/opportunities" && <em>实时</em>}
+                {item.href === "/app/opportunities" && <em>实时</em>}
               </AppLink>
             );
           })}

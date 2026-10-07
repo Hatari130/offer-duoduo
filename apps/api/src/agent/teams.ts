@@ -31,7 +31,7 @@ export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
   resume_coach: {
     id: "resume_coach",
     name: "简历精修团队",
-    tagline: "Sharpen. Prove. Stand out.",
+    tagline: "找差距。挖素材。写出彩。",
     description: "读你的简历和目标岗位，缺素材时先问你，只写你说过的事实。",
     starter: "帮我把简历针对这个岗位改一下",
     defaultSkills: RESUME_TEAM_DEFAULT_SKILLS
@@ -39,7 +39,7 @@ export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
   interview_coach: {
     id: "interview_coach",
     name: "面试陪练团队",
-    tagline: "Ask. Answer. Improve.",
+    tagline: "出题。追问。复盘。",
     description: "按岗位和你的经历出题，一题一题追问，答完打分并给示范答案。",
     starter: "我们来模拟一场这个岗位的面试吧",
     defaultSkills: INTERVIEW_TEAM_DEFAULT_SKILLS
@@ -47,7 +47,7 @@ export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
   job_radar: {
     id: "job_radar",
     name: "岗位雷达团队",
-    tagline: "Search. Filter. Match.",
+    tagline: "检索。筛选。匹配。",
     description: "在岗位库里检索还能投的岗位，按你的硬性条件筛掉不合适的。",
     starter: "帮我找几个现在还能投、适合我的岗位",
     defaultSkills: RADAR_TEAM_DEFAULT_SKILLS
@@ -55,7 +55,7 @@ export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
   career_planner: {
     id: "career_planner",
     name: "求职规划团队",
-    tagline: "Plan. Act. Review.",
+    tagline: "排计划。去行动。看进展。",
     description: "看你的真实投递记录，排这周做得完的计划，复盘卡在哪一步。",
     starter: "帮我看看现在的投递情况，排一下这周的计划",
     defaultSkills: PLANNER_TEAM_DEFAULT_SKILLS

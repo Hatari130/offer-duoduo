@@ -67,7 +67,8 @@ function Motif({ team }: { team: ChatAgentName }) {
 
 /** Wide (16:9) for the dialog; square for the home deck, with the motif moved under the slogan. */
 export function TeamCover({ team, tagline, square = false }: { team: ChatAgentName; tagline: string; square?: boolean }) {
-  const words = tagline.split(/(?<=\.)\s+/);
+  // One phrase per line: split after a full stop, Chinese or English.
+  const words = tagline.split(/(?<=[.。])\s*/).filter(Boolean);
   const [width, height] = square ? [240, 240] : [320, 180];
   return (
     <svg

@@ -73,7 +73,7 @@ export const CUSTOM_SKILL_LIMITS = { name: 20, role: 40, when: 120, summary: 60,
 export interface ChatAgentProfile {
   id: ChatAgentName;
   name: string;
-  /** Short English slogan printed on the team cover. */
+  /** Three short phrases printed on the team cover, each ending in 。 (or “.”). */
   tagline: string;
   description: string;
   /** What the composer is pre-filled with when the team is invited. */
