@@ -9,6 +9,7 @@ import { randomUUID } from "node:crypto";
 import type {
   ChatAgentExpertNote,
   ChatAgentName,
+  ChatAttachment,
   ChatAgentRewrite,
   ChatAgentRun,
   ChatAgentStep,
@@ -54,7 +55,7 @@ export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
   career_planner: {
     id: "career_planner",
     name: "求职规划团队",
-    tagline: "Plan. Review. Keep going.",
+    tagline: "Plan. Act. Review.",
     description: "看你的真实投递记录，排这周做得完的计划，复盘卡在哪一步。",
     starter: "帮我看看现在的投递情况，排一下这周的计划",
     defaultSkills: PLANNER_TEAM_DEFAULT_SKILLS
@@ -84,7 +85,7 @@ function createTeamSession(
   materials: TeamMaterials,
   experts: ExpertSkill[],
   model: ModelClient,
-  conversation: { userStatements: () => string[]; transcript: () => string[] },
+  conversation: { userStatements: () => string[]; transcript: () => string[]; shownBefore: string[] },
   onExpertNote: (note: ChatAgentExpertNote) => void
 ): TeamSession {
   const shared = { experts, expertModel: model, onExpertNote, userStatements: conversation.userStatements };
@@ -93,7 +94,13 @@ function createTeamSession(
     return { ...session, systemPrompt: interviewCoachSystemPrompt(experts) };
   }
   if (team === "job_radar") {
-    const session = createJobRadarSession({ ...shared, search: materials.search, applications: materials.applications, profile: materials.profile });
+    const session = createJobRadarSession({
+      ...shared,
+      search: materials.search,
+      applications: materials.applications,
+      profile: materials.profile,
+      shownBefore: conversation.shownBefore
+    });
     return { ...session, systemPrompt: jobRadarSystemPrompt(experts) };
   }
   if (team === "career_planner") {
@@ -104,18 +111,49 @@ function createTeamSession(
   return { ...session, systemPrompt: resumeCoachSystemPrompt(experts) };
 }
 
-/** Rebuild what the model saw in earlier turns from stored chat messages. */
+/**
+ * What the user said in one turn, including the text extracted from their
+ * attachments (a pasted JD, an uploaded resume). It all counts as evidence.
+ */
+export function userTurnText(content: string, attachments: ChatAttachment[] = []): string {
+  const files = attachments
+    .filter((attachment) => attachment.content?.trim())
+    .map((attachment) => `【附件：${attachment.name}】\n${attachment.content!.trim().slice(0, 20_000)}`);
+  return [content, ...files].join("\n\n");
+}
+
+const TOOL_CALL_RULE = "【输出规则】要调用工具时直接调用，调用前不要写任何文字（不要写“我先看看”“稍等”之类）。文字只用于最后给用户的回复或向用户提问。";
+
+/** Turns whose tool calls are replayed in full; older turns keep only what was said and decided. */
+export const FULL_TRACE_TURNS = 2;
+
+/** An old agent turn without its tool calls: the reply plus the rewrites it settled on. */
+function compactTurn(message: ChatMessage): string {
+  const rewrites = (message.agentRun?.rewrites ?? []).map((rewrite) => `「${rewrite.title}」→ ${rewrite.after}`);
+  return [message.content, rewrites.length ? `（这一轮已写好：${rewrites.join("；")}）` : ""].filter(Boolean).join("\n");
+}
+
+/**
+ * Rebuild what the model saw in earlier turns from stored chat messages.
+ * Tool results (a whole resume, search hits) are the bulk of a trace, so only the
+ * last FULL_TRACE_TURNS keep them; the model can call a tool again if it needs one.
+ * User messages are always kept whole: they are the evidence the guard checks against.
+ */
 export function agentMessagesFromHistory(history: ChatMessage[], systemPrompt: string): AgentMessage[] {
   const messages: AgentMessage[] = [{ role: "system", content: systemPrompt }];
-  for (const message of history) {
+  const traced = history.filter((message) => message.role === "assistant" && message.agentRun?.trace.length);
+  const replayFrom = traced.length > FULL_TRACE_TURNS ? history.indexOf(traced[traced.length - FULL_TRACE_TURNS]) : 0;
+  history.forEach((message, index) => {
     if (message.role === "user") {
-      messages.push({ role: "user", content: message.content });
-    } else if (message.role === "assistant" && message.agentRun?.trace.length) {
+      messages.push({ role: "user", content: userTurnText(message.content, message.attachments) });
+    } else if (message.role === "assistant" && message.agentRun?.trace.length && index >= replayFrom) {
       messages.push(...(message.agentRun.trace as AgentMessage[]));
+    } else if (message.role === "assistant" && message.agentRun?.trace.length) {
+      messages.push({ role: "assistant", content: compactTurn(message) });
     } else if (message.role === "assistant" && message.content) {
       messages.push({ role: "assistant", content: message.content });
     }
-  }
+  });
   return messages;
 }
 
@@ -127,9 +165,15 @@ export interface TeamTurnInput {
   /** Conversation messages before the current user message. */
   history: ChatMessage[];
   prompt: string;
+  /** Files attached to the current message; only their extracted text is used. */
+  attachments?: ChatAttachment[];
   onStep?: (step: ChatAgentStep) => void | Promise<void>;
   onRewrite?: (rewrite: ChatAgentRewrite) => void | Promise<void>;
   onExpertNote?: (note: ChatAgentExpertNote) => void | Promise<void>;
+  /** Cancels the turn (stop button, closed tab). */
+  signal?: AbortSignal;
+  onText?: (delta: string) => void | Promise<void>;
+  onTextReset?: () => void | Promise<void>;
 }
 
 export interface TeamTurnResult {
@@ -138,20 +182,39 @@ export interface TeamTurnResult {
   opportunityResults?: ChatOpportunityResults;
 }
 
+/** Opening ids the job radar already showed as cards in this conversation, read from the stored traces. */
+function shownOpportunityIds(history: ChatMessage[]): string[] {
+  return history.flatMap((message) => ((message.agentRun?.trace ?? []) as AgentMessage[]).flatMap((item) =>
+    (item.tool_calls ?? []).filter((call) => call.function.name === "show_opportunities").flatMap((call) => {
+      try {
+        const ids = (JSON.parse(call.function.arguments || "{}") as { ids?: unknown }).ids;
+        return Array.isArray(ids) ? ids.map(String) : [];
+      } catch {
+        return [];
+      }
+    })));
+}
+
 export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult> {
   const pending: Array<Promise<void>> = [];
   let messages: AgentMessage[] = [];
   const conversation = {
+    shownBefore: shownOpportunityIds(input.history),
     userStatements: () => messages.filter((message) => message.role === "user").map((message) => message.content || ""),
     transcript: () => messages
       .filter((message) => (message.role === "user" || message.role === "assistant") && message.content)
       .map((message) => `${message.role === "user" ? "候选人" : "面试官"}：${message.content}`)
   };
-  const session = createTeamSession(input.team, input.materials, input.experts, input.model, conversation, (note) => {
+  // Expert calls stop with the turn too.
+  const expertModel: ModelClient = {
+    complete: (messages, tools, options) => input.model.complete(messages, tools, { ...options, signal: input.signal })
+  };
+  const session = createTeamSession(input.team, input.materials, input.experts, expertModel, conversation, (note) => {
     pending.push(Promise.resolve(input.onExpertNote?.(note)));
   });
-  messages = agentMessagesFromHistory(input.history, session.systemPrompt);
-  messages.push({ role: "user", content: input.prompt });
+  // Replies stream to the user, so a lead-in written before a tool call would flash on screen and vanish.
+  messages = agentMessagesFromHistory(input.history, `${session.systemPrompt}\n\n${TOOL_CALL_RULE}`);
+  messages.push({ role: "user", content: userTurnText(input.prompt, input.attachments) });
   const turnStart = messages.length;
 
   const steps: ChatAgentStep[] = [];
@@ -174,6 +237,13 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
     model: input.model,
     tools: session.tools,
     messages,
+    signal: input.signal,
+    onText: input.onText ? (delta) => {
+      pending.push(Promise.resolve(input.onText!(delta)));
+    } : undefined,
+    onTextReset: () => {
+      pending.push(Promise.resolve(input.onTextReset?.()));
+    },
     onEvent: (event) => {
       if (event.type !== "tool_result") return;
       const output = (event.result ?? {}) as Record<string, unknown>;
@@ -187,7 +257,7 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
           const job = input.materials.job;
           emitStep(job
             ? { label: "读取岗位要求", detail: `${job.company} · ${job.position}`, status: "done" }
-            : { label: "读取岗位要求", detail: "未选择岗位，以对话里的 JD 为准", status: "rejected" });
+            : { label: "读取岗位要求", detail: "未选择岗位，以对话里的 JD 为准", status: "done" });
           break;
         }
         case "list_applications":

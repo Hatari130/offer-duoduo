@@ -2,7 +2,6 @@ import { useEffect, useLayoutEffect, useRef, useState, type FocusEvent, type Mou
 import { SiteCompliance } from "../components/SiteCompliance";
 import type { ChatConversation } from "@offerflow/domain";
 import {
-  BookOpenCheck,
   BriefcaseBusiness,
   Building2,
   Check,
@@ -67,7 +66,6 @@ const primaryNavigation = [
   { href: "/app/opportunities", label: "校招信息速递", mobileLabel: "机会", icon: Newspaper, requiresAuth: false },
   { href: "/app/companies", label: "公司投递直达", mobileLabel: "直达", icon: Building2, requiresAuth: false },
   { href: "/app/resumes", label: "简历模板", mobileLabel: "简历", icon: FileText, requiresAuth: true, badge: "内测中" },
-  { href: "/app/practice", label: "笔试练习", mobileLabel: "笔试", icon: BookOpenCheck, requiresAuth: false },
   { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness, requiresAuth: true }
 ];
 
@@ -394,10 +392,8 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
       setThreadError(requestError instanceof Error ? requestError.message : "暂时无法删除对话");
     }
   };
-  const isPractice = pathname.startsWith("/app/practice");
-
   return (
-    <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}${isPractice ? " app-frame--no-bottom-nav" : ""}`}>
+    <div className={`app-frame${sidebarCollapsed ? " is-sidebar-collapsed" : ""}`}>
       <a className="skip-link" href="#main-content">跳到主要内容</a>
       <div className="workspace-quick-actions" role="group" aria-label="帮助、显示与反馈">
         {isGuest && (
@@ -793,26 +789,24 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </main>
       </div>
 
-      {!isPractice && (
-        <nav className="mobile-bottom-nav" aria-label="主要功能" data-active-index={activeNavigationIndex}>
-          {primaryNavigation.map((item) => {
-            const Icon = item.icon;
-            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
-            return (
-              <AppLink
-                key={item.href}
-                href={item.href}
-                className={`mobile-bottom-link${active ? " is-active" : ""}`}
-                ariaCurrent={active ? "page" : undefined}
-                guard={item.requiresAuth ? () => requireLogin(`登录后即可使用${item.label}。`) : undefined}
-              >
-                <Icon aria-hidden="true" size={20} strokeWidth={1.8} />
-                <span>{item.mobileLabel}</span>
-              </AppLink>
-            );
-          })}
-        </nav>
-      )}
+      <nav className="mobile-bottom-nav" aria-label="主要功能" data-active-index={activeNavigationIndex}>
+        {primaryNavigation.map((item) => {
+          const Icon = item.icon;
+          const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+          return (
+            <AppLink
+              key={item.href}
+              href={item.href}
+              className={`mobile-bottom-link${active ? " is-active" : ""}`}
+              ariaCurrent={active ? "page" : undefined}
+              guard={item.requiresAuth ? () => requireLogin(`登录后即可使用${item.label}。`) : undefined}
+            >
+              <Icon aria-hidden="true" size={20} strokeWidth={1.8} />
+              <span>{item.mobileLabel}</span>
+            </AppLink>
+          );
+        })}
+      </nav>
       <FeedbackDialog open={feedbackOpen} onClose={() => setFeedbackOpen(false)} pagePath={pathname} />
       <ChangelogDialog
         open={changelogOpen}

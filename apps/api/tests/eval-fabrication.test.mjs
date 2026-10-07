@@ -62,3 +62,27 @@ test("the report counts the share of changes that contain unsupported claims", (
   assert.equal(report.fabricationRate, 0.5);
   assert.deepEqual(report.findings, [{ kind: "number", value: "20", change: 1 }]);
 });
+
+test("exaggeration words without backing are flagged, unless the user said them", () => {
+  const evidence = ["负责公众号日常推送，每周 3 篇"];
+  assert.deepEqual(
+    findUnsupportedClaims("负责公众号推送，每周 3 篇，阅读量显著提升", evidence),
+    [{ kind: "magnitude", value: "显著" }]
+  );
+  assert.deepEqual(findUnsupportedClaims("阅读量显著提升", [...evidence, "那段时间阅读量显著提升了"]), []);
+});
+
+test("a slash-separated list of known tools is not a new term", () => {
+  const evidence = ["技能：SQL、Python、XGBoost、A/B 实验设计"];
+  assert.deepEqual(findUnsupportedClaims("熟练使用 SQL/Python/XGBoost，做过 A/B 实验", evidence), []);
+  assert.deepEqual(findUnsupportedClaims("熟练使用 SQL/Tableau", evidence), [{ kind: "term", value: "sql/tableau" }]);
+});
+
+test("从0到1 is judged as an ownership claim, not as the numbers 0 and 1", () => {
+  const evidence = ["独立运营小红书账号，从零开始做到 2000 粉"];
+  assert.deepEqual(findUnsupportedClaims("从0到1独立运营小红书账号，涨到 2000 粉", evidence, { before: evidence[0] }), []);
+  assert.deepEqual(
+    findUnsupportedClaims("从0到1搭建账号", ["参与账号运营"], { before: "参与账号运营" }),
+    [{ kind: "ownership", value: "从0到1" }]
+  );
+});

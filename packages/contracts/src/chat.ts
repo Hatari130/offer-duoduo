@@ -126,6 +126,8 @@ export interface MessageFeedbackResponse {
 export type ChatStreamEvent =
   | { type: "message.started"; message: ChatMessage }
   | { type: "message.delta"; messageId: string; delta: string }
+  /** Discard the text streamed so far for this message (the model decided to call tools after all). */
+  | { type: "message.reset"; messageId: string }
   | { type: "citation"; messageId: string; citation: KnowledgeCitation }
   | { type: "agent.step"; messageId: string; step: ChatAgentStep }
   | { type: "agent.rewrite"; messageId: string; rewrite: ChatAgentRewrite }

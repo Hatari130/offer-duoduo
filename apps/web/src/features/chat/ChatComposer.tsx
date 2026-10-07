@@ -89,8 +89,19 @@ export function ChatComposer({
         let content: string;
         const recognize = async () => {
           controller.signal.throwIfAborted();
-          setProgress(`正在识别「${file.name}」中的文字…`);
-          return (await onRecognizeFile(new File([file], file.name, { type: mimeType }), controller.signal)).text;
+          // Recognition time depends on the OCR service's queue; show it is still working.
+          const started = Date.now();
+          const label = () => {
+            const seconds = Math.round((Date.now() - started) / 1000);
+            setProgress(`正在识别「${file.name}」中的文字…${seconds >= 3 ? `已 ${seconds} 秒` : ""}`);
+          };
+          label();
+          const ticker = window.setInterval(label, 1000);
+          try {
+            return (await onRecognizeFile(new File([file], file.name, { type: mimeType }), controller.signal)).text;
+          } finally {
+            window.clearInterval(ticker);
+          }
         };
         if (mimeType.startsWith("image/")) {
           content = await recognize();
@@ -182,7 +193,6 @@ export function ChatComposer({
           if (!event.clipboardData.getData("text/plain")) event.preventDefault();
           void addFiles(files);
         }}
-        aria-describedby="chat-attachment-help"
         placeholder="说说你想推进什么，也可以粘贴岗位描述或截图。"
       />
       <div className="composer-toolbar">
@@ -235,7 +245,6 @@ export function ChatComposer({
           </button>
         )}
       </div>
-      <p id="chat-attachment-help" className="composer-attachment-help">支持文档和截图，可粘贴或拖入。仅保留提取文字，不保存原文件。</p>
       <div className="composer-attachment-progress" role="status" aria-atomic="true">{progress}</div>
       {parsing && <button className="composer-cancel-upload" type="button" onClick={() => {
         processingRef.current?.abort();

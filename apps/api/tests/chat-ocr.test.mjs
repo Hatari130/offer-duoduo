@@ -15,7 +15,7 @@ test("PaddleOCR posts multipart, polls pending/running/done, returns page text w
   const calls = [];
   const fileBytes = Buffer.from(png);
   const responses = [json({ jobId: "job-1" }), json({ state: "pending" }), json({ state: "running" }), json({ state: "done", resultUrl: { jsonUrl: "https://storage.example/result.jsonl" } }), new Response(`${jsonl("# 岗位描述\n![图片](https://storage.example/crop.png)")}\n${jsonl("岗位职责：用户研究")}`)];
-  const provider = createChatOcrProvider(config(), {
+  const provider = createChatOcrProvider(loadApiConfig({ PADDLE_OCR_TOKEN: "test-provider-secret", PADDLE_OCR_MODEL: "PaddleOCR-VL-1.6" }), {
     pollMs: 1,
     validateResultUrl: async (url) => assert.equal(url, "https://storage.example/result.jsonl"),
     fetchImpl: async (url, init) => {
@@ -34,6 +34,25 @@ test("PaddleOCR posts multipart, polls pending/running/done, returns page text w
   assert.equal(await provider.recognize(fileBytes, "image/png", new AbortController().signal), "# 岗位描述\n\n岗位职责：用户研究");
   assert.equal(calls.length, 5);
   assert.equal(calls[4].headers, undefined, "provider token must not be sent to result storage");
+});
+
+test("the default PP-OCRv5 model skips slow corrections and its line results become page text", async () => {
+  const ppOcrPage = (lines) => JSON.stringify({ result: { ocrResults: [{ prunedResult: { rec_texts: lines, rec_scores: lines.map(() => 0.99) } }] } });
+  const provider = createChatOcrProvider(config(), {
+    pollMs: 1,
+    validateResultUrl: async () => undefined,
+    fetchImpl: async (_url, init) => {
+      if (init.method === "POST") {
+        assert.equal(init.body.get("model"), "PP-OCRv5");
+        assert.deepEqual(JSON.parse(init.body.get("optionalPayload")), { useDocOrientationClassify: false, useDocUnwarping: false, useTextlineOrientation: false });
+        return json({ jobId: "job-2" });
+      }
+      if (String(_url).endsWith("job-2")) return json({ state: "done", resultUrl: { jsonUrl: "https://storage.example/r.jsonl" } });
+      return new Response(`${ppOcrPage(["林知夏·简历", " 实习经历 ", ""])}\n${ppOcrPage(["第二页内容"])}`);
+    }
+  });
+  assert.equal(await provider.recognize(png, "image/png", new AbortController().signal), "林知夏·简历\n实习经历\n\n第二页内容");
+  assert.throws(() => extractOcrMarkdown(JSON.stringify({ result: { ocrResults: [{ prunedResult: { rec_texts: [""] } }] } })), { code: "OCR_NO_TEXT" });
 });
 
 test("OCR rejects empty/oversized text and private result URLs", async () => {

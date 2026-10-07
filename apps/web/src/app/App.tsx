@@ -14,7 +14,6 @@ import { ResumeStudioPage } from "../pages/ResumeStudioPage";
 import { ResumeLibraryPage } from "../pages/ResumeLibraryPage";
 import { BrowserExtensionPage } from "../pages/BrowserExtensionPage";
 import { HelpCenterPage } from "../pages/HelpCenterPage";
-import { PracticePage } from "../pages/PracticePage";
 import { Logo } from "../components/Logo";
 import { LegalPage } from "../pages/LegalPage";
 import { AuthDialog } from "../components/AuthDialog";
@@ -29,7 +28,6 @@ const titles: Array<[RegExp, string]> = [
   [/^\/app\/resumes\/tailor/, "岗位定制简历"],
   [/^\/app\/resumes\/edit/, "制作简历"],
   [/^\/app\/resumes/, "简历模板"],
-  [/^\/app\/practice/, "笔试练习 · 题库与极速秒搜"],
   [/^\/app\/settings/, "设置与设备同步"],
   [/^\/browser-extension/, "浏览器插件"],
   [/^\/help-center$/, "帮助中心"],
@@ -114,7 +112,6 @@ export function App() {
   else if (pathname.startsWith("/app/opportunities")) page = <OpportunitiesPage />;
   else if (pathname.startsWith("/app/companies")) page = <CompanyDirectoryPage />;
   else if (pathname.startsWith("/app/applications")) page = <ApplicationsPage />;
-  else if (pathname.startsWith("/app/practice")) page = <PracticePage />;
   else if (pathname.startsWith("/app/resumes")) page = <ResumeLibraryPage />;
   else if (pathname.startsWith("/app/settings")) page = <SettingsPage />;
   else page = <ChatPage conversationId={conversationIdFromPath(pathname)} />;

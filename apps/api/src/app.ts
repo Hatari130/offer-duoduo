@@ -121,6 +121,9 @@ export interface OfferFlowAppOptions {
   agentModel?: ModelClient;
 }
 
+const AGENT_TURNS_PER_WINDOW = 40;
+const AGENT_TURN_WINDOW_MS = 60 * 60_000;
+
 class HttpError extends Error {
   constructor(
     readonly status: number,
@@ -324,6 +327,9 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const emailVerification = createEmailVerificationService(config, store, emailMailer);
   const authAttempts = new Map<string, { count: number; resetAt: number }>();
   const feedbackAttempts = new Map<string, { count: number; resetAt: number }>();
+  // A team turn costs several model calls, so each user gets one at a time and a budget per hour.
+  const agentTurnStarts = new Map<string, number[]>();
+  const activeAgentUsers = new Set<string>();
   let opportunityRefresh: Promise<Awaited<ReturnType<OfferFlowStore["getOpportunityFeed"]>>> | undefined;
 
   async function refreshOpportunitySnapshot(preferSeed: boolean): Promise<OpportunityFeedSnapshot> {
@@ -634,6 +640,23 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     if (current.count > 5) throw new HttpError(429, "FEEDBACK_RATE_LIMITED", "提交得有点频繁，请稍后再试");
   }
 
+  /** Claims a team turn for the user; call the returned function when the turn ends. */
+  function claimAgentTurn(userId: string): () => void {
+    if (activeAgentUsers.has(userId)) {
+      throw new HttpError(429, "AGENT_BUSY", "上一条回复还在生成，等它结束或先停止再发", { retryAfterSeconds: 5 });
+    }
+    const now = Date.now();
+    const recent = (agentTurnStarts.get(userId) ?? []).filter((start) => start > now - AGENT_TURN_WINDOW_MS);
+    if (recent.length >= AGENT_TURNS_PER_WINDOW) {
+      const retryAfterSeconds = Math.ceil((recent[0] + AGENT_TURN_WINDOW_MS - now) / 1000);
+      throw new HttpError(429, "AGENT_RATE_LIMITED", `这一小时用得有点多，${Math.ceil(retryAfterSeconds / 60)} 分钟后再试`, { retryAfterSeconds });
+    }
+    recent.push(now);
+    agentTurnStarts.set(userId, recent);
+    activeAgentUsers.add(userId);
+    return () => activeAgentUsers.delete(userId);
+  }
+
   async function issueSession(
     user: SessionUser,
     scope: "user" | "device" = "user",
@@ -857,6 +880,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     prompt: string,
     history: ChatMessage[],
     context: ChatContextReference[],
+    attachments: ChatAttachment[],
     team: ChatAgentName,
     requestedSkills: string[] | undefined
   ): Promise<void> {
@@ -876,6 +900,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       today: shanghaiToday()
     };
     const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
+    // Stop button or closed tab: stop the agent loop, model calls and expert calls.
+    const abortController = new AbortController();
+    response.on("close", () => {
+      if (!response.writableEnded) abortController.abort();
+    });
 
     response.statusCode = 200;
     response.setHeader("content-type", "text/event-stream; charset=utf-8");
@@ -885,6 +914,7 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     response.flushHeaders();
     await writeSse(response, { type: "message.started", message: assistantMessage });
 
+    let streamed = "";
     try {
       if (!agentModel) throw new Error(`AI 服务尚未配置，${TEAM_PROFILES[team].name}暂时不可用`);
       const turn = await runTeamTurn({
@@ -894,25 +924,45 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         experts,
         history,
         prompt,
+        attachments,
+        signal: abortController.signal,
+        onText: (delta) => {
+          streamed += delta;
+          return writeSse(response, { type: "message.delta", messageId: assistantMessage.id, delta });
+        },
+        onTextReset: () => {
+          streamed = "";
+          return writeSse(response, { type: "message.reset", messageId: assistantMessage.id });
+        },
         onStep: (step) => writeSse(response, { type: "agent.step", messageId: assistantMessage.id, step }),
         onRewrite: (rewrite) => writeSse(response, { type: "agent.rewrite", messageId: assistantMessage.id, rewrite }),
         onExpertNote: (note) => writeSse(response, { type: "agent.expert", messageId: assistantMessage.id, note })
       });
-      await writeSse(response, { type: "message.delta", messageId: assistantMessage.id, delta: turn.reply });
+      // The final reply was streamed as it was written; send whatever did not stream (e.g. the step-limit notice).
+      if (!turn.reply.startsWith(streamed)) {
+        await writeSse(response, { type: "message.reset", messageId: assistantMessage.id });
+        streamed = "";
+      }
+      if (turn.reply.length > streamed.length) {
+        await writeSse(response, { type: "message.delta", messageId: assistantMessage.id, delta: turn.reply.slice(streamed.length) });
+      }
       const completed = await store.completeAssistantMessage(
         userId, conversationId, assistantMessage.id, turn.reply, [], "complete", turn.opportunityResults, turn.agentRun
       );
       await writeSse(response, { type: "message.completed", message: completed });
       await writeSse(response, { type: "done" });
     } catch (error) {
-      await store.completeAssistantMessage(userId, conversationId, assistantMessage.id, "", [], "error");
-      await writeSse(response, {
-        type: "error",
-        error: {
-          code: "CHAT_GENERATION_FAILED",
-          message: error instanceof Error ? error.message : "简历教练暂时不可用，请重试"
-        }
-      });
+      const stopped = abortController.signal.aborted;
+      await store.completeAssistantMessage(userId, conversationId, assistantMessage.id, stopped ? streamed : "", [], stopped ? "stopped" : "error");
+      if (!stopped) {
+        await writeSse(response, {
+          type: "error",
+          error: {
+            code: "CHAT_GENERATION_FAILED",
+            message: error instanceof Error ? error.message : "团队暂时不可用，请重试"
+          }
+        });
+      }
     } finally {
       if (!response.writableEnded) response.end();
     }
@@ -1634,7 +1684,12 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         const retryTeam = conversationTeam(history);
         if (retryTeam && sourceMessage) {
           const sourceIndex = history.indexOf(sourceMessage);
-          await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage.context ?? [], retryTeam, undefined);
+          const release = claimAgentTurn(userId);
+          try {
+            await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage.context ?? [], sourceMessage.attachments ?? [], retryTeam, undefined);
+          } finally {
+            release();
+          }
           return;
         }
         await streamAnswer(
@@ -1662,18 +1717,24 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           throw new HttpError(400, "CHAT_CONTEXT_NOT_FOUND", "选中的个人材料已不可用，请重新选择");
         }
         const history = await store.getConversationHistory(userId, conversationId);
-        await store.appendUserMessage(
-          userId,
-          conversationId,
-          body.clientMessageId,
-          body.content,
-          body.attachments,
-          context
-        );
         const team = body.agent ?? conversationTeam(history);
-        if (team) {
-          await streamAgentAnswer(response, userId, conversationId, body.content, history, context, team, body.skills);
-          return;
+        // Checked before the message is stored, so a refused message does not linger unanswered.
+        const release = team ? claimAgentTurn(userId) : undefined;
+        try {
+          await store.appendUserMessage(
+            userId,
+            conversationId,
+            body.clientMessageId,
+            body.content,
+            body.attachments,
+            context
+          );
+          if (team) {
+            await streamAgentAnswer(response, userId, conversationId, body.content, history, context, body.attachments ?? [], team, body.skills);
+            return;
+          }
+        } finally {
+          release?.();
         }
         await streamAnswer(request, response, userId, conversationId, body.content, history, body.attachments, context);
         return;

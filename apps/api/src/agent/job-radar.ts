@@ -15,8 +15,10 @@ export const RADAR_TEAM_DEFAULT_SKILLS = ["job-analyst", "soe-hr", "funnel-analy
 const MAX_SEARCHES = 4;
 const MAX_SHOWN = 6;
 
-function compact(opportunity: RecruitmentOpportunity) {
+function compact(opportunity: RecruitmentOpportunity, flags: { applied?: boolean; shownBefore?: boolean } = {}) {
   return {
+    ...(flags.applied ? { applied: true } : {}),
+    ...(flags.shownBefore ? { shownBefore: true } : {}),
     id: opportunity.id,
     company: opportunity.company,
     title: opportunity.title,
@@ -37,7 +39,16 @@ export function createJobRadarSession(options: {
   experts?: ExpertSkill[];
   expertModel?: ModelClient;
   onExpertNote?: (note: ChatAgentExpertNote) => void;
+  /** Opening ids shown as cards in earlier turns, so "换一组" can skip them. */
+  shownBefore?: string[];
 }) {
+  const appliedCompanies = options.applications.map((application) => application.company.trim()).filter(Boolean);
+  const shownBefore = new Set(options.shownBefore ?? []);
+  // Flags the model can see on every result, so it does not have to remember to cross-check.
+  const flagged = (item: RecruitmentOpportunity) => compact(item, {
+    applied: appliedCompanies.some((company) => item.company.includes(company) || company.includes(item.company)),
+    shownBefore: shownBefore.has(item.id)
+  });
   const entries = options.profile ? resumeEntries(options.profile) : [];
   const seen = new Map<string, RecruitmentOpportunity>();
   const notes: ChatAgentExpertNote[] = [];
@@ -64,7 +75,7 @@ export function createJobRadarSession(options: {
         return {
           total: results.total,
           sourceAvailable: results.sourceAvailable,
-          items: results.items.map(compact)
+          items: results.items.map(flagged)
         };
       }
     },
@@ -95,7 +106,7 @@ export function createJobRadarSession(options: {
     model: options.expertModel,
     materials: () => [
       "【这轮检索到的岗位】",
-      [...seen.values()].map((item) => JSON.stringify(compact(item))).join("\n") || "（还没有检索）", "",
+      [...seen.values()].map((item) => JSON.stringify(flagged(item))).join("\n") || "（还没有检索）", "",
       "【用户的投递记录】",
       options.applications.slice(0, 30).map((application) => JSON.stringify(applicationSummary(application))).join("\n") || "（没有）", "",
       "【简历】", entries.map((entry) => `【${entry.title}】\n${entry.text}`).join("\n\n") || "（还没有简历）", "",
@@ -124,6 +135,7 @@ export function jobRadarSystemPrompt(experts: ExpertSkill[]): string {
     "1. 先弄清硬性条件：方向、城市、届别。对话里已经说过的不要再问；完全没有线索时，先按已知条件检索，再问一个最关键的条件。",
     "2. 用 search_opportunities 检索。结果太少就放宽条件，太多或不准就收紧，每轮最多查 4 次。",
     "3. 逐条核对结果：届别、城市不符合用户硬性条件的直接排除。用户要求 2026 届，就不能推荐只招 2027 届的岗位。",
+    "   结果里标了 applied 的是用户已经投过的公司，除非用户要求，否则不推荐；用户说“换一组”“再来几个”时，不要再选标了 shownBefore 的岗位。",
     "4. 用 show_opportunities 选出最值得投的岗位（最多 6 个）展示成卡片。卡片会单独显示，你的回复里不要再逐条罗列公司和链接，只用几句话说明为什么推荐这几个、各自适合他的哪一点。",
     "5. 需要判断和他简历的匹配度时，调用 get_resume；用户问“我还没投哪些”时，调用 list_applications 排除已投的。",
     ...expertPanelRules(experts),

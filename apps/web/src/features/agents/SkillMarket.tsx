@@ -65,12 +65,12 @@ export function SkillMarket({
     const teamNames = skill.teams.map((team) => agents.find((agent) => agent.id === team)?.name.replace("团队", "")).filter(Boolean).join(" · ");
     const custom = skill.source === "custom" ? customSkills.find((item) => `custom:${item.id}` === skill.id) : undefined;
     return (
-      <article key={skill.id} className={`skill-card${joined ? " is-joined" : ""}`}>
+      <article key={skill.id} className={`skill-card${joined ? " is-joined" : ""}${activeTeam && !fits ? " is-unfit" : ""}`}>
         <ExpertAvatar expert={skill} size="large" />
         <div className="skill-card__text">
           <strong>{skill.name}</strong>
           <p>{skill.summary}</p>
-          <small>{skill.source === "official" ? "JobKoI 官方" : "我创建的"} · 适用：{teamNames}</small>
+          <small>适用：{teamNames}</small>
         </div>
         <div className="skill-card__actions">
           {custom && (
@@ -78,16 +78,18 @@ export function SkillMarket({
               <Pencil aria-hidden="true" size={14} />
             </button>
           )}
-          <button
-            type="button"
-            className="skill-card__join"
-            disabled={!activeTeam || !fits}
-            aria-pressed={joined}
-            title={!activeTeam ? "先在首页邀请一支团队" : fits ? undefined : `不适用于${activeTeam.name}`}
-            onClick={() => onToggle(skill.id)}
-          >
-            {joined ? <><Check aria-hidden="true" size={13} />已加入</> : fits ? <><Plus aria-hidden="true" size={13} />加入团队</> : "不适用"}
-          </button>
+          {/* Only offered when it can be pressed: a team is invited and the skill fits it. */}
+          {fits && (
+            <button
+              type="button"
+              className="skill-card__join"
+              aria-pressed={joined}
+              aria-label={`${joined ? "移出" : "加入"} ${skill.name}`}
+              onClick={() => onToggle(skill.id)}
+            >
+              {joined ? <><Check aria-hidden="true" size={13} />已加入</> : <><Plus aria-hidden="true" size={13} />加入</>}
+            </button>
+          )}
         </div>
       </article>
     );

@@ -20,3 +20,10 @@ test("normalizes recognized content and keeps only text and metadata", () => {
   assert.throws(() => extractedAttachment(file, file.type, " ", "a"), /没有可读取/);
   assert.throws(() => extractedAttachment(file, file.type, "中".repeat(70_000), "a"), /文字过多/);
 });
+
+test("PDF text turns look-alike radicals back into normal characters and drops spaces between them", async () => {
+  const { normalizePdfText } = await import("../src/features/chat/pdfAttachment.ts");
+  assert.equal(normalizePdfText("某市实验 ⼩ 学 ⾏ 政助理，家⻓会材料"), "某市实验小学行政助理，家长会材料");
+  assert.equal(normalizePdfText("MARK-CID 8842 和 Python 3"), "MARK-CID 8842 和 Python 3", "spaces next to Latin text are kept");
+  assert.equal(normalizePdfText("推文 40 余篇，共计"), "推文 40 余篇，共计", "full-width punctuation is kept");
+});

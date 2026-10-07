@@ -8,7 +8,7 @@
  * the number (30 人 → 30%), and Chinese company / project names.
  */
 
-export type FabricationKind = "number" | "term" | "ownership";
+export type FabricationKind = "number" | "term" | "ownership" | "magnitude";
 
 export interface FabricationFinding {
   kind: FabricationKind;
@@ -29,13 +29,17 @@ export interface FabricationOptions {
 // Words that claim the candidate led the work. "参与/协助" in the source must not become these.
 const OWNERSHIP_WORDS = ["负责", "主导", "牵头", "带领", "主持", "独立完成", "独立负责", "从0到1", "从零到一"];
 const SUPPORTING_WORDS = ["参与", "协助", "配合", "辅助", "帮忙", "帮助", "支持"];
+// Words that claim how big the effect was. Without a number or the user's own words behind them they are exaggeration.
+const MAGNITUDE_WORDS = ["显著", "大幅", "全量", "极大", "翻倍", "成倍", "数倍", "爆发式", "行业领先", "业内领先", "大规模"];
 
 const NUMBER_PATTERN = /\d+(?:\.\d+)?/g;
 // Latin-script tokens: tools, languages, frameworks, abbreviations (SQL, A/B, C++, Node.js).
 const TERM_PATTERN = /[A-Za-z][A-Za-z0-9+#.]*(?:\/[A-Za-z0-9+#.]+)*/g;
 
 function numbersIn(text: string): Set<string> {
-  return new Set((text.match(NUMBER_PATTERN) || []).map((value) => String(Number(value))));
+  // "从0到1" is an ownership phrase (checked below), not a count of anything.
+  const counted = text.replace(/从\s*0\s*到\s*1/g, "");
+  return new Set((counted.match(NUMBER_PATTERN) || []).map((value) => String(Number(value))));
 }
 
 function termsIn(text: string): Set<string> {
@@ -58,7 +62,9 @@ export function findUnsupportedClaims(
 
   const sourceTerms = termsIn(`${source}\n${allowed}`);
   for (const value of termsIn(rewritten)) {
-    if (!sourceTerms.has(value)) findings.push({ kind: "term", value });
+    // "A/B" is one term, but "SQL/Python" is a list: supported if every part is.
+    const supported = sourceTerms.has(value) || (value.includes("/") && value.split("/").every((part) => sourceTerms.has(part)));
+    if (!supported) findings.push({ kind: "term", value });
   }
 
   const wasSupportingRole = options.before === undefined
@@ -67,6 +73,10 @@ export function findUnsupportedClaims(
     if (wasSupportingRole && rewritten.includes(word) && !source.includes(word)) {
       findings.push({ kind: "ownership", value: word });
     }
+  }
+
+  for (const word of MAGNITUDE_WORDS) {
+    if (rewritten.includes(word) && !source.includes(word)) findings.push({ kind: "magnitude", value: word });
   }
 
   return findings;
