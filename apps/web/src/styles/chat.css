@@ -645,7 +645,6 @@
   border-radius: 50%;
 }
 
-.composer-attachment-help,
 .composer-attachment-progress {
   margin: 0.4rem 0 0;
   color: var(--of-text-muted);

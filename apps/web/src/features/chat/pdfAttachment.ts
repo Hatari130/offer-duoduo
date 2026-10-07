@@ -35,6 +35,33 @@ function truncateToUtf8Bytes(text: string, maxBytes: number): { text: string; tr
   return { text: text.slice(0, low), truncated: true };
 }
 
+const CJK_CHAR = "[\\u3400-\\u9fff\\u3000-\\u303f\\uff01-\\uff5e]";
+const SPACE_BETWEEN_CJK = new RegExp(`(?<=${CJK_CHAR})[ \\t]+(?=${CJK_CHAR})`, "g");
+
+// CJK Radicals Supplement has no NFKC mapping; these simplified forms are drawn
+// for whole characters by some fonts. Code points checked against Unicode names.
+const RADICAL_SUPPLEMENT: Record<string, string> = {
+  "⺟": "母", "⺠": "民", "⻄": "西", "⻅": "见", "⻆": "角",
+  "⻉": "贝", "⻋": "车", "⻓": "长", "⻔": "门", "⻘": "青",
+  "⻙": "韦", "⻚": "页", "⻛": "风", "⻜": "飞", "⻝": "食",
+  "⻢": "马", "⻣": "骨", "⻤": "鬼", "⻥": "鱼", "⻦": "鸟",
+  "⻨": "麦", "⻩": "黄", "⻬": "齐", "⻮": "齿", "⻰": "龙",
+  "⻳": "龟"
+};
+
+/**
+ * Some PDF fonts map common characters to look-alike radicals (⼩ U+2F29 instead
+ * of 小 U+5C0F), and pdf.js inserts spaces between separately drawn glyphs.
+ * Kangxi radicals are NFKC-normalised one by one, so full-width Chinese
+ * punctuation such as ， is left alone.
+ */
+export function normalizePdfText(text: string): string {
+  return text
+    .replace(/[⼀-⿟]/g, (character) => character.normalize("NFKC"))
+    .replace(/[⺀-⻿]/g, (character) => RADICAL_SUPPLEMENT[character] ?? character)
+    .replace(SPACE_BETWEEN_CJK, "");
+}
+
 export async function extractPdfAttachmentText(buffer: ArrayBuffer): Promise<string> {
   const getDocument = await loadPdfJs();
   const pdf = await getDocument({
@@ -59,7 +86,7 @@ export async function extractPdfAttachmentText(buffer: ArrayBuffer): Promise<str
       else needsOcr = true;
     }
     if (needsOcr || !pages.length) throw new Error("PDF_NEEDS_OCR");
-    const truncated = truncateToUtf8Bytes(pages.join("\n\n"), MAX_PDF_TEXT_BYTES);
+    const truncated = truncateToUtf8Bytes(normalizePdfText(pages.join("\n\n")), MAX_PDF_TEXT_BYTES);
     return truncated.truncated
       ? `${truncated.text}\n\n（附件内容过长，超出部分已截断）`
       : truncated.text;

@@ -105,7 +105,7 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     aiModel: env.AI_MODEL || "deepseek-chat",
     paddleOcrToken: env.PADDLE_OCR_TOKEN?.trim() || undefined,
     paddleOcrJobUrl: env.PADDLE_OCR_JOB_URL?.trim() || "https://paddleocr.aistudio-app.com/api/v2/ocr/jobs",
-    paddleOcrModel: env.PADDLE_OCR_MODEL?.trim() || "PaddleOCR-VL-1.6",
+    paddleOcrModel: env.PADDLE_OCR_MODEL?.trim() || "PP-OCRv5",
     demoStreamDelayMs: positiveNumber(env.DEMO_STREAM_DELAY_MS, 18),
     interviewAsrProvider:
       env.INTERVIEW_ASR_PROVIDER?.trim().toLowerCase() === "disabled" ? "disabled" : "bcut",

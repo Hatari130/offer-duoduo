@@ -9,15 +9,18 @@ import { WEB_SECURITY_HEADERS, webSecurityPlugin } from "../../deploy/web-securi
 const require = createRequire(resolve(process.cwd(), "package.json"));
 
 function copyPdfJsCMaps(): Plugin {
+  // Chinese PDFs that use predefined CMaps need these files at /pdfjs/cmaps/.
+  let outDir = resolve(__dirname, "dist");
   return {
     name: "offerflow-web-copy-pdfjs-cmaps",
     apply: "build",
+    configResolved(config) {
+      outDir = resolve(config.root, config.build.outDir);
+    },
     async closeBundle() {
       const pdfJsRoot = dirname(require.resolve("pdfjs-dist/package.json"));
-      await mkdir(resolve(__dirname, "dist/pdfjs"), { recursive: true });
-      await cp(resolve(pdfJsRoot, "cmaps"), resolve(__dirname, "dist/pdfjs/cmaps"), {
-        recursive: true
-      });
+      await mkdir(resolve(outDir, "pdfjs"), { recursive: true });
+      await cp(resolve(pdfJsRoot, "cmaps"), resolve(outDir, "pdfjs/cmaps"), { recursive: true });
     }
   };
 }

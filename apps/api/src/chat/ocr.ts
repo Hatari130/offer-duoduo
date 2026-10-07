@@ -95,12 +95,25 @@ export async function validateOcrResultUrl(value: string): Promise<void> {
   if (!addresses.length || addresses.some(({ address }) => !isPublicAddress(address))) throw upstreamError();
 }
 
+/**
+ * Reads both result shapes: PaddleOCR-VL returns Markdown per page
+ * (layoutParsingResults), PP-OCR returns recognized lines (ocrResults.rec_texts).
+ */
 export function extractOcrMarkdown(jsonl: string): string {
   const pages: string[] = [];
   for (const line of jsonl.split(/\r?\n/)) {
     if (!line.trim()) continue;
     const item: unknown = JSON.parse(line);
-    if (!isRecord(item) || !isRecord(item.result) || !Array.isArray(item.result.layoutParsingResults)) throw upstreamError();
+    if (!isRecord(item) || !isRecord(item.result)) throw upstreamError();
+    if (Array.isArray(item.result.ocrResults)) {
+      for (const page of item.result.ocrResults) {
+        const texts = isRecord(page) && isRecord(page.prunedResult) ? page.prunedResult.rec_texts : undefined;
+        if (!Array.isArray(texts) || texts.some((text) => typeof text !== "string")) throw upstreamError();
+        pages.push((texts as string[]).map((text) => text.trim()).filter(Boolean).join("\n"));
+      }
+      continue;
+    }
+    if (!Array.isArray(item.result.layoutParsingResults)) throw upstreamError();
     for (const page of item.result.layoutParsingResults) {
       if (!isRecord(page) || !isRecord(page.markdown) || typeof page.markdown.text !== "string") throw upstreamError();
       // Persist recognized text, never result-image links or embedded binary data.
@@ -140,7 +153,10 @@ export function createChatOcrProvider(config: ApiConfig, dependencies: {
         const extension = ({ "application/pdf": "pdf", "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" } as Record<string, string>)[mimeType];
         form.set("file", new Blob([new Uint8Array(bytes)], { type: mimeType }), `attachment.${extension}`);
         form.set("model", config.paddleOcrModel);
-        form.set("optionalPayload", JSON.stringify({ useDocOrientationClassify: false, useDocUnwarping: false, useChartRecognition: false }));
+        // Screenshots and resumes are upright and flat: skip the slow correction steps.
+        form.set("optionalPayload", JSON.stringify(config.paddleOcrModel.startsWith("PaddleOCR-VL")
+          ? { useDocOrientationClassify: false, useDocUnwarping: false, useChartRecognition: false }
+          : { useDocOrientationClassify: false, useDocUnwarping: false, useTextlineOrientation: false }));
         const submitted = dataRecord(JSON.parse(await boundedText(await fetchImpl(jobUrl, {
           method: "POST", headers, body: form, signal, redirect: "error"
         }), 128_000)));
@@ -162,7 +178,7 @@ export function createChatOcrProvider(config: ApiConfig, dependencies: {
           }
           if (data.state === "failed") throw new OcrError(422, "OCR_FAILED", "文字识别失败，请确认文件完整、未加密且文字清晰。");
           if (data.state !== "pending" && data.state !== "running") throw upstreamError();
-          await delay(dependencies.pollMs ?? 3000, undefined, { signal });
+          await delay(dependencies.pollMs ?? 1000, undefined, { signal });
         }
       } catch (error) {
         if (parentSignal.aborted) throw new OcrError(499, "OCR_CANCELLED", "已取消文字识别。");
