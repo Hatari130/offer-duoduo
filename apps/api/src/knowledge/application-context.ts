@@ -1,5 +1,5 @@
 import type { JobApplication } from "@offerflow/domain";
-import { STAGE_LABELS } from "@offerflow/domain";
+import { applicationStageLabel, selectableStage } from "@offerflow/domain";
 import type { KnowledgeEntry } from "./service.ts";
 
 function dateLabel(value?: string): string | undefined {
@@ -21,10 +21,11 @@ export function applicationKnowledgeContent(application: JobApplication): string
     application.department && `部门：${application.department}`,
     application.city && `城市：${application.city}`,
     application.jobType && `岗位类型：${application.jobType}`,
-    `投递阶段：${STAGE_LABELS[application.stage]}`,
+    `投递阶段：${applicationStageLabel(application)}`,
+    selectableStage(application.stage) === "assessment" && `测评：${application.assessmentCompleted ? "已完成" : "未完成"}`,
     application.externalStage && `招聘网站状态：${application.externalStage}`,
     application.appliedAt && `投递时间：${dateLabel(application.appliedAt)}`,
-    application.deadline && `截止时间：${dateLabel(application.deadline)}`,
+    application.deadline && `测评截止：${dateLabel(application.deadline)}`,
     application.nextAction && `下一步：${application.nextAction}`,
     application.summary && `岗位摘要：${application.summary}`,
     application.responsibilities.length && `岗位职责：\n${application.responsibilities.join("\n")}`,

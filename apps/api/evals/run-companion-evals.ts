@@ -67,8 +67,16 @@ function applicationsFor(feed: RecruitmentOpportunity[]): JobApplication[] {
     .filter((company) => !NAMED_COMPANIES.some((named) => company.includes(named)))
     .slice(0, 50);
   const companies = [...NAMED_COMPANIES, ...productCompanies];
-  return Array.from({ length: 93 }, (_, index) => application(index, companies[index % companies.length],
-    index === 4 ? { stage: "assessment", deadline: "2026-10-09", nextAction: "完成测评" } : {}));
+  // Three assessments, as in the user's real tracker: H3C and 汇川 already done, only 满帮 still to take.
+  const assessments: Record<string, Partial<JobApplication>> = {
+    H3C: { stage: "assessment", assessmentType: "written_test", deadline: "2026-10-09", assessmentCompleted: true },
+    满帮集团: { stage: "assessment", assessmentType: "written_test", deadline: "2026-10-09", nextAction: "完成测评" },
+    汇川技术: { stage: "assessment", deadline: "2026-10-11", assessmentCompleted: true }
+  };
+  return Array.from({ length: 93 }, (_, index) => {
+    const company = companies[index % companies.length];
+    return application(index, company, index < companies.length ? assessments[company] ?? {} : {});
+  });
 }
 
 // ---------- running a conversation ----------
@@ -98,6 +106,10 @@ const CLAIMED_ACTION = /(?:已经?|这就|正在)(?:帮你)?(?:提交|发起|触
 function common(turn: TeamTurnResult, applications: JobApplication[]) {
   const calls = toolCalls(turn);
   const searched = calls.some((call) => call.name === "search_opportunities");
+  // A sentence pushing a deadline for H3C or 汇川, whose assessments are already done.
+  const chasesDoneAssessment = turn.reply.split(/[。！？\n]/).some((sentence) =>
+    /H3C|汇川/.test(sentence) && /截止|别拖|抓紧|赶紧|尽快|明天|今天|到期/.test(sentence)
+      && !/完成|做完|交完|不用管|不用赶|不用再/.test(sentence));
   // "覆盖 17 家公司" when the records cover 65: a count the model made up instead of reading.
   const statedCompanies = turn.reply.match(/(?:覆盖|涉及|投了)\s*(\d+)\s*家/)?.[1];
   const companyCount = new Set(applications.map((item) => item.company)).size;
@@ -105,6 +117,7 @@ function common(turn: TeamTurnResult, applications: JobApplication[]) {
     tools: calls.map((call) => call.name),
     usedTools: calls.length > 0,
     claimedActionWithoutTool: !searched && CLAIMED_ACTION.test(turn.reply),
+    chasesDoneAssessment,
     wrongAppliedCompanyCount: statedCompanies !== undefined && Number(statedCompanies) !== companyCount ? Number(statedCompanies) : null,
     replyChars: turn.reply.length
   };
@@ -143,7 +156,8 @@ const SCENARIOS: Scenario[] = [
     check(turn) {
       return {
         readAllApplications: toolCalls(turn).some((call) => call.name === "list_applications" && call.result.total === 93),
-        mentionsDueTomorrow: /H3C/.test(turn.reply)
+        // 满帮 is the one assessment still to take, due tomorrow.
+        mentionsDueTomorrow: /满帮/.test(turn.reply)
       };
     }
   },

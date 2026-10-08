@@ -186,6 +186,29 @@ export interface JobApplication {
   identityAliases?: string[];
 }
 
+/** A stage with its detail, e.g. "测评-笔试测评", "面试-一面", "已结束-简历挂". */
+export function stageLabel(
+  stage: ApplicationStage,
+  closedReason?: ClosedStageReason,
+  interviewRound?: InterviewRound,
+  assessmentType?: AssessmentType
+): string {
+  if (stage === "closed" && closedReason) return `${STAGE_LABELS.closed}-${CLOSED_STAGE_REASON_LABELS[closedReason]}`;
+  if (stage === "interview" && interviewRound) return `${STAGE_LABELS.interview}-${INTERVIEW_ROUND_LABELS[interviewRound]}`;
+  if (stage === "assessment" && assessmentType) return `${STAGE_LABELS.assessment}-${ASSESSMENT_TYPE_LABELS[assessmentType]}`;
+  return STAGE_LABELS[stage];
+}
+
+/** The stage of an application as the tracker shows it. */
+export function applicationStageLabel(application: JobApplication): string {
+  return stageLabel(
+    selectableStage(application.stage),
+    application.closedReason,
+    application.interviewRound,
+    application.assessmentType
+  );
+}
+
 export interface ExtractedJob {
   company: string;
   position: string;

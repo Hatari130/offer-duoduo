@@ -3,7 +3,7 @@
  * checking that written text only uses facts the user actually gave.
  */
 import type { JobApplication, PersonalProfile, TailorJobContext } from "@offerflow/domain";
-import { STAGE_LABELS } from "@offerflow/domain";
+import { applicationStageLabel, selectableStage, STAGE_LABELS } from "@offerflow/domain";
 import { findUnsupportedClaims, withoutJobPostings, type FabricationFinding } from "./fabrication.ts";
 import type { AgentTool } from "./loop.ts";
 
@@ -76,13 +76,22 @@ export function getJobTool(job: TailorJobContext | undefined): AgentTool {
   };
 }
 
+/** An assessment the user has not marked done in the tracker. */
+function assessmentToDo(application: JobApplication): boolean {
+  return selectableStage(application.stage) === "assessment" && !application.assessmentCompleted;
+}
+
+/** One application as the agents read it: the same facts the tracker shows, including what is already done. */
 export function applicationSummary(application: JobApplication) {
   return {
     id: application.id,
     company: application.company,
     position: application.position,
     city: application.city,
-    stage: STAGE_LABELS[application.stage],
+    stage: applicationStageLabel(application),
+    // Without this the agent only sees "测评, 截止明天" and keeps chasing tests the user already took.
+    ...(selectableStage(application.stage) === "assessment" ? { assessmentDone: Boolean(application.assessmentCompleted) } : {}),
+    ...(application.externalStage ? { siteStatus: application.externalStage } : {}),
     appliedAt: application.appliedAt,
     deadline: application.deadline,
     nextAction: application.nextAction,
@@ -93,7 +102,7 @@ export function applicationSummary(application: JobApplication) {
 export function listApplicationsTool(applications: JobApplication[]): AgentTool {
   return {
     name: "list_applications",
-    description: "读取用户的全部投递记录：公司、岗位、城市、阶段、投递时间、截止时间、下一步、最近更新时间。总数、公司数和各阶段数量已经算好，直接引用，不要自己数。",
+    description: "读取用户的全部投递记录：公司、岗位、城市、阶段（含测评类型、面试轮次、结束原因）、投递时间、deadline（测评截止时间）、assessmentDone（测评是否已完成，已完成的截止时间不再需要赶）、siteStatus（招聘网站上显示的状态）、下一步、最近更新时间。总数、公司数、各阶段数量和还没完成的测评数已经算好，直接引用，不要自己数。",
     parameters: EMPTY_OBJECT_SCHEMA,
     run: () => {
       if (!applications.length) {
@@ -109,6 +118,7 @@ export function listApplicationsTool(applications: JobApplication[]): AgentTool 
         total: applications.length,
         companyCount: new Set(applications.map((application) => application.company.trim())).size,
         stageCounts,
+        assessmentsToDo: applications.filter(assessmentToDo).length,
         applications: applications.map(applicationSummary)
       };
     }

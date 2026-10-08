@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import type { ApplicationSyncItem } from "@offerflow/contracts";
 import {
+  applicationStageLabel,
+  stageLabel,
   ASSESSMENT_TYPES,
   ASSESSMENT_TYPE_LABELS,
   CLOSED_STAGE_REASONS,
@@ -89,26 +91,8 @@ function stageTone(stage: ApplicationStage): string {
   return "interested";
 }
 
-function selectedStageLabel(
-  stage: ApplicationStage,
-  closedReason?: ClosedStageReason,
-  interviewRound?: InterviewRound,
-  assessmentType?: AssessmentType
-): string {
-  if (stage === "closed" && closedReason) return `${STAGE_LABELS.closed}-${CLOSED_STAGE_REASON_LABELS[closedReason]}`;
-  if (stage === "interview" && interviewRound) return `${STAGE_LABELS.interview}-${INTERVIEW_ROUND_LABELS[interviewRound]}`;
-  if (stage === "assessment" && assessmentType) return `${STAGE_LABELS.assessment}-${ASSESSMENT_TYPE_LABELS[assessmentType]}`;
-  return STAGE_LABELS[stage];
-}
-
-function applicationStageLabel(application: JobApplication): string {
-  return selectedStageLabel(
-    selectableStage(application.stage),
-    application.closedReason,
-    application.interviewRound,
-    application.assessmentType
-  );
-}
+// Shared with the agents, so the chat describes a stage exactly as this page shows it.
+const selectedStageLabel = stageLabel;
 
 function applicationRecruitmentType(application: JobApplication): RecruitmentType | undefined {
   return application.recruitmentType || inferRecruitmentType(

@@ -246,3 +246,23 @@ test("company names match on the company, not on any shared characters", async (
   assert.equal(sameCompany("京东", "京东方"), false);
   assert.equal(sameCompany("腾讯", "腾讯音乐"), false);
 });
+
+test("the agents see which assessments are done, so they do not chase a finished test", async () => {
+  const { listApplicationsTool } = await import("../src/agent/material-tools.ts");
+  const record = (id, company, extra) => ({ id, company, position: "产品经理", stage: "assessment", deadline: "2026-10-09", responsibilities: [], requirements: [], updatedAt: "2026-10-01T00:00:00.000Z", ...extra });
+  const result = listApplicationsTool([
+    record("a", "H3C", { assessmentCompleted: true, assessmentType: "written_test" }),
+    record("b", "满帮集团", {}),
+    record("c", "汇川技术", { assessmentCompleted: true, externalStage: "测评已完成" }),
+    { ...record("d", "小米", {}), stage: "closed", closedReason: "resume_rejected" }
+  ]).run({});
+
+  assert.equal(result.assessmentsToDo, 1);
+  assert.deepEqual(result.applications.map((item) => [item.company, item.stage, item.assessmentDone]), [
+    ["H3C", "测评-笔试测评", true],
+    ["满帮集团", "测评", false],
+    ["汇川技术", "测评", true],
+    ["小米", "已结束-简历挂", undefined]
+  ]);
+  assert.equal(result.applications[2].siteStatus, "测评已完成");
+});

@@ -23,7 +23,9 @@ test("gives the model one bounded companion identity", () => {
   const prompt = companionSystemPrompt();
   assert.match(prompt, /AI 求职伙伴“小鲤”/);
   assert.match(prompt, /温暖但不敷衍，直接但不催逼/);
-  assert.match(prompt, /只承接当前请求中实际提供的材料和真实历史/);
+  assert.match(prompt, /只依据对话历史和工具读到的数据/);
+  // Wording left over from the retrieval chat, where material was pasted into the prompt.
+  assert.doesNotMatch(prompt, /知识资料|本轮材料|最多问两个/);
   assert.match(prompt, /你不是人类/);
 });
 
