@@ -7,7 +7,7 @@
  */
 import type { ChatAgentExpertNote, ChatOpportunityResults, JobApplication, PersonalProfile, RecruitmentOpportunity } from "@offerflow/domain";
 import { createConsultExpertTool, type ExpertSkill } from "./experts.ts";
-import { applicationSummary, getResumeTool, listApplicationsTool, resumeEntries } from "./material-tools.ts";
+import { applicationSummary, getResumeTool, listApplicationsTool, resumeEntries, sameCompany } from "./material-tools.ts";
 import type { AgentTool, ModelClient } from "./loop.ts";
 import { expertPanelRules } from "./resume-coach.ts";
 
@@ -70,7 +70,7 @@ export function createJobRadarSession(options: {
 }) {
   const appliedCompanies = options.applications.map((application) => application.company.trim()).filter(Boolean);
   const applied = (item: RecruitmentOpportunity) =>
-    appliedCompanies.some((company) => item.company.includes(company) || company.includes(item.company));
+    appliedCompanies.some((company) => sameCompany(company, item.company));
   const shownBefore = new Set(options.shownBefore ?? []);
   // Flags the model can see on every result, so it does not have to remember to cross-check.
   const flagged = (item: RecruitmentOpportunity) => compact(item, {
@@ -87,12 +87,12 @@ export function createJobRadarSession(options: {
   const tools: AgentTool[] = [
     {
       name: "search_opportunities",
-      description: "在 JobKoI 岗位库里检索还能投的校招岗位。query 用关键词写清条件，例如“上海 产品经理 2027届 秋招”。用户问“还有哪些公司没投”“我没投过的”时，把 exclude_applied 设为 true：系统会在全部匹配结果里去掉用户投过的公司，并按公司汇总。可以根据结果调整条件再查，每轮最多查 4 次。",
+      description: "在 JobKoI 岗位库里检索还能投的校招岗位，query 写方向、城市、届别、公司、批次等关键词，例如“上海 产品经理 2027届 秋招”。每轮最多查 4 次。",
       parameters: {
         type: "object",
         properties: {
           query: { type: "string", description: "检索条件：方向、城市、届别、公司、批次等关键词" },
-          exclude_applied: { type: "boolean", description: "为 true 时排除用户已经投过的公司，并返回按公司汇总的结果" }
+          exclude_applied: { type: "boolean", description: "为 true 时在全部匹配结果里去掉用户投过的公司，并返回按公司汇总的数量和名单" }
         },
         required: ["query"],
         additionalProperties: false
@@ -126,11 +126,40 @@ export function createJobRadarSession(options: {
           companyCount: new Set(unapplied.map((item) => item.company)).size,
           companies,
           items: unapplied.slice(0, ITEMS_PER_SEARCH).map(flagged),
-          // Without a direction the answer is "most of the feed", which helps nobody; the
-          // direction is usually already in the user's applications, so search again rather than ask.
-          ...(results.isBroadSearch ? {
-            hint: "这次检索没有岗位方向条件，结果几乎是整个岗位库。先调用 list_applications 看用户投得最多的岗位方向，把方向（如“产品经理”）和届别写进 query 再查一次，不要反过来问用户方向。"
-          } : {})
+          // A fact about the result, so the model can tell it searched too broadly.
+          ...(results.isBroadSearch ? { note: "这次检索没有识别出岗位方向、城市或届别条件，结果接近整个岗位库" } : {})
+        };
+      }
+    },
+    {
+      name: "lookup_companies",
+      description: "查一批公司（最多 20 家）在 JobKoI 岗位库里有没有还能投的岗位，以及用户是否投过。返回每家公司的在招岗位数、方向和城市；没有收录的公司 openings 为 0，只说明岗位库里没有，不代表这家公司不招。查到的岗位 id 可以直接用 show_opportunities 展示。",
+      parameters: {
+        type: "object",
+        properties: { companies: { type: "array", items: { type: "string" }, description: "公司名，例如 [\"腾讯\", \"阿里巴巴\"]" } },
+        required: ["companies"],
+        additionalProperties: false
+      },
+      async run(args) {
+        const names = (Array.isArray(args.companies) ? args.companies.map(String) : []).map((name) => name.trim()).filter(Boolean).slice(0, 20);
+        if (!names.length) return { error: "companies 不能为空" };
+        return {
+          companies: await Promise.all(names.map(async (name) => {
+            const results = await options.search(name, { limit: WHOLE_FEED });
+            // The search falls back to the whole feed when it does not recognise the name, so match the company here.
+            const openings = results.items.filter((item) => sameCompany(item.company, name));
+            for (const item of openings) seen.set(item.id, item);
+            return {
+              company: name,
+              applied: appliedCompanies.some((company) => sameCompany(company, name)),
+              openings: openings.length,
+              ...(openings.length ? {
+                roles: [...new Set(openings.flatMap((item) => item.roleTags))].slice(0, 5),
+                cities: [...new Set(openings.flatMap((item) => item.cities))].slice(0, 4),
+                ids: openings.slice(0, 3).map((item) => item.id)
+              } : {})
+            };
+          }))
         };
       }
     },
@@ -193,7 +222,7 @@ export function jobRadarSystemPrompt(experts: ExpertSkill[]): string {
     "3. 逐条核对结果：届别、城市不符合用户硬性条件的直接排除。用户要求 2026 届，就不能推荐只招 2027 届的岗位。",
     "   结果里标了 applied 的是用户已经投过的公司，除非用户要求，否则不推荐；用户说“换一组”“再来几个”时，不要再选标了 shownBefore 的岗位。",
     "4. 用 show_opportunities 选出最值得投的岗位（最多 6 个）展示成卡片。卡片会单独显示，你的回复里不要再逐条罗列公司和链接，只用几句话说明为什么推荐这几个、各自适合他的哪一点。",
-    "5. 需要判断和他简历的匹配度时，调用 get_resume。用户问“还有哪些公司没投”时，用 exclude_applied: true 检索，按返回的 companies 回答：一共多少家没投、排除了多少家已投、最值得先看的几家，再从中挑卡片。不要自己去数或比对已投记录。",
+    "5. 需要判断和他简历的匹配度时，调用 get_resume。你对行业和公司的了解可以用来扩展思路（比如推荐同类公司），但哪家公司现在在招，以岗位库为准，用 lookup_companies 核对。",
     ...expertPanelRules(experts),
     "",
     "硬规则：",

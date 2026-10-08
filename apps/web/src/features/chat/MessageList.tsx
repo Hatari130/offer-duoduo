@@ -67,7 +67,7 @@ const pendingStages = {
     {
       label: "核对链接",
       headline: "小鲤正在核对链接和截止时间",
-      support: "很快给你整理成最多 5 张岗位卡片"
+      support: "很快给你整理成岗位卡片"
     }
   ],
   answer: [
@@ -219,7 +219,7 @@ export function MessageList({
                   message.role === "assistant" ? (
                     <Markdown externalLinks>{message.content}</Markdown>
                   ) : message.content
-                ) : message.status === "streaming" ? <ThinkingIndicator /> : null}
+                ) : message.status === "streaming" ? <ThinkingIndicator afterSteps={message.agentRun?.steps.length ?? 0} /> : null}
               </div>
 
               {message.opportunityResults && (
@@ -364,7 +364,8 @@ function displayDate(value?: string): string | undefined {
 
 function OpportunityResultCards({ results }: { results: ChatOpportunityResults }) {
   const titleId = useId();
-  const items = results.items.slice(0, 5);
+  // The agents pick at most 6 cards (show_opportunities); show every one they picked.
+  const items = results.items.slice(0, 6);
   if (!items.length) return null;
 
   return (
@@ -474,10 +475,28 @@ function CitationList({ citations }: { citations: KnowledgeCitation[] }) {
   );
 }
 
-function ThinkingIndicator() {
+/**
+ * Shown while the agent works with nothing to show yet. A thinking model can take
+ * half a minute, so it says what is happening and counts the seconds since the last
+ * step: a long think should not look frozen.
+ */
+function ThinkingIndicator({ afterSteps }: { afterSteps: number }) {
+  const [seconds, setSeconds] = useState(0);
+  useEffect(() => {
+    setSeconds(0);
+    const started = Date.now();
+    const timer = window.setInterval(() => setSeconds(Math.floor((Date.now() - started) / 1000)), 1000);
+    return () => window.clearInterval(timer);
+  }, [afterSteps]);
+  const label = afterSteps ? "正在思考下一步" : "正在思考";
   return (
-    <span className="thinking-indicator" aria-label="小鲤正在整理回答">
-      <i /><i /><i />
+    <span className="thinking-indicator" role="status">
+      <i aria-hidden="true" /><i aria-hidden="true" /><i aria-hidden="true" />
+      <span className="thinking-indicator__label">
+        {label}
+        {/* The count is for sighted users; a screen reader would announce it every second. */}
+        {seconds >= 3 && <span aria-hidden="true"> · {seconds} 秒</span>}
+      </span>
     </span>
   );
 }

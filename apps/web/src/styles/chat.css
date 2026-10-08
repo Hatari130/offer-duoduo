@@ -1246,6 +1246,14 @@
   opacity: 0.55;
 }
 
+.thinking-indicator__label {
+  margin-inline-start: 0.35rem;
+  color: var(--of-text-muted);
+  font-size: 0.8125rem;
+  /* Keeps the label from shifting as the seconds tick. */
+  font-variant-numeric: tabular-nums;
+}
+
 .citation-list { margin-block-start: 1.2rem; }
 
 .citation-list > span {

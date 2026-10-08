@@ -32,8 +32,9 @@ import { preloadMarkdown } from "../features/chat/Markdown";
 import { TodayBrief, type BriefAction } from "../features/chat/TodayBrief";
 import { chatPendingMode, type ChatPendingMode } from "../features/chat/pendingMode";
 
-function withAgentRun(message: ChatMessage, team: ChatAgentName, update: (run: ChatAgentRun) => ChatAgentRun): ChatMessage {
-  const run = message.agentRun ?? { agent: team, steps: [], rewrites: [], trace: [] };
+/** Applies a streamed agent event to a message. With no team invited, the default agent is answering. */
+function withAgentRun(message: ChatMessage, team: ChatAgentName | undefined, update: (run: ChatAgentRun) => ChatAgentRun): ChatMessage {
+  const run = message.agentRun ?? { agent: team ?? COMPANION_AGENT, steps: [], rewrites: [], trace: [] };
   return { ...message, agentRun: update(run) };
 }
 
@@ -304,13 +305,13 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       } else if (event.type === "agent.step") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId
-            ? withAgentRun(message, team ?? "resume_coach", (run) => ({ ...run, steps: [...run.steps, event.step] }))
+            ? withAgentRun(message, team, (run) => ({ ...run, steps: [...run.steps, event.step] }))
             : message
         ));
       } else if (event.type === "agent.rewrite") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId
-            ? withAgentRun(message, team ?? "resume_coach", (run) => ({
+            ? withAgentRun(message, team, (run) => ({
               ...run,
               rewrites: [...run.rewrites.filter((item) => item.entryId !== event.rewrite.entryId), event.rewrite]
             }))
@@ -319,7 +320,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
       } else if (event.type === "agent.expert") {
         setMessages((current) => current.map((message) =>
           message.id === event.messageId
-            ? withAgentRun(message, team ?? "resume_coach", (run) => ({ ...run, notes: [...(run.notes ?? []), event.note] }))
+            ? withAgentRun(message, team, (run) => ({ ...run, notes: [...(run.notes ?? []), event.note] }))
             : message
         ));
       } else if (event.type === "message.completed") {

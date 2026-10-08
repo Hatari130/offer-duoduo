@@ -7,6 +7,23 @@ import { STAGE_LABELS } from "@offerflow/domain";
 import { findUnsupportedClaims, withoutJobPostings, type FabricationFinding } from "./fabrication.ts";
 import type { AgentTool } from "./loop.ts";
 
+// Words that do not tell two companies apart: "大疆" and "大疆创新" are one company.
+const GENERIC_COMPANY_SUFFIX = /(?:股份有限公司|有限责任公司|有限公司|股份|集团|控股|公司|科技|技术|创新|智能|信息|网络|电子|汽车|出行)+$/;
+
+function companyKey(name: string): string {
+  return name.toLowerCase().replace(/[（(][^)）]*[)）]/g, "").replace(/\s+/g, "").replace(/^中国/, "").replace(GENERIC_COMPANY_SUFFIX, "");
+}
+
+/**
+ * Whether two names refer to the same company. Containment is not enough:
+ * "京东" is inside "京东方" and "腾讯" inside "腾讯音乐", and they are different companies.
+ * Aliases in other scripts ("H3C" / "新华三集团") are not recognised.
+ */
+export function sameCompany(left: string, right: string): boolean {
+  const key = companyKey(left);
+  return Boolean(key) && key === companyKey(right);
+}
+
 /** Everything written text may draw on: the resume, and what the user said about themselves. */
 export function userEvidence(entries: ResumeEntry[], statements: string[]): string[] {
   return [...entries.map((entry) => `${entry.title}\n${entry.text}`), ...statements.map(withoutJobPostings)];

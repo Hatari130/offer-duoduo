@@ -210,3 +210,39 @@ test("another agent's tool calls are not replayed, only what it said", () => {
   assert.deepEqual(forResumeTeam.filter((message) => message.role === "tool").map((message) => message.tool_call_id), ["r1"]);
   assert.ok(forResumeTeam.some((message) => message.role === "assistant" && message.content === "companion 的回复"));
 });
+
+test("looking up companies reports openings only for the named company, and lets them be shown as cards", async () => {
+  const item = (id, company) => ({ id, company, title: "2027届", graduationYears: ["2027届"], roleTags: ["产品经理"], cities: ["深圳"], officialUrl: "https://example.com" });
+  const feed = [item("tx-1", "腾讯"), item("tx-2", "腾讯音乐"), item("mt-1", "美团"), item("dj-1", "大疆创新")];
+  const session = createJobRadarSession({
+    // Like the real search: an unrecognised name falls back to the whole feed.
+    search: async (query) => {
+      const hits = feed.filter((opportunity) => opportunity.company.includes(query));
+      const items = hits.length ? hits : feed;
+      return { query, total: items.length, items, sourceAvailable: true, isBroadSearch: !hits.length };
+    },
+    applications: [{ id: "app-1", company: "大疆", position: "产品经理", stage: "applied" }],
+    userStatements: () => []
+  });
+  const lookup = session.tools.find((tool) => tool.name === "lookup_companies");
+  const { companies } = await lookup.run({ companies: ["腾讯", "网易", "大疆"] });
+
+  assert.deepEqual(companies.map((company) => [company.company, company.openings, company.applied]), [
+    ["腾讯", 1, false], // 腾讯音乐 is another company
+    ["网易", 0, false],
+    ["大疆", 1, true] // listed as 大疆创新
+  ]);
+  assert.deepEqual(session.tools.find((tool) => tool.name === "show_opportunities").run({ ids: ["tx-1"] }), { shown: 1 });
+});
+
+test("company names match on the company, not on any shared characters", async () => {
+  const { sameCompany } = await import("../src/agent/material-tools.ts");
+  assert.equal(sameCompany("大疆", "大疆创新"), true);
+  assert.equal(sameCompany("小鹏汽车", "小鹏"), true);
+  assert.equal(sameCompany("满帮集团", "满帮"), true);
+  assert.equal(sameCompany("TCL", "TCL科技集团股份有限公司"), true);
+  assert.equal(sameCompany("滴滴", "滴滴出行"), true);
+  // Containment is not identity.
+  assert.equal(sameCompany("京东", "京东方"), false);
+  assert.equal(sameCompany("腾讯", "腾讯音乐"), false);
+});

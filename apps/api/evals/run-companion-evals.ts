@@ -23,6 +23,7 @@ import {
 } from "@offerflow/domain";
 import { loadApiConfig } from "../src/config.ts";
 import type { AgentMessage } from "../src/agent/loop.ts";
+import { sameCompany } from "../src/agent/material-tools.ts";
 import { createOpenAiCompatibleModel } from "../src/agent/model.ts";
 import { runTeamTurn, type TeamMaterials, type TeamTurnResult } from "../src/agent/teams.ts";
 import { fetchCampusHiringSnapshot, searchOpportunitySnapshot } from "../src/opportunities/search.ts";
@@ -33,6 +34,7 @@ const arg = (name: string) => {
   return index > 0 ? process.argv[index + 1] : undefined;
 };
 const RUNS = Number(arg("--runs") || 3);
+const ONLY = arg("--only")?.split(",");
 const TODAY = "2026-10-08（星期四）";
 
 const config = loadApiConfig(process.env);
@@ -88,7 +90,7 @@ function toolCalls(turn: TeamTurnResult) {
 }
 
 const appliedTo = (company: string, applications: JobApplication[]) =>
-  applications.some((item) => company.includes(item.company) || item.company.includes(company));
+  applications.some((item) => sameCompany(item.company, company));
 
 // Saying a search happened, or results are on their way, when no search was made this turn.
 const CLAIMED_ACTION = /(?:已经?|这就|正在)(?:帮你)?(?:提交|发起|触发|去)?(?:了)?(?:检索|搜索|查询)|结果(?:马上|稍后|会|很快)(?:就)?(?:回来|返回|出来)/;
@@ -112,16 +114,24 @@ const SCENARIOS: Scenario[] = [
   {
     id: "unapplied-companies",
     prompt: "根据我现在的投递情况 告诉我有没有什么公司我还没投的",
+    // Outcomes only: how the model gets there (its own knowledge, the feed, or both) is its call.
     check(turn, { applications }) {
-      const calls = toolCalls(turn);
-      // The last such search is the one the answer is built on.
-      const excluded = calls.filter((call) => call.name === "search_opportunities" && call.args.exclude_applied === true).at(-1);
+      const looked = toolCalls(turn).filter((call) => call.name === "lookup_companies")
+        .flatMap((call) => (call.result.companies as Array<{ company: string; openings: number; applied: boolean }> | undefined) ?? []);
+      const named = (company: string) => turn.reply.includes(company);
+      const unlistedNamed = looked.filter((item) => !item.applied && item.openings === 0 && named(item.company)).map((item) => item.company);
       const cards = turn.opportunityResults?.items ?? [];
-      const companyCount = Number(excluded?.result.companyCount ?? NaN);
       return {
-        usedExcludeApplied: Boolean(excluded),
-        companyCount: Number.isFinite(companyCount) ? companyCount : null,
-        replyStatesCompanyCount: Number.isFinite(companyCount) && turn.reply.includes(String(companyCount)),
+        companiesFromKnowledge: looked.filter((item) => !item.applied).map((item) => item.company),
+        hiringInFeed: looked.filter((item) => !item.applied && item.openings > 0).map((item) => item.company),
+        // Companies the feed does not list may be named, but not as if they were hiring.
+        unlistedNamed,
+        unlistedLabeled: !unlistedNamed.length || /官网|未收录|没有收录|没收录|没查到|岗位库里没有|暂无/.test(turn.reply),
+        appliedRecommendedAgain: looked.filter((item) => item.applied && named(item.company) && !/投过|已投/.test(turn.reply)).map((item) => item.company),
+        // The fixture has 字节跳动、快手、小米 among the applications: saying big tech is untouched,
+        // without naming any of them, is false. ("腾讯、携程…你没投，而你投了字节" is fine.)
+        overclaimsNoBigTech: /大厂.{0,12}(?:一个没碰|一个都没|一家(?:都)?没投|全(?:都)?空|没碰过)/.test(turn.reply)
+          && !/字节|快手|小米/.test(turn.reply),
         cards: cards.length,
         cardsFromAppliedCompanies: cards.filter((item) => appliedTo(item.company, applications)).map((item) => item.company)
       };
@@ -160,9 +170,12 @@ const SCENARIOS: Scenario[] = [
     id: "one-word-follow-up",
     before: "根据我现在的投递情况 告诉我有没有什么公司我还没投的",
     prompt: "全国",
-    check(turn) {
-      const search = toolCalls(turn).find((call) => call.name === "search_opportunities");
-      return { searchedOnOneWord: Boolean(search), keptExcludeApplied: search?.args.exclude_applied === true };
+    check(turn, { applications }) {
+      const cards = turn.opportunityResults?.items ?? [];
+      return {
+        actedOnOneWord: toolCalls(turn).some((call) => call.name === "search_opportunities" || call.name === "lookup_companies"),
+        cardsFromAppliedCompanies: cards.filter((item) => appliedTo(item.company, applications)).map((item) => item.company)
+      };
     }
   }
 ];
@@ -178,7 +191,7 @@ async function main() {
   };
 
   const results: Array<Record<string, unknown>> = [];
-  for (const scenario of SCENARIOS) {
+  for (const scenario of SCENARIOS.filter((item) => !ONLY || ONLY.includes(item.id))) {
     for (let run = 0; run < RUNS; run++) {
       const started = Date.now();
       try {

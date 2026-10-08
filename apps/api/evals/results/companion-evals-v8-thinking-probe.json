@@ -1,0 +1,88 @@
+{
+  "model": "deepseek-flash",
+  "runsPerScenario": 1,
+  "feedSourceUpdatedAt": "2026-10-08T09:50:08+08:00",
+  "results": [
+    {
+      "scenario": "unapplied-companies",
+      "run": 0,
+      "seconds": 19.3,
+      "tools": [
+        "list_applications",
+        "get_resume",
+        "search_opportunities",
+        "search_opportunities",
+        "search_opportunities",
+        "search_opportunities",
+        "lookup_companies"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 573,
+      "companiesFromKnowledge": [
+        "腾讯",
+        "阿里巴巴",
+        "网易",
+        "拼多多",
+        "百度",
+        "滴滴",
+        "理想汽车",
+        "韶音科技",
+        "迅雷",
+        "剪映",
+        "光轮智能",
+        "深信服",
+        "佳都科技集团",
+        "曹操出行",
+        "Klook客路",
+        "庭宇科技",
+        "MetaApp",
+        "中远海运科技",
+        "今朝时代"
+      ],
+      "hiringInFeed": [
+        "腾讯",
+        "阿里巴巴",
+        "网易",
+        "拼多多",
+        "百度",
+        "滴滴",
+        "理想汽车",
+        "韶音科技",
+        "迅雷",
+        "剪映",
+        "光轮智能",
+        "深信服",
+        "佳都科技集团",
+        "曹操出行",
+        "Klook客路",
+        "庭宇科技",
+        "MetaApp",
+        "中远海运科技",
+        "今朝时代"
+      ],
+      "unlistedNamed": [],
+      "unlistedLabeled": true,
+      "appliedRecommendedAgain": [],
+      "cards": 12,
+      "cardsFromAppliedCompanies": [],
+      "reply": "盘完了：你投了 65 家公司、93 个岗位，全是产品/AI产品方向，集中在北京、深圳、广州。\n\n有个明显空缺——**大厂平台型产品岗**这块基本没碰。腾讯、百度、阿里、拼多多你都没投；其中真有产品岗可投的是腾讯（产品类）和拼多多（产品管培生，上海）。百度、阿里目前挂出来的只有研发和算法岗，不用凑。\n\n除开大厂，这几家和你投过的东西同赛道、值得补：\n\n- **剪映**：AI产品经理 / Agent产品经理，深圳、北京，跟你最对口的 AI PM\n- **韶音科技**：产品经理培训生、软件产品经理，深圳，和安克创新同一个消费电子赛道\n- **迅雷**：产品经理，深圳/北京/广州\n- **光轮智能**：技术产品经理、具身平台产品经理，北京\n- **理想汽车**：产品岗，北京 —— 你投了赛力斯和小鹏，理想还是空的\n- **今朝时代**：产品经理管培生，深圳\n\n再往后还有一串可以顺手扫的：滴滴（产品助理国际化，北京/深圳）、曹操出行（AI&ROBOX产品岗）、Klook客路（深圳）、庭宇科技（AI产品经理）、深信服（售前产品经理）、中远海运科技、佳都科技集团、MetaApp、红果短剧。\n\n提醒一句：**H3C 的测评明天 10-09 截止**，今天先把它做完，这个比新投更急。\n\n要不要我按\"最可能进面\"的顺序，把这批新岗位排个投递优先级？"
+    },
+    {
+      "scenario": "my-applications",
+      "run": 0,
+      "seconds": 7.5,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 409,
+      "readAllApplications": true,
+      "mentionsDueTomorrow": true,
+      "reply": "你一共 93 条投递记录，覆盖 65 家公司（有 28 家投了两个岗，比如字节、快手、小米、TCL 都是一条北京、一条广深方向）。阶段上 92 条停在“已投递”，只有 1 条进了测评。\n\n**唯一真正到期的是这一个：**\n- **H3C｜产品经理（北京）**——测评截止 **2026-10-09，就是明天**，记录里标的下一步就是“完成测评”。今天最好先把它做掉。\n\n其余 92 条都没登记截止时间和下一步，最近更新时间统一停在 10-01，等于投完之后一周没有跟进动作。这不代表没截止，只说明系统里没有这个信息，具体还得看各家官网/邮箱通知。\n\n另外提醒一句：同一家公司“一公司两岗”在部分企业会被判重复投递，尤其字节、快手这类有投递次数限制的，建议你确认下两个岗位是不是都还生效。\n\n**下一步（今天）：**先做 H3C 测评，做完回来告诉我，我帮你把剩下 64 家还在招的岗位捞一遍，看有没有漏投或已经关了的。"
+    }
+  ]
+}

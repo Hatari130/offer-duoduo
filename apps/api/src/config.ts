@@ -34,6 +34,8 @@ export interface ApiConfig {
   aiApiKey?: string;
   aiBaseUrl: string;
   aiModel: string;
+  /** DeepSeek thinking effort; unset leaves the API default ("high"). */
+  aiReasoningEffort?: "low" | "high" | "max";
   paddleOcrToken?: string;
   paddleOcrJobUrl: string;
   paddleOcrModel: string;
@@ -103,7 +105,10 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
     opportunityFetchTimeoutSeconds: positiveNumber(env.OPPORTUNITY_FETCH_TIMEOUT_SECONDS, 120),
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,
     aiBaseUrl: (env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
-    aiModel: env.AI_MODEL || "deepseek-chat",
+    // "deepseek-chat" is an undocumented alias for deepseek-flash with thinking off; production
+    // runs deepseek-flash with thinking on, so the default matches it and evals test the same model.
+    aiModel: env.AI_MODEL || "deepseek-flash",
+    aiReasoningEffort: (["low", "high", "max"] as const).find((effort) => effort === env.AI_REASONING_EFFORT?.trim()),
     paddleOcrToken: env.PADDLE_OCR_TOKEN?.trim() || undefined,
     paddleOcrJobUrl: env.PADDLE_OCR_JOB_URL?.trim() || "https://paddleocr.aistudio-app.com/api/v2/ocr/jobs",
     paddleOcrModel: env.PADDLE_OCR_MODEL?.trim() || "PP-OCRv5",

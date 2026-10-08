@@ -14,6 +14,8 @@ export interface ToolCall {
 export interface AgentMessage {
   role: "system" | "user" | "assistant" | "tool";
   content: string | null;
+  /** A thinking model's reasoning; sent back to the API with the rest of the history, never shown. */
+  reasoning_content?: string;
   tool_calls?: ToolCall[];
   tool_call_id?: string;
 }
@@ -66,10 +68,6 @@ export async function runAgentTurn(options: {
   const { model, tools, messages, onEvent, signal } = options;
   const maxSteps = options.maxSteps ?? 8;
   const byName = new Map(tools.map((tool) => [tool.name, tool]));
-  // Text written together with a call that only shows something (e.g. the summary
-  // written with the call that shows job cards) is part of the answer.
-  let kept = "";
-  const withKept = (text: string) => [kept, text].filter(Boolean).join("\n\n");
 
   for (let step = 1; step <= maxSteps; step++) {
     signal?.throwIfAborted();
@@ -86,21 +84,17 @@ export async function runAgentTurn(options: {
     messages.push(message);
 
     if (!message.tool_calls?.length) {
-      const reply = withKept(message.content?.trim() || "");
+      const reply = message.content?.trim() || "";
       onEvent?.({ type: "reply", content: reply });
       return { reply, steps: step, stoppedByStepLimit: false };
     }
 
+    // An answer written together with a call that only shows something (job cards)
+    // is the final answer: asking the model again would make it answer twice.
     const text = message.content?.trim() || "";
-    const onlyPresents = message.tool_calls.every((call) => byName.get(call.function.name)?.presents);
-    if (text && onlyPresents) {
-      kept = withKept(text);
-      // Keeps what was streamed and separates it from the text that follows.
-      if (streamedText) options.onText?.("\n\n");
-    } else if (streamedText) {
-      // A preamble ("我先看看") streamed before fetching data is not the answer.
-      options.onTextReset?.();
-    }
+    const answersWithDisplay = Boolean(text) && message.tool_calls.every((call) => byName.get(call.function.name)?.presents);
+    // A preamble ("我先看看") streamed before fetching data is not the answer.
+    if (streamedText && !answersWithDisplay) options.onTextReset?.();
 
     // Calls made in one reply are independent, so they run in parallel (e.g. several experts at once).
     // Results are appended in the model's original order.
@@ -124,11 +118,22 @@ export async function runAgentTurn(options: {
     for (const { call, result } of results) {
       messages.push({ role: "tool", tool_call_id: call.id, content: JSON.stringify(result) });
     }
+
+    if (answersWithDisplay) {
+      const failed = results.some(({ result }) => Boolean(result && typeof result === "object" && "error" in result));
+      if (!failed) {
+        // Closes the turn in the history so the next turn starts after an answer, not a tool result.
+        messages.push({ role: "assistant", content: text });
+        onEvent?.({ type: "reply", content: text });
+        return { reply: text, steps: step, stoppedByStepLimit: false };
+      }
+      // The display failed, so what was written about it is not true: withdraw it and let the model fix the call.
+      if (streamedText) options.onTextReset?.();
+    }
   }
 
-  const notice = "这一轮步骤太多，我先停在这里。你可以告诉我下一步想先做什么。";
-  messages.push({ role: "assistant", content: notice });
-  const reply = withKept(notice);
+  const reply = "这一轮步骤太多，我先停在这里。你可以告诉我下一步想先做什么。";
+  messages.push({ role: "assistant", content: reply });
   onEvent?.({ type: "reply", content: reply });
   return { reply, steps: maxSteps, stoppedByStepLimit: true };
 }
