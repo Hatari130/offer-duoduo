@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 import {
   normalizeCampusHiringFeed,
   opportunityStatus,
-  type ChatMessage,
   type ChatOpportunityResults,
   type OpportunityFeedSnapshot,
   type RecruitmentOpportunity
@@ -48,13 +47,6 @@ interface OpportunityFilters {
     end: number;
   };
 }
-
-export interface OpportunitySearchResolution {
-  prompt: string;
-  contextPrompt?: string;
-}
-
-type OpportunitySearchHistoryMessage = Pick<ChatMessage, "role" | "content" | "opportunityResults">;
 
 const SHANGHAI_OFFSET_MS = 8 * 60 * 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -186,72 +178,14 @@ function relevance(opportunity: RecruitmentOpportunity, filters: OpportunityFilt
   return score;
 }
 
-export function isOpportunitySearchPrompt(prompt: string): boolean {
-  const value = prompt.trim();
-  if (!value) return false;
-  const asksAboutOwnApplications = /(?:我的|我已|我投|投过|投了).*(?:投递|申请|岗位|职位).*(?:记录|进度|状态|结果)|(?:投递|申请)(?:记录|进度|状态)/.test(value);
-  if (asksAboutOwnApplications) return false;
-  const opportunityNoun = /岗位|职位|招聘(?:信息|机会)?|工作机会|实习机会|校招机会/.test(value);
-  const listingCue = /哪些|有什么|有没有|找(?:一下|一找)?|搜索|查询|推荐|列出|看看|适合|可投|能投|在招|开放|投递链接|申请链接/.test(value);
-  const plainWorkSearch = /(?:找(?:一下|一找|一份)?|有什么|有哪些|有没有|搜索|查询|推荐(?!信)).{0,20}工作|工作.{0,20}(?:机会|岗位|职位|招聘|可投|能投|在招|推荐(?!信))/.test(value);
-  const campusContext = /应届生?|毕业生|校招生?|校招|春招|秋招/.test(value);
-  const campusSearchCue = /推荐|找|看看|哪些|有什么|有没有|适合|可投|能投|在招|机会/.test(value);
-  return (opportunityNoun && listingCue) || plainWorkSearch || (campusContext && campusSearchCue);
-}
-
-export function isOpportunitySearchFollowUp(prompt: string): boolean {
-  const value = prompt.trim();
-  if (!value) return false;
-  const asksAboutOwnApplications = /(?:我的|我已|我投|投过|投了).*(?:投递|申请|岗位|职位).*(?:记录|进度|状态|结果)|(?:投递|申请)(?:记录|进度|状态)/.test(value);
-  if (asksAboutOwnApplications) return false;
-  const asksForCareerAdvice = /面试|简历|能力|技能|岗位职责|工作内容|职业规划|怎么准备|如何准备/.test(value);
-  if (asksForCareerAdvice) return false;
-  const capabilityQuestion = /岗位库|招聘库|岗位数据|招聘数据|json\s*数据|数据库/i.test(value);
-  const resultContinuation = /还有吗|还有没有|换一批|更多|继续(?:找|查|看)|这些|上面|刚才|链接呢|能投吗/.test(value);
-  const filterRefinement = /(?:只看|只想|改成|换成|那|再看|优先|不要).*(?:岗位|职位|工作|春招|秋招|实习|20\d{2}\s*届|今天|昨天|昨日|近\s*\d+\s*天|(?:近|最近|过去)?\s*(?:1|一)\s*(?:周|星期)|本周)|(?:今天|昨天|昨日|近\s*\d+\s*天|(?:近|最近|过去)?\s*(?:1|一)\s*(?:周|星期)(?:内)?|本周)(?:更新|发布|新增|上新)?(?:的)?(?:呢|吗|有哪些)?/.test(value)
-    || CITIES.some((city) => value.includes(city))
-    || ROLE_FILTERS.some((candidate) => candidate.pattern.test(value));
-  return capabilityQuestion || resultContinuation || filterRefinement;
-}
-
-export function resolveOpportunitySearchPrompt(
-  prompt: string,
-  history: readonly OpportunitySearchHistoryMessage[] = []
-): OpportunitySearchResolution | undefined {
-  if (isOpportunitySearchPrompt(prompt)) return { prompt };
-  if (!isOpportunitySearchFollowUp(prompt)) return undefined;
-
-  let lastUserIndex = -1;
-  let lastUserPrompt: string | undefined;
-  let lastResultIndex = -1;
-  let lastResultQuery: string | undefined;
-  history.forEach((message, index) => {
-    if (message.role === "user") {
-      lastUserIndex = index;
-      lastUserPrompt = message.content;
-    }
-    if (message.role === "assistant" && message.opportunityResults) {
-      lastResultIndex = index;
-      lastResultQuery = message.opportunityResults.query;
-    }
-  });
-
-  if (lastResultQuery && lastResultIndex > lastUserIndex) {
-    return { prompt, contextPrompt: lastResultQuery };
-  }
-  if (lastUserPrompt && isOpportunitySearchPrompt(lastUserPrompt)) {
-    return { prompt, contextPrompt: lastUserPrompt };
-  }
-  return undefined;
-}
-
 export function searchOpportunitySnapshot(
   snapshot: OpportunityFeedSnapshot,
   prompt: string,
   options: { limit?: number; now?: Date; sourceAvailable?: boolean; contextPrompt?: string } = {}
 ): ChatOpportunityResults {
   // Chat answers show 5 cards; the job radar agent asks for more so it can filter them itself.
-  const limit = Math.max(1, Math.min(options.limit ?? 5, 20));
+  // No upper cap: "companies I have not applied to" needs every match, not one page.
+  const limit = Math.max(1, options.limit ?? 5);
   const now = options.now ?? new Date();
   const currentFilters = filtersFor(prompt, snapshot.opportunities, now);
   const filters = options.contextPrompt
@@ -292,22 +226,6 @@ export function searchOpportunitySnapshot(
     fetchedAt: snapshot.fetchedAt,
     sourceUpdatedAt: snapshot.sourceUpdatedAt
   };
-}
-
-export function opportunitySearchAnswer(results: ChatOpportunityResults): string {
-  if (!results.sourceAvailable) {
-    return "这次岗位库暂时没连上，我先不拿可能过期的链接糊弄你。稍后再试一次就好；其他求职问题我们可以接着聊。";
-  }
-  if (!results.total) {
-    return results.isBroadSearch
-      ? "我刚查了岗位库，暂时没有仍可投递的校招岗位。你可以稍后再来看看；也可以先告诉我目标方向和城市，等岗位库更新后我们按这些条件继续筛。"
-      : "我刚按这些条件查了一遍，暂时没有找到仍可投递的岗位。我们可以先放宽城市、届别或岗位方向中的一项，再查一次。";
-  }
-  const shown = results.items.length;
-  if (results.isBroadSearch) {
-    return `我先从 ${results.total} 条当前可投递的校招岗位里，挑出近期更新的 ${shown} 条给你。你还没限定方向和城市，告诉我专业、想做的方向或目标城市中的任意一项，我们就能继续收窄。`;
-  }
-  return `查到了 ${results.total} 条当前可投递的匹配岗位，我先把最符合条件的 ${shown} 条放在下面。我们可以接着一起挑；打开投递页后，记得再确认一次状态和截止时间。`;
 }
 
 export async function fetchCampusHiringSnapshot(

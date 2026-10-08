@@ -24,6 +24,8 @@ export interface AgentTool {
   description: string;
   /** JSON Schema of the arguments. */
   parameters: Record<string, unknown>;
+  /** The tool shows something to the user (e.g. job cards), so text written with its call is part of the answer. */
+  presents?: boolean;
   run(args: Record<string, unknown>): unknown | Promise<unknown>;
 }
 
@@ -64,6 +66,10 @@ export async function runAgentTurn(options: {
   const { model, tools, messages, onEvent, signal } = options;
   const maxSteps = options.maxSteps ?? 8;
   const byName = new Map(tools.map((tool) => [tool.name, tool]));
+  // Text written together with a call that only shows something (e.g. the summary
+  // written with the call that shows job cards) is part of the answer.
+  let kept = "";
+  const withKept = (text: string) => [kept, text].filter(Boolean).join("\n\n");
 
   for (let step = 1; step <= maxSteps; step++) {
     signal?.throwIfAborted();
@@ -78,13 +84,22 @@ export async function runAgentTurn(options: {
       } : {})
     });
     messages.push(message);
-    // A preamble streamed before deciding to call tools is not the answer.
-    if (message.tool_calls?.length && streamedText) options.onTextReset?.();
 
     if (!message.tool_calls?.length) {
-      const reply = message.content?.trim() || "";
+      const reply = withKept(message.content?.trim() || "");
       onEvent?.({ type: "reply", content: reply });
       return { reply, steps: step, stoppedByStepLimit: false };
+    }
+
+    const text = message.content?.trim() || "";
+    const onlyPresents = message.tool_calls.every((call) => byName.get(call.function.name)?.presents);
+    if (text && onlyPresents) {
+      kept = withKept(text);
+      // Keeps what was streamed and separates it from the text that follows.
+      if (streamedText) options.onText?.("\n\n");
+    } else if (streamedText) {
+      // A preamble ("我先看看") streamed before fetching data is not the answer.
+      options.onTextReset?.();
     }
 
     // Calls made in one reply are independent, so they run in parallel (e.g. several experts at once).
@@ -111,8 +126,9 @@ export async function runAgentTurn(options: {
     }
   }
 
-  const reply = "这一轮步骤太多，我先停在这里。你可以告诉我下一步想先做什么。";
-  messages.push({ role: "assistant", content: reply });
+  const notice = "这一轮步骤太多，我先停在这里。你可以告诉我下一步想先做什么。";
+  messages.push({ role: "assistant", content: notice });
+  const reply = withKept(notice);
   onEvent?.({ type: "reply", content: reply });
   return { reply, steps: maxSteps, stoppedByStepLimit: true };
 }

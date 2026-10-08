@@ -99,7 +99,8 @@ export function loadApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
       || "https://shouna12358-png.github.io/campus-hiring/campus-hiring.json",
     opportunitySeedPath: env.OPPORTUNITY_SEED_PATH?.trim() || bundledOpportunitySeedPath,
     opportunityRefreshSeconds: positiveNumber(env.OPPORTUNITY_REFRESH_SECONDS, 60 * 10),
-    opportunityFetchTimeoutSeconds: positiveNumber(env.OPPORTUNITY_FETCH_TIMEOUT_SECONDS, 25),
+    // The production server downloads the GitHub Pages feed (1.4 MB gzipped) in about 40 s.
+    opportunityFetchTimeoutSeconds: positiveNumber(env.OPPORTUNITY_FETCH_TIMEOUT_SECONDS, 120),
     aiApiKey: env.AI_API_KEY || env.DEEPSEEK_API_KEY || undefined,
     aiBaseUrl: (env.AI_BASE_URL || "https://api.deepseek.com").replace(/\/$/, ""),
     aiModel: env.AI_MODEL || "deepseek-chat",

@@ -66,11 +66,17 @@ import type {
   PersonalProfile,
   TailorJobContext
 } from "@offerflow/domain";
-import { cloudResumeToPersonalProfile, opportunityStatus, RECRUITMENT_TYPES, STAGE_LABELS } from "@offerflow/domain";
-import { createAssistantProvider, type AssistantProvider } from "./ai/assistant.ts";
+import {
+  cloudResumeToPersonalProfile,
+  COMPANION_AGENT,
+  DEFAULT_CHAT_COMPANION,
+  opportunityStatus,
+  RECRUITMENT_TYPES,
+  STAGE_LABELS,
+  type ChatRunAgent
+} from "@offerflow/domain";
 import { createDirectMailMailer, type EmailMailer } from "./auth/direct-mail.ts";
 import { createEmailVerificationService } from "./auth/email-verification.ts";
-import { opportunityCapabilityAnswer } from "./ai/capabilities.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
 import { loadApiConfig, type ApiConfig } from "./config.ts";
 import { createChatOcrProvider, OcrError, readOcrFile, validateOcrSignature, type ChatOcrProvider } from "./chat/ocr.ts";
@@ -82,21 +88,11 @@ import {
   createInterviewTranscriptionProvider,
   type InterviewTranscriptionProvider
 } from "./interviews/transcription.ts";
-import {
-  applicationKnowledgeEntry,
-  applicationOverviewEntry,
-  shouldUseApplicationContext
-} from "./knowledge/application-context.ts";
-import {
-  KnowledgeService,
-  searchKnowledgeEntries,
-  type KnowledgeEntry
-} from "./knowledge/service.ts";
+import { applicationKnowledgeEntry } from "./knowledge/application-context.ts";
+import type { KnowledgeEntry } from "./knowledge/service.ts";
 import {
   fetchCampusHiringSnapshot,
   loadCampusHiringSnapshot,
-  opportunitySearchAnswer,
-  resolveOpportunitySearchPrompt,
   searchOpportunitySnapshot
 } from "./opportunities/search.ts";
 import type { ModelClient } from "./agent/loop.ts";
@@ -110,9 +106,7 @@ import { StoreError, type OfferFlowStore, type SessionRecord } from "./store/sto
 export interface OfferFlowAppOptions {
   config?: ApiConfig;
   store?: OfferFlowStore;
-  assistant?: AssistantProvider;
   resumeTailor?: ResumeTailorProvider;
-  knowledge?: KnowledgeService;
   interviewQaParser?: InterviewQaParser;
   transcriber?: InterviewTranscriptionProvider;
   emailMailer?: EmailMailer;
@@ -315,10 +309,8 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   const store: OfferFlowStore = options.store ?? (config.databaseUrl
     ? new PostgresStore({ connectionString: config.databaseUrl, allowDemoAuth: config.allowDemoAuth })
     : new MemoryStore());
-  const assistant = options.assistant ?? createAssistantProvider(config);
   const resumeTailor = options.resumeTailor ?? createResumeTailorProvider(config);
   const agentModel = options.agentModel ?? (config.aiApiKey ? createOpenAiCompatibleModel(config) : undefined);
-  const knowledge = options.knowledge ?? new KnowledgeService();
   const interviewQaParser = options.interviewQaParser ?? createInterviewQaParser(config);
   const transcriber = options.transcriber ?? createInterviewTranscriptionProvider(config);
   const chatOcr = options.chatOcr ?? createChatOcrProvider(config);
@@ -375,30 +367,29 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       || Date.now() - fetchedAt >= config.opportunityRefreshSeconds * 1_000;
 
     if ((config.opportunitySourceUrl || config.opportunitySeedPath) && (snapshot.opportunities.length === 0 || stale)) {
-      opportunityRefresh ??= refreshOpportunitySnapshot(snapshot.opportunities.length === 0)
+      const empty = snapshot.opportunities.length === 0;
+      opportunityRefresh ??= refreshOpportunitySnapshot(empty)
         .then((fresh) => store.replaceOpportunityFeed(fresh))
+        .catch((error: unknown) => {
+          console.warn("[opportunities] refresh failed; keeping the last stored snapshot", error);
+          throw error;
+        })
         .finally(() => { opportunityRefresh = undefined; });
+      if (!empty) {
+        // The source is slow from the server (a 7 MB download can take 40 s), so a stale
+        // snapshot is served now and replaced in the background.
+        opportunityRefresh.catch(() => undefined);
+        return { snapshot, sourceAvailable };
+      }
       try {
         snapshot = await opportunityRefresh;
         sourceAvailable = true;
-      } catch (error) {
-        console.warn("[opportunities] refresh failed; using the last stored snapshot", error);
+      } catch {
+        // Logged above; nothing stored yet, so the caller reports the source as unavailable.
       }
     }
 
     return { snapshot, sourceAvailable };
-  }
-
-  async function searchChatOpportunities(prompt: string, history: ChatMessage[]): Promise<ChatOpportunityResults | undefined> {
-    const resolution = resolveOpportunitySearchPrompt(prompt, history);
-    if (!resolution) return undefined;
-    const { snapshot, sourceAvailable } = await freshOpportunitySnapshot();
-
-    return searchOpportunitySnapshot(snapshot, resolution.prompt, {
-      limit: 5,
-      sourceAvailable,
-      contextPrompt: resolution.contextPrompt
-    });
   }
 
   function enforceAuthRateLimit(request: IncomingMessage): void {
@@ -596,21 +587,6 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     }).slice(0, 4);
   }
 
-  function automaticApplicationCitations(
-    prompt: string,
-    applications: JobApplication[]
-  ): KnowledgeCitation[] {
-    const overview = explicitCitations([applicationOverviewEntry(applications)]);
-    const matchingRecords = searchKnowledgeEntries(
-      prompt,
-      applications.map(applicationKnowledgeEntry),
-      5
-    ).map((citation) => ({
-      ...citation,
-      excerpt: citation.excerpt.slice(0, 1_800)
-    }));
-    return [...overview, ...matchingRecords];
-  }
 
   async function requireSession(request: IncomingMessage): Promise<SessionRecord> {
     const token = requestToken(request, config.cookieName);
@@ -675,135 +651,6 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return { user, accessToken: issued.accessToken, expiresAt };
   }
 
-  async function streamAnswer(
-    request: IncomingMessage,
-    response: ServerResponse,
-    userId: string,
-    conversationId: string,
-    prompt: string,
-    history: ChatMessage[],
-    attachments: ChatAttachment[] = [],
-    context: ChatContextReference[] = []
-  ): Promise<void> {
-    const applications = (await store.listApplications(userId))
-      .filter((item) => !item.deletedAt)
-      .map((item) => item.application);
-    const useApplicationContext = shouldUseApplicationContext(prompt, history, applications);
-    const opportunityResults = useApplicationContext
-      ? undefined
-      : await searchChatOpportunities(prompt, history);
-    const capabilityAnswer = opportunityResults || useApplicationContext
-      ? undefined
-      : opportunityCapabilityAnswer(prompt);
-    const selectedEntries = await selectedContextKnowledge(userId, context);
-    const relevantAttachments = attachments.length ? attachments : history
-      .filter((message) => message.role === "user")
-      .flatMap((message) => message.attachments)
-      .slice(-2);
-    const attachmentEntries = attachmentKnowledge(relevantAttachments);
-    const contextualEntries = [...selectedEntries, ...attachmentEntries];
-    const explicitlySelectedEntries = [...(context.length ? selectedEntries : []), ...attachmentEntries];
-    const personalApplicationCitations = useApplicationContext
-      ? automaticApplicationCitations(prompt, applications)
-      : [];
-    const citations = opportunityResults || capabilityAnswer
-      ? []
-      : [
-        ...explicitCitations(explicitlySelectedEntries),
-        ...personalApplicationCitations,
-        ...(useApplicationContext ? [] : knowledge.search(prompt, 4, contextualEntries))
-      ]
-        .filter((citation, index, items) => items.findIndex((item) => item.id === citation.id) === index)
-        .slice(0, 6);
-    const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
-    const abortController = new AbortController();
-    response.on("close", () => {
-      if (!response.writableEnded) abortController.abort();
-    });
-
-    response.statusCode = 200;
-    response.setHeader("content-type", "text/event-stream; charset=utf-8");
-    response.setHeader("cache-control", "no-cache, no-transform");
-    response.setHeader("connection", "keep-alive");
-    response.setHeader("x-accel-buffering", "no");
-    response.flushHeaders();
-
-    await writeSse(response, { type: "message.started", message: assistantMessage });
-    for (const citation of citations) {
-      await writeSse(response, {
-        type: "citation",
-        messageId: assistantMessage.id,
-        citation
-      });
-    }
-
-    let content = "";
-    try {
-      if (opportunityResults) {
-        content = opportunitySearchAnswer(opportunityResults);
-        await writeSse(response, {
-          type: "message.delta",
-          messageId: assistantMessage.id,
-          delta: content
-        });
-      } else if (capabilityAnswer) {
-        content = capabilityAnswer;
-        await writeSse(response, {
-          type: "message.delta",
-          messageId: assistantMessage.id,
-          delta: content
-        });
-      } else {
-        for await (const delta of assistant.generate({
-          prompt,
-          history,
-          citations,
-          signal: abortController.signal
-        })) {
-          content += delta;
-          await writeSse(response, {
-            type: "message.delta",
-            messageId: assistantMessage.id,
-            delta
-          });
-        }
-      }
-      const completed = await store.completeAssistantMessage(
-        userId,
-        conversationId,
-        assistantMessage.id,
-        content,
-        citations,
-        "complete",
-        opportunityResults
-      );
-      await writeSse(response, { type: "message.completed", message: completed });
-      await writeSse(response, { type: "done" });
-    } catch (error) {
-      const aborted = abortController.signal.aborted;
-      await store.completeAssistantMessage(
-        userId,
-        conversationId,
-        assistantMessage.id,
-        content,
-        citations,
-        aborted ? "stopped" : "error",
-        opportunityResults
-      );
-      if (!aborted) {
-        await writeSse(response, {
-          type: "error",
-          error: {
-            code: "CHAT_GENERATION_FAILED",
-            message: error instanceof Error ? error.message : "回答生成失败，请重试"
-          }
-        });
-      }
-    } finally {
-      if (!response.writableEnded) response.end();
-    }
-  }
-
   /** The resume and job a team works on: the first ones the user picked, else their latest resume. */
   async function teamResumeAndJob(
     userId: string,
@@ -842,9 +689,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     return { profile, job };
   }
 
-  /** The team that owns a conversation: the one that answered most recently. */
+  /** The team that owns a conversation: the one that answered most recently. The default agent owns none. */
   function conversationTeam(history: ChatMessage[]): ChatAgentName | undefined {
-    return [...history].reverse().find((message) => message.agentRun)?.agentRun?.agent;
+    const agent = [...history].reverse()
+      .find((message) => message.agentRun && message.agentRun.agent !== COMPANION_AGENT)?.agentRun?.agent;
+    return agent === COMPANION_AGENT ? undefined : agent;
   }
 
   function trimmedSkillDraft(draft: CustomSkillDraft): CustomSkillDraft {
@@ -881,24 +730,34 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     history: ChatMessage[],
     context: ChatContextReference[],
     attachments: ChatAttachment[],
-    team: ChatAgentName,
+    team: ChatRunAgent,
     requestedSkills: string[] | undefined
   ): Promise<void> {
+    const companion = team === COMPANION_AGENT;
+    const agentName = companion ? DEFAULT_CHAT_COMPANION.name : TEAM_PROFILES[team].name;
     // Materials stay fixed for the conversation: use what was picked on the first message that picked anything.
     const references = context.length
       ? context
       : history.find((message) => message.role === "user" && message.context?.length)?.context ?? [];
-    const lastRun = [...history].reverse().find((message) => message.agentRun)?.agentRun;
-    const experts = resolveTeamSkills(team, await availableSkills(userId), requestedSkills ?? lastRun?.skills, TEAM_PROFILES[team].defaultSkills);
+    const lastRun = [...history].reverse().find((message) => message.agentRun?.agent === team)?.agentRun;
+    const experts = companion
+      ? []
+      : resolveTeamSkills(team, await availableSkills(userId), requestedSkills ?? lastRun?.skills, TEAM_PROFILES[team].defaultSkills);
+    const selectedEntries = companion ? await selectedContextKnowledge(userId, references) : [];
     const materials: TeamMaterials = {
       ...(await teamResumeAndJob(userId, references)),
       applications: (await store.listApplications(userId)).filter((item) => !item.deletedAt).map((item) => item.application),
-      search: async (query) => {
+      search: async (query, options) => {
         const { snapshot, sourceAvailable } = await freshOpportunitySnapshot();
-        return searchOpportunitySnapshot(snapshot, query, { limit: 12, sourceAvailable });
+        return searchOpportunitySnapshot(snapshot, query, { limit: options?.limit ?? 12, sourceAvailable });
       },
-      today: shanghaiToday()
+      today: shanghaiToday(),
+      selected: selectedEntries.map((entry) => ({ title: entry.title, content: entry.content }))
     };
+    // What the user picked or attached for this message is shown as the answer's sources.
+    const citations = companion
+      ? explicitCitations([...(context.length ? selectedEntries : []), ...attachmentKnowledge(attachments)])
+      : [];
     const assistantMessage = await store.beginAssistantMessage(userId, conversationId);
     // Stop button or closed tab: stop the agent loop, model calls and expert calls.
     const abortController = new AbortController();
@@ -913,10 +772,13 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     response.setHeader("x-accel-buffering", "no");
     response.flushHeaders();
     await writeSse(response, { type: "message.started", message: assistantMessage });
+    for (const citation of citations) {
+      await writeSse(response, { type: "citation", messageId: assistantMessage.id, citation });
+    }
 
     let streamed = "";
     try {
-      if (!agentModel) throw new Error(`AI 服务尚未配置，${TEAM_PROFILES[team].name}暂时不可用`);
+      if (!agentModel) throw new Error(`AI 服务尚未配置，${agentName}暂时不可用`);
       const turn = await runTeamTurn({
         team,
         model: agentModel,
@@ -947,19 +809,19 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         await writeSse(response, { type: "message.delta", messageId: assistantMessage.id, delta: turn.reply.slice(streamed.length) });
       }
       const completed = await store.completeAssistantMessage(
-        userId, conversationId, assistantMessage.id, turn.reply, [], "complete", turn.opportunityResults, turn.agentRun
+        userId, conversationId, assistantMessage.id, turn.reply, citations, "complete", turn.opportunityResults, turn.agentRun
       );
       await writeSse(response, { type: "message.completed", message: completed });
       await writeSse(response, { type: "done" });
     } catch (error) {
       const stopped = abortController.signal.aborted;
-      await store.completeAssistantMessage(userId, conversationId, assistantMessage.id, stopped ? streamed : "", [], stopped ? "stopped" : "error");
+      await store.completeAssistantMessage(userId, conversationId, assistantMessage.id, stopped ? streamed : "", citations, stopped ? "stopped" : "error");
       if (!stopped) {
         await writeSse(response, {
           type: "error",
           error: {
             code: "CHAT_GENERATION_FAILED",
-            message: error instanceof Error ? error.message : "团队暂时不可用，请重试"
+            message: error instanceof Error ? error.message : `${agentName}暂时不可用，请重试`
           }
         });
       }
@@ -1681,27 +1543,14 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
         const history = await store.getConversationHistory(userId, conversationId);
         const messageIndex = history.findIndex((message) => message.id === messageId);
         const sourceMessage = history.slice(0, messageIndex).reverse().find((message) => message.role === "user");
-        const retryTeam = conversationTeam(history);
-        if (retryTeam && sourceMessage) {
-          const sourceIndex = history.indexOf(sourceMessage);
-          const release = claimAgentTurn(userId);
-          try {
-            await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage.context ?? [], sourceMessage.attachments ?? [], retryTeam, undefined);
-          } finally {
-            release();
-          }
-          return;
+        const retryAgent = conversationTeam(history) ?? COMPANION_AGENT;
+        const sourceIndex = sourceMessage ? history.indexOf(sourceMessage) : messageIndex;
+        const release = claimAgentTurn(userId);
+        try {
+          await streamAgentAnswer(response, userId, conversationId, prompt, history.slice(0, sourceIndex), sourceMessage?.context ?? [], sourceMessage?.attachments ?? [], retryAgent, undefined);
+        } finally {
+          release();
         }
-        await streamAnswer(
-          request,
-          response,
-          userId,
-          conversationId,
-          prompt,
-          history,
-          sourceMessage?.attachments,
-          sourceMessage?.context
-        );
         return;
       }
 
@@ -1717,9 +1566,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
           throw new HttpError(400, "CHAT_CONTEXT_NOT_FOUND", "选中的个人材料已不可用，请重新选择");
         }
         const history = await store.getConversationHistory(userId, conversationId);
-        const team = body.agent ?? conversationTeam(history);
+        // With no team invited, the default agent answers.
+        const agent = body.agent ?? conversationTeam(history) ?? COMPANION_AGENT;
         // Checked before the message is stored, so a refused message does not linger unanswered.
-        const release = team ? claimAgentTurn(userId) : undefined;
+        const release = claimAgentTurn(userId);
         try {
           await store.appendUserMessage(
             userId,
@@ -1729,14 +1579,10 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
             body.attachments,
             context
           );
-          if (team) {
-            await streamAgentAnswer(response, userId, conversationId, body.content, history, context, body.attachments ?? [], team, body.skills);
-            return;
-          }
+          await streamAgentAnswer(response, userId, conversationId, body.content, history, context, body.attachments ?? [], agent, body.skills);
         } finally {
-          release?.();
+          release();
         }
-        await streamAnswer(request, response, userId, conversationId, body.content, history, body.attachments, context);
         return;
       }
 
@@ -1970,8 +1816,6 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
     handler,
     store,
     config,
-    assistant,
-    knowledge,
     interviewQaParser,
     transcriber
   };

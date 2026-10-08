@@ -1,14 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import {
-  isOpportunitySearchPrompt,
-  resolveOpportunitySearchPrompt,
-  searchOpportunitySnapshot
-} from "../src/opportunities/search.ts";
-import {
-  assistantCapabilityContext,
-  opportunityCapabilityAnswer
-} from "../src/ai/capabilities.ts";
+import { searchOpportunitySnapshot } from "../src/opportunities/search.ts";
 import { companionSystemPrompt } from "../src/ai/companion.ts";
 
 function opportunity(id, overrides = {}) {
@@ -26,61 +18,6 @@ function opportunity(id, overrides = {}) {
     ...overrides
   };
 }
-
-test("recognizes explicit opportunity searches without hijacking career questions", () => {
-  assert.equal(isOpportunitySearchPrompt("目前有哪些产品经理岗位能投递？"), true);
-  assert.equal(isOpportunitySearchPrompt("你有什么岗位推荐 应届生"), true);
-  assert.equal(isOpportunitySearchPrompt("帮我找一下上海的产品实习机会"), true);
-  assert.equal(isOpportunitySearchPrompt("应届生有什么工作推荐？"), true);
-  assert.equal(isOpportunitySearchPrompt("给毕业生看看能投的"), true);
-  assert.equal(isOpportunitySearchPrompt("我想找产品经理相关的工作 昨天更新的有什么我能投的吗"), true);
-  assert.equal(isOpportunitySearchPrompt("产品经理需要具备哪些能力？"), false);
-  assert.equal(isOpportunitySearchPrompt("如何准备产品经理岗位面试？"), false);
-  assert.equal(isOpportunitySearchPrompt("应届生的工作经历怎么写？"), false);
-  assert.equal(isOpportunitySearchPrompt("工作有什么意义？"), false);
-  assert.equal(isOpportunitySearchPrompt("工作推荐信应该怎么写？"), false);
-  assert.equal(isOpportunitySearchPrompt("我的投递进度怎么样？"), false);
-});
-
-test("inherits opportunity intent for follow-up questions instead of falling back to the model", () => {
-  const previousPrompt = "我想找产品经理相关的工作 昨天更新的有什么我能投的吗";
-  const resolution = resolveOpportunitySearchPrompt("你不是有json数据没", [
-    { role: "user", content: previousPrompt },
-    { role: "assistant", content: "我目前没有接入实时岗位数据库。" }
-  ]);
-
-  assert.deepEqual(resolution, {
-    prompt: "你不是有json数据没",
-    contextPrompt: previousPrompt
-  });
-  assert.equal(resolveOpportunitySearchPrompt("产品经理面试应该准备什么？", [
-    { role: "user", content: previousPrompt }
-  ]), undefined);
-
-  assert.deepEqual(resolveOpportunitySearchPrompt("只想最近一周更新的", [
-    { role: "user", content: "我想找销售类的岗位 最新能投递什么" },
-    {
-      role: "assistant",
-      content: "找到匹配岗位。",
-      opportunityResults: {
-        query: "我想找销售类的岗位 最新能投递什么",
-        total: 873,
-        items: [],
-        sourceAvailable: true,
-        isBroadSearch: false
-      }
-    }
-  ]), {
-    prompt: "只想最近一周更新的",
-    contextPrompt: "我想找销售类的岗位 最新能投递什么"
-  });
-});
-
-test("states the backend opportunity capability without asking the model to guess", () => {
-  assert.match(assistantCapabilityContext(), /后端已接入真实校招岗位数据/);
-  assert.match(opportunityCapabilityAnswer("你不是有json数据没") || "", /我能直接查 JobKoI 已接入/);
-  assert.equal(opportunityCapabilityAnswer("帮我修改项目经历"), undefined);
-});
 
 test("gives the model one bounded companion identity", () => {
   const prompt = companionSystemPrompt();
@@ -189,4 +126,11 @@ test("keeps previous role filters while applying a follow-up city filter", () =>
 
   assert.equal(results.total, 1);
   assert.equal(results.items[0]?.id, "product-beijing");
+});
+
+test("a large limit returns every match, so set differences are computed over all of them", () => {
+  const snapshot = { opportunities: Array.from({ length: 30 }, (_, index) => opportunity(`p${index}`, { company: `公司${index}` })) };
+  const results = searchOpportunitySnapshot(snapshot, "产品经理", { limit: 5_000, now: new Date("2026-08-28T12:00:00+08:00") });
+  assert.equal(results.total, 30);
+  assert.equal(results.items.length, 30);
 });

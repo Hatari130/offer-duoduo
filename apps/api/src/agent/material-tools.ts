@@ -76,11 +76,25 @@ export function applicationSummary(application: JobApplication) {
 export function listApplicationsTool(applications: JobApplication[]): AgentTool {
   return {
     name: "list_applications",
-    description: "读取用户的投递记录：公司、岗位、城市、阶段、投递时间、截止时间、下一步、最近更新时间。",
+    description: "读取用户的全部投递记录：公司、岗位、城市、阶段、投递时间、截止时间、下一步、最近更新时间。总数、公司数和各阶段数量已经算好，直接引用，不要自己数。",
     parameters: EMPTY_OBJECT_SCHEMA,
-    run: () => applications.length
-      ? { total: applications.length, applications: applications.map(applicationSummary) }
-      : { total: 0, hint: "用户还没有投递记录。可以建议用户在“个人投递管理”里添加，或用浏览器插件记录网申。" }
+    run: () => {
+      if (!applications.length) {
+        return { total: 0, hint: "用户还没有投递记录。可以建议用户在“个人投递管理”里添加，或用浏览器插件记录网申。" };
+      }
+      // Counted in code: a model counting distinct companies across 93 rows gets it wrong.
+      const stageCounts: Record<string, number> = {};
+      for (const application of applications) {
+        const stage = STAGE_LABELS[application.stage];
+        stageCounts[stage] = (stageCounts[stage] ?? 0) + 1;
+      }
+      return {
+        total: applications.length,
+        companyCount: new Set(applications.map((application) => application.company.trim())).size,
+        stageCounts,
+        applications: applications.map(applicationSummary)
+      };
+    }
   };
 }
 

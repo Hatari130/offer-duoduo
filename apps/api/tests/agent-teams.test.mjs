@@ -151,3 +151,62 @@ test("long conversations replay tool calls only for the last two turns", () => {
   // An old turn keeps its reply and what it settled on.
   assert.equal(messages[2].content, "回复 1\n（这一轮已写好：「融媒体中心」→ 撰写推文 40 余篇）");
 });
+
+test("companies not yet applied to are computed over every match, grouped by company", async () => {
+  const item = (id, company, role = "产品经理") => ({ id, company, title: "2027届", graduationYears: ["2027届"], roleTags: [role], cities: ["上海"], officialUrl: "https://example.com" });
+  // 30 matches: more than one page of results, so the answer cannot come from the first 12 the model sees.
+  const matches = [
+    ...Array.from({ length: 10 }, (_, index) => item(`bytedance-${index}`, "字节跳动")),
+    ...Array.from({ length: 12 }, (_, index) => item(`meituan-${index}`, "美团")),
+    ...Array.from({ length: 8 }, (_, index) => item(`xiaomi-${index}`, "小米", "AI 产品经理"))
+  ];
+  const limits = [];
+  const session = createJobRadarSession({
+    search: async (_query, options) => {
+      limits.push(options?.limit);
+      const items = matches.slice(0, options?.limit ?? 12);
+      return { query: "", total: matches.length, items, sourceAvailable: true, isBroadSearch: false };
+    },
+    applications: [{ id: "app-1", company: "字节跳动", position: "产品经理", stage: "applied" }],
+    userStatements: () => []
+  });
+  const search = session.tools.find((tool) => tool.name === "search_opportunities");
+  const found = await search.run({ query: "产品经理 2027届", exclude_applied: true });
+
+  assert.ok(limits[0] >= matches.length);
+  assert.equal(found.total, 20);
+  assert.equal(found.companyCount, 2);
+  assert.equal(found.appliedCompaniesExcluded, 1);
+  assert.deepEqual(found.companies.map((company) => [company.company, company.openings]), [["美团", 12], ["小米", 8]]);
+  assert.equal(found.items.some((opportunity) => opportunity.company === "字节跳动"), false);
+  // Every unapplied opening can be shown as a card, not only the first page.
+  assert.deepEqual(session.tools.find((tool) => tool.name === "show_opportunities").run({ ids: ["xiaomi-7"] }), { shown: 1 });
+});
+
+test("another agent's tool calls are not replayed, only what it said", () => {
+  const run = (agent, id) => ({
+    id: `a-${id}`,
+    role: "assistant",
+    content: `${agent} 的回复`,
+    status: "complete",
+    agentRun: {
+      agent,
+      steps: [],
+      rewrites: [],
+      trace: [
+        { role: "assistant", content: null, tool_calls: [call(id, "list_applications", {})] },
+        { role: "tool", tool_call_id: id, content: "{}" },
+        { role: "assistant", content: `${agent} 的回复` }
+      ]
+    }
+  });
+  const history = [
+    { id: "u1", role: "user", content: "我投了哪些", status: "complete" },
+    run("companion", "c1"),
+    { id: "u2", role: "user", content: "帮我改简历", status: "complete" },
+    run("resume_coach", "r1")
+  ];
+  const forResumeTeam = agentMessagesFromHistory(history, "系统提示", "resume_coach");
+  assert.deepEqual(forResumeTeam.filter((message) => message.role === "tool").map((message) => message.tool_call_id), ["r1"]);
+  assert.ok(forResumeTeam.some((message) => message.role === "assistant" && message.content === "companion 的回复"));
+});

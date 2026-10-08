@@ -14,7 +14,7 @@ import type {
   CustomSkill,
   CustomSkillDraft
 } from "@offerflow/domain";
-import { DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
+import { COMPANION_AGENT, DEFAULT_CHAT_COMPANION } from "@offerflow/domain";
 import { ChevronRight, Store, X } from "lucide-react";
 import { api } from "../app/api";
 import { useAuth } from "../app/AuthContext";
@@ -37,8 +37,10 @@ function withAgentRun(message: ChatMessage, team: ChatAgentName, update: (run: C
   return { ...message, agentRun: update(run) };
 }
 
-function lastAgentRun(messages: ChatMessage[]): ChatAgentRun | undefined {
-  return [...messages].reverse().find((message) => message.agentRun)?.agentRun;
+/** The last turn of an invited team. The default agent's turns do not tie the conversation to a team. */
+function lastAgentRun(messages: ChatMessage[]): (ChatAgentRun & { agent: ChatAgentName }) | undefined {
+  const run = [...messages].reverse().find((message) => message.agentRun && message.agentRun.agent !== COMPANION_AGENT)?.agentRun;
+  return run && run.agent !== COMPANION_AGENT ? { ...run, agent: run.agent } : undefined;
 }
 
 export function ChatPage({ conversationId }: { conversationId?: string }) {

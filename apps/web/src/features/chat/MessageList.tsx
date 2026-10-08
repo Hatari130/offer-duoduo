@@ -1,12 +1,12 @@
 import { useEffect, useId, useRef, useState } from "react";
 import type {
   ChatAgentExpertNote,
-  ChatAgentName,
   ChatAgentRewrite,
   ChatAgentRun,
   ChatContextKind,
   ChatMessage,
   ChatOpportunityResults,
+  ChatRunAgent,
   KnowledgeCitation,
   OpportunityStatus,
   RecruitmentOpportunity
@@ -43,7 +43,7 @@ interface MessageListProps {
   onFollowUp: (prompt: string) => void;
   onOpenWorkspace: (kind: ChatContextKind) => void;
   /** Team names for the byline of agent turns. */
-  teamNames?: Partial<Record<ChatAgentName, string>>;
+  teamNames?: Partial<Record<ChatRunAgent, string>>;
 }
 
 const followUps = [

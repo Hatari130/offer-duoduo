@@ -1,0 +1,254 @@
+{
+  "model": "deepseek-chat",
+  "runsPerScenario": 3,
+  "feedSourceUpdatedAt": "2026-10-08T09:50:08+08:00",
+  "results": [
+    {
+      "scenario": "unapplied-companies",
+      "run": 0,
+      "seconds": 6.1,
+      "tools": [
+        "list_applications",
+        "search_opportunities",
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 391,
+      "usedExcludeApplied": true,
+      "companyCount": 4764,
+      "replyStatesCompanyCount": true,
+      "cards": 6,
+      "cardsFromAppliedCompanies": [],
+      "reply": "你目前记录了 93 条投递，覆盖 65 家公司，方向集中在产品经理 / AI 产品经理，城市是北京、深圳、广州。\n\n岗位库里排除掉这 65 家后，还有 4764 家公司有在招岗位；如果只看产品/AI 产品方向，也有 267 家没投过。挑了几个和你方向对得上的：\n\n- 剪映：AI产品经理、Agent产品经理（深圳/北京/上海）\n- 光轮智能：技术产品经理、具身平台产品经理（北京/上海/杭州）\n- 哈啰：产品经理、AI全栈（上海/杭州/北京/广州/深圳）\n- 曹操出行：AI&ROBOX产品岗（北京/上海/广州/深圳）\n- 国网信通产业集团：产品经理（北京/天津/成都）\n- 中远海运科技：产品经理（北京/上海/广州）\n\n卡片里有投递链接，点开确认一下是否还在招——很多岗位写的是招满为止。\n\n另外提醒一句：H3C 的测评截止是明天（10月9日），今天先把它做掉，比继续加投更划算。"
+    },
+    {
+      "scenario": "unapplied-companies",
+      "run": 1,
+      "seconds": 2.9,
+      "tools": [
+        "list_applications",
+        "search_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 316,
+      "usedExcludeApplied": true,
+      "companyCount": 4764,
+      "replyStatesCompanyCount": true,
+      "cards": 12,
+      "cardsFromAppliedCompanies": [],
+      "reply": "你目前投了 93 条、覆盖 65 家公司，岗位库匹配到但你没投过的公司有 4764 家——数量很大，所以关键是筛出跟你方向对得上的。\n\n不过刚才这轮检索是按“校招秋招”泛查的，返回的多是银行、能源、制造类，跟你投的 AI产品/产品经理方向不太贴。想给你更准的名单，我需要确认一个条件：\n\n**你接下来主要想投哪个方向？** 比如还是 AI产品经理/产品经理，还是想扩到别的（数据分析、运营、项目管理等）？\n\n另外提醒一句：你记录里 **H3C 的测评截止是 2026-10-09（明天）**，还没完成，先把这个处理掉再挑新岗位。\n\n告诉我方向，我立刻按“AI产品/产品经理 + 你没投过的公司”再查一轮，把值得投的岗位卡片直接给你。"
+    },
+    {
+      "scenario": "unapplied-companies",
+      "run": 2,
+      "seconds": 3.2,
+      "tools": [
+        "list_applications",
+        "search_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 376,
+      "usedExcludeApplied": true,
+      "companyCount": 4762,
+      "replyStatesCompanyCount": true,
+      "cards": 12,
+      "cardsFromAppliedCompanies": [],
+      "reply": "你目前投了 **93 条、覆盖 65 家公司**（其中 92 条已投递、1 条在测评阶段）。岗位库里排除掉你投过的公司后，还有 **4762 家公司**在招——所以“没投的公司”非常多，关键不是数量，而是筛出跟你方向对得上的。\n\n不过刚才这次检索是按“校招岗位”泛查的，返回的岗位偏散（有环卫集团、农商行、检测岗等），跟你投递记录里清一色的**产品经理 / AI 产品经理**方向不太匹配。要给你真正能投的名单，我需要确认一件事：\n\n**你接下来想优先看哪个方向？**\n- A. 继续 AI 产品经理 / 产品经理（跟你已投的 93 条一致）\n- B. 想换方向（比如运营、数据分析、项目管理）\n\n另外，你投的城市集中在**北京、深圳、广州**，我会默认按这三个城市筛。\n\n你回一个方向，我就直接拉出“没投过 + 方向匹配 + 还能投”的公司清单给你。"
+    },
+    {
+      "scenario": "my-applications",
+      "run": 0,
+      "seconds": 2.5,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 280,
+      "readAllApplications": true,
+      "mentionsDueTomorrow": true,
+      "reply": "你一共投了 93 条，覆盖 65 家公司，方向集中在产品经理 / AI 产品经理，城市是北京、深圳、广州。\n\n**最急的一条：H3C（深圳）AI 产品经理**——还在测评阶段，截止 **2026-10-09**，也就是明天。下一步动作就是完成测评，今天先把它做掉，别拖到明天。\n\n其余 92 条都停在“已投递”，没有写截止时间，暂时没有别的到期提醒。不过投递记录里只有 H3C 有下一步动作，其他都还等着回音——如果最近一周（10-02 到 10-08）有公司该出笔试/面试通知了，可以挑几家主动去官网或邮箱查一下状态。\n\n要不要我帮你看看还有哪些公司没投过？"
+    },
+    {
+      "scenario": "my-applications",
+      "run": 1,
+      "seconds": 2.1,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 293,
+      "readAllApplications": true,
+      "mentionsDueTomorrow": true,
+      "reply": "你一共投了 93 条，覆盖 65 家公司，其中 92 条在“已投递”，1 条在“测评”。\n\n**最需要马上处理的只有一条：**\n- **H3C · AI产品经理（深圳）** — 阶段是测评，**截止 2026-10-09，也就是明天**，下一步是“完成测评”。今天就把测评做掉，别拖到明天。\n\n其余 92 条都没有记录截止时间，暂时看不出时间压力。不过投递记录里只有 H3C 一条有截止日期，其他岗位的真实截止时间系统里没有，建议你打开投递链接或邮箱确认一下有没有漏掉的笔试/测评通知。\n\n下一步：先花 30 分钟把 H3C 测评做完。做完告诉我，我帮你看看还有哪些公司没投、可以补投。"
+    },
+    {
+      "scenario": "my-applications",
+      "run": 2,
+      "seconds": 1.9,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 211,
+      "readAllApplications": true,
+      "mentionsDueTomorrow": true,
+      "reply": "你一共记了 93 条投递，覆盖 65 家公司，其中 92 条是“已投递”，1 条在“测评”阶段。\n\n**最急的一条：H3C（AI产品经理，深圳）**\n- 截止时间：2026-10-09，也就是明天\n- 下一步：完成测评\n\n其他投递记录里没有填截止时间，所以暂时看不出别的紧迫项——不代表没有，只是记录里没写。\n\n今天先做一件事：把 H3C 的测评做完，别拖到明天。做完后回来把状态更新一下，我可以帮你看看接下来该盯哪几家。"
+    },
+    {
+      "scenario": "nationwide-ai-pm",
+      "run": 0,
+      "seconds": 5.4,
+      "tools": [
+        "search_opportunities",
+        "search_opportunities",
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 367,
+      "cards": 6,
+      "cardsWrongCohort": [],
+      "reply": "全国 2027 届 AI 产品经理方向，我筛出这几个还没投的（卡片里有投递链接）：\n\n- **剪映**：AI产品经理 / Agent产品经理，深圳·北京·上海\n- **中科闻歌**：AI产品经理，北京·上海·杭州·长沙·深圳，10-19 截止\n- **英集动力**：AI产品经理，北京·无锡·常州\n- **光轮智能**：技术产品经理 / 具身平台产品经理，北京·上海·杭州等，11-24 截止\n- **曹操出行**：AI&ROBOX产品岗，北京·上海·杭州·深圳等\n- **拓维信息**：产品经理，长沙·上海·北京\n\n另外你已经投过的华宇信息、鼎捷数智也有 AI 产品经理岗，可以留意进度。\n\n岗位库很多写的是“招满为止”，投之前点开链接确认还在招。\n\n要不要我按城市再收窄一次？比如只留北京+上海，或者你更想去哪个城市，我直接重筛。"
+    },
+    {
+      "scenario": "nationwide-ai-pm",
+      "run": 1,
+      "seconds": 4.2,
+      "tools": [
+        "search_opportunities",
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 425,
+      "cards": 6,
+      "cardsWrongCohort": [],
+      "reply": "全国 2027 届 AI 产品岗，岗位库里匹配到 405 条，去掉你投过的 30 家公司后还有 389 家。真正带 AI 产品/产品经理标签的，我挑了几个：\n\n- **剪映**（深圳/北京/上海）：AI 产品经理、Agent 产品经理，最对口\n- **光轮智能**（北京/上海/杭州）：技术产品经理、具身平台产品经理\n- **国网信通产业集团**（北京/天津/成都）：产品经理 + AI 工程师\n- **谷雨**（广州）：AI 产品类\n- **江苏金融租赁**（南京）：IT 产品经理、AI 应用创新工程师\n- **中电港**（全国）：产品经理\n\n另外提醒一句：**工银瑞信基金今天（10/8）就截止**，易方达 10/11 截止，丽水移动 10/10 截止——这几家都带产品/数据方向，想投的话今天就得动手。\n\n岗位库很多写的是“招满为止”，投之前打开链接确认还在招。\n\n下一步：告诉我你更想去哪个城市，或者偏 C 端还是 B 端，我再帮你缩一轮。"
+    },
+    {
+      "scenario": "nationwide-ai-pm",
+      "run": 2,
+      "seconds": 5.3,
+      "tools": [
+        "search_opportunities",
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 315,
+      "cards": 6,
+      "cardsWrongCohort": [],
+      "reply": "全国 2027 届 AI 产品经理方向，岗位库里匹配到 405 个在招岗位，去掉你投过的 30 家公司后，还有 389 家可投。上面 6 个是里面最贴 AI 产品线的。\n\n几个提醒：\n- 剪映（深圳/北京/上海）直接开了 AI 产品经理、Agent 产品经理，是最对口的一条，建议优先。\n- 光轮智能、谷雨、国网信通产业集团、中电港、江苏金融租赁也都有产品经理/AI 产品类岗位，城市分布在北京、上海、杭州、广州、南京和全国。\n- 岗位库数据是第三方公开信息，很多写“招满为止”，投之前点开链接确认还在招。\n\n下一步：先从剪映那条开始，把简历里的 AI 产品相关经历调成第一屏。要不要我读一下你的简历，对着剪映的岗位要求看差在哪？"
+    },
+    {
+      "scenario": "anxious-chat",
+      "run": 0,
+      "seconds": 2.8,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 335,
+      "replyUnder400Chars": true,
+      "reply": "93 条、65 家公司，只有 1 个测评——这个比例确实会让人慌，但先看两个事实：一是你投的时间集中在 10 月 1 日前后，到现在才一周，很多公司简历关本来就要 1–3 周才动；二是 93 条里有大量重复公司（字节、快手、小米、TCL、H3C 这些各投了两三个岗位），实际覆盖的公司数比“93”少得多，所以“没回复”的体感会被放大。\n\n有一件事比焦虑更急：**H3C 的测评截止是明天（10 月 9 日）**，这条别错过，今天先把它做掉。\n\n然后今天可以再做一件小事：把投递记录里“已投递但超过 10 天没动静”的公司挑出来，去官网/公众号查一下状态，有些是简历没过、有些是还在筛，分清楚之后你就知道该补投还是该等。\n\n要不要我帮你查一下岗位库里还有哪些公司你没投过？"
+    },
+    {
+      "scenario": "anxious-chat",
+      "run": 1,
+      "seconds": 3.1,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 407,
+      "replyUnder400Chars": false,
+      "reply": "投了 93 条、65 家公司，只有 1 条进了测评——这个比例确实会让人心里发沉，你的焦虑不是没来由的。\n\n先分清两件事：**投递量已经够了**，问题不在数量，而在\"投出去之后有没有回音\"这件事上。而且有个更急的：H3C 的测评 **明天（10/9）就截止**，这条是眼下唯一有进展的，今天先把它做完。\n\n另外从记录看，93 条里绝大多数是 10/1 同一天批量投的，岗位名高度集中在\"产品经理 / AI产品经理\"，城市在北京、深圳、广州之间来回换。这种投法容易踩两个坑：一是同一家公司投了多个岗位（字节、快手、小米、TCL、H3C 等都出现了两次），二是岗位描述和你的经历没做针对性对齐，HR 一眼看不出匹配点。\n\n今天可以只做一件事：**先把 H3C 测评做完**。做完之后告诉我，我帮你看简历和这几个岗位的匹配度，找出回复率低的具体原因——是简历没写对，还是投的岗位本身偏了。\n\n要不要现在先看一眼你的简历？"
+    },
+    {
+      "scenario": "anxious-chat",
+      "run": 2,
+      "seconds": 2.7,
+      "tools": [
+        "list_applications"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 289,
+      "replyUnder400Chars": true,
+      "reply": "投了 93 条、65 家公司，只有 1 个走到测评——这个数字确实容易让人慌。但先看两个事实：一是所有记录都停在 10 月 1 日，也就是最近一周没更新过；二是 92 条都还停在“已投递”，说明现在缺的不是数量，是反馈和跟进。\n\n眼下最该做的只有一件：H3C 的测评明天（10 月 9 日）就截止了，今天先把它做完。这是你目前唯一一个已经推进到下一步的机会，别让它过期。\n\n做完之后，我们再一起看简历和投递方向——93 条里 AI 产品经理和产品经理混着投，可能有些岗位的匹配度并不高，值得挑几条重点改。\n\n要不要现在先打开 H3C 的测评链接？做完回来告诉我，我陪你看下一步。"
+    },
+    {
+      "scenario": "one-word-follow-up",
+      "run": 0,
+      "seconds": 10,
+      "tools": [
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 368,
+      "searchedOnOneWord": true,
+      "keptExcludeApplied": true,
+      "reply": "不限城市的话，匹配你 AI 产品/产品经理方向的没投公司有 389 家，我挑了 6 个方向最贴的：\n\n- 剪映：AI产品经理、Agent产品经理（深圳/北京/上海）\n- 光轮智能：技术产品经理、具身平台产品经理（北京/上海/杭州）\n- 国网信通产业集团：产品经理（北京/天津/成都）\n- Klook客路：产品、人工智能（深圳，11-30 截止）\n- 江苏金融租赁：IT产品经理、AI应用创新工程师（南京）\n- 中电港：产品经理（全国）\n\n卡片里可以直接点进投递页，投前确认还在招。\n\n两个提醒：\n1. H3C 测评明天（10-9）截止，先做掉。\n2. 工银瑞信基金今天（10-8）截止，易方达基金 10-11 截止——这两家你都没投，如果方向能接受，今天就能顺手补上。\n\n要不要我按“截止时间最近”再排一版，帮你定接下来三天的投递顺序？"
+    },
+    {
+      "scenario": "one-word-follow-up",
+      "run": 1,
+      "seconds": 9.6,
+      "tools": [
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 368,
+      "searchedOnOneWord": true,
+      "keptExcludeApplied": true,
+      "reply": "不限城市后，岗位库里你没投过、且有产品类岗位的公司是 389 家（共 405 个岗位）。挑了几家对口度高的（卡片已展开）：\n\n- 剪映 AI 产品经理 / Agent 产品经理（深圳·北京·上海）\n- 光轮智能 技术产品经理 / 战略产品管培生（北京·上海·杭州）\n- 谷雨 AI 产品类（广州）\n- 国网信通产业集团 产品经理（北京·天津·成都）\n- 中电港 产品经理（全国）\n- 江苏金融租赁 IT 产品经理 / AI 应用创新工程师（南京）\n\n另外这几家截止很近，值得优先看：工银瑞信基金（今天 10-08 截止）、易方达基金（10-11）、丽水移动（10-10）。\n\n还是先提醒：H3C 测评明天截止，今天先把它做完再铺新投递。\n\n要我把范围再收一下吗？比如“只投大厂”或“只看 10 月内截止的”，我可以直接给你排个先后顺序。"
+    },
+    {
+      "scenario": "one-word-follow-up",
+      "run": 2,
+      "seconds": 19.9,
+      "tools": [
+        "search_opportunities",
+        "search_opportunities",
+        "show_opportunities"
+      ],
+      "usedTools": true,
+      "claimedActionWithoutTool": false,
+      "wrongAppliedCompanyCount": null,
+      "replyChars": 349,
+      "searchedOnOneWord": true,
+      "keptExcludeApplied": true,
+      "reply": "按“全国 + AI产品/产品经理”筛完，岗位库里还有 405 个对口岗位、389 家公司你没投过。挑了几个方向最贴的放在上面卡片里：\n\n- **剪映**（深圳/北京/上海）：AI产品经理、Agent产品经理，和你投的字节系最接近\n- **光轮智能**（北京/上海/杭州）：技术产品经理、具身平台产品经理\n- **韶音科技**（深圳）：产品经理培训生、软件产品经理\n- **MetaApp**（北京/厦门/成都）：产品经理管培生、游戏产品经理\n- **滴滴**（北京/上海/深圳）：产品助理，国际化金融方向\n- **Babycare**（杭州）：产品经理\n\n另外提醒一句：H3C 的测评 **明天（10/9）截止**，先把它做掉再投新的。\n\n要不要我按“AI产品经理”单独再筛一轮，或者只看北上广深？"
+    }
+  ]
+}

@@ -6,24 +6,27 @@
  * ChatMessage.agentRun.trace, and the next turn replays them.
  */
 import { randomUUID } from "node:crypto";
-import type {
-  ChatAgentExpertNote,
-  ChatAgentName,
-  ChatAttachment,
-  ChatAgentRewrite,
-  ChatAgentRun,
-  ChatAgentStep,
-  ChatMessage,
-  ChatOpportunityResults,
-  JobApplication,
-  PersonalProfile,
-  TailorJobContext
+import {
+  COMPANION_AGENT,
+  type ChatAgentExpertNote,
+  type ChatAgentName,
+  type ChatAttachment,
+  type ChatAgentRewrite,
+  type ChatAgentRun,
+  type ChatAgentStep,
+  type ChatMessage,
+  type ChatOpportunityResults,
+  type ChatRunAgent,
+  type JobApplication,
+  type PersonalProfile,
+  type TailorJobContext
 } from "@offerflow/domain";
 import type { ChatAgentProfile } from "@offerflow/contracts";
 import { careerPlannerSystemPrompt, createCareerPlannerSession, PLANNER_TEAM_DEFAULT_SKILLS } from "./career-planner.ts";
+import { companionAgentPrompt, createCompanionSession, type SelectedMaterial } from "./companion.ts";
 import type { ExpertSkill } from "./experts.ts";
 import { createInterviewCoachSession, interviewCoachSystemPrompt, INTERVIEW_TEAM_DEFAULT_SKILLS } from "./interview-coach.ts";
-import { createJobRadarSession, jobRadarSystemPrompt, RADAR_TEAM_DEFAULT_SKILLS } from "./job-radar.ts";
+import { createJobRadarSession, jobRadarSystemPrompt, RADAR_TEAM_DEFAULT_SKILLS, type OpportunitySearch } from "./job-radar.ts";
 import { runAgentTurn, type AgentMessage, type AgentTool, type ModelClient } from "./loop.ts";
 import { createResumeCoachSession, RESUME_TEAM_DEFAULT_SKILLS, resumeCoachSystemPrompt, type AcceptedRewrite } from "./resume-coach.ts";
 
@@ -66,9 +69,11 @@ export interface TeamMaterials {
   profile?: PersonalProfile;
   job?: TailorJobContext;
   applications: JobApplication[];
-  search: (query: string) => Promise<ChatOpportunityResults>;
+  search: OpportunitySearch;
   /** Today's date in Asia/Shanghai, e.g. "2026-10-07（星期三）". */
   today: string;
+  /** Materials the user picked in the composer, read by the default agent. */
+  selected?: SelectedMaterial[];
 }
 
 interface TeamSession {
@@ -81,13 +86,25 @@ interface TeamSession {
 }
 
 function createTeamSession(
-  team: ChatAgentName,
+  team: ChatRunAgent,
   materials: TeamMaterials,
   experts: ExpertSkill[],
   model: ModelClient,
   conversation: { userStatements: () => string[]; transcript: () => string[]; shownBefore: string[] },
   onExpertNote: (note: ChatAgentExpertNote) => void
 ): TeamSession {
+  if (team === COMPANION_AGENT) {
+    const session = createCompanionSession({
+      search: materials.search,
+      applications: materials.applications,
+      profile: materials.profile,
+      job: materials.job,
+      selected: materials.selected,
+      userStatements: conversation.userStatements,
+      shownBefore: conversation.shownBefore
+    });
+    return { ...session, systemPrompt: companionAgentPrompt() };
+  }
   const shared = { experts, expertModel: model, onExpertNote, userStatements: conversation.userStatements };
   if (team === "interview_coach") {
     const session = createInterviewCoachSession({ ...shared, profile: materials.profile, job: materials.job, transcript: conversation.transcript });
@@ -138,16 +155,23 @@ function compactTurn(message: ChatMessage): string {
  * Tool results (a whole resume, search hits) are the bulk of a trace, so only the
  * last FULL_TRACE_TURNS keep them; the model can call a tool again if it needs one.
  * User messages are always kept whole: they are the evidence the guard checks against.
+ * When `agent` is given, only that agent's traces are replayed: another agent's
+ * tool calls name tools this one does not have, so its turns are kept as text.
  */
-export function agentMessagesFromHistory(history: ChatMessage[], systemPrompt: string): AgentMessage[] {
+export function agentMessagesFromHistory(history: ChatMessage[], systemPrompt: string, agent?: ChatRunAgent): AgentMessage[] {
   const messages: AgentMessage[] = [{ role: "system", content: systemPrompt }];
-  const traced = history.filter((message) => message.role === "assistant" && message.agentRun?.trace.length);
+  const ownTrace = (message: ChatMessage) => message.role === "assistant" && message.agentRun?.trace.length
+    && (agent === undefined || message.agentRun.agent === agent)
+    ? message.agentRun.trace as AgentMessage[]
+    : undefined;
+  const traced = history.filter((message) => ownTrace(message));
   const replayFrom = traced.length > FULL_TRACE_TURNS ? history.indexOf(traced[traced.length - FULL_TRACE_TURNS]) : 0;
   history.forEach((message, index) => {
+    const trace = ownTrace(message);
     if (message.role === "user") {
       messages.push({ role: "user", content: userTurnText(message.content, message.attachments) });
-    } else if (message.role === "assistant" && message.agentRun?.trace.length && index >= replayFrom) {
-      messages.push(...(message.agentRun.trace as AgentMessage[]));
+    } else if (trace && index >= replayFrom) {
+      messages.push(...trace);
     } else if (message.role === "assistant" && message.agentRun?.trace.length) {
       messages.push({ role: "assistant", content: compactTurn(message) });
     } else if (message.role === "assistant" && message.content) {
@@ -158,7 +182,7 @@ export function agentMessagesFromHistory(history: ChatMessage[], systemPrompt: s
 }
 
 export interface TeamTurnInput {
-  team: ChatAgentName;
+  team: ChatRunAgent;
   model: ModelClient;
   materials: TeamMaterials;
   experts: ExpertSkill[];
@@ -213,7 +237,7 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
     pending.push(Promise.resolve(input.onExpertNote?.(note)));
   });
   // Replies stream to the user, so a lead-in written before a tool call would flash on screen and vanish.
-  messages = agentMessagesFromHistory(input.history, `${session.systemPrompt}\n\n${TOOL_CALL_RULE}`);
+  messages = agentMessagesFromHistory(input.history, `${session.systemPrompt}\n\n${TOOL_CALL_RULE}`, input.team);
   messages.push({ role: "user", content: userTurnText(input.prompt, input.attachments) });
   const turnStart = messages.length;
 
@@ -266,7 +290,16 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
         case "search_opportunities":
           emitStep(output.error
             ? { label: "检索岗位库", detail: String(output.error), status: "rejected" }
-            : { label: `检索岗位库「${String(event.args.query || "")}」`, detail: `找到 ${Number(output.total || 0)} 条`, status: "done" });
+            : event.args.exclude_applied === true
+              ? {
+                label: `检索没投过的公司「${String(event.args.query || "")}」`,
+                detail: `${Number(output.companyCount || 0)} 家公司、${Number(output.total || 0)} 个岗位，已排除投过的 ${Number(output.appliedCompaniesExcluded || 0)} 家`,
+                status: "done"
+              }
+              : { label: `检索岗位库「${String(event.args.query || "")}」`, detail: `找到 ${Number(output.total || 0)} 条`, status: "done" });
+          break;
+        case "read_selected_materials":
+          emitStep({ label: "读取选中的材料", detail: `${((output.materials as unknown[]) ?? []).length} 份`, status: "done" });
           break;
         case "show_opportunities":
           emitStep(output.error

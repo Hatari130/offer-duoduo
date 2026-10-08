@@ -88,7 +88,12 @@ async function serverFixture(t, chatOcr) {
     config: { ...loadApiConfig({}), port: 0, demoStreamDelayMs: 0, opportunitySourceUrl: undefined, opportunitySeedPath: undefined },
     chatOcr,
     store: new MemoryStore({ persistence: false }),
-    assistant: { model: "test", async *generate(input) { yield input.citations.map((item) => item.excerpt).join("\n") || "已读取"; } }
+    // Echoes every user message it was shown, attachments included, so tests can see what reached the model.
+    agentModel: {
+      async complete(messages) {
+        return { role: "assistant", content: messages.filter((message) => message.role === "user").map((message) => message.content).join("\n") || "已读取" };
+      }
+    }
   });
   app.server.listen(0, "127.0.0.1");
   await once(app.server, "listening");

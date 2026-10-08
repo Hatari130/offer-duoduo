@@ -8,6 +8,32 @@ import test from "node:test";
 import { createOfferFlowServer } from "../src/server.ts";
 import { loadApiConfig } from "../src/config.ts";
 import { MemoryStore } from "../src/store/memory-store.ts";
+
+/** Stands in for the model: picks a tool from the user's words, then answers with what the tool returned. */
+function ruleBasedAgentModel() {
+  let calls = 0;
+  const call = (name, args = {}) => ({
+    role: "assistant",
+    content: null,
+    tool_calls: [{ id: `call-${++calls}`, type: "function", function: { name, arguments: JSON.stringify(args) } }]
+  });
+  return {
+    async complete(messages) {
+      const last = messages.at(-1);
+      if (last.role === "tool") {
+        const result = JSON.parse(last.content);
+        if (messages.at(-2).tool_calls?.[0]?.function.name === "search_opportunities" && result.items?.length) {
+          return call("show_opportunities", { ids: result.items.map((item) => item.id) });
+        }
+        return { role: "assistant", content: `根据记录：${last.content}` };
+      }
+      if (/这条投递/.test(last.content)) return call("read_selected_materials");
+      if (/投了哪些|下一步/.test(last.content)) return call("list_applications");
+      if (/岗位能投/.test(last.content)) return call("search_opportunities", { query: last.content });
+      return { role: "assistant", content: "先明确目标岗位，再按周复盘投递与面试证据。" };
+    }
+  };
+}
 import { StoreError } from "../src/store/store.ts";
 
 function sampleApplication(overrides = {}) {
@@ -39,16 +65,9 @@ async function startTestServer(configOverrides = {}, appOverrides = {}) {
     opportunitySeedPath: undefined,
     ...configOverrides
   };
-  const assistant = {
-    model: "test-assistant",
-    async *generate() {
-      yield "先明确目标岗位，";
-      yield "再按周复盘投递与面试证据。";
-    }
-  };
   const app = createOfferFlowServer({
     config,
-    assistant,
+    agentModel: ruleBasedAgentModel(),
     store: new MemoryStore({ persistence: false }),
     ...appOverrides
   });
@@ -473,7 +492,8 @@ test("auth, chat streaming, applications and device pairing work end to end", as
     })
   });
   const personalApplicationBody = await personalApplicationStream.text();
-  assert.match(personalApplicationBody, /个人投递管理｜当前投递概览/);
+  // The agent reads every record of this user with a tool, and never another user's.
+  assert.match(personalApplicationBody, /"label":"读取投递记录","detail":"1 条"/);
   assert.match(personalApplicationBody, /远航智能/);
   assert.doesNotMatch(personalApplicationBody, /隐私科技|保密岗位/);
 
@@ -485,7 +505,7 @@ test("auth, chat streaming, applications and device pairing work end to end", as
       clientMessageId: "e2e-personal-applications-follow-up"
     })
   });
-  assert.match(await applicationFollowUpStream.text(), /个人投递管理｜当前投递概览/);
+  assert.match(await applicationFollowUpStream.text(), /"label":"读取投递记录"/);
 
   const applicationContext = await jsonRequest(app.baseUrl, "/v1/chat-context", { headers });
   assert.equal(applicationContext.payload.data.contexts[0].kind, "application");
@@ -499,7 +519,10 @@ test("auth, chat streaming, applications and device pairing work end to end", as
       context: [{ ...applicationContext.payload.data.contexts[0], label: "伪造的材料名称" }]
     })
   });
-  assert.match(await contextualStream.text(), /投递记录｜远航智能 · 产品实习生/);
+  const contextualBody = await contextualStream.text();
+  // The picked record is shown as the answer's source and read by the agent.
+  assert.match(contextualBody, /"type":"citation".*投递记录｜远航智能 · 产品实习生/);
+  assert.match(contextualBody, /"label":"读取选中的材料","detail":"1 份"/);
   const canonicalConversation = await jsonRequest(app.baseUrl, `/v1/conversations/${conversationId}`, { headers });
   assert.equal(canonicalConversation.payload.data.messages.at(-2).context[0].label, "远航智能 · 产品实习生");
 
@@ -577,6 +600,46 @@ test("public opportunity catalogue hydrates an empty store from the configured J
   const second = await jsonRequest(app.baseUrl, "/v1/opportunities");
   assert.equal(second.payload.data.opportunities.length, 1);
   assert.equal(sourceRequests, 1);
+});
+
+test("a stale catalogue is served at once and refreshed in the background", async (t) => {
+  let answerSource;
+  const sourceMayAnswer = new Promise((resolve) => { answerSource = resolve; });
+  // A source as slow as GitHub Pages is from the production server: it answers only when the test says so.
+  const source = createServer(async (_request, response) => {
+    await sourceMayAnswer;
+    response.setHeader("content-type", "application/json; charset=utf-8");
+    response.end(JSON.stringify({
+      updatedAt: "2026-10-08T09:50:00+08:00",
+      items: [{ id: "fresh-role", company: "新数据科技", positions: "产品经理", city: "上海", targetCohort: "2027届", type: "秋招", applyUrl: "https://jobs.example.com/fresh" }]
+    }));
+  });
+  source.listen(0, "127.0.0.1");
+  await once(source, "listening");
+  const store = new MemoryStore({ persistence: false });
+  store.replaceOpportunityFeed({
+    opportunities: [{ id: "old-role", company: "旧数据科技", title: "2027届", graduationYears: ["2027届"], roleTags: ["产品经理"], cities: ["上海"], officialUrl: "https://jobs.example.com/old" }],
+    fetchedAt: "2026-01-01T00:00:00.000Z"
+  });
+  const app = await startTestServer({
+    opportunitySourceUrl: `http://127.0.0.1:${source.address().port}/campus-hiring.json`,
+    opportunityFetchTimeoutSeconds: 5
+  }, { store });
+  t.after(async () => {
+    answerSource();
+    app.server.close();
+    source.close();
+    await Promise.all([once(app.server, "close"), once(source, "close")]);
+  });
+
+  const stale = await jsonRequest(app.baseUrl, "/v1/opportunities");
+  assert.equal(stale.payload.data.opportunities[0].company, "旧数据科技");
+
+  answerSource();
+  for (let attempt = 0; attempt < 100 && store.getOpportunityFeed().opportunities[0]?.company !== "新数据科技"; attempt += 1) {
+    await new Promise((resolve) => setTimeout(resolve, 20));
+  }
+  assert.equal(store.getOpportunityFeed().opportunities[0].company, "新数据科技");
 });
 
 test("public opportunity catalogue hydrates from the bundled snapshot without a remote request", async (t) => {
@@ -687,35 +750,10 @@ test("opportunity catalogue is public and only accepts trusted importer snapshot
     })
   });
   const chatStream = await chat.text();
-  assert.match(chatStream, /我先从 1 条当前可投递的校招岗位里/);
+  // The default agent searches the synced feed and shows the opening as a card with its real link.
+  assert.match(chatStream, /"label":"检索岗位库「目前有哪些岗位能投递？」","detail":"找到 1 条"/);
   assert.match(chatStream, /"opportunityResults"/);
   assert.match(chatStream, /https:\/\/example\.com\/apply/);
-
-  const recentFollowUp = await fetch(`${app.baseUrl}/v1/conversations/${conversation.payload.data.conversation.id}/messages`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      content: "只想最近一周更新的",
-      clientMessageId: "opportunity-recent-week-follow-up"
-    })
-  });
-  const recentFollowUpStream = await recentFollowUp.text();
-  assert.match(recentFollowUpStream, /"opportunityResults"/);
-  assert.match(recentFollowUpStream, /https:\/\/example\.com\/apply/);
-  assert.doesNotMatch(recentFollowUpStream, /无法直接访问实时招聘网站/);
-
-  const followUp = await fetch(`${app.baseUrl}/v1/conversations/${conversation.payload.data.conversation.id}/messages`, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({
-      content: "你不是有json数据没",
-      clientMessageId: "opportunity-search-follow-up"
-    })
-  });
-  const followUpStream = await followUp.text();
-  assert.match(followUpStream, /"opportunityResults"/);
-  assert.match(followUpStream, /https:\/\/example\.com\/apply/);
-  assert.doesNotMatch(followUpStream, /没有接入.*岗位数据库/);
 
   const importStatus = await jsonRequest(app.baseUrl, "/v1/imports/opportunities/status");
   assert.equal(importStatus.payload.data.status, "ready");

@@ -48,6 +48,12 @@ export type ChatAgentName = "resume_coach" | "interview_coach" | "job_radar" | "
 
 export const CHAT_AGENT_NAMES: readonly ChatAgentName[] = ["resume_coach", "interview_coach", "job_radar", "career_planner"];
 
+/** The agent that answers when no team is invited. It is not a team: it cannot be invited and owns no conversation. */
+export const COMPANION_AGENT = "companion";
+
+/** Any agent whose turn can be stored on a message. */
+export type ChatRunAgent = ChatAgentName | typeof COMPANION_AGENT;
+
 /** One visible step of an agent turn, e.g. “读取简历” or a rejected rewrite. */
 export interface ChatAgentStep {
   id: string;
@@ -107,7 +113,7 @@ export interface ChatAgentExpertNote {
 }
 
 export interface ChatAgentRun {
-  agent: ChatAgentName;
+  agent: ChatRunAgent;
   steps: ChatAgentStep[];
   rewrites: ChatAgentRewrite[];
   /** Opinions from experts consulted during this turn. Missing on runs stored before experts existed. */

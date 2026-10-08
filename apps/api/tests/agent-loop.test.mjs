@@ -54,6 +54,50 @@ test("tool errors and unknown tools are returned to the model instead of crashin
   assert.match(messages[3].content, /没有名为 missing 的工具/);
 });
 
+test("text written with a call that shows cards stays in the reply; a preamble before reading data is withdrawn", async () => {
+  const summary = "按你投递记录里的方向筛，岗位库里还有 232 家你没投过的公司，其中和产品岗最贴的六家我放在下面的卡片里，先看剪映和光轮智能。";
+  const streamed = [];
+  let resets = 0;
+  const streaming = (script) => ({
+    async complete(_messages, _tools, options) {
+      const next = script.shift();
+      if (next.content) options.onText?.(next.content);
+      return next;
+    }
+  });
+  const tools = [
+    { name: "show", description: "", parameters: {}, presents: true, run: () => ({ shown: 6 }) },
+    { name: "read", description: "", parameters: {}, run: () => ({ total: 93 }) }
+  ];
+
+  const kept = await runAgentTurn({
+    model: streaming([
+      { role: "assistant", content: summary, tool_calls: [call("c1", "show", {})] },
+      { role: "assistant", content: "卡片里有投递链接。" }
+    ]),
+    tools,
+    messages: [{ role: "user", content: "还有哪些公司没投" }],
+    onText: (delta) => streamed.push(delta),
+    onTextReset: () => { resets += 1; }
+  });
+  assert.equal(kept.reply, `${summary}\n\n卡片里有投递链接。`);
+  assert.equal(streamed.join(""), kept.reply);
+  assert.equal(resets, 0);
+
+  const withdrawn = await runAgentTurn({
+    model: streaming([
+      { role: "assistant", content: "I'll read your applications first, then search for companies you have not applied to.", tool_calls: [call("c2", "read", {})] },
+      { role: "assistant", content: "卡片里有投递链接。" }
+    ]),
+    tools,
+    messages: [{ role: "user", content: "还有哪些公司没投" }],
+    onText: () => {},
+    onTextReset: () => { resets += 1; }
+  });
+  assert.equal(withdrawn.reply, "卡片里有投递链接。");
+  assert.equal(resets, 1);
+});
+
 test("the loop stops at the step limit", async () => {
   const looping = { role: "assistant", content: null, tool_calls: [call("c", "noop", {})] };
   const model = scriptedModel([looping, looping, looping]);
