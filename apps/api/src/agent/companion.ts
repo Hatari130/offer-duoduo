@@ -11,9 +11,8 @@
  */
 import type { JobApplication, PersonalProfile, TailorJobContext } from "@offerflow/domain";
 import { companionSystemPrompt } from "../ai/companion.ts";
-import { assistantRuntimeContext } from "../ai/runtime-context.ts";
 import { createJobRadarSession, type OpportunitySearch } from "./job-radar.ts";
-import { getJobTool } from "./material-tools.ts";
+import { getJobTool, updateApplicationTool, type AgentWriteActions } from "./material-tools.ts";
 import type { AgentTool } from "./loop.ts";
 
 /** Something the user picked in the composer: an application, a resume version or an interview record. */
@@ -30,6 +29,8 @@ export function createCompanionSession(options: {
   selected?: SelectedMaterial[];
   userStatements: () => string[];
   shownBefore?: string[];
+  /** Writes to the user's data; without them 小鲤 only reads. */
+  actions?: AgentWriteActions;
 }) {
   const radar = createJobRadarSession({
     search: options.search,
@@ -47,14 +48,14 @@ export function createCompanionSession(options: {
       run: () => ({ materials: options.selected })
     });
   }
+  if (options.actions) tools.push(updateApplicationTool(options.applications, options.actions));
   return { tools, notes: radar.notes, results: radar.results };
 }
 
-export function companionAgentPrompt(now: Date = new Date()): string {
+/** Stays the same for the whole conversation, so the model API can cache it; the date is sent per turn by runTeamTurn. */
+export function companionAgentPrompt(canWrite = false): string {
   return [
     companionSystemPrompt(),
-    "",
-    assistantRuntimeContext(now),
     "",
     "你有工具可以读用户的全部投递记录、简历和选中的材料，检索 JobKoI 岗位库（第三方公开的校招数据），核对一批公司在岗位库里有没有在招，以及把岗位展示成带投递链接的卡片。需要什么就自己调用。",
     "",
@@ -64,7 +65,10 @@ export function companionAgentPrompt(now: Date = new Date()): string {
     "- 你自己对行业、公司、岗位的了解可以放心用，用户往往正需要这种视野。但“某家公司现在在招、截止时间、投递链接”只能来自岗位库；凭了解提到的公司，要么核对过，要么说清楚是你的推荐、需要去官网确认。",
     "- 先做再问：能从对话和投递记录里看出来的，不要问用户。",
     "- 只说已经做完的事，不说“已经帮你检索”“结果马上回来”这类没发生的事。数量用工具算好的。",
-    "- 卡片会单独显示，回复里不用再罗列链接。改简历、完整的模拟面试，交给用户在输入框上方邀请的“简历精修团队”“面试陪练团队”，那里会核对每条改写的出处。",
+    "- 卡片会单独显示，回复里不用再罗列链接。改简历、完整的模拟面试，交给用户在输入框上方邀请的“简历精修团队”“面试陪练团队”，那里会核对每条改写的出处，也能把改好的简历存成定岗简历。",
+    ...(canWrite
+      ? ["- 用户明确告诉你投递有变化（测评做完了、进了几面、截止时间改了），用 update_application 记到投递记录里，然后一句话告诉他改了什么；他没说过的不要凭推测改。"]
+      : []),
     "- 回复短而具体，先给结果，再给一个下一步，一般不超过 300 字。要列名单时，列最值得看的 6 个左右，其余一句话带过。"
   ].join("\n");
 }

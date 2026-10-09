@@ -9,7 +9,7 @@
 import type { ChatAgentExpertNote, PersonalProfile, TailorJobContext } from "@offerflow/domain";
 import { unbackedClaims } from "./claim-check.ts";
 import { createConsultExpertTool, expertRoster, officialSkills, resolveTeamSkills, type ExpertSkill } from "./experts.ts";
-import { getJobTool, getResumeTool, resumeEntries, unsupportedFacts, userEvidence } from "./material-tools.ts";
+import { getJobTool, getResumeTool, resumeEntries, unsupportedFacts, userEvidence, type AgentWriteActions } from "./material-tools.ts";
 import type { AgentTool, ModelClient } from "./loop.ts";
 
 export { resumeEntries, type ResumeEntry } from "./material-tools.ts";
@@ -48,10 +48,17 @@ export function createResumeCoachSession(options: {
   onExpertNote?: (note: ChatAgentExpertNote) => void;
   /** Checks each new claim in a rewrite against the evidence. Without it only the code check runs. */
   claimChecker?: ModelClient;
+  /** Writes to the user's data. Without them the coach can only propose (as in evals). */
+  actions?: AgentWriteActions;
+  /** Rewrites accepted in earlier turns of this conversation, oldest first. */
+  priorRewrites?: Array<{ entryId: string; after: string }>;
+  /** The tailored resume this conversation already saved to. */
+  savedVersionId?: string;
 }) {
   const entries = options.profile ? resumeEntries(options.profile) : [];
   const accepted = new Map<string, AcceptedRewrite>();
   const notes: ChatAgentExpertNote[] = [];
+  let savedVersionId = options.savedVersionId;
 
   const tools: AgentTool[] = [
     getResumeTool(entries),
@@ -111,6 +118,41 @@ export function createResumeCoachSession(options: {
   });
   if (consult) tools.push(consult);
 
+  const actions = options.actions;
+  if (actions) {
+    tools.push({
+      name: "save_tailored_resume",
+      description: "把这次对话里已经通过检查的改写，写入这个岗位的定制简历。定制简历是网页格式，用户可以在简历页继续编辑、导出 PDF；用户的通用简历不会被改动。用户要求保存、写进简历、生成定岗简历时调用，没要求就不要调用。没有选中岗位时，要填 company 和 position。",
+      parameters: {
+        type: "object",
+        properties: {
+          company: { type: "string", description: "目标公司，没有选中岗位时必填" },
+          position: { type: "string", description: "目标岗位，没有选中岗位时必填" }
+        },
+        additionalProperties: false
+      },
+      async run(args) {
+        // Later rewrites of the same entry win; only rewrites that passed the guard are here.
+        const latest = new Map<string, string>();
+        for (const rewrite of options.priorRewrites ?? []) latest.set(rewrite.entryId, rewrite.after);
+        for (const rewrite of accepted.values()) latest.set(rewrite.entryId, rewrite.after);
+        if (!latest.size) return { error: "还没有通过检查的改写。先用 propose_rewrite 提交，通过后再保存。" };
+        const company = String(args.company || "").trim();
+        const position = String(args.position || "").trim();
+        if (!options.job && !savedVersionId && !(company && position)) {
+          return { error: "没有选中岗位，请填写 company 和 position，或请用户在输入框里选中这条投递" };
+        }
+        const write = await actions.saveTailoredResume({
+          rewrites: [...latest].map(([entryId, after]) => ({ entryId, after })),
+          ...(options.job || savedVersionId ? {} : { job: { company, position } }),
+          ...(savedVersionId ? { previousVersionId: savedVersionId } : {})
+        });
+        savedVersionId = write.versionId;
+        return { saved: true, write };
+      }
+    });
+  }
+
   return { tools, entries, accepted, notes };
 }
 
@@ -128,7 +170,9 @@ export function expertPanelRules(experts: ExpertSkill[]): string[] {
 }
 
 export function resumeCoachSystemPrompt(
-  experts: ExpertSkill[] = resolveTeamSkills("resume_coach", officialSkills(), undefined, RESUME_TEAM_DEFAULT_SKILLS)
+  experts: ExpertSkill[] = resolveTeamSkills("resume_coach", officialSkills(), undefined, RESUME_TEAM_DEFAULT_SKILLS),
+  /** Whether save_tailored_resume is on offer (not in evals that only propose). */
+  canSave = false
 ): string {
   return [
     "你是 JobKoI 简历精修团队的主教练“小鲤”，帮用户把一份简历针对一个目标岗位改好。你通过工具读取资料、提交改写稿。",
@@ -144,6 +188,9 @@ export function resumeCoachSystemPrompt(
     "6. 用户要求编造：一句话说明不能编，问一次真实情况，同时把不需要新素材的改写先提交。",
     "7. 用户要你写一段简历里还没有的经历（比如“帮我写一段班委经历”）：先问清他担任什么角色、做过哪几件事，等他回答后再写。不要先替他假设一个角色或职责写出来再让他确认。",
     "8. 结束时用几行话告诉用户改了哪几条、每条用到了他的哪句回答。",
+    ...(canSave
+      ? ["9. 用户要求保存、写进简历或生成定岗简历时，用 save_tailored_resume 把通过检查的改写写入这个岗位的定制简历；他没要求就不要保存。保存后告诉他可以在简历页打开、继续编辑、导出 PDF。"]
+      : []),
     ...expertPanelRules(experts),
     ...(experts.some((expert) => expert.id === "plain-editor")
       ? ["- 用户嫌改写“太 AI”“太长”“太口语”时，请文字编辑阿简按要求改，再把他的版本用 propose_rewrite 提交。"]

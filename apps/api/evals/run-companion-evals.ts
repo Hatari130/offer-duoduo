@@ -109,7 +109,7 @@ function common(turn: TeamTurnResult, applications: JobApplication[]) {
   // A sentence pushing a deadline for H3C or 汇川, whose assessments are already done.
   const chasesDoneAssessment = turn.reply.split(/[。！？\n]/).some((sentence) =>
     /H3C|汇川/.test(sentence) && /截止|别拖|抓紧|赶紧|尽快|明天|今天|到期/.test(sentence)
-      && !/完成|做完|交完|不用管|不用赶|不用再/.test(sentence));
+      && !/完成|做完|交完|不用管|不用赶|不用再|✅|✓/.test(sentence));
   // "覆盖 17 家公司" when the records cover 65: a count the model made up instead of reading.
   const statedCompanies = turn.reply.match(/(?:覆盖|涉及|投了)\s*(\d+)\s*家/)?.[1];
   const companyCount = new Set(applications.map((item) => item.company)).size;

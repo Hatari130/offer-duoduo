@@ -645,6 +645,7 @@ export function ChatPage({ conversationId }: { conversationId?: string }) {
               onFeedback={feedback}
               onFollowUp={(prompt) => void send(prompt)}
               onOpenWorkspace={(kind) => navigate(kind === "resume" ? "/app/resumes" : "/app/applications")}
+              onNavigate={navigate}
               teamNames={Object.fromEntries(agents.map((agent) => [agent.id, agent.name]))}
             />
           </div>

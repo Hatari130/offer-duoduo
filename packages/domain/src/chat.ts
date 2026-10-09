@@ -112,10 +112,25 @@ export interface ChatAgentExpertNote {
   content: string;
 }
 
+/** Something an agent wrote into the user's data during a turn, shown with a link to it. */
+export interface ChatAgentWrite {
+  kind: "tailored_resume" | "application";
+  /** e.g. "字节跳动 · AI产品经理" */
+  title: string;
+  /** What changed, e.g. "写入 3 条改写" or "测评已完成". */
+  detail: string;
+  /** Where the user can see it in the app. */
+  href: string;
+  /** The tailored resume version, so later turns update it instead of creating another. */
+  versionId?: string;
+}
+
 export interface ChatAgentRun {
   agent: ChatRunAgent;
   steps: ChatAgentStep[];
   rewrites: ChatAgentRewrite[];
+  /** Writes made this turn. Missing on runs stored before agents could write. */
+  writes?: ChatAgentWrite[];
   /** Opinions from experts consulted during this turn. Missing on runs stored before experts existed. */
   notes?: ChatAgentExpertNote[];
   /** Skills on the team for this turn; later turns keep them unless the user changes the team. */

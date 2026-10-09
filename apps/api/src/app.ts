@@ -19,6 +19,7 @@ import type {
   SessionUser,
   UpdateConversationRequest,
   UpdateApplicationRequest,
+  ResumeTemplateRecord,
   UpdateResumeTemplateRequest
 } from "@offerflow/contracts";
 import {
@@ -70,11 +71,17 @@ import {
   cloudResumeToPersonalProfile,
   COMPANION_AGENT,
   DEFAULT_CHAT_COMPANION,
+  INTERVIEW_ROUND_LABELS,
   opportunityStatus,
   RECRUITMENT_TYPES,
+  selectableStage,
   STAGE_LABELS,
   type ChatRunAgent
 } from "@offerflow/domain";
+import { applyRewrites, type AgentWriteActions } from "./agent/material-tools.ts";
+
+/** The resume a team reads, and writes rewrites back to (a general resume is never overwritten). */
+type ResumeBase = { kind: "version"; versionId: string } | { kind: "template"; template: ResumeTemplateRecord };
 import { createDirectMailMailer, type EmailMailer } from "./auth/direct-mail.ts";
 import { createEmailVerificationService } from "./auth/email-verification.ts";
 import { createResumeTailorProvider, type ResumeTailorProvider } from "./ai/resume-tailor.ts";
@@ -652,41 +659,139 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
   }
 
   /** The resume and job a team works on: the first ones the user picked, else their latest resume. */
+  /**
+   * The resume and job a team works on. The resume is, in order: the version the user
+   * picked; the picked application's tailored resume, so tailoring continues where the
+   * user left it; their latest general resume. Writes go back to the same resume.
+   */
   async function teamResumeAndJob(
     userId: string,
     references: ChatContextReference[]
-  ): Promise<{ profile?: PersonalProfile; job?: TailorJobContext }> {
+  ): Promise<{ profile?: PersonalProfile; job?: TailorJobContext; application?: JobApplication; base?: ResumeBase }> {
     const resumeReference = references.find((reference) => reference.kind === "resume");
     const applicationReference = references.find((reference) => reference.kind === "application");
+    const application = applicationReference
+      ? (await store.listApplications(userId)).find((item) => !item.deletedAt && item.application.id === applicationReference.id)?.application
+      : undefined;
+    const versions = await store.listResumeVersions(userId);
+    const version = versions.find((item) => item.version.id === resumeReference?.id)
+      ?? versions.find((item) => item.version.id === application?.tailoredResumeVersionId);
+    let base: ResumeBase | undefined;
     let profile: PersonalProfile | undefined;
-    if (resumeReference) {
-      profile = (await store.listResumeVersions(userId))
-        .find((item) => item.version.id === resumeReference.id)?.version.document.profile;
-    }
-    if (!profile) {
+    if (version) {
+      base = { kind: "version", versionId: version.version.id };
+      profile = version.version.document.profile;
+    } else {
       const latest = (await store.listResumeTemplates(userId))
         .filter((template) => !template.deletedAt)
         .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))[0];
-      profile = latest ? latest.document?.profile ?? cloudResumeToPersonalProfile(latest.profile) : undefined;
-    }
-    let job: TailorJobContext | undefined;
-    if (applicationReference) {
-      const application = (await store.listApplications(userId))
-        .find((item) => !item.deletedAt && item.application.id === applicationReference.id)?.application;
-      if (application) {
-        job = {
-          company: application.company,
-          position: application.position,
-          city: application.city,
-          sourceUrl: application.sourceUrl,
-          summary: application.summary,
-          responsibilities: application.responsibilities,
-          requirements: application.requirements,
-          rawExcerpt: application.rawExcerpt
-        };
+      if (latest) {
+        base = { kind: "template", template: latest };
+        profile = latest.document?.profile ?? cloudResumeToPersonalProfile(latest.profile);
       }
     }
-    return { profile, job };
+    const job: TailorJobContext | undefined = application ? {
+      company: application.company,
+      position: application.position,
+      city: application.city,
+      sourceUrl: application.sourceUrl,
+      summary: application.summary,
+      responsibilities: application.responsibilities,
+      requirements: application.requirements,
+      rawExcerpt: application.rawExcerpt
+    } : undefined;
+    return { profile, job, application, base };
+  }
+
+  /**
+   * What the agents may write, bound to this user and conversation. Nothing here
+   * touches the general resume: rewrites go to a tailored copy for the job.
+   */
+  function agentWriteActions(
+    userId: string,
+    context: { base?: ResumeBase; job?: TailorJobContext; application?: JobApplication }
+  ): AgentWriteActions {
+    return {
+      async saveTailoredResume({ rewrites, job, previousVersionId }) {
+        let target = previousVersionId ? await store.getResumeVersion(userId, previousVersionId) : undefined;
+        if (!target && context.base?.kind === "version") target = await store.getResumeVersion(userId, context.base.versionId);
+        let created = false;
+        if (!target) {
+          if (context.base?.kind !== "template") throw new Error("还没有可用的通用简历，请先到“简历”页建一份");
+          const template = context.base.template;
+          const targetJob = context.job ?? (job && { company: job.company, position: job.position, sourceUrl: "", responsibilities: [], requirements: [] });
+          if (!targetJob) throw new Error("没有目标岗位，请填写 company 和 position");
+          target = (await store.createTailorTask(userId, {
+            sourceResumeId: template.id,
+            sourceRevision: template.revision,
+            sourceResumeName: template.name,
+            sourceProfile: template.document?.profile ?? cloudResumeToPersonalProfile(template.profile),
+            sourceAssets: template.document?.assets,
+            sourcePortraitAssetId: template.document?.portraitAssetId,
+            sourceEvidence: template.document?.sourceEvidence,
+            applicationId: context.application?.id,
+            job: targetJob
+          })).version;
+          created = true;
+        }
+        const { profile, applied } = applyRewrites(target.version.document.profile, rewrites);
+        if (!applied.length) throw new Error("改写对应的条目在定岗简历里找不到，可能已经被手动删除");
+        const saved = await store.updateResumeVersion(
+          userId,
+          target.version.id,
+          { ...target.version.document, profile, updatedAt: new Date().toISOString() },
+          target.revision
+        );
+        const skipped = rewrites.length - applied.length;
+        return {
+          kind: "tailored_resume",
+          title: `${saved.version.company} · ${saved.version.position}`,
+          detail: `${created ? "新建定岗简历，" : ""}写入 ${applied.length} 条改写${skipped ? `，${skipped} 条找不到对应条目` : ""}`,
+          href: `/app/resumes/tailor/${encodeURIComponent(saved.version.tailorTaskId)}`,
+          versionId: saved.version.id
+        };
+      },
+      async updateApplication(update) {
+        const record = await store.getApplication(userId, update.applicationId);
+        if (!record || record.deletedAt) throw new Error("没有找到这条投递");
+        const before = record.application;
+        const next: JobApplication = { ...before };
+        const changes: string[] = [];
+        if (update.stage && update.stage !== selectableStage(before.stage)) {
+          next.stage = update.stage;
+          changes.push(`阶段改为“${STAGE_LABELS[update.stage]}”`);
+        }
+        if (update.interviewRound && update.interviewRound !== before.interviewRound) {
+          next.interviewRound = update.interviewRound;
+          changes.push(`面试轮次：${INTERVIEW_ROUND_LABELS[update.interviewRound]}`);
+        }
+        if (update.assessmentDone !== undefined && update.assessmentDone !== Boolean(before.assessmentCompleted)) {
+          next.assessmentCompleted = update.assessmentDone || undefined;
+          changes.push(update.assessmentDone ? "测评已完成" : "测评改为未完成");
+        }
+        if (update.nextAction && update.nextAction !== before.nextAction) {
+          next.nextAction = update.nextAction;
+          changes.push(`下一步：${update.nextAction}`);
+        }
+        if (update.deadline && update.deadline !== before.deadline) {
+          next.deadline = update.deadline;
+          changes.push(`截止时间：${update.deadline}`);
+        }
+        const title = `${before.company} · ${before.position}`;
+        if (!changes.length) return { write: { kind: "application", title, detail: "和记录一致，没有改动", href: "/app/applications" }, application: before };
+        const now = new Date().toISOString();
+        next.updatedAt = now;
+        // The timeline keeps what changed and who changed it, so a wrong edit can be found and undone.
+        next.events = [...before.events, {
+          id: crypto.randomUUID(),
+          type: update.stage && update.stage !== selectableStage(before.stage) ? "stage_changed" : "updated",
+          title: `小鲤根据对话更新：${changes.join("，")}`,
+          occurredAt: now
+        }];
+        const saved = await store.updateApplication(userId, next, record.revision);
+        return { write: { kind: "application", title, detail: changes.join("，"), href: "/app/applications" }, application: saved.application };
+      }
+    };
   }
 
   /** The team that owns a conversation: the one that answered most recently. The default agent owns none. */
@@ -744,8 +849,11 @@ export function createOfferFlowApp(options: OfferFlowAppOptions = {}) {
       ? []
       : resolveTeamSkills(team, await availableSkills(userId), requestedSkills ?? lastRun?.skills, TEAM_PROFILES[team].defaultSkills);
     const selectedEntries = companion ? await selectedContextKnowledge(userId, references) : [];
+    const resumeAndJob = await teamResumeAndJob(userId, references);
     const materials: TeamMaterials = {
-      ...(await teamResumeAndJob(userId, references)),
+      profile: resumeAndJob.profile,
+      job: resumeAndJob.job,
+      actions: agentWriteActions(userId, resumeAndJob),
       applications: (await store.listApplications(userId)).filter((item) => !item.deletedAt).map((item) => item.application),
       search: async (query, options) => {
         const { snapshot, sourceAvailable } = await freshOpportunitySnapshot();

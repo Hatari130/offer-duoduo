@@ -14,6 +14,7 @@ import {
   type ChatAgentRewrite,
   type ChatAgentRun,
   type ChatAgentStep,
+  type ChatAgentWrite,
   type ChatMessage,
   type ChatOpportunityResults,
   type ChatRunAgent,
@@ -27,7 +28,9 @@ import { companionAgentPrompt, createCompanionSession, type SelectedMaterial } f
 import type { ExpertSkill } from "./experts.ts";
 import { createInterviewCoachSession, interviewCoachSystemPrompt, INTERVIEW_TEAM_DEFAULT_SKILLS } from "./interview-coach.ts";
 import { createJobRadarSession, jobRadarSystemPrompt, RADAR_TEAM_DEFAULT_SKILLS, type OpportunitySearch } from "./job-radar.ts";
+import { assistantRuntimeContext } from "../ai/runtime-context.ts";
 import { runAgentTurn, type AgentMessage, type AgentTool, type ModelClient } from "./loop.ts";
+import type { AgentWriteActions } from "./material-tools.ts";
 import { createResumeCoachSession, RESUME_TEAM_DEFAULT_SKILLS, resumeCoachSystemPrompt, type AcceptedRewrite } from "./resume-coach.ts";
 
 export const TEAM_PROFILES: Record<ChatAgentName, ChatAgentProfile> = {
@@ -74,6 +77,8 @@ export interface TeamMaterials {
   today: string;
   /** Materials the user picked in the composer, read by the default agent. */
   selected?: SelectedMaterial[];
+  /** Writes to the user's data. Without them the agents only read and propose. */
+  actions?: AgentWriteActions;
 }
 
 interface TeamSession {
@@ -90,9 +95,16 @@ function createTeamSession(
   materials: TeamMaterials,
   experts: ExpertSkill[],
   model: ModelClient,
-  conversation: { userStatements: () => string[]; transcript: () => string[]; shownBefore: string[] },
+  conversation: {
+    userStatements: () => string[];
+    transcript: () => string[];
+    shownBefore: string[];
+    priorRewrites: Array<{ entryId: string; after: string }>;
+    savedVersionId?: string;
+  },
   onExpertNote: (note: ChatAgentExpertNote) => void
 ): TeamSession {
+  const { actions } = materials;
   if (team === COMPANION_AGENT) {
     const session = createCompanionSession({
       search: materials.search,
@@ -101,9 +113,10 @@ function createTeamSession(
       job: materials.job,
       selected: materials.selected,
       userStatements: conversation.userStatements,
-      shownBefore: conversation.shownBefore
+      shownBefore: conversation.shownBefore,
+      actions
     });
-    return { ...session, systemPrompt: companionAgentPrompt() };
+    return { ...session, systemPrompt: companionAgentPrompt(Boolean(actions)) };
   }
   const shared = { experts, expertModel: model, onExpertNote, userStatements: conversation.userStatements };
   if (team === "interview_coach") {
@@ -121,11 +134,28 @@ function createTeamSession(
     return { ...session, systemPrompt: jobRadarSystemPrompt(experts) };
   }
   if (team === "career_planner") {
-    const session = createCareerPlannerSession({ ...shared, applications: materials.applications, profile: materials.profile, today: materials.today });
-    return { ...session, systemPrompt: careerPlannerSystemPrompt(experts, materials.today) };
+    const session = createCareerPlannerSession({ ...shared, applications: materials.applications, profile: materials.profile, today: materials.today, actions });
+    return { ...session, systemPrompt: careerPlannerSystemPrompt(experts, Boolean(actions)) };
   }
-  const session = createResumeCoachSession({ ...shared, profile: materials.profile, job: materials.job, claimChecker: model });
-  return { ...session, systemPrompt: resumeCoachSystemPrompt(experts) };
+  const session = createResumeCoachSession({
+    ...shared,
+    profile: materials.profile,
+    job: materials.job,
+    claimChecker: model,
+    actions,
+    priorRewrites: conversation.priorRewrites,
+    savedVersionId: conversation.savedVersionId
+  });
+  return { ...session, systemPrompt: resumeCoachSystemPrompt(experts, Boolean(actions)) };
+}
+
+/** Rewrites the resume team accepted in earlier turns, oldest first, and the tailored resume it last saved to. */
+function resumeWorkFromHistory(history: ChatMessage[]) {
+  const runs = history.flatMap((message) => message.agentRun?.agent === "resume_coach" ? [message.agentRun] : []);
+  return {
+    priorRewrites: runs.flatMap((run) => run.rewrites.map(({ entryId, after }) => ({ entryId, after }))),
+    savedVersionId: runs.flatMap((run) => run.writes ?? []).filter((write) => write.kind === "tailored_resume").at(-1)?.versionId
+  };
 }
 
 /**
@@ -196,6 +226,8 @@ export interface TeamTurnInput {
   onExpertNote?: (note: ChatAgentExpertNote) => void | Promise<void>;
   /** Cancels the turn (stop button, closed tab). */
   signal?: AbortSignal;
+  /** The current time; defaults to now. */
+  now?: Date;
   onText?: (delta: string) => void | Promise<void>;
   onTextReset?: () => void | Promise<void>;
 }
@@ -227,7 +259,8 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
     userStatements: () => messages.filter((message) => message.role === "user").map((message) => message.content || ""),
     transcript: () => messages
       .filter((message) => (message.role === "user" || message.role === "assistant") && message.content)
-      .map((message) => `${message.role === "user" ? "候选人" : "面试官"}：${message.content}`)
+      .map((message) => `${message.role === "user" ? "候选人" : "面试官"}：${message.content}`),
+    ...resumeWorkFromHistory(input.history)
   };
   // Expert calls stop with the turn too.
   const expertModel: ModelClient = {
@@ -238,12 +271,18 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
   });
   // Replies stream to the user, so a lead-in written before a tool call would flash on screen and vanish.
   messages = agentMessagesFromHistory(input.history, `${session.systemPrompt}\n\n${TOOL_CALL_RULE}`, input.team);
+  // The date changes every request. The model API caches the longest unchanged prefix, so the
+  // date goes last, after the history: in the system prompt it would make the whole history
+  // uncacheable (measured: 4% of input tokens cached instead of 93%). It is a system message,
+  // not part of the user's text, so its numbers never count as evidence for a rewrite.
+  messages.push({ role: "system", content: assistantRuntimeContext(input.now ?? new Date()) });
   messages.push({ role: "user", content: userTurnText(input.prompt, input.attachments) });
   const turnStart = messages.length;
 
   const steps: ChatAgentStep[] = [];
   const rewrites: ChatAgentRewrite[] = [];
-  const emitStep = (step: Omit<ChatAgentStep, "id">) => {
+  const writes: ChatAgentWrite[] = [];
+  const emitStep =(step: Omit<ChatAgentStep, "id">) => {
     const full = { id: randomUUID(), ...step };
     steps.push(full);
     pending.push(Promise.resolve(input.onStep?.(full)));
@@ -323,6 +362,17 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
           }
           break;
         }
+        case "save_tailored_resume":
+        case "update_application": {
+          const write = output.write as ChatAgentWrite | undefined;
+          if (write) {
+            writes.push(write);
+            emitStep({ label: event.name === "save_tailored_resume" ? `存入定岗简历「${write.title}」` : `更新投递「${write.title}」`, detail: write.detail, status: "done" });
+          } else {
+            emitStep({ label: event.name === "save_tailored_resume" ? "保存定岗简历" : "更新投递", detail: rejected(output), status: "rejected" });
+          }
+          break;
+        }
       }
     }
   });
@@ -335,6 +385,7 @@ export async function runTeamTurn(input: TeamTurnInput): Promise<TeamTurnResult>
       agent: input.team,
       steps,
       rewrites,
+      ...(writes.length ? { writes } : {}),
       notes: session.notes,
       skills: input.experts.map((expert) => expert.id),
       trace: messages.slice(turnStart)

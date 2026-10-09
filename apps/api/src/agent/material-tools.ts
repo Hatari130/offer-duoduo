@@ -2,8 +2,8 @@
  * Tools and helpers shared by the teams: reading the user's materials and
  * checking that written text only uses facts the user actually gave.
  */
-import type { JobApplication, PersonalProfile, TailorJobContext } from "@offerflow/domain";
-import { applicationStageLabel, selectableStage, STAGE_LABELS } from "@offerflow/domain";
+import type { ChatAgentWrite, InterviewRound, JobApplication, PersonalProfile, TailorJobContext } from "@offerflow/domain";
+import { applicationStageLabel, INTERVIEW_ROUNDS, SELECTABLE_STAGES, selectableStage, STAGE_LABELS } from "@offerflow/domain";
 import { findUnsupportedClaims, withoutJobPostings, type FabricationFinding } from "./fabrication.ts";
 import type { AgentTool } from "./loop.ts";
 
@@ -49,6 +49,113 @@ export function resumeEntries(profile: PersonalProfile): ResumeEntry[] {
     ...profile.projects.map((entry) => ({ id: entry.id, section: "项目" as const, title: `${entry.name} · ${entry.role}`, text: lines(entry.description) })),
     ...profile.campusExperiences.map((entry) => ({ id: entry.id, section: "在校经历" as const, title: `${entry.type} · ${entry.role}`, text: lines(entry.description) }))
   ].filter((entry) => entry.text);
+}
+
+/** Rewritten text in the shape of the original: bullets stay bullets. */
+function asDescription(original: string, rewritten: string): string {
+  const bulleted = original.split("\n").some((line) => /^\s*[•\-]/.test(line));
+  const lines = rewritten.split("\n").map(stripBullet).filter(Boolean);
+  return bulleted ? lines.map((line) => `• ${line}`).join("\n") : lines.join("\n");
+}
+
+/**
+ * The inverse of resumeEntries: puts rewritten entries back into a profile.
+ * Returns a new profile and the ids that were found; unknown ids are skipped.
+ */
+export function applyRewrites(
+  profile: PersonalProfile,
+  rewrites: Array<{ entryId: string; after: string }>
+): { profile: PersonalProfile; applied: string[] } {
+  const next = structuredClone(profile);
+  const applied: string[] = [];
+  for (const { entryId, after } of rewrites) {
+    if (entryId === "summary") {
+      next.selfIntroduction = after.trim();
+      applied.push(entryId);
+      continue;
+    }
+    if (entryId === "strengths") {
+      next.strengths = after.trim();
+      applied.push(entryId);
+      continue;
+    }
+    const entry = [...next.experiences, ...next.projects, ...next.campusExperiences].find((item) => item.id === entryId);
+    if (!entry) continue;
+    entry.description = asDescription(entry.description, after);
+    applied.push(entryId);
+  }
+  return { profile: next, applied };
+}
+
+/** A change to one application, as the agent may make it. */
+export interface ApplicationUpdate {
+  applicationId: string;
+  assessmentDone?: boolean;
+  stage?: (typeof SELECTABLE_STAGES)[number];
+  interviewRound?: InterviewRound;
+  nextAction?: string;
+  /** "YYYY-MM-DD" or "YYYY-MM-DD HH:mm"; shows in the calendar. */
+  deadline?: string;
+}
+
+/**
+ * Writes the agents may make, implemented by the app against the store. Absent
+ * in evals and tests that only read; the write tools are then not offered.
+ */
+export interface AgentWriteActions {
+  /** Puts accepted rewrites into the job's tailored resume, creating it from the base resume if needed. */
+  saveTailoredResume(input: {
+    rewrites: Array<{ entryId: string; after: string }>;
+    /** The target job when none was picked in the composer. */
+    job?: { company: string; position: string };
+    /** The version this conversation saved before, to update rather than create another. */
+    previousVersionId?: string;
+  }): Promise<ChatAgentWrite>;
+  updateApplication(update: ApplicationUpdate): Promise<{ write: ChatAgentWrite; application: JobApplication }>;
+}
+
+const DEADLINE_FORMAT = /^\d{4}-\d{2}-\d{2}(?: \d{2}:\d{2})?$/;
+
+/**
+ * Records a change the user stated (an assessment done, a new interview round,
+ * a deadline). The record keeps its history, so a wrong change can be seen and undone.
+ */
+export function updateApplicationTool(applications: JobApplication[], actions: AgentWriteActions): AgentTool {
+  return {
+    name: "update_application",
+    description: "更新用户的一条投递记录：标记测评已完成、改阶段（含面试轮次）、写下一步、设截止时间（会出现在日历里）。只记录用户明确说过的变化，比如“H3C 测评做完了”“我进二面了”“满帮测评改到 15 号截止”；不要根据推测修改。application_id 来自 list_applications。",
+    parameters: {
+      type: "object",
+      properties: {
+        application_id: { type: "string", description: "list_applications 返回的 id" },
+        assessment_done: { type: "boolean", description: "测评或笔试是否已完成" },
+        stage: { type: "string", enum: [...SELECTABLE_STAGES], description: "新阶段：interested 感兴趣、applied 已投递、assessment 测评、interview 面试、offer、closed 已结束" },
+        interview_round: { type: "string", enum: [...INTERVIEW_ROUNDS], description: "面试轮次，stage 为 interview 时填写" },
+        next_action: { type: "string", description: "用户自己说了接下来要做什么时才填，一句话；不要替他写建议" },
+        deadline: { type: "string", description: "截止时间，格式 2026-10-15 或 2026-10-15 18:00" }
+      },
+      required: ["application_id"],
+      additionalProperties: false
+    },
+    async run(args) {
+      const index = applications.findIndex((application) => application.id === args.application_id);
+      if (index < 0) return { error: `没有 id 为 ${String(args.application_id)} 的投递，请先调用 list_applications 查看` };
+      const update: ApplicationUpdate = { applicationId: String(args.application_id) };
+      if (typeof args.assessment_done === "boolean") update.assessmentDone = args.assessment_done;
+      if (typeof args.stage === "string") update.stage = args.stage as ApplicationUpdate["stage"];
+      if (typeof args.interview_round === "string") update.interviewRound = args.interview_round as InterviewRound;
+      if (typeof args.next_action === "string" && args.next_action.trim()) update.nextAction = args.next_action.trim();
+      if (typeof args.deadline === "string") {
+        if (!DEADLINE_FORMAT.test(args.deadline.trim())) return { error: "deadline 格式应为 2026-10-15 或 2026-10-15 18:00" };
+        update.deadline = args.deadline.trim();
+      }
+      if (Object.keys(update).length === 1) return { error: "没有要更新的内容" };
+      const { write, application } = await actions.updateApplication(update);
+      // Later reads in this turn see the change.
+      applications[index] = application;
+      return { updated: true, write, application: applicationSummary(application) };
+    }
+  };
 }
 
 const EMPTY_OBJECT_SCHEMA = { type: "object", properties: {}, additionalProperties: false };

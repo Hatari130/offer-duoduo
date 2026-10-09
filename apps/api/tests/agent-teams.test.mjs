@@ -266,3 +266,25 @@ test("the agents see which assessments are done, so they do not chase a finished
   ]);
   assert.equal(result.applications[2].siteStatus, "测评已完成");
 });
+
+test("the date is sent after the history, so the system prompt and history stay cacheable", async () => {
+  const { runTeamTurn } = await import("../src/agent/teams.ts");
+  const seen = [];
+  const model = { async complete(messages) { seen.push(messages.map((message) => ({ ...message }))); return { role: "assistant", content: "好的" }; } };
+  const history = [
+    { id: "u1", role: "user", content: "我投了哪些", attachments: [], citations: [], status: "complete" },
+    { id: "a1", role: "assistant", content: "你投了 93 条。", attachments: [], citations: [], status: "complete" }
+  ];
+  const materials = { applications: [], search: async () => ({ query: "", total: 0, items: [], sourceAvailable: true, isBroadSearch: true }), today: "2026-10-08（星期四）" };
+  for (const now of [new Date("2026-10-08T10:00:01+08:00"), new Date("2026-10-08T10:07:42+08:00")]) {
+    await runTeamTurn({ team: "companion", model, materials, experts: [], history, prompt: "满帮哪天截止", now });
+  }
+
+  const [first, second] = seen;
+  // Everything before the date is byte-identical between the two requests.
+  assert.deepEqual(first.slice(0, -2), second.slice(0, -2));
+  assert.equal(first.at(-2).role, "system");
+  assert.match(first.at(-2).content, /当前北京时间：2026-10-08 10:00:01/);
+  assert.match(second.at(-2).content, /当前北京时间：2026-10-08 10:07:42/);
+  assert.equal(first.at(-1).content, "满帮哪天截止");
+});

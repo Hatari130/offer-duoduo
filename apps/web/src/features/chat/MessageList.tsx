@@ -3,6 +3,7 @@ import type {
   ChatAgentExpertNote,
   ChatAgentRewrite,
   ChatAgentRun,
+  ChatAgentWrite,
   ChatContextKind,
   ChatMessage,
   ChatOpportunityResults,
@@ -42,6 +43,8 @@ interface MessageListProps {
   onFeedback: (message: ChatMessage, feedback: "positive" | "negative") => void;
   onFollowUp: (prompt: string) => void;
   onOpenWorkspace: (kind: ChatContextKind) => void;
+  /** Opens a page in the app, e.g. a tailored resume the agent saved. */
+  onNavigate: (href: string) => void;
   /** Team names for the byline of agent turns. */
   teamNames?: Partial<Record<ChatRunAgent, string>>;
 }
@@ -108,6 +111,7 @@ export function MessageList({
   onFeedback,
   onFollowUp,
   onOpenWorkspace,
+  onNavigate,
   teamNames = {}
 }: MessageListProps) {
   const endRef = useRef<HTMLDivElement>(null);
@@ -231,6 +235,10 @@ export function MessageList({
                   rewrites={message.agentRun.rewrites}
                   onAdjust={message.id === lastAssistantId && message.status === "complete" ? onFollowUp : undefined}
                 />
+              )}
+
+              {message.agentRun?.writes && message.agentRun.writes.length > 0 && (
+                <AgentWrites writes={message.agentRun.writes} onOpen={onNavigate} />
               )}
 
               {message.status === "error" && (
@@ -472,6 +480,29 @@ function CitationList({ citations }: { citations: KnowledgeCitation[] }) {
         )}
       </dialog>
     </>
+  );
+}
+
+/** What the agent saved this turn, each with a way to open it. */
+function AgentWrites({ writes, onOpen }: { writes: ChatAgentWrite[]; onOpen: (href: string) => void }) {
+  return (
+    <section className="agent-writes" aria-label="小鲤这一轮保存的内容">
+      {writes.map((write, index) => (
+        <article className="agent-write" key={`${write.href}-${index}`}>
+          <span className="agent-write__icon" aria-hidden="true">
+            {write.kind === "tailored_resume" ? <FileText size={15} /> : <Check size={15} />}
+          </span>
+          <div>
+            <strong>{write.kind === "tailored_resume" ? "已存入定岗简历" : "已更新投递"}｜{write.title}</strong>
+            <span>{write.detail}</span>
+          </div>
+          <button type="button" onClick={() => onOpen(write.href)}>
+            {write.kind === "tailored_resume" ? "打开编辑 / 导出 PDF" : "查看投递"}
+            <ArrowUpRight aria-hidden="true" size={13} />
+          </button>
+        </article>
+      ))}
+    </section>
   );
 }
 

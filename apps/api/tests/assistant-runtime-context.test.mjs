@@ -20,10 +20,11 @@ test("uses Shanghai time even when UTC is still on the previous day", () => {
   assert.match(context, /“昨天”指 2026-08-31/);
 });
 
-test("the default agent's system prompt carries the runtime date and principles, not procedures", () => {
-  const prompt = companionAgentPrompt(new Date("2026-08-31T06:30:45.000Z"));
+test("the default agent's system prompt carries principles, not procedures, and no date", () => {
+  const prompt = companionAgentPrompt();
 
-  assert.match(prompt, /当前北京时间：2026-08-31 14:30:45（星期一）/);
+  // The date changes every request and would stop the model API from caching the prompt and history.
+  assert.doesNotMatch(prompt, /当前北京时间/);
   // Its own knowledge is welcome; hiring facts come from the feed.
   assert.match(prompt, /你自己对行业、公司、岗位的了解可以放心用/);
   assert.match(prompt, /只能来自岗位库/);
