@@ -1,5 +1,7 @@
+:root,
 .app-frame {
-  /* App-only visual theme: cool white surfaces with a restrained indigo route accent. */
+  /* The cool white + indigo theme. Declared on :root too, so the login page, the boot screen and
+     anything rendered outside the shell stop falling back to the old warm-paper tokens from @offerflow/ui. */
   --of-paper: #f7f8fb;
   --of-paper-surface: #ffffff;
   --of-ink: #161922;
@@ -82,6 +84,9 @@
     0 30px 84px -30px rgb(37 47 80 / 0.32);
   --of-sidebar-expanded-width: 17rem;
   --of-sidebar-collapsed-width: 4.5rem;
+}
+
+.app-frame {
   display: grid;
   height: 100vh;
   height: 100dvh;
