@@ -41,6 +41,7 @@ import {
   Plus,
   Search,
   Send,
+  Share2,
   Star,
   Table2,
   Upload,
@@ -51,6 +52,7 @@ import { api } from "../app/api";
 import { createUuid } from "../app/id";
 import { navigate, startUiTransition } from "../app/router";
 import { BatchImportDialog } from "../features/applications/BatchImportDialog";
+import { ShareReportDialog } from "../features/applications/ShareReportDialog";
 import { InterviewRecordsDialog } from "../features/applications/InterviewRecordsDialog";
 import { computeDeadlineStatus } from "../features/applications/applicationDeadline";
 import { downloadApplicationExport } from "../features/applications/applicationExcelExport";
@@ -118,6 +120,7 @@ export function ApplicationsPage() {
   });
   const [exporting, setExporting] = useState(false);
   const [importOpen, setImportOpen] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
   const [expandedEmptyStages, setExpandedEmptyStages] = useState<Set<ApplicationStage>>(() => new Set());
   const [dialog, setDialog] = useState<{ mode: "create" } | { mode: "edit"; item: ApplicationSyncItem }>();
   const [interviewDialog, setInterviewDialog] = useState<ApplicationSyncItem>();
@@ -407,6 +410,15 @@ export function ApplicationsPage() {
         >
           <Upload aria-hidden="true" size={16} />批量导入
         </button>
+        <button
+          className="application-export-button"
+          type="button"
+          disabled={loading || items.length === 0}
+          title="把全部投递生成一张可以发到小红书的战报图片"
+          onClick={() => setReportOpen(true)}
+        >
+          <Share2 aria-hidden="true" size={16} />生成战报
+        </button>
         <div className="view-switch" aria-label="显示方式">
           <button type="button" aria-pressed={view === "table"} onClick={() => selectView("table")}><Table2 aria-hidden="true" size={16} />表格</button>
           <button type="button" aria-pressed={view === "board"} onClick={() => selectView("board")}><Columns3 aria-hidden="true" size={16} />看板</button>
@@ -599,6 +611,12 @@ export function ApplicationsPage() {
         <InterviewRecordsDialog
           item={interviewDialog}
           onClose={() => setInterviewDialog(undefined)}
+        />
+      )}
+      {reportOpen && (
+        <ShareReportDialog
+          items={items}
+          onClose={() => setReportOpen(false)}
         />
       )}
       {importOpen && (
