@@ -43,8 +43,6 @@ import { ConversationSearchDialog } from "../features/chat/ConversationSearchDia
 import { groupConversations } from "../features/chat/conversationHistory";
 
 export const OPEN_CONVERSATION_SEARCH_EVENT = "offerflow:open-conversation-search";
-const IS_APPLE_PLATFORM = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent);
-const MOD_KEY = IS_APPLE_PLATFORM ? "⌘" : "Ctrl";
 
 interface AppLinkProps extends PropsWithChildren {
   href: string;
@@ -463,20 +461,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         >
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
           <span className="sidebar-item-label">新对话</span>
-          <span className="sidebar-shortcut">{IS_APPLE_PLATFORM ? "⇧⌘O" : "Ctrl ⇧ O"}</span>
         </AppLink>
-
-        <button
-          type="button"
-          className="nav-link sidebar-search-button"
-          title={sidebarCollapsed ? "搜索对话" : undefined}
-          aria-haspopup="dialog"
-          onClick={() => window.dispatchEvent(new Event(OPEN_CONVERSATION_SEARCH_EVENT))}
-        >
-          <Search aria-hidden="true" size={18} strokeWidth={1.8} />
-          <span className="sidebar-item-label">搜索对话</span>
-          <em>{MOD_KEY} K</em>
-        </button>
 
         <nav className="primary-nav" aria-label="功能页" data-active-index={activeNavigationIndex}>
           {primaryNavigation.map((item) => {
@@ -502,6 +487,17 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
 
         <section className="recent-threads" aria-labelledby="recent-thread-title">
           <h2 className="sr-only" id="recent-thread-title">历史对话</h2>
+          {conversations.length > 0 && (
+            <button
+              type="button"
+              className="thread-search"
+              aria-haspopup="dialog"
+              onClick={() => window.dispatchEvent(new Event(OPEN_CONVERSATION_SEARCH_EVENT))}
+            >
+              <Search aria-hidden="true" size={14} />
+              <span>搜索对话</span>
+            </button>
+          )}
           <div className="thread-links">
             {conversationGroups.map((group) => (
               <div className="thread-group" role="group" aria-labelledby={`thread-group-${group.key}`} key={group.key}>

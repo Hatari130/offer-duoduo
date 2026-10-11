@@ -22,7 +22,7 @@ function Highlighted({ text, terms }: { text: string; terms: string[] }) {
 }
 
 /**
- * Command-palette search over chat history (ChatGPT/Claude style): opens with ⌘K, empty query lists
+ * Command-palette search over chat history (ChatGPT/Claude style): empty query lists
  * recent chats by date, typing filters title and last message, ↑↓ + Enter open a result.
  */
 export function ConversationSearchDialog({
@@ -137,7 +137,6 @@ export function ConversationSearchDialog({
           onChange={(event) => setQuery(event.target.value)}
           onKeyDown={onKeyDown}
         />
-        <kbd>Esc</kbd>
       </div>
 
       <div className="conversation-search__results" id="conversation-search-results" role="listbox" aria-label="对话" ref={listRef}>
@@ -182,12 +181,6 @@ export function ConversationSearchDialog({
           <p className="conversation-search__empty">还没有对话。开始第一次求职对话吧。</p>
         )}
       </div>
-
-      <footer className="conversation-search__footer" aria-hidden="true">
-        <span><kbd>↑</kbd><kbd>↓</kbd>选择</span>
-        <span><kbd>Enter</kbd>打开</span>
-        <span><kbd>Esc</kbd>关闭</span>
-      </footer>
     </dialog>
   );
 }
