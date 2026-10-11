@@ -291,10 +291,21 @@
   font-weight: 550;
 }
 
+/* Search sits under "新对话" like ChatGPT/Claude; it is a button styled as a nav row. */
+.sidebar-search-button {
+  width: 100%;
+  margin-block-end: 0.25rem;
+  background: transparent;
+  border: 0;
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+
 .recent-threads {
   min-height: 0;
   max-height: 50rem;
-  margin-block-start: 1.55rem;
+  margin-block-start: 1.4rem;
   padding-inline: 0.25rem;
   overflow-y: auto;
   opacity: 1;
@@ -315,40 +326,24 @@
 
 .thread-links {
   display: grid;
-  gap: 0.12rem;
-  margin-block-start: 0.45rem;
+  gap: 1rem;
 }
 
-.thread-search {
+.thread-group {
   display: grid;
-  min-height: 2.25rem;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 0.4rem;
-  margin: 0.5rem 0.35rem 0;
-  padding-inline: 0.55rem;
-  color: var(--of-text-subtle);
-  background: var(--of-surface-muted);
-  border: 1px solid transparent;
-  border-radius: 0.65rem;
+  gap: 0.06rem;
 }
 
-.thread-search:focus-within { border-color: var(--of-focus); }
-
-.thread-search input {
-  min-width: 0;
-  color: var(--of-text);
-  background: transparent;
-  border: 0;
-  font: inherit;
-  font-size: 0.75rem;
+.thread-group > .sidebar-section-heading {
+  padding-block: 0 0.3rem;
+  letter-spacing: 0;
 }
 
 .thread-link-row {
   position: relative;
   display: grid;
   min-width: 0;
-  min-height: 3.05rem;
+  min-height: 2.25rem;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   border-radius: 0.72rem;
@@ -361,7 +356,7 @@
 .thread-link {
   display: block;
   min-width: 0;
-  padding: 0.45rem 0.3rem 0.45rem 0.65rem;
+  padding: 0.5rem 0.3rem 0.5rem 0.6rem;
   overflow: hidden;
   color: var(--of-text-muted);
   border-radius: 0.72rem;
@@ -370,38 +365,36 @@
   text-decoration: none;
 }
 
-.thread-link-copy {
-  display: grid;
-  min-width: 0;
-  gap: 0.14rem;
-}
-
 .thread-link-title {
+  display: block;
   overflow: hidden;
   color: inherit;
-  font-size: 0.76rem;
-  font-weight: 560;
+  font-size: 0.8rem;
+  font-weight: 500;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.thread-link time {
-  color: var(--of-text-subtle);
-  font-size: 0.7rem;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.2;
-  white-space: nowrap;
+/* The action button overlays the title on hover, so long titles use the full row width otherwise. */
+.thread-link-row:is(:hover, :focus-within, .is-menu-open) .thread-link-title {
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 2.6rem), transparent calc(100% - 1.4rem));
+  mask-image: linear-gradient(90deg, #000 calc(100% - 2.6rem), transparent calc(100% - 1.4rem));
 }
 
 .thread-link:hover,
 .thread-link-row.is-active .thread-link {
-  color: var(--of-text);
+  color: var(--of-text-strong);
 }
 
+.thread-link-row.is-active .thread-link-title { font-weight: 600; }
+
 .thread-row-actions {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
   display: flex;
-  gap: 0.05rem;
-  padding-inline-end: 0.3rem;
+  align-items: center;
+  padding-inline-end: 0.2rem;
   opacity: 0;
   transform: translateX(0.2rem);
   transition-property: opacity, transform;
@@ -409,28 +402,28 @@
   transition-timing-function: ease-out;
 }
 
-.thread-link-row:is(:hover, :focus-within, .is-menu-open, .is-pinned) .thread-row-actions {
+.thread-link-row:is(:hover, :focus-within, .is-menu-open) .thread-row-actions {
   opacity: 1;
   transform: translateX(0);
 }
 
-.thread-link-row.is-pinned:not(:hover, :focus-within, .is-menu-open) .thread-more-button {
-  opacity: 0;
-  pointer-events: none;
-}
+.thread-link-row:not(:hover, :focus-within, .is-menu-open) .thread-row-actions { pointer-events: none; }
 
+/* Touch screens have no hover: keep "…" visible and tappable, and always leave room for it. */
 @media (hover: none) {
   .thread-row-actions {
     opacity: 1;
     transform: translateX(0);
   }
+  .thread-link-row:not(:hover, :focus-within, .is-menu-open) .thread-row-actions { pointer-events: auto; }
+  .thread-link { padding-inline-end: 2.2rem; }
 }
 
 .thread-row-actions button,
 .thread-link-row form button {
   display: grid;
-  width: 2rem;
-  height: 2rem;
+  width: 1.85rem;
+  height: 1.85rem;
   place-items: center;
   color: var(--of-text-subtle);
   background: transparent;
@@ -443,8 +436,6 @@
 
 .thread-row-actions button:hover,
 .thread-link-row form button:hover { color: var(--of-text); background: var(--of-surface); }
-
-.thread-row-actions .thread-pin-button[aria-pressed="true"] { color: var(--of-brand-600); }
 
 .thread-row-actions button:active { transform: scale(0.96); }
 
@@ -1319,4 +1310,176 @@
   .thread-row-actions,
   .thread-row-actions button,
   .thread-action-popover button { transition-duration: 0.01ms; }
+}
+
+/* ⌘K conversation search: a command palette anchored near the top, like ChatGPT/Claude. */
+.conversation-search {
+  width: min(40rem, calc(100vw - 2rem));
+  max-height: min(34rem, calc(100dvh - 6rem));
+  margin: 12vh auto auto;
+  padding: 0;
+  overflow: hidden;
+  color: var(--of-text);
+  background: var(--of-surface-raised);
+  border: 1px solid var(--of-line);
+  border-radius: 1rem;
+  box-shadow: var(--of-shadow-dialog);
+}
+
+.conversation-search[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation-search::backdrop {
+  background: rgb(15 18 28 / 0.32);
+}
+
+.conversation-search__field {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.95rem 1.1rem;
+  color: var(--of-text-subtle);
+  border-block-end: 1px solid var(--of-line);
+}
+
+.conversation-search__field input {
+  min-width: 0;
+  padding: 0;
+  color: var(--of-text-strong);
+  background: transparent;
+  border: 0;
+  outline: none;
+  font: inherit;
+  font-size: 1rem;
+}
+
+.conversation-search__field input::placeholder { color: var(--of-text-subtle); }
+
+.conversation-search kbd {
+  display: inline-grid;
+  min-width: 1.4rem;
+  height: 1.35rem;
+  place-items: center;
+  padding-inline: 0.35rem;
+  color: var(--of-text-subtle);
+  background: var(--of-surface-muted);
+  border: 1px solid var(--of-line);
+  border-radius: 0.35rem;
+  font: inherit;
+  font-size: 0.68rem;
+  font-weight: 600;
+}
+
+.conversation-search__results {
+  flex: 1;
+  min-height: 0;
+  padding: 0.4rem;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.conversation-search__group {
+  padding: 0.75rem 0.7rem 0.3rem;
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+  font-weight: 600;
+}
+
+.conversation-search__option {
+  display: grid;
+  min-height: 2.6rem;
+  grid-template-columns: 1.1rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.5rem 0.7rem;
+  color: var(--of-text-muted);
+  border-radius: 0.6rem;
+  cursor: pointer;
+}
+
+.conversation-search__option.is-active {
+  color: var(--of-text-strong);
+  background: var(--of-surface-muted);
+}
+
+.conversation-search__option > svg { color: var(--of-text-subtle); }
+.conversation-search__option.is-active > svg { color: var(--of-brand-600); }
+
+.conversation-search__copy {
+  display: grid;
+  min-width: 0;
+  gap: 0.15rem;
+}
+
+.conversation-search__title,
+.conversation-search__snippet {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-search__title {
+  font-size: 0.86rem;
+  font-weight: 550;
+}
+
+.conversation-search__snippet {
+  color: var(--of-text-subtle);
+  font-size: 0.76rem;
+}
+
+.conversation-search__option time {
+  color: var(--of-text-subtle);
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.conversation-search mark {
+  padding-inline: 0.05rem;
+  color: inherit;
+  background: var(--of-brand-100);
+  border-radius: 0.2rem;
+}
+
+.conversation-search__empty {
+  margin: 0;
+  padding: 2.5rem 1rem;
+  color: var(--of-text-subtle);
+  font-size: 0.84rem;
+  text-align: center;
+}
+
+.conversation-search__footer {
+  display: flex;
+  gap: 1.1rem;
+  padding: 0.6rem 1.1rem;
+  color: var(--of-text-subtle);
+  border-block-start: 1px solid var(--of-line);
+  font-size: 0.72rem;
+}
+
+.conversation-search__footer span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .conversation-search[open] { animation: conversation-search-in 140ms cubic-bezier(0.2, 0, 0, 1); }
+  @keyframes conversation-search-in {
+    from { opacity: 0; transform: translateY(-0.4rem) scale(0.985); }
+  }
+}
+
+@media (max-width: 40rem) {
+  .conversation-search {
+    margin-block-start: 0.75rem;
+    max-height: calc(100dvh - 1.5rem);
+  }
+  .conversation-search__field kbd,
+  .conversation-search__footer { display: none; }
 }

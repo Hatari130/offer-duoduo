@@ -7,7 +7,6 @@ import {
   Check,
   ChevronDown,
   CircleHelp,
-  Clock3,
   FileText,
   Home,
   Info,
@@ -40,6 +39,12 @@ import { ChangelogDialog } from "../components/ChangelogDialog";
 import { hasSeenLatestChangelog } from "../features/changelog/changelogData";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { UserAvatar } from "../components/UserAvatar";
+import { ConversationSearchDialog } from "../features/chat/ConversationSearchDialog";
+import { groupConversations } from "../features/chat/conversationHistory";
+
+export const OPEN_CONVERSATION_SEARCH_EVENT = "offerflow:open-conversation-search";
+const IS_APPLE_PLATFORM = typeof navigator !== "undefined" && /Mac|iPhone|iPad/i.test(navigator.platform || navigator.userAgent);
+const MOD_KEY = IS_APPLE_PLATFORM ? "⌘" : "Ctrl";
 
 interface AppLinkProps extends PropsWithChildren {
   href: string;
@@ -69,28 +74,6 @@ const primaryNavigation = [
   { href: "/app/applications", label: "个人投递管理", mobileLabel: "投递", icon: BriefcaseBusiness, requiresAuth: true }
 ];
 
-function formatConversationTime(value: string, now: number): string {
-  const timestamp = Date.parse(value);
-  if (!Number.isFinite(timestamp)) return "";
-  const elapsed = Math.max(0, now - timestamp);
-  if (elapsed < 10 * 60_000) return "刚刚";
-
-  const current = new Date(now);
-  const updated = new Date(timestamp);
-  const currentDay = new Date(current.getFullYear(), current.getMonth(), current.getDate()).getTime();
-  const updatedDay = new Date(updated.getFullYear(), updated.getMonth(), updated.getDate()).getTime();
-  const dayDifference = Math.round((currentDay - updatedDay) / 86_400_000);
-
-  if (dayDifference <= 0) return "今天";
-  if (dayDifference === 1) return "昨天";
-  if (dayDifference < 7) return `${dayDifference}天前`;
-  return updated.toLocaleDateString("zh-CN", {
-    month: "numeric",
-    day: "numeric",
-    ...(updated.getFullYear() === current.getFullYear() ? {} : { year: "numeric" })
-  });
-}
-
 export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: string }>) {
   const { status, user, logout, requestLogin } = useAuth();
   const isGuest = status === "guest";
@@ -102,7 +85,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     return window.localStorage.getItem("offerflow:sidebar-collapsed") === "true";
   });
   const [conversations, setConversations] = useState<ChatConversation[]>([]);
-  const [threadQuery, setThreadQuery] = useState("");
+  const [searchOpen, setSearchOpen] = useState(false);
   const [renamingConversationId, setRenamingConversationId] = useState<string>();
   const [renameDraft, setRenameDraft] = useState("");
   const [threadError, setThreadError] = useState("");
@@ -200,6 +183,19 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
   }, [isAnonymous, user?.id]);
 
   useEffect(() => {
+    const openSearch = () => {
+      if (isAnonymous) {
+        requestLogin("登录后即可搜索你的历史对话。");
+        return;
+      }
+      setMobileOpen(false);
+      setSearchOpen(true);
+    };
+    window.addEventListener(OPEN_CONVERSATION_SEARCH_EVENT, openSearch);
+    return () => window.removeEventListener(OPEN_CONVERSATION_SEARCH_EVENT, openSearch);
+  }, [isAnonymous, requestLogin]);
+
+  useEffect(() => {
     const colorScheme = window.matchMedia?.("(prefers-color-scheme: dark)");
     if (!colorScheme) return undefined;
     const followSystemTheme = (event: MediaQueryListEvent) => {
@@ -290,11 +286,7 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
     return false;
   };
   const pinnedConversationIdSet = new Set(pinnedConversationIds);
-  const visibleConversations = conversations
-    .filter((conversation) =>
-      `${conversation.title} ${conversation.lastMessagePreview || ""}`.toLowerCase().includes(threadQuery.trim().toLowerCase())
-    )
-    .sort((first, second) => Number(pinnedConversationIdSet.has(second.id)) - Number(pinnedConversationIdSet.has(first.id)));
+  const conversationGroups = groupConversations(conversations, pinnedConversationIdSet, clockNow);
   const activeThreadMenuConversation = conversations.find((conversation) => conversation.id === activeThreadMenuId);
   const closeThreadMenu = () => {
     setActiveThreadMenuId(undefined);
@@ -471,8 +463,20 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         >
           <Plus aria-hidden="true" size={18} strokeWidth={2} />
           <span className="sidebar-item-label">新对话</span>
-          <span className="sidebar-shortcut">⌘ K</span>
+          <span className="sidebar-shortcut">{IS_APPLE_PLATFORM ? "⇧⌘O" : "Ctrl ⇧ O"}</span>
         </AppLink>
+
+        <button
+          type="button"
+          className="nav-link sidebar-search-button"
+          title={sidebarCollapsed ? "搜索对话" : undefined}
+          aria-haspopup="dialog"
+          onClick={() => window.dispatchEvent(new Event(OPEN_CONVERSATION_SEARCH_EVENT))}
+        >
+          <Search aria-hidden="true" size={18} strokeWidth={1.8} />
+          <span className="sidebar-item-label">搜索对话</span>
+          <em>{MOD_KEY} K</em>
+        </button>
 
         <nav className="primary-nav" aria-label="功能页" data-active-index={activeNavigationIndex}>
           {primaryNavigation.map((item) => {
@@ -497,24 +501,12 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
         </nav>
 
         <section className="recent-threads" aria-labelledby="recent-thread-title">
-          <div className="sidebar-section-heading">
-            <span id="recent-thread-title">最近对话</span>
-            <Clock3 aria-hidden="true" size={14} />
-          </div>
-          {conversations.length > 4 && (
-            <label className="thread-search">
-              <span className="sr-only">搜索历史对话</span>
-              <Search aria-hidden="true" size={14} />
-              <input
-                type="search"
-                value={threadQuery}
-                placeholder="搜索对话"
-                onChange={(event) => setThreadQuery(event.target.value)}
-              />
-            </label>
-          )}
+          <h2 className="sr-only" id="recent-thread-title">历史对话</h2>
           <div className="thread-links">
-            {visibleConversations.map((conversation) => {
+            {conversationGroups.map((group) => (
+              <div className="thread-group" role="group" aria-labelledby={`thread-group-${group.key}`} key={group.key}>
+                <div className="sidebar-section-heading" id={`thread-group-${group.key}`}>{group.label}</div>
+            {group.conversations.map((conversation) => {
               const href = `/app/chat/${encodeURIComponent(conversation.id)}`;
               return (
                 <div
@@ -543,22 +535,9 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                         title={conversation.title}
                         onNavigate={closeMobile}
                       >
-                        <span className="thread-link-copy">
-                          <span className="thread-link-title">{conversation.title}</span>
-                          <time dateTime={conversation.updatedAt}>{formatConversationTime(conversation.updatedAt, clockNow)}</time>
-                        </span>
+                        <span className="thread-link-title">{conversation.title}</span>
                       </AppLink>
                       <span className="thread-row-actions">
-                        <button
-                          type="button"
-                          className="thread-pin-button"
-                          aria-label={`${pinnedConversationIdSet.has(conversation.id) ? "取消置顶" : "置顶"} ${conversation.title}`}
-                          aria-pressed={pinnedConversationIdSet.has(conversation.id)}
-                          title={pinnedConversationIdSet.has(conversation.id) ? "取消置顶" : "置顶对话"}
-                          onClick={() => togglePinnedConversation(conversation)}
-                        >
-                          <Pin aria-hidden="true" size={14} fill={pinnedConversationIdSet.has(conversation.id) ? "currentColor" : "none"} />
-                        </button>
                         <button
                           type="button"
                           className="thread-more-button"
@@ -575,11 +554,10 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
                 </div>
               );
             })}
+              </div>
+            ))}
             {!conversations.length && (
               <p className="thread-empty">你的求职问题会保存在这里。</p>
-            )}
-            {conversations.length > 0 && !visibleConversations.length && (
-              <p className="thread-empty">没有匹配的对话。换个关键词试试。</p>
             )}
           </div>
           <p className="sr-only" role="status" aria-live="polite">{threadStatus}</p>
@@ -723,6 +701,16 @@ export function AppShell({ pathname, children }: PropsWithChildren<{ pathname: s
 
         </div>
       </aside>
+
+      <ConversationSearchDialog
+        open={searchOpen}
+        conversations={conversations}
+        pinnedIds={pinnedConversationIdSet}
+        now={clockNow}
+        onClose={() => setSearchOpen(false)}
+        onOpenConversation={(conversationId) => navigate(`/app/chat/${encodeURIComponent(conversationId)}`)}
+        onNewChat={() => navigate("/app/chat")}
+      />
 
       {activeThreadMenuConversation && threadMenuPosition && (
         <div

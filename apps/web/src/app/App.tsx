@@ -2,7 +2,7 @@ import { lazy, Suspense, useEffect } from "react";
 import { LoaderCircle } from "lucide-react";
 import { useAuth } from "./AuthContext";
 import { conversationIdFromPath, navigate, usePathname } from "./router";
-import { AppShell } from "../layouts/AppShell";
+import { AppShell, OPEN_CONVERSATION_SEARCH_EVENT } from "../layouts/AppShell";
 import { ChatPage } from "../pages/ChatPage";
 import { Logo } from "../components/Logo";
 import { AuthDialog } from "../components/AuthDialog";
@@ -105,8 +105,16 @@ export function App() {
   }, [pathname, status]);
 
   useEffect(() => {
+    // Same bindings as ChatGPT: ⌘K searches history, ⇧⌘O starts a new chat.
     const shortcut = (event: KeyboardEvent) => {
-      if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
+      if (!(event.metaKey || event.ctrlKey)) return;
+      const key = event.key.toLowerCase();
+      if (key === "k" && !event.shiftKey) {
+        event.preventDefault();
+        // The search lives in the app shell; outside it, go to the workspace first.
+        if (pathname.startsWith("/app")) window.dispatchEvent(new Event(OPEN_CONVERSATION_SEARCH_EVENT));
+        else navigate("/app/chat");
+      } else if (key === "o" && event.shiftKey) {
         event.preventDefault();
         if (status === "anonymous") requestLogin("登录后即可开始并保存新的求职对话。");
         else navigate("/app/chat");
@@ -114,7 +122,7 @@ export function App() {
     };
     window.addEventListener("keydown", shortcut);
     return () => window.removeEventListener("keydown", shortcut);
-  }, [requestLogin, status]);
+  }, [pathname, requestLogin, status]);
 
   useEffect(() => {
     if (status === "authenticated" || status === "guest") prefetchShellPages();
